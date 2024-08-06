@@ -37,7 +37,9 @@ export const useHandlePrompt = ({
       role: "user",
       name: "prompt",
     });
-    setCurrentCommand(null);
+    flushSync(() => {
+      setCurrentCommand(null);
+    });
   };
 
   const shouldApplyPrompt = [
