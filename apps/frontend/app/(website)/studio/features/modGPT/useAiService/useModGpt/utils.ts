@@ -21,7 +21,7 @@ export const useHandlePrompt = ({
   ReturnType<typeof useChat>,
   "append" | "isLoading" | "setMessages"
 >) => {
-  const { command } = useModStore();
+  const { command, setCurrentCommand } = useModStore();
   const { getToken, isSignedIn } = useAuth();
   const aliases = useGetAliases();
   const handleSelectPrompt = async (value: string) => {
@@ -37,6 +37,7 @@ export const useHandlePrompt = ({
       role: "user",
       name: "prompt",
     });
+    setCurrentCommand(null);
   };
 
   const shouldApplyPrompt = [
@@ -47,19 +48,7 @@ export const useHandlePrompt = ({
       !isLoading,
   ].every(identity);
 
-  console.log(
-    isSignedIn,
-    command === LEARN_KEY,
-    aliases.$BEFORE,
-    aliases.$AFTER,
-  );
   useEffect(() => {
-    console.log(
-      isSignedIn,
-      command === LEARN_KEY,
-      aliases.$BEFORE,
-      aliases.$AFTER,
-    );
     if (shouldApplyPrompt) {
       setMessages([]);
       handleSelectPrompt(autoGenerateCodemodPrompt);
