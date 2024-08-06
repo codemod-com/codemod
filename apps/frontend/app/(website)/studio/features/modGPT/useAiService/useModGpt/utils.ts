@@ -1,10 +1,11 @@
+import { LEARN_KEY } from "@/constants";
 import { useAuth } from "@auth/useAuth";
 import { autoGenerateCodemodPrompt } from "@chatbot/prompts";
 import { applyAliases, useGetAliases } from "@studio/store/CFS/alias";
 import { useModStore } from "@studio/store/mod";
 import type { useChat } from "ai/react/dist";
 import { identity } from "ramda";
-import { type Dispatch, type SetStateAction, useEffect, useRef } from "react";
+import { type Dispatch, type SetStateAction, useEffect } from "react";
 import { flushSync } from "react-dom";
 
 export const useHandlePrompt = ({
@@ -21,7 +22,6 @@ export const useHandlePrompt = ({
   "append" | "isLoading" | "setMessages"
 >) => {
   const { command } = useModStore();
-  const executedCommand = useRef(false);
   const { getToken, isSignedIn } = useAuth();
   const aliases = useGetAliases();
   const handleSelectPrompt = async (value: string) => {
@@ -41,16 +41,26 @@ export const useHandlePrompt = ({
 
   const shouldApplyPrompt = [
     isSignedIn &&
-      command === "learn" &&
+      command === LEARN_KEY &&
       aliases.$BEFORE !== null &&
       aliases.$AFTER !== null &&
-      !isLoading &&
-      !executedCommand.current,
+      !isLoading,
   ].every(identity);
 
+  console.log(
+    isSignedIn,
+    command === LEARN_KEY,
+    aliases.$BEFORE,
+    aliases.$AFTER,
+  );
   useEffect(() => {
+    console.log(
+      isSignedIn,
+      command === LEARN_KEY,
+      aliases.$BEFORE,
+      aliases.$AFTER,
+    );
     if (shouldApplyPrompt) {
-      executedCommand.current = true;
       setMessages([]);
       handleSelectPrompt(autoGenerateCodemodPrompt);
     }

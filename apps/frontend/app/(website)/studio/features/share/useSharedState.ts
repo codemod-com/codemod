@@ -1,3 +1,4 @@
+"use client";
 import { LEARN_KEY } from "@/constants";
 import type { KnownEngines } from "@codemod-com/utilities";
 import { getCodeDiff } from "@studio/api/getCodeDiff";
@@ -26,10 +27,47 @@ const decodeNullable = (value: string | null): string | null => {
     return value;
   }
 };
-const getState = () => {
+const getState = async () => {
   const searchParams = new URLSearchParams(window.location.search);
 
   const csc = searchParams.get(SEARCH_PARAMS_KEYS.COMPRESSED_SHAREABLE_CODEMOD);
+
+  const engine =
+    decodeNullable(searchParams.get(SEARCH_PARAMS_KEYS.ENGINE)) ??
+    ("jscodeshift" as KnownEngines);
+  const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
+  const codemodSource = decodeNullable(
+    searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_SOURCE),
+  );
+  const codemodName = decodeNullable(
+    searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_NAME),
+  );
+
+  const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
+  const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+  const isLearn = command === LEARN_KEY;
+
+  if (command === LEARN_KEY) {
+    if (!engine || !diffId || !iv) {
+      return;
+    }
+
+    const snippets = await getCodeDiff({ diffId, iv });
+
+    if (!snippets) {
+      return;
+    }
+
+    const editors = [toInitialStates({ ...snippets, name: "Learn" })];
+    return {
+      engine,
+      editors: editors.map(toInitialStates),
+      codemodSource: null,
+      codemodName,
+      command: LEARN_KEY,
+    };
+  }
+
   if (csc === null) return;
 
   try {
@@ -88,19 +126,6 @@ const getState = () => {
     console.error(error);
   }
 
-  const engine = decodeNullable(
-    searchParams.get(SEARCH_PARAMS_KEYS.ENGINE),
-  ) as KnownEngines;
-  const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
-  const codemodSource = decodeNullable(
-    searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_SOURCE),
-  );
-  const codemodName = decodeNullable(
-    searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_NAME),
-  );
-
-  const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
-
   const someSearchParamsSet = [
     engine,
     diffId,
@@ -109,61 +134,32 @@ const getState = () => {
     command,
   ].some((s) => s !== null);
 
-  if (someSearchParamsSet) {
+  if (someSearchParamsSet)
     return {
       engine: engine ?? "jscodeshift",
       editors: [getEmptyTestCase()],
       codemodSource: codemodSource ?? "",
       codemodName: codemodName ?? "",
       command:
-        command === "learn" || command === "accessTokenRequested"
+        command === LEARN_KEY || command === "accessTokenRequested"
           ? command
           : null,
     };
-  }
 };
 
 const useCodemodLearn = () => {};
 export const useSharedState = () => {
-  const { setInitialState, getSelectedEditors, setEngine } = useSnippetsStore();
-  const { setContent } = useModStore();
-  const searchParams = new URLSearchParams(window.location.search);
-  const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
-
+  const { setInitialState } = useSnippetsStore();
+  const { setContent, setCurrentCommand } = useModStore();
   useEffect(() => {
-    const initialState = getState();
-    const snippetStore = getSelectedEditors();
-    if (command === LEARN_KEY) {
-      (async () => {
-        try {
-          const engine = (searchParams.get(SEARCH_PARAMS_KEYS.ENGINE) ??
-            "jscodeshift") as KnownEngines;
-          const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
-          const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
-
-          if (!engine || !diffId || !iv) {
-            return;
-          }
-
-          const snippets = await getCodeDiff({ diffId, iv });
-
-          if (!snippets) {
-            return;
-          }
-
-          snippetStore.setBeforeSnippet(snippets.before);
-          snippetStore.setAfterSnippet(snippets.after);
-          searchParams.delete(SEARCH_PARAMS_KEYS.COMMAND);
-          setEngine(engine);
-        } catch (err) {
-          console.error(err);
-        }
-      })();
-      return;
-    }
-    if (initialState) {
-      setInitialState(initialState);
-      setContent(initialState.codemodSource);
-    }
+    const setState = async () => {
+      const initialState = await getState();
+      if (initialState) {
+        setInitialState(initialState);
+        setContent(initialState.codemodSource);
+        setCurrentCommand(initialState?.command);
+      }
+    };
+    setState();
   }, []);
 };
