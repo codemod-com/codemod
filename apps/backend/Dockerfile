@@ -57,4 +57,5 @@ WORKDIR /app
 COPY --from=installer /app/apps/backend ./apps/backend
 COPY --from=installer /app/packages/database ./packages/database
 
-CMD cd packages/database && pnpm dlx prisma@latest migrate deploy && cd - && node build/index.js
+CMD cd packages/database && pnpm dlx prisma@latest migrate deploy && cd - && node apps/backend/build/index.js
+
