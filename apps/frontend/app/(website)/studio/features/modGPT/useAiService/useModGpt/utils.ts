@@ -5,7 +5,7 @@ import { applyAliases, useGetAliases } from "@studio/store/CFS/alias";
 import { useModStore } from "@studio/store/mod";
 import type { useChat } from "ai/react/dist";
 import { identity } from "ramda";
-import { type Dispatch, type SetStateAction, useEffect } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useRef } from "react";
 import { flushSync } from "react-dom";
 
 export const useHandlePrompt = ({
