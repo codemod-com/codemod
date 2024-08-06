@@ -57,4 +57,4 @@ WORKDIR /app
 COPY --from=installer /app/apps/auth-service ./apps/auth-service
 COPY --from=installer /app/packages/database ./packages/database
 
-CMD cd packages/database && pnpm dlx prisma@latest migrate deploy && cd - && node build/index.js
+CMD cd packages/database && pnpm dlx prisma@latest migrate deploy && cd - && node apps/auth-service/build/index.js
