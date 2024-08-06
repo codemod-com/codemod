@@ -11,6 +11,7 @@ COPY ./packages/tsconfig /app/packages/tsconfig/
 COPY ./packages/utilities /app/packages/utilities/
 COPY ./packages/filemod /app/packages/filemod/
 COPY ./packages/database /app/packages/database/
+COPY ./packages/api-types /app/packages/api-types/
 
 RUN pnpm install
 
