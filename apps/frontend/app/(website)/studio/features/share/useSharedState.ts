@@ -59,6 +59,7 @@ const getState = async () => {
     }
 
     const editors = [toInitialStates({ ...snippets, name: "Learn" })];
+    searchParams.delete(SEARCH_PARAMS_KEYS.COMMAND);
     return {
       engine,
       editors,
