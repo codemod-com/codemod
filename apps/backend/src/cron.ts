@@ -31,6 +31,10 @@ const cleanupLoginIntentsCron = new CronJob(
 const syncDatabaseWithPosthogDataCron = new CronJob(
   "0 * * * *", // cronTime - every hour
   async () => {
+    if (environment.NODE_ENV !== "production") {
+      return;
+    }
+
     const posthogService = new PostHogService(
       environment.POSTHOG_API_KEY ?? "",
       environment.POSTHOG_PROJECT_ID ?? "",
@@ -114,6 +118,7 @@ const systemHealthCheckCron = new CronJob(
       return;
     }
 
+    const env = process.env.NODE_ENV ?? "";
     const token = process.env.SLACK_TOKEN ?? "";
     const channel = process.env.SLACK_CHANNEL ?? "";
     const web = new WebClient(token);
@@ -127,7 +132,7 @@ const systemHealthCheckCron = new CronJob(
             if (response.status === 200 && service.available === false) {
               await web.chat.postMessage({
                 channel: channel,
-                text: `${service.name} is now up.`,
+                text: `[${env}]: ${service.name} is now up.`,
               });
               service.available = true;
             }
@@ -139,7 +144,7 @@ const systemHealthCheckCron = new CronJob(
                 if (service.available === false) {
                   await web.chat.postMessage({
                     channel: channel,
-                    text: `${service.name} is now up.`,
+                    text: `[${env}]: ${service.name} is now up.`,
                   });
                 }
                 service.available = true;
@@ -159,7 +164,7 @@ const systemHealthCheckCron = new CronJob(
           if (service.available === true) {
             await web.chat.postMessage({
               channel: channel,
-              text: `${service.name} is down. Error: ${error}`,
+              text: `[${env}]: ${service.name} is down. Error: ${error}`,
             });
 
             service.available = false;
