@@ -28,23 +28,23 @@ COPY packages/workflow /app/packages/workflow/
 COPY packages/api-types /app/packages/api-types/
 COPY packages/codemod-utils /app/packages/codemod-utils/
 COPY packages/auth /app/packages/auth/
- 
+
 # Generate a partial monorepo with a pruned lockfile for a target workspace.
 # Assuming "web" is the name entered in the project's package.json: { name: "web" }
 RUN turbo prune @codemod-com/backend --docker
- 
- 
+
+
 
 FROM base AS installer
 WORKDIR /app
 
 RUN apk update
 RUN apk add --no-cache libc6-compat
- 
+
 # First install the dependencies (as they change less often)
 COPY --from=builder /app/out/json/ .
 RUN pnpm install
- 
+
 # Build the project
 COPY --from=builder /app/out/full/ .
 RUN pnpm build --filter @codemod-com/backend
@@ -57,5 +57,5 @@ COPY --from=installer /app/node_modules/.pnpm/@prisma+client@5.15.1_prisma@5.15.
 
 WORKDIR /app
 COPY --from=installer /app/apps/backend ./apps/backend
- 
-CMD node apps/backend/build/index.js
+
+CMD cd packages/database && pnpm dlx prisma@latest migrate deploy && cd - && node build/index.js
