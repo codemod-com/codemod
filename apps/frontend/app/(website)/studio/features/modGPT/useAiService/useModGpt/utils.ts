@@ -22,6 +22,7 @@ export const useHandlePrompt = ({
   "append" | "isLoading" | "setMessages"
 >) => {
   const { command, setCurrentCommand } = useModStore();
+  const executedCommand = useRef(false);
   const { getToken, isSignedIn } = useAuth();
   const aliases = useGetAliases();
   const handleSelectPrompt = async (value: string) => {
@@ -47,11 +48,13 @@ export const useHandlePrompt = ({
       command === LEARN_KEY &&
       aliases.$BEFORE !== null &&
       aliases.$AFTER !== null &&
-      !isLoading,
+      !isLoading &&
+      !executedCommand.current,
   ].every(identity);
 
   useEffect(() => {
     if (shouldApplyPrompt) {
+      executedCommand.current = true;
       setMessages([]);
       handleSelectPrompt(autoGenerateCodemodPrompt);
     }
