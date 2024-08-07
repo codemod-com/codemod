@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
 
   if (
     !request.nextUrl.pathname.startsWith("/api") &&
-    process.env.NODE_ENV !== "development"
+    request.nextUrl.origin === "https://codemod.com"
   ) {
     // based off the examples presented on:
     // https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy

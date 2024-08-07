@@ -1,7 +1,9 @@
 import { useAuth } from "@/app/auth/useAuth";
+import { LEARN_KEY } from "@/constants";
 import { env } from "@/env";
 import type { LLMMessage, MessageFromWs, MessageToWs } from "@chatbot/types";
 import type { LLMEngine } from "@codemod-com/utilities";
+import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -24,6 +26,7 @@ export const useCodemodAI = ({
 }) => {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [wsMessage, setWsMessage] = useState<MessageFromWs>();
+  const { command, setCurrentCommand } = useModStore();
   const { getAllSnippets, addPair } = useSnippetsStore();
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [serviceBusy, setServiceBusy] = useState(false);
@@ -101,11 +104,6 @@ export const useCodemodAI = ({
   const isEnvPrepared =
     ws && beforeSnippets.length && afterSnippets.length && isWsConnected;
 
-  console.log({
-    isEnvPrepared,
-    ws,
-    isWsConnected,
-  });
   const autogenerateTestCases = async () => {
     if (isEnvPrepared) {
       setWsMessage({
@@ -138,6 +136,13 @@ export const useCodemodAI = ({
       setServiceBusy(true);
     }
   };
+
+  useEffect(() => {
+    if (command === LEARN_KEY) {
+      startIterativeCodemodGeneration();
+      setCurrentCommand(null);
+    }
+  }, [command, isEnvPrepared]);
 
   return {
     stopCodemodAi: () => {
