@@ -126,7 +126,7 @@ const getState = () => {
 const useCodemodLearn = () => {};
 export const useSharedState = () => {
   const { setInitialState, getSelectedEditors, setEngine } = useSnippetsStore();
-  const { setContent } = useModStore();
+  const { setContent, setCurrentCommand } = useModStore();
   const searchParams = new URLSearchParams(window.location.search);
   const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
 
@@ -140,7 +140,6 @@ export const useSharedState = () => {
             "jscodeshift") as KnownEngines;
           const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
           const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
-
           if (!engine || !diffId || !iv) {
             return;
           }
@@ -155,6 +154,7 @@ export const useSharedState = () => {
           snippetStore.setAfterSnippet(snippets.after);
           searchParams.delete(SEARCH_PARAMS_KEYS.COMMAND);
           setEngine(engine);
+          setCurrentCommand(LEARN_KEY);
         } catch (err) {
           console.error(err);
         }

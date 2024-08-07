@@ -18,7 +18,6 @@ export const useExecutionStatus = ({
   const { get: getExecutionStatus } = useAPI<GetExecutionStatusResponse>(
     GET_EXECUTION_STATUS(codemodExecutionId || ""),
   );
-  const [intervalId, setIntervalId] = useState(-1);
 
   useEffect(() => {
     let _intervalId: number;

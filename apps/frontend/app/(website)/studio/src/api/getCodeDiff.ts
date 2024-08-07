@@ -13,7 +13,7 @@ export const getCodeDiff = async (body: {
 
   try {
     const res = await apiClient.get<GetCodeDiffResponse>(
-      `diffs/${diffId}?iv=${iv}`,
+      `https://backend.codemod.com/diffs/${diffId}?iv=${iv}`,
     );
 
     return res.data;

@@ -1,7 +1,9 @@
 import { useAuth } from "@/app/auth/useAuth";
+import { LEARN_KEY } from "@/constants";
 import { env } from "@/env";
 import type { LLMMessage, MessageFromWs, MessageToWs } from "@chatbot/types";
 import type { LLMEngine } from "@codemod-com/utilities";
+import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -24,6 +26,7 @@ export const useCodemodAI = ({
 }) => {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [wsMessage, setWsMessage] = useState<MessageFromWs>();
+  const { command, setCurrentCommand } = useModStore();
   const { getAllSnippets, addPair } = useSnippetsStore();
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [serviceBusy, setServiceBusy] = useState(false);
@@ -72,28 +75,29 @@ export const useCodemodAI = ({
     }
   };
 
-  useEffect(() => {
-    const connectWebSocket = async () => {
-      const token = await getToken();
-      if (token) {
-        const websocket = new WebSocket(env.NEXT_PUBLIC_WS_URL as string);
-        setWs(websocket);
+  const connectWebSocket = async () => {
+    const token = await getToken();
+    if (token) {
+      const websocket = new WebSocket(env.NEXT_PUBLIC_WS_URL as string);
+      setWs(websocket);
+
+      websocket.onopen = () => {
+        console.info("WebSocket connection established");
         setIsWsConnected(true);
+      };
+      websocket.onmessage = (event) => onMessage(JSON.parse(event.data));
+      websocket.onerror = handleError;
+      websocket.onclose = () => setIsWsConnected(false);
 
-        websocket.onopen = () =>
-          console.info("WebSocket connection established");
-        websocket.onmessage = (event) => onMessage(JSON.parse(event.data));
-        websocket.onerror = handleError;
-        websocket.onclose = () => setIsWsConnected(false);
+      return () => {
+        websocket.close();
+        setIsWsConnected(false);
+        setServiceBusy(false);
+      };
+    }
+  };
 
-        return () => {
-          websocket.close();
-          setIsWsConnected(false);
-          setServiceBusy(false);
-        };
-      }
-    };
-
+  useEffect(() => {
     connectWebSocket();
   }, []);
 
@@ -101,11 +105,6 @@ export const useCodemodAI = ({
   const isEnvPrepared =
     ws && beforeSnippets.length && afterSnippets.length && isWsConnected;
 
-  console.log({
-    isEnvPrepared,
-    ws,
-    isWsConnected,
-  });
   const autogenerateTestCases = async () => {
     if (isEnvPrepared) {
       setWsMessage({
@@ -122,10 +121,12 @@ export const useCodemodAI = ({
     }
   };
 
-  const startIterativeCodemodGeneration = async () => {
+  const startIterativeCodemodGeneration = async (
+    content = `Generate codemod with AI`,
+  ) => {
     if (isEnvPrepared) {
       setWsMessage({
-        content: `Generate codemod with AI`,
+        content,
         role: "user",
         id: Date.now().toString(),
       });
@@ -139,9 +140,19 @@ export const useCodemodAI = ({
     }
   };
 
+  useEffect(() => {
+    if (command === LEARN_KEY && isWsConnected) {
+      startIterativeCodemodGeneration(
+        "Codemod learn: generate codemod with AI",
+      );
+      setCurrentCommand(null);
+    }
+  }, [command, isEnvPrepared, isWsConnected]);
+
   return {
     stopCodemodAi: () => {
       ws?.close();
+      connectWebSocket();
       setIsWsConnected(false);
       setServiceBusy(false);
     },
