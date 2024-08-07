@@ -53,7 +53,6 @@ export const useExecutionStatus = ({
           response?.result?.status === "done" ||
           response?.result?.status === "error";
 
-        console.log(isExecutionFinalized, response);
         if (isExecutionFinalized) {
           if (response?.result) showStatusToast(response.result);
           clearInterval(_intervalId);

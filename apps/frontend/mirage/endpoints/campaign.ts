@@ -11,8 +11,6 @@ export const campaignEndpoints = (server: Server<AppRegistry>) => {
       return new Response(404, {}, { error: "Not found" });
     }
 
-    console.log(campaign, "???");
-
     return campaign.dashboard;
   });
 };
