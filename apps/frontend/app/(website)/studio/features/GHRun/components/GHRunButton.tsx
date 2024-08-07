@@ -1,3 +1,4 @@
+"use client";
 import { useUser } from "@clerk/nextjs";
 import type { GHBranch, GithubRepository } from "@codemod-com/api-types";
 import {
