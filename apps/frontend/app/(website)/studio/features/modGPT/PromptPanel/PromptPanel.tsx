@@ -62,7 +62,7 @@ export function PromptPanel(props: PromptPanelProps) {
         <>
           <div className="mb-1 flex w-full gap-1 overflow-x-auto px-1 items-center justify-content-center actions">
             <WebSocketButton
-              handleButtonClick={startIterativeCodemodGeneration}
+              handleButtonClick={() => startIterativeCodemodGeneration()}
               isLoading={isLoading}
             />
           </div>
