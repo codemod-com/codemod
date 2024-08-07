@@ -53,7 +53,7 @@ const buildGetResponse = () => {
 const responsesMap = new Map<string, () => Result>();
 
 export const executionStatusEndpoints = (server: Server<AppRegistry>) => {
-  server.get(EXECUTION_STATUS, (schema, request) => {
+  server.get(EXECUTION_STATUS, (_, request) => {
     const codemodRunId = request.params.id ?? "";
 
     if (!responsesMap.has(codemodRunId)) {
@@ -63,6 +63,6 @@ export const executionStatusEndpoints = (server: Server<AppRegistry>) => {
     const getResponse = responsesMap.get(codemodRunId)!;
     const nextResponse = getResponse();
 
-    return new Response(200, {}, nextResponse);
+    return new Response(200, {}, { result: nextResponse, success: true });
   });
 };
