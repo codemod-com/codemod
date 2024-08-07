@@ -75,28 +75,29 @@ export const useCodemodAI = ({
     }
   };
 
-  useEffect(() => {
-    const connectWebSocket = async () => {
-      const token = await getToken();
-      if (token) {
-        const websocket = new WebSocket(env.NEXT_PUBLIC_WS_URL as string);
-        setWs(websocket);
+  const connectWebSocket = async () => {
+    const token = await getToken();
+    if (token) {
+      const websocket = new WebSocket(env.NEXT_PUBLIC_WS_URL as string);
+      setWs(websocket);
+
+      websocket.onopen = () => {
+        console.info("WebSocket connection established");
         setIsWsConnected(true);
+      };
+      websocket.onmessage = (event) => onMessage(JSON.parse(event.data));
+      websocket.onerror = handleError;
+      websocket.onclose = () => setIsWsConnected(false);
 
-        websocket.onopen = () =>
-          console.info("WebSocket connection established");
-        websocket.onmessage = (event) => onMessage(JSON.parse(event.data));
-        websocket.onerror = handleError;
-        websocket.onclose = () => setIsWsConnected(false);
+      return () => {
+        websocket.close();
+        setIsWsConnected(false);
+        setServiceBusy(false);
+      };
+    }
+  };
 
-        return () => {
-          websocket.close();
-          setIsWsConnected(false);
-          setServiceBusy(false);
-        };
-      }
-    };
-
+  useEffect(() => {
     connectWebSocket();
   }, []);
 
@@ -120,10 +121,12 @@ export const useCodemodAI = ({
     }
   };
 
-  const startIterativeCodemodGeneration = async () => {
+  const startIterativeCodemodGeneration = async (
+    content = `Generate codemod with AI`,
+  ) => {
     if (isEnvPrepared) {
       setWsMessage({
-        content: `Generate codemod with AI`,
+        content,
         role: "user",
         id: Date.now().toString(),
       });
@@ -138,15 +141,18 @@ export const useCodemodAI = ({
   };
 
   useEffect(() => {
-    if (command === LEARN_KEY) {
-      startIterativeCodemodGeneration();
+    if (command === LEARN_KEY && isWsConnected) {
+      startIterativeCodemodGeneration(
+        "Codemod learn: generate codemod with AI",
+      );
       setCurrentCommand(null);
     }
-  }, [command, isEnvPrepared]);
+  }, [command, isEnvPrepared, isWsConnected]);
 
   return {
     stopCodemodAi: () => {
       ws?.close();
+      connectWebSocket();
       setIsWsConnected(false);
       setServiceBusy(false);
     },
