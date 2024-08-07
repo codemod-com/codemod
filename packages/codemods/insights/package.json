@@ -1,0 +1,27 @@
+{
+  "name": "insights",
+  "license": "MIT",
+  "devDependencies": {
+    "@codemod.com/workflow": "workspace:*",
+    "@types/node": "20.9.0",
+    "typescript": "^5.2.2",
+    "vitest": "^1.0.1"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "files": ["README.md", ".codemodrc.json", "/dist/index.cjs"],
+  "dependencies": {
+    "@ast-grep/napi": "^0.25.1",
+    "@types/semver": "^7.5.8",
+    "@types/semver-diff": "^3.0.0",
+    "date-fns": "^3.6.0",
+    "depcheck": "^1.4.7",
+    "git-url-parse": "^14.1.0",
+    "giturl": "^2.0.0",
+    "npm-check": "^6.0.1",
+    "semver": "^7.6.3",
+    "semver-diff": "^4.0.0"
+  },
+  "type": "module"
+}
