@@ -4,7 +4,7 @@ import type { ColorConfig } from "@/app/(website)/campaigns/[campaignId]/view/[v
 import dynamic from "next/dynamic";
 import type React from "react";
 import { useCallback, useState } from "react";
-import { uuid } from "valibot"; // Assuming ImportDataButton is in the same directory
+import { uuid } from "valibot";
 import ImportDataButton from "./ImportDataButton";
 
 const DynamicLineChart = dynamic(() => import("./DynamicLineChart"), {
@@ -65,7 +65,6 @@ export const ChartTile: React.FC<ChartTileProps> = ({
 
   const handleImportError = useCallback((error: Error) => {
     console.error("Import error:", error.message);
-    // You could add more error handling here, like showing a toast notification
   }, []);
 
   return (

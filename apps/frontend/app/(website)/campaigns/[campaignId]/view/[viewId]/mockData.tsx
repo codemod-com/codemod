@@ -31,7 +31,7 @@ export const cardData: CardDataObject = {
   },
   mergedPRs: {
     title: "Auto-generated PRs merged",
-    value: 106, // This remains a number as it's not a duration
+    value: 106,
     change: 10,
     subtitle: "compared to previous 3 months",
   },
