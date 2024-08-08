@@ -100,6 +100,60 @@ const driftDataArray: DataPoint[] = [
   },
 ];
 
+export const customData = [
+  {
+    title: "useEffectLegacy",
+    data: [
+      {
+        timestamp: new Date("2023-06-01").getTime(),
+        value: Math.floor(Math.random() * 20) + 1,
+      },
+      {
+        timestamp: new Date("2023-07-01").getTime(),
+        value: Math.floor(Math.random() * 20) + 1,
+      },
+      {
+        timestamp: new Date("2023-08-01").getTime(),
+        value: Math.floor(Math.random() * 20) + 1,
+      },
+    ],
+  },
+  {
+    title: "useCallbackModern",
+    data: [
+      {
+        timestamp: new Date("2023-06-01").getTime(),
+        value: Math.floor(Math.random() * 20) + 1,
+      },
+      {
+        timestamp: new Date("2023-07-01").getTime(),
+        value: Math.floor(Math.random() * 20) + 1,
+      },
+      {
+        timestamp: new Date("2023-08-01").getTime(),
+        value: Math.floor(Math.random() * 20) + 1,
+      },
+    ],
+  },
+  {
+    title: "useMemoOptimized",
+    data: [
+      {
+        timestamp: new Date("2023-06-01").getTime(),
+        value: Math.floor(Math.random() * 20) + 1,
+      },
+      {
+        timestamp: new Date("2023-07-01").getTime(),
+        value: Math.floor(Math.random() * 20) + 1,
+      },
+      {
+        timestamp: new Date("2023-08-01").getTime(),
+        value: Math.floor(Math.random() * 20) + 1,
+      },
+    ],
+  },
+];
+
 export const depreciatedAPIData = [
   {
     title: "useContextReact18",
@@ -336,5 +390,92 @@ export const heroData = [
     timeToFirstReview: "40m",
     linesOfCodeDeleted: 10230,
     linesOfCodeAdded: 9870,
+  },
+];
+
+export const customData2 = [
+  {
+    title: "useStateUpdates",
+    data: [
+      {
+        timestamp: new Date("2023-06-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-07-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-08-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-09-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+    ],
+  },
+  {
+    title: "useReducerComplexity",
+    data: [
+      {
+        timestamp: new Date("2023-06-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-07-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-08-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-09-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+    ],
+  },
+  {
+    title: "useContextProvider",
+    data: [
+      {
+        timestamp: new Date("2023-06-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-07-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-08-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-09-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+    ],
+  },
+  {
+    title: "useRefDOMAccess",
+    data: [
+      {
+        timestamp: new Date("2023-06-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-07-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-08-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+      {
+        timestamp: new Date("2023-09-01").getTime(),
+        value: Math.floor(Math.random() * 30) + 5,
+      },
+    ],
   },
 ];

@@ -1,6 +1,8 @@
 "use client";
 import {
   cardData,
+  customData,
+  customData2,
   depreciatedAPIData,
   heroData,
   migrationPrData,
@@ -13,6 +15,7 @@ import {
   ReviewTimeCard,
   TimeSavedCard,
 } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets";
+import { CustomChart } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/CustomChart";
 import { DepreciatedAPIChart } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/DepreciatedAPIChart";
 import { PrsMergedChart } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/PrsMergedChart";
 
@@ -64,6 +67,12 @@ const DashboardPage: React.FC = () => {
               </div>
               <div className="bg-white rounded-lg shadow p-6">
                 <PrsMergedChart data={prsMergedData} />
+              </div>
+              <div className="bg-white rounded-lg shadow p-6">
+                <CustomChart data={customData} />
+              </div>
+              <div className="bg-white rounded-lg shadow p-6">
+                <CustomChart data={customData2} />
               </div>
             </div>
 

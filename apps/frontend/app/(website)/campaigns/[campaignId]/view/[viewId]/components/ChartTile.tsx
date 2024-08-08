@@ -1,4 +1,5 @@
 "use client";
+import { generateChartColors } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/utils";
 import type { ColorConfig } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
 import dynamic from "next/dynamic";
 import type React from "react";
@@ -12,7 +13,7 @@ const DynamicLineChart = dynamic(() => import("./DynamicLineChart"), {
 
 export interface ChartTileProps {
   title: string;
-  colorSets: ColorConfig[];
+  colorSets?: ColorConfig[];
   data: Array<{
     title: string;
     data: Array<{ timestamp: number; value: number }>;
@@ -28,11 +29,11 @@ interface InputDataItem {
 
 export const ChartTile: React.FC<ChartTileProps> = ({
   title,
-  colorSets,
+  colorSets: dS,
   data: initialData,
 }) => {
   const [data, setData] = useState(initialData);
-
+  const colorSets = dS ?? generateChartColors(data.length);
   const transformData = useCallback(
     (inputData: InputDataItem[]): ChartTileProps["data"] => {
       const groupedData = inputData.reduce(
