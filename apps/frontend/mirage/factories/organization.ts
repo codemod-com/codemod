@@ -6,7 +6,7 @@ export const organizationFactory = Factory.extend<
   Omit<GithubOrganization, "id">
 >({
   url() {
-    return `https://`;
+    return `https://api.github.com/orgs/${faker.internet.domainWord()}`;
   },
   description() {
     return faker.lorem.paragraph();

@@ -9,7 +9,7 @@ type Props = {
 
 const OrganizationList = ({ organizations, onSelectOrganization }: Props) => {
   return (
-    <ul className="flex flex-col gap-xs m-0">
+    <ul className="flex flex-col gap-xxs m-0">
       {organizations.map((organization) => (
         <li key={organization.id}>
           <OrganizationItem

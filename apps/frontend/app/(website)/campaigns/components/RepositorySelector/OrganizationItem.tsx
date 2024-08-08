@@ -6,17 +6,21 @@ type Props = {
   onClick(repo: GithubOrganization): void;
 };
 
+const getOrgNameFromUrl = (orgUrl: string) => {
+  return orgUrl.replace("https://api.github.com/orgs/", "");
+};
+
 const OrganizationItem = ({ organization, onClick }: Props) => {
   return (
     <div
       role="button"
       onClick={() => onClick(organization)}
-      className={
-        "flex flex-col gap-[12px] py-xs px-[12px] bg-emphasis-light dark:bg-emphasis-dark rounded-[8px] hover:bg-primary-dark dark:hover:bg-primary-light border cursor-pointer"
-      }
+      className="flex items-center justify-between px-2 py-1 bg-primary-dark dark:bg-emphasis-dark hover:bg-emphasis-light dark:hover:bg-primary-light cursor-pointer"
     >
-      <span className="body-m-medium">{organization.url}</span>
-      <ChevronRight />
+      <span className="body-m-medium">
+        {getOrgNameFromUrl(organization.url)}
+      </span>
+      <ChevronRight size={16} />
     </div>
   );
 };
