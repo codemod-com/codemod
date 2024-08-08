@@ -5,7 +5,6 @@ interface ChartColor {
 }
 
 function hslToRgb(h: number, s: number, l: number): string {
-  // Declare variables separately with explicit types
   let r: number;
   let g: number;
   let b: number;
@@ -14,7 +13,7 @@ function hslToRgb(h: number, s: number, l: number): string {
     r = g = b = l; // achromatic
   } else {
     const hue2rgb = (p: number, q: number, t: number) => {
-      let tempT = t; // Use a local variable instead of reassigning the parameter
+      let tempT = t;
 
       if (tempT < 0) tempT += 1;
       if (tempT > 1) tempT -= 1;

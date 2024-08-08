@@ -54,7 +54,7 @@ const CustomLegend = (props: any) => {
   }, []);
 
   return (
-    <ul className="flex justify-center space-x-4">
+    <ul className="flex flex-wrap relative justify-center space-x-4">
       {uniquePayload.map((entry: any, index: number) => (
         <li key={`item-${index}`} className="flex items-center">
           <span
