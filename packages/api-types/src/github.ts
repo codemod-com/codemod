@@ -70,6 +70,12 @@ export type GithubRepository = {
   };
 };
 
+export type GithubOrganization = {
+  id: number;
+  url: string;
+  description: string;
+};
+
 export type GithubContent = {
   name: string;
   path: string;

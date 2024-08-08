@@ -1,4 +1,6 @@
 const GH_REPO_LIST = "/sourceControl/github/user/repos";
+const GH_ORGANIZATION_LIST = "/sourceControl/github/user/orgs";
+const GH_ORGANIZATION_REPO_LIST = "/sourceControl/github/user/orgs/:id/repos";
 const GH_BRANCH_LIST = "/sourceControl/github/repo/branches";
 const RUN_CODEMOD = "/run/codemodRun";
 
@@ -22,6 +24,8 @@ export {
   GH_BRANCH_LIST,
   GH_REPO_LIST,
   RUN_CODEMOD,
+  GH_ORGANIZATION_LIST,
+  GH_ORGANIZATION_REPO_LIST,
   buildGetWorkflowRunUrl,
   buildCreateWorkflowRunUrl,
   buildCancelWorkflowRunUrl,

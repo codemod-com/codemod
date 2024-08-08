@@ -1,4 +1,4 @@
-import type { GithubRepository } from "be-types";
+import type { GithubRepository } from "@codemod-com/api-types";
 import { memo } from "react";
 import RepositoryItem from "./RepositoryItem";
 

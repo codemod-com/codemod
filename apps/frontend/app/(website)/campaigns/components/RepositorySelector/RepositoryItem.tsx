@@ -1,6 +1,5 @@
-import type { GithubRepository } from "be-types";
+import type { GithubRepository } from "@codemod-com/api-types";
 import { cx } from "cva";
-import RepositoryLanguage from "./RepositoryLanguage";
 
 type Props = {
   repository: GithubRepository;
@@ -22,9 +21,6 @@ const RepositoryItem = ({ repository, isActive, onClick }: Props) => {
       )}
     >
       <span className="body-m-medium">{repository.name}</span>
-      {repository.language && (
-        <RepositoryLanguage language={repository.language} />
-      )}
     </div>
   );
 };
