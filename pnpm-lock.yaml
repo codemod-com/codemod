@@ -1296,6 +1296,9 @@ importers:
       '@codemod-com/api-types':
         specifier: workspace:*
         version: link:../../packages/api-types
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../packages/codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
