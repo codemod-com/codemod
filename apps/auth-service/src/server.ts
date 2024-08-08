@@ -64,6 +64,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     /^https?:\/\/.*-codemod\.vercel\.app$/,
     /^https?:\/\/localhost(:\d+)?$/,
     /^https?:\/\/codemod\.com$/,
+    /^https?:\/\/staging.codemod\.com$/,
   ];
 
   await fastify.register(cors, {

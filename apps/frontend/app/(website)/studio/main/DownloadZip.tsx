@@ -1,3 +1,4 @@
+"use client";
 import { useAuth, useSession } from "@clerk/nextjs";
 import { getHumanCodemodName } from "@studio/api/getHumanCodemodName";
 import { Button } from "@studio/components/ui/button";

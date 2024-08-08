@@ -7,7 +7,11 @@ import {
 import type { SnippetValues } from "@studio/store/snippets";
 import { parseSnippet } from "@studio/utils/babelParser";
 
-export const toInitialStates = ({ before, after, name }) => ({
+export const toInitialStates = ({
+  before,
+  after,
+  name,
+}: { before: string; after: string; name: string }) => ({
   name,
   before: getSnippetInitialState(before),
   after: getSnippetInitialState(after),
