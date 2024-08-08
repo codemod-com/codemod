@@ -207,6 +207,7 @@ const Main = () => {
               className="bg-gray-bg"
             >
               <TestTabsComponent
+                isTestCaseGenerated={aiAssistantData.isTestCaseGenerated}
                 autogenerateTestCases={aiAssistantData.autogenerateTestCases}
               />
               <PanelGroup direction="horizontal">
