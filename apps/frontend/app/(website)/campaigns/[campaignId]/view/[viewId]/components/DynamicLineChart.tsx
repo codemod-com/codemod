@@ -36,7 +36,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           <p
             key={index}
             style={{ color: pld.color }}
-          >{`${pld.name}: ${pld.value}`}</p>
+          >{`${pld.name}: ${pld.value.toFixed(2)}`}</p>
         ))}
       </div>
     );
@@ -88,11 +88,11 @@ const DynamicLineChart: React.FC<ExtendedDynamicLineChartProps> = ({
     return acc;
   }, [] as any[]);
 
-  const minValue = Math.min(
-    ...dataSets.flatMap((set) => set.data.map((d) => d.value)),
+  const minValue = Math.floor(
+    Math.min(...dataSets.flatMap((set) => set.data.map((d) => d.value))),
   );
-  const maxValue = Math.max(
-    ...dataSets.flatMap((set) => set.data.map((d) => d.value)),
+  const maxValue = Math.ceil(
+    Math.max(...dataSets.flatMap((set) => set.data.map((d) => d.value))),
   );
 
   return (
@@ -109,13 +109,17 @@ const DynamicLineChart: React.FC<ExtendedDynamicLineChartProps> = ({
             scale="time"
             domain={["auto", "auto"]}
             tickFormatter={(unixTime) =>
-              new Date(unixTime).toLocaleDateString("en-US", { month: "short" })
+              new Date(unixTime).toLocaleDateString("en-US", {
+                month: "short",
+                year: "numeric",
+              })
             }
             padding={{ left: 30, right: 30 }}
           />
           <YAxis
             domain={[minValue, maxValue]}
             padding={{ top: 20, bottom: 20 }}
+            tickFormatter={(value) => Math.round(value)}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend content={<CustomLegend />} />
