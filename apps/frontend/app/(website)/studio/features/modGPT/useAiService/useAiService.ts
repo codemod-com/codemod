@@ -45,6 +45,7 @@ export const useAiService = ({
     startIterativeCodemodGeneration,
     serviceBusy,
     stopCodemodAi,
+    isTestCaseGenerated,
   } = useCodemodAI({
     messages,
     engine,
@@ -107,5 +108,6 @@ export const useAiService = ({
     modGptSubmit,
     startIterativeCodemodGeneration,
     autogenerateTestCases,
+    isTestCaseGenerated,
   };
 };

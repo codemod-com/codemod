@@ -31,6 +31,7 @@ export const useCodemodAI = ({
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [serviceBusy, setServiceBusy] = useState(false);
   const { getToken } = useAuth();
+  const [isTestCaseGenerated, setIsTestCaseGenerated] = useState(false);
 
   const emitMessage = async (message: MessageToSend) => {
     const token = await getToken();
@@ -60,6 +61,7 @@ export const useCodemodAI = ({
       });
       setServiceBusy(false);
     } else if (data.before) {
+      setIsTestCaseGenerated(false);
       setWsMessage({
         content: `Test cases created and added to a new test tab`,
         role: "assistant",
@@ -107,6 +109,7 @@ export const useCodemodAI = ({
 
   const autogenerateTestCases = async () => {
     if (isEnvPrepared) {
+      setIsTestCaseGenerated(true);
       setWsMessage({
         content: `Generate test cases`,
         role: "user",
@@ -160,5 +163,6 @@ export const useCodemodAI = ({
     wsMessage,
     serviceBusy,
     autogenerateTestCases,
+    isTestCaseGenerated,
   };
 };

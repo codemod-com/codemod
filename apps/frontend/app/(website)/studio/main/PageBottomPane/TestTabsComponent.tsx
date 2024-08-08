@@ -4,14 +4,16 @@ import type { useAiService } from "@chatbot/useAiService";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Tabs from "@radix-ui/react-tabs";
 import { useSnippetsStore } from "@studio/store/snippets";
+import { useViewStore } from "@studio/store/view";
 import { useEffect, useRef, useState } from "react";
 
 export const TestTabsComponent = ({
   autogenerateTestCases,
+  isTestCaseGenerated,
 }: {
-  autogenerateTestCases: ReturnType<
-    typeof useAiService
-  >["autogenerateTestCases"];
+  autogenerateTestCases: ReturnType<typeof useAiService>[
+    | "autogenerateTestCases"
+    | "isTestCaseGenerated"];
 }) => {
   const {
     getSelectedEditors,
@@ -30,6 +32,8 @@ export const TestTabsComponent = ({
   const inputRef = useRef(null);
   const [isEditedNameAlreadyInUse, setIsEditedNameAlreadyInUse] =
     useState(false);
+  const { activateModGpt } = useViewStore();
+
   useEffect(() => {
     if (inputRef.current) {
       setTimeout(() => inputRef.current.focus(), 0);
@@ -121,6 +125,7 @@ export const TestTabsComponent = ({
               +
             </button>
             <GenerateTestCasesButton
+              isTestCaseGenerated={isTestCaseGenerated}
               handleButtonClick={autogenerateTestCases}
             />
           </>
