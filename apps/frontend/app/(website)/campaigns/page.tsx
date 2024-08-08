@@ -1,5 +1,6 @@
 "use client";
 import Tabs, { TabContent } from "@/components/shared/Tabs";
+import { useMirageServer } from "@/hooks/useMirageServer";
 import type { GithubRepository } from "@codemod-com/api-types";
 import { useEffect, useState } from "react";
 import CampaignsTable from "./components/CampaignsTable";
@@ -8,6 +9,7 @@ import SecondaryHeader from "./components/SecondaryHeader";
 import { useCampaignTabsConfig } from "./hooks/useCampaigTabsConfig";
 
 const InsightsPage = () => {
+  useMirageServer(true);
   const tabsConfig = useCampaignTabsConfig();
 
   const [repo, setRepo] = useState<GithubRepository | null>();

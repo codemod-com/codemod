@@ -6,7 +6,7 @@ export const organizationFactory = Factory.extend<
   Omit<GithubOrganization, "id">
 >({
   url() {
-    return faker.internet.url();
+    return `https://`;
   },
   description() {
     return faker.lorem.paragraph();

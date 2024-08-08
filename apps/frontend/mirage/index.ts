@@ -6,7 +6,6 @@ import {
   branchEndpoints,
   campaignEndpoints,
   codemodRunEndpoints,
-  executionStatusEndpoints,
   organizationEndpoints,
   repositoryEndpoints,
 } from "./endpoints";
@@ -64,7 +63,7 @@ export const runServer = (environment: string) =>
       repositoryEndpoints(this);
       branchEndpoints(this);
       codemodRunEndpoints(this);
-      executionStatusEndpoints(this);
+      // executionStatusEndpoints(this);
       organizationEndpoints(this);
 
       // Needed because Chrome recognizes that the Mirage Response is not a real response

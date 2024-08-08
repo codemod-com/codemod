@@ -30,8 +30,6 @@ export type Props = {
 };
 
 const RepositorySelector = ({ onConfirm, onOpenChange, open }: Props) => {
-  const { data: repositoryList, isLoading: repositoriesLoading } =
-    useRepositories();
   const { data: organizationList, isLoading: organizationsLoading } =
     useOrganizations();
 
@@ -43,6 +41,9 @@ const RepositorySelector = ({ onConfirm, onOpenChange, open }: Props) => {
 
   const [selectedOrganization, setSelectedOrganization] =
     useState<GithubOrganization>();
+
+  const { data: repositoryList, isLoading: repositoriesLoading } =
+    useRepositories(selectedOrganization);
 
   const handleButtonClick = async () => {
     if (!selectedRepository) {
