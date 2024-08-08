@@ -1,9 +1,9 @@
-name: CI/CD Pipeline for Auth Backend (Production)
+name: CI/CD Pipeline for Auth Backend (Staging)
 
 on:
   push:
     branches:
-      - main
+      - staging
     paths:
       - 'apps/auth-service/**'
 jobs:
@@ -25,7 +25,7 @@ jobs:
         id: get_version
         run: |
           VERSION=$(cat apps/auth-service/package.json | jq -r '.version')
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "VERSION=${VERSION}-staging" >> $GITHUB_ENV
 
       - name: Login to Amazon ECR
         run: |
@@ -44,12 +44,12 @@ jobs:
       - name: Build Docker image
         if: steps.check_version.outputs.should_deploy == 'true'
         run: |
-          docker build -f apps/auth-service/Dockerfile --no-cache --progress=plain -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION .
+          docker build -f apps/auth-service/Dockerfile --no-cache --progress=plain -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION-staging .
 
       - name: Push Docker image to Amazon ECR
         if: steps.check_version.outputs.should_deploy == 'true'
         run: |
-          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION
+          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION-staging
 
       - name: Decode SSH Key
         run: echo "${{ secrets.AWS_SSH_KEY }}" | base64 --decode > private_key.pem
