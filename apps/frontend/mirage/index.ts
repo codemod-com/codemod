@@ -7,33 +7,44 @@ import {
   campaignEndpoints,
   codemodRunEndpoints,
   executionStatusEndpoints,
+  organizationEndpoints,
   repositoryEndpoints,
 } from "./endpoints";
 import {
   branchFactory,
   campaignFactory,
   dashboardFactory,
+  organizationFactory,
   repositoryFactory,
 } from "./factories";
 import {
   branchModel,
   campaignModel,
   dashboardModel,
+  organizationModel,
   repositoryModel,
 } from "./models";
-import { createBranches, createCampaigns, createRepositories } from "./seeds";
+import {
+  createBranches,
+  createCampaigns,
+  createOrganization,
+  createRepositories,
+} from "./seeds";
 
 const models = {
   campaign: campaignModel,
   dashboard: dashboardModel,
   repository: repositoryModel,
   branch: branchModel,
+  organization: organizationModel,
 };
+
 const factories = {
   campaign: campaignFactory,
   dashboard: dashboardFactory,
   repository: repositoryFactory,
   branch: branchFactory,
+  organization: organizationFactory,
 };
 
 export type AppRegistry = Registry<typeof models, typeof factories>;
@@ -54,6 +65,7 @@ export const runServer = (environment: string) =>
       branchEndpoints(this);
       codemodRunEndpoints(this);
       executionStatusEndpoints(this);
+      organizationEndpoints(this);
 
       // Needed because Chrome recognizes that the Mirage Response is not a real response
       // with setting instantiateStreaming to null we fallback to legacy WebAssembly instantiation
@@ -87,5 +99,6 @@ export const runServer = (environment: string) =>
       createCampaigns(server);
       createBranches(server);
       createRepositories(server);
+      createOrganization(server);
     },
   });
