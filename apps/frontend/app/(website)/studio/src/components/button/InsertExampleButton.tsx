@@ -9,14 +9,15 @@ import { buildDefaultCodemodSource, useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "../../store/snippets";
 
 const InsertExampleButton = () => {
-  const { engine, getSelectedEditors } = useSnippetsStore();
+  const { engine, getSelectedEditors, clearAll } = useSnippetsStore();
   const { setContent } = useModStore();
   return (
     <Tooltip
       trigger={
         <Button
           className="flex items-center justify-center px-0"
-          onClick={() => {
+          onClick={async () => {
+            await clearAll();
             getSelectedEditors().setBeforeSnippet(BEFORE_SNIPPET_DEFAULT_CODE);
             getSelectedEditors().setAfterSnippet(AFTER_SNIPPET_DEFAULT_CODE);
             setContent(buildDefaultCodemodSource(engine));
@@ -24,7 +25,6 @@ const InsertExampleButton = () => {
           size="xs"
           variant="ghost"
         >
-          {/* <KeyboardIcon className="h-4 w-4" /> */}
           <ExampleIcon />
           <span className="sr-only">Insert Example</span>
         </Button>
