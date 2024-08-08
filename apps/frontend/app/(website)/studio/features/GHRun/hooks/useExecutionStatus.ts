@@ -18,7 +18,6 @@ export const useExecutionStatus = ({
   const { get: getExecutionStatus } = useAPI<GetExecutionStatusResponse>(
     GET_EXECUTION_STATUS(codemodExecutionId || ""),
   );
-  const [intervalId, setIntervalId] = useState(-1);
 
   useEffect(() => {
     let _intervalId: number;
@@ -52,6 +51,7 @@ export const useExecutionStatus = ({
           !response?.success ||
           response?.result?.status === "done" ||
           response?.result?.status === "error";
+
         if (isExecutionFinalized) {
           if (response?.result) showStatusToast(response.result);
           clearInterval(_intervalId);

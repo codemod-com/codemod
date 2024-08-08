@@ -1,4 +1,5 @@
 import { cn } from "@/utils";
+import type { useAiService } from "@chatbot/useAiService";
 import { useAuth } from "@clerk/nextjs";
 import Text from "@studio/components/Text";
 import {
@@ -29,10 +30,12 @@ export const AssistantTab = ({
   panelRefs,
   beforePanel,
   afterPanel,
+  aiAssistantData,
 }: {
   panelRefs: PanelsRefs;
   beforePanel: PanelData;
   afterPanel: PanelData;
+  aiAssistantData: ReturnType<typeof useAiService>;
 }) => {
   const { activeTab } = useViewStore();
   const { engine } = useSnippetsStore();
@@ -83,6 +86,7 @@ export const AssistantTab = ({
     isSignedIn,
     engine,
     panelRefs,
+    aiAssistantData,
   })
     .filter(Boolean)
     .reduce(

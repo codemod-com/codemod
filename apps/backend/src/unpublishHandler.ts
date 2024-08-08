@@ -3,10 +3,7 @@ import type { RouteHandler } from "fastify";
 
 import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
-import {
-  extractNameAndVersion,
-  isNeitherNullNorUndefined,
-} from "@codemod-com/utilities";
+import { extractNameAndVersion } from "@codemod-com/utilities";
 
 import { buildRevalidateHelper } from "./revalidate.js";
 import { parseUnpublishBody } from "./schemata/schema.js";
@@ -21,7 +18,7 @@ export const unpublishHandler: RouteHandler<{
 }> = async (request: UserDataPopulatedRequest, reply) => {
   try {
     const { username } = request.user!;
-    const orgs = request.organizations!;
+    const allowedNamespaces = request.allowedNamespaces!;
 
     if (username === null) {
       throw new Error("The username of the current user does not exist");
@@ -52,11 +49,6 @@ export const unpublishHandler: RouteHandler<{
     }
 
     let skipCheck = false;
-
-    const allowedNamespaces = [
-      username,
-      ...orgs.map((org) => org.organization.slug),
-    ].filter(isNeitherNullNorUndefined);
 
     // Allow Codemod engineers to unpublish anything if required
     if (environment.VERIFIED_PUBLISHERS.includes(username)) {

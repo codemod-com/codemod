@@ -8,6 +8,7 @@ import {
   type KnownEngines,
   doubleQuotify,
   isJavaScriptName,
+  isJsxName,
 } from "@codemod-com/utilities";
 import { createCodeDiff } from "#api.js";
 import {
@@ -26,15 +27,7 @@ const getFileExtension = (filePath: string) => {
   return extname(filePath).toLowerCase();
 };
 
-const getOldSourceFile = (
-  commitHash: string,
-  filePath: string,
-  fileExtension: string,
-) => {
-  if (!isJavaScriptName(fileExtension)) {
-    return null;
-  }
-
+const getOldSourceFile = (commitHash: string, filePath: string) => {
   try {
     const commitWithFileName = doubleQuotify(`${commitHash}:${filePath}`);
     const output = execSync(`git show ${commitWithFileName}`).toString();
@@ -53,11 +46,7 @@ const getOldSourceFile = (
   }
 };
 
-const getSourceFile = (filePath: string, fileExtension: string) => {
-  if (!isJavaScriptName(fileExtension)) {
-    return null;
-  }
-
+const getSourceFile = (filePath: string) => {
   const project = new Project({
     compilerOptions: {
       allowJs: true,
@@ -130,11 +119,14 @@ export const handleLearnCliCommand = async (options: {
 
   const fileExtension = getFileExtension(path);
 
-  if (!isJavaScriptName(fileExtension)) {
+  const isValidFile =
+    isJavaScriptName(fileExtension) || isJsxName(fileExtension);
+
+  if (!isValidFile) {
     printer.printOperationMessage({
       kind: "error",
       message:
-        "At this moment, we are supporting only Jscodeshift engine, so the file must be either a JavaScript or TypeScript file (.js, .jsx, .ts, .tsx).\n" +
+        "At this moment, we are supporting only Jscodeshift engine, so the file must be either a JavaScript or TypeScript file (.js, .ts, .mjs, .cjs, .mts, .cts, .jsx, .tsx).\n" +
         "Soon, we will support other engines and hence other extensions including .md, .mdx and more!",
     });
     return;
@@ -188,8 +180,8 @@ export const handleLearnCliCommand = async (options: {
     return;
   }
 
-  const oldSourceFile = getOldSourceFile(latestCommitHash, path, fileExtension);
-  const sourceFile = getSourceFile(dirtyPath, fileExtension);
+  const oldSourceFile = getOldSourceFile(latestCommitHash, path);
+  const sourceFile = getSourceFile(dirtyPath);
 
   if (oldSourceFile === null || sourceFile === null) {
     printer.printOperationMessage({

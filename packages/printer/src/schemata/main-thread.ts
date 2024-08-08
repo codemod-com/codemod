@@ -9,7 +9,7 @@ const mainThreadMessageSchema = v.union([
   v.object({
     kind: v.literal("initialization"),
     path: v.string(),
-    transformer: v.nullable(v.function()),
+    transformer: v.nullable(v.string()),
     engine: v.union([
       v.literal("jscodeshift"),
       v.literal("ts-morph"),
