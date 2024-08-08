@@ -4,24 +4,15 @@ import RepositoryItem from "./RepositoryItem";
 
 type Props = {
   repositories: GithubRepository[];
-  selectedRepositoryId: GithubRepository["id"] | null;
-  onRepoSelect(repo: GithubRepository): void;
+  onToggleRepo(repo: GithubRepository): void;
 };
 
-const RepoList = ({
-  repositories,
-  selectedRepositoryId,
-  onRepoSelect,
-}: Props) => {
+const RepoList = ({ repositories, onToggleRepo }: Props) => {
   return (
     <ul className="flex flex-col gap-xs m-0">
       {repositories.map((repository) => (
         <li key={repository.id}>
-          <RepositoryItem
-            repository={repository}
-            onClick={onRepoSelect}
-            isActive={selectedRepositoryId === repository.id}
-          />
+          <RepositoryItem repository={repository} onClick={onToggleRepo} />
         </li>
       ))}
     </ul>

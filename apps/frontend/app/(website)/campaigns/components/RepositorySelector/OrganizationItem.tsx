@@ -1,13 +1,11 @@
 import type { GithubOrganization } from "@codemod-com/api-types";
 import { ChevronRight } from "lucide-react";
 
+import { getOrgNameFromUrl } from "../../utils";
+
 type Props = {
   organization: GithubOrganization;
   onClick(repo: GithubOrganization): void;
-};
-
-const getOrgNameFromUrl = (orgUrl: string) => {
-  return orgUrl.replace("https://api.github.com/orgs/", "");
 };
 
 const OrganizationItem = ({ organization, onClick }: Props) => {

@@ -1,26 +1,24 @@
+import Checkbox from "@/components/shared/Checkbox";
 import type { GithubRepository } from "@codemod-com/api-types";
 import { cx } from "cva";
 
 type Props = {
   repository: GithubRepository;
-  isActive: boolean;
   onClick(repo: GithubRepository): void;
 };
 
-const RepositoryItem = ({ repository, isActive, onClick }: Props) => {
+const RepositoryItem = ({ repository, onClick }: Props) => {
   return (
     <div
       role="button"
       onClick={() => onClick(repository)}
       className={cx(
-        "flex flex-col gap-[12px] py-xs px-[12px] bg-emphasis-light dark:bg-emphasis-dark rounded-[8px] hover:bg-primary-dark dark:hover:bg-primary-light border cursor-pointer",
-        {
-          // @TODO make List and ListItem components, that handles hover, active logic
-          "!bg-primary-dark !dark:bg-primary-light border-2": isActive,
-        },
+        "flex items-center justify-between px-2 py-1 bg-primary-dark dark:bg-emphasis-dark hover:bg-emphasis-light dark:hover:bg-primary-light cursor-pointer",
       )}
     >
-      <span className="body-m-medium">{repository.name}</span>
+      <Checkbox required className="!w-4 !h-4">
+        <span className="body-m-medium">{repository.name}</span>
+      </Checkbox>
     </div>
   );
 };

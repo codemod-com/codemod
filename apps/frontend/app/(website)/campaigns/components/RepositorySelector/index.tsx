@@ -16,10 +16,11 @@ import type {
 } from "@codemod-com/api-types";
 import { Separator } from "@studio/components/ui/separator";
 import useDebounce from "@studio/hooks/useDebounce";
-import { Folder } from "lucide-react";
+import { ChevronLeft, Folder } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useOrganizations } from "../../hooks/useOrganizations";
 import { useRepositories } from "../../hooks/useRepositories";
+import { getOrgNameFromUrl } from "../../utils";
 import OrganizationList from "./OrganizationList";
 import RepoList from "./RepoList";
 
@@ -36,28 +37,32 @@ const RepositorySelector = ({ onConfirm, onOpenChange, open }: Props) => {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
 
-  const [selectedRepository, setSelectedRepository] =
-    useState<GithubRepository>();
+  const [selectedRepos, setSelectedRepos] = useState<GithubRepository[]>([]);
 
   const [selectedOrganization, setSelectedOrganization] =
-    useState<GithubOrganization>();
+    useState<GithubOrganization | null>(null);
 
   const { data: repositoryList, isLoading: repositoriesLoading } =
     useRepositories(selectedOrganization);
 
   const handleButtonClick = async () => {
-    if (!selectedRepository) {
+    if (!selectedRepos) {
       return;
     }
 
-    onConfirm(selectedRepository);
+    // onConfirm(selectedRepository);
   };
 
   const repos = repositoryList?.data ?? [];
 
+  // @TODO logic broken
   const filteredRepos = useMemo(() => {
-    return repos.filter((repo) => repo.name.includes(debouncedSearch));
-  }, [debouncedSearch, repos]);
+    return repos.filter(
+      (repo) =>
+        repo.name.includes(debouncedSearch) &&
+        selectedRepos.findIndex(({ id }) => id === repos.id) === -1,
+    );
+  }, [debouncedSearch, selectedRepos, repos]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -77,29 +82,61 @@ const RepositorySelector = ({ onConfirm, onOpenChange, open }: Props) => {
             className="bg-border-light dark:bg-border-dark"
           />
           {selectedOrganization ? (
-            <Input
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              placeholder="Search"
-              icon={"search"}
-              onClear={() => {
-                setSearch("");
-              }}
-              value={search}
-              inputClassName="placeholder:text-secondary-light dark:placeholder:text-secondary-dark"
-              iconClassName="text-secondary-light dark:text-secondary-dark w-5 h-5"
-              commandClassName="max-h-[20px] !font-medium !body-s-medium"
-              className="bg-white dark:bg-black !rounded-[6px] !p-xxs"
-            />
+            <>
+              <div
+                role="button"
+                className="flex items-center gap-xs"
+                onClick={() => setSelectedOrganization(null)}
+              >
+                <ChevronLeft size={16} />
+                {getOrgNameFromUrl(selectedOrganization.url)}
+              </div>
+              <Input
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                placeholder="Search"
+                icon={"search"}
+                onClear={() => {
+                  setSearch("");
+                }}
+                value={search}
+                inputClassName="placeholder:text-secondary-light dark:placeholder:text-secondary-dark"
+                iconClassName="text-secondary-light dark:text-secondary-dark w-5 h-5"
+                commandClassName="max-h-[20px] !font-medium !body-s-medium"
+                className="bg-white dark:bg-black !rounded-[6px] !p-xxs"
+              />
+              <span>
+                {selectedRepos.length} of {repos.length} selected
+              </span>
+              <RepoList
+                repositories={selectedRepos}
+                onToggleRepo={(repo) => {
+                  setSelectedRepos((prevSelectedRepos) => {
+                    if (prevSelectedRepos.includes(repo)) {
+                      return prevSelectedRepos.filter((i) => i !== repo);
+                    }
+
+                    return [...prevSelectedRepos, repo];
+                  });
+                }}
+              />
+            </>
           ) : null}
 
           <div className="overflow-y-auto">
             {selectedOrganization ? (
               <RepoList
                 repositories={filteredRepos}
-                onRepoSelect={setSelectedRepository}
-                selectedRepositoryId={selectedRepository?.id ?? null}
+                onToggleRepo={(repo) => {
+                  setSelectedRepos((prevSelectedRepos) => {
+                    if (prevSelectedRepos.includes(repo)) {
+                      return prevSelectedRepos.filter((i) => i !== repo);
+                    }
+
+                    return [...prevSelectedRepos, repo];
+                  });
+                }}
               />
             ) : (
               <OrganizationList
@@ -108,9 +145,13 @@ const RepositorySelector = ({ onConfirm, onOpenChange, open }: Props) => {
               />
             )}
           </div>
+          <Separator
+            orientation="horizontal"
+            className="bg-border-light dark:bg-border-dark"
+          />
           <div className="flex justify-end">
             <Button
-              disabled={!selectedRepository}
+              disabled={!selectedRepos}
               intent="primary"
               // hint={''}
               onClick={handleButtonClick}

@@ -27,7 +27,7 @@ export default function Checkbox({
     >
       <input
         className={clsx(
-          "mr-4 flex h-6 w-6 shrink-0 cursor-pointer appearance-none items-center justify-center rounded border border-border-light focus:outline-none dark:border-border-dark",
+          "mr-4 flex h-6 w-6 shrink-0 cursor-pointer appearance-none items-center justify-center rounded border border-border-light border-solid focus:outline-none dark:border-border-dark",
           {
             "border-primary-light bg-primary-light before:mt-1 before:h-6 before:content-check dark:border-primary-dark":
               _checked,
