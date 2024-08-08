@@ -3,6 +3,7 @@
 import { useHideMenu } from "@/components/global/useHideMenu";
 import type { GlobalPagePayload } from "@/types";
 import { cn } from "@/utils";
+import { usePathname } from "next/navigation";
 import Footer from "./Footer";
 import Navigation from "./Navigation";
 
@@ -16,6 +17,9 @@ export default function GlobalLayout({
   children: any;
 }) {
   const hideMenu = useHideMenu();
+  const pathname = usePathname();
+
+  console.log(pathname, "???");
   return (
     <div
       className={cn(
@@ -23,8 +27,16 @@ export default function GlobalLayout({
         className,
       )}
     >
-      {!hideMenu && data && <Navigation data={data.navigation} />}
-      <main className={cn("w-full", !hideMenu && "max-w-[1312px]")}>
+      {(!hideMenu || pathname.startsWith("/campaigns")) && data && (
+        <Navigation data={data.navigation} />
+      )}
+      {/* @TODO refactor this logic */}
+      <main
+        className={cn(
+          "w-full",
+          !hideMenu && pathname !== "/campaigns" && "max-w-[1312px]",
+        )}
+      >
         {children}
       </main>
       {!hideMenu && data && <Footer data={data.footer} />}

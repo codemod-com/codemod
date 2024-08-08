@@ -180,7 +180,7 @@ catalog:
     lodash-es: ^4.17.21
     lottie-react: ^2.4.0
     lowlight: ^3.0.0
-    lucide-react: ^0.265.0
+    lucide-react: ^0.408.0
     magic-string: ^0.30.10
     match-sorter: ^6.3.4
     mdast-util-from-markdown: ^2.0.0

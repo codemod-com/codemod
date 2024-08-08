@@ -5,7 +5,7 @@ import { cx } from "cva";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-type TabsProps = {
+export type TabsProps = {
   items: {
     id: string;
     label: string;
@@ -21,6 +21,7 @@ export default function Tabs({ items, children, listClassName }: TabsProps) {
     <RadixTabs.Root
       defaultValue={items[0].id}
       onValueChange={(newValue) => setActiveTab(newValue as string)}
+      className="w-full"
     >
       <RadixTabs.List
         className={cx(

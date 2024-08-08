@@ -29,6 +29,7 @@ export default function CodemodList({
     total: initial?.total || 0,
   });
 
+  debugger
   const { ref, inView } = useInView({
     threshold: 1,
   });
