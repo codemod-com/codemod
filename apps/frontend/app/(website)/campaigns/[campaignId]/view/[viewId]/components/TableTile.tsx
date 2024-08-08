@@ -2,7 +2,7 @@
 import { CaretDown, CaretRight, CaretUp, Info } from "@phosphor-icons/react";
 import { Toast, ToastProvider, ToastViewport } from "@radix-ui/react-toast";
 import Tooltip from "@studio/components/Tooltip/Tooltip";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ColumnDefinition, TableTileProps } from "../types";
 import ImportDataButton from "./ImportDataButton";
 
@@ -12,14 +12,21 @@ const camelToSpaced = (str: string): string =>
 export function TableTile<T>({
   title,
   data: initialData,
-  columns,
-  transformer,
-  fields,
+  columns: c,
+  transformer = new Proxy(
+    {},
+    {
+      get() {
+        return (a) => (a instanceof Object ? a.name : a);
+      },
+    },
+  ),
 }: TableTileProps<T> & {
-  columns: ColumnDefinition[];
-  transformer: Record<keyof T, (value: any) => React.ReactNode>;
-  fields: (keyof T)[];
+  columns?: ColumnDefinition[];
+  transformer?: Record<keyof T, (value: any) => React.ReactNode>;
 }) {
+  const shouldDeriveColumNames = !c;
+  const [columns, setColumns] = useState<T[]>(c || []);
   const [data, setData] = useState<T[]>(initialData);
   const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -46,6 +53,12 @@ export function TableTile<T>({
     [data, sortColumn, sortDirection],
   );
 
+  useEffect(() => {
+    if (shouldDeriveColumNames) {
+      setColumns(Object.keys(data[0] || {}));
+    }
+  }, [data]);
+
   const displayData = showAll ? sortedData : sortedData.slice(0, 3);
 
   const handleSort = (column: keyof T) => {
@@ -68,9 +81,13 @@ export function TableTile<T>({
     importedData.every((item) => fields.every((field) => field in item));
 
   const handleImport = (importedData: any) => {
-    validateImportedData(importedData)
-      ? setData(importedData)
-      : setShowToast(true);
+    if (shouldDeriveColumNames) {
+      setData(importedData);
+    } else {
+      validateImportedData(importedData)
+        ? setData(importedData)
+        : setShowToast(true);
+    }
   };
 
   const handleImportError = (error: Error) => {

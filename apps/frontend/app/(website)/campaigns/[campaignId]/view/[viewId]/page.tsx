@@ -16,6 +16,7 @@ import {
   TimeSavedCard,
 } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets";
 import { CustomChart } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/CustomChart";
+import { CustomTable } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/CustomTable";
 import { DepreciatedAPIChart } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/DepreciatedAPIChart";
 import { PrsMergedChart } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/PrsMergedChart";
 
@@ -82,6 +83,10 @@ const DashboardPage: React.FC = () => {
 
             <div className="p-6">
               <HeroTable data={heroData} />
+            </div>
+
+            <div className="p-6">
+              <CustomTable data={migrationPrData.data} />
             </div>
           </div>
         </div>
