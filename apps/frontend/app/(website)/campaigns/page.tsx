@@ -1,7 +1,6 @@
 "use client";
 import Tabs, { TabContent } from "@/components/shared/Tabs";
 import type { GithubRepository } from "@codemod-com/api-types";
-import { mockGithubRepositories } from "@mocks/handlers/gh-run";
 import { useEffect, useState } from "react";
 import CampaignsTable from "./components/CampaignsTable";
 import RepositorySelector from "./components/RepositorySelector";
@@ -11,9 +10,7 @@ import { useCampaignTabsConfig } from "./hooks/useCampaigTabsConfig";
 const InsightsPage = () => {
   const tabsConfig = useCampaignTabsConfig();
 
-  const [repo, setRepo] = useState<GithubRepository | null>(
-    mockGithubRepositories[0],
-  );
+  const [repo, setRepo] = useState<GithubRepository | null>();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
