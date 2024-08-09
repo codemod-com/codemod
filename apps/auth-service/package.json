@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/auth-service",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "scripts": {
     "build": "tsc && node esbuild.config.js",
     "start": "node build/index.js"
