@@ -1,5 +1,5 @@
 {
-  "name": "@codemod/npm-sort-package-json-exports",
+  "name": "@codemod/npm-esm-first-in-exports",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "20.9.0",
