@@ -39,15 +39,11 @@ export class WorkerManager {
           engine: "jscodeshift" | "ts-morph" | "ast-grep";
         };
       };
-      stringifiedTransformer: string | null;
+      codemodSource: string;
       onError?: CodemodExecutionErrorCallback;
     },
   ) {
-    const {
-      codemod,
-      stringifiedTransformer: transformer,
-      flowSettings,
-    } = _options;
+    const { codemod, flowSettings, codemodSource } = _options;
 
     this.__workerCount = flowSettings.threads;
 
@@ -65,7 +61,7 @@ export class WorkerManager {
 
       worker.postMessage({
         kind: "initialization",
-        transformer,
+        codemodSource,
         ...codemod,
         ...codemod.config,
         ...flowSettings,
