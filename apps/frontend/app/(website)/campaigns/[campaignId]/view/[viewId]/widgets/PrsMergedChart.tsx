@@ -6,7 +6,7 @@ import type { ColorConfig } from "@/app/(website)/campaigns/[campaignId]/view/[v
 
 export const prsMergedChartColorSets: ColorConfig[] = [
   {
-    line: "#F59E0B", // Pomarańczowy
+    line: "#F59E0B",
     gradientStart: "#FCD34D",
     gradientEnd: "#FFFBEB",
   },

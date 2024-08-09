@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowUp } from "@phosphor-icons/react";
 import type React from "react";
 import { useState } from "react";
-import { uuid } from "valibot"; // Assuming ImportDataButton is in the same directory
+import { uuid } from "valibot";
 import type { CardTileProps } from "../types";
 import ImportDataButton from "./ImportDataButton";
 

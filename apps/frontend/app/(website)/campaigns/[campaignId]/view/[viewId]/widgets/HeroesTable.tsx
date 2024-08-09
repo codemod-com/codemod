@@ -56,7 +56,6 @@ export const migrationHeroesTransformer: TransformerType<MigrationHeroData> = {
 export const HeroTable = ({
   data,
 }: {
-  title: string;
   data: MigrationHeroData[];
 }) => (
   <TableTile

@@ -1,9 +1,10 @@
 "use client";
+import { generateChartColors } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/utils";
 import type { ColorConfig } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
 import dynamic from "next/dynamic";
 import type React from "react";
 import { useCallback, useState } from "react";
-import { uuid } from "valibot"; // Assuming ImportDataButton is in the same directory
+import { uuid } from "valibot";
 import ImportDataButton from "./ImportDataButton";
 
 const DynamicLineChart = dynamic(() => import("./DynamicLineChart"), {
@@ -12,7 +13,7 @@ const DynamicLineChart = dynamic(() => import("./DynamicLineChart"), {
 
 export interface ChartTileProps {
   title: string;
-  colorSets: ColorConfig[];
+  colorSets?: ColorConfig[];
   data: Array<{
     title: string;
     data: Array<{ timestamp: number; value: number }>;
@@ -28,11 +29,11 @@ interface InputDataItem {
 
 export const ChartTile: React.FC<ChartTileProps> = ({
   title,
-  colorSets,
+  colorSets: dS,
   data: initialData,
 }) => {
   const [data, setData] = useState(initialData);
-
+  const colorSets = dS ?? generateChartColors(data.length);
   const transformData = useCallback(
     (inputData: InputDataItem[]): ChartTileProps["data"] => {
       const groupedData = inputData.reduce(
@@ -64,7 +65,6 @@ export const ChartTile: React.FC<ChartTileProps> = ({
 
   const handleImportError = useCallback((error: Error) => {
     console.error("Import error:", error.message);
-    // You could add more error handling here, like showing a toast notification
   }, []);
 
   return (
