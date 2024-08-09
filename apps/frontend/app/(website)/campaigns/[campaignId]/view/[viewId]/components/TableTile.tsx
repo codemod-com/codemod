@@ -25,7 +25,7 @@ export function TableTile<T>({
   columns?: ColumnDefinition[];
   transformer?: Record<keyof T, (value: any) => React.ReactNode>;
 }) {
-  const shouldDeriveColumNames = !c;
+  const shouldDeriveColumnNames = !c;
   const [columns, setColumns] = useState<T[]>(c || []);
   const [data, setData] = useState<T[]>(initialData);
   const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
