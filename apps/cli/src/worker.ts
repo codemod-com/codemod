@@ -6,7 +6,7 @@ import {
   decodeMainThreadMessage,
 } from "@codemod-com/printer";
 import {
-  type TransformFunction,
+  getTransformer,
   runAstGrepCodemod,
   runJscodeshiftCodemod,
   runTsMorphCodemod,
@@ -52,39 +52,41 @@ const messageHandler = async (m: unknown) => {
     try {
       let commands: readonly FileCommand[] = [];
       switch (initializationMessage.engine) {
-        case "jscodeshift":
-          if (initializationMessage.transformer === null) {
-            throw new Error(
-              "Codemod transformer could not be located in the source file",
-            );
+        case "jscodeshift": {
+          const transformer = getTransformer(
+            initializationMessage.codemodSource,
+          );
+
+          if (typeof transformer !== "function") {
+            throw new Error("Invalid transformer");
           }
 
           commands = runJscodeshiftCodemod(
-            new Function(
-              `return ${initializationMessage.transformer}`,
-            )() as TransformFunction,
+            transformer,
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
             initializationMessage.engineOptions,
           );
           break;
-        case "ts-morph":
-          if (initializationMessage.transformer === null) {
-            throw new Error(
-              "Codemod transformer could not be located in the source file",
-            );
+        }
+        case "ts-morph": {
+          const transformer = getTransformer(
+            initializationMessage.codemodSource,
+          );
+
+          if (typeof transformer !== "function") {
+            throw new Error("Invalid transformer");
           }
 
           commands = runTsMorphCodemod(
-            new Function(
-              `return ${initializationMessage.transformer}`,
-            )() as TransformFunction,
+            transformer,
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
           );
           break;
+        }
         case "ast-grep":
           commands = await runAstGrepCodemod(
             initializationMessage.path,

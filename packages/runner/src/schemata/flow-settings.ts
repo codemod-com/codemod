@@ -83,7 +83,5 @@ export const parseFlowSettings = async (
     flowSettings.target = dirname(target);
   }
 
-  console.log(flowSettings);
-
   return flowSettings;
 };
