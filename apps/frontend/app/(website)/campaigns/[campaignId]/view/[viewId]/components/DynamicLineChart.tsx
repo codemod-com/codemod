@@ -7,6 +7,7 @@ import {
   Line,
   ResponsiveContainer,
   Tooltip,
+  type TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
@@ -17,22 +18,42 @@ interface ExtendedDynamicLineChartProps extends DynamicLineChartProps {
   title: string;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipPayloadItem {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface CustomTooltipProps extends TooltipProps<number, string> {
+  payload?: TooltipPayloadItem[];
+}
+
+export const CustomTooltip: React.FC<CustomTooltipProps> = ({
+  active,
+  payload,
+  label,
+}) => {
   if (active && payload && payload.length) {
-    const uniquePayload = payload.reduce((acc: any[], current: any) => {
-      if (!acc.find((item: any) => item.name === current.name)) {
-        acc.push(current);
-      }
-      return acc;
-    }, []);
+    const uniquePayload = payload.reduce<TooltipPayloadItem[]>(
+      (acc, current) => {
+        if (!acc.find((item) => item.name === current.name)) {
+          acc.push(current);
+        }
+        return acc;
+      },
+      [],
+    );
 
     return (
       <div className="custom-tooltip bg-white p-4 shadow-md rounded">
-        <p className="label">{`${new Date(label).toLocaleDateString("en-US", {
-          month: "long",
-          year: "numeric",
-        })}`}</p>
-        {uniquePayload.map((pld: any, index: number) => (
+        <p className="label">{`${new Date(label || "").toLocaleDateString(
+          "en-US",
+          {
+            month: "long",
+            year: "numeric",
+          },
+        )}`}</p>
+        {uniquePayload.map((pld, index) => (
           <p
             key={index}
             style={{ color: pld.color }}
@@ -44,18 +65,25 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-const CustomLegend = (props: any) => {
-  const { payload } = props;
-  const uniquePayload = payload.reduce((acc: any[], current: any) => {
-    if (!acc.find((item: any) => item.value === current.value)) {
-      acc.push(current);
-    }
-    return acc;
+interface LegendPayloadItem {
+  value: string;
+  color: string;
+}
+
+interface CustomLegendProps {
+  payload?: { value: string; color: string }[];
+}
+
+const CustomLegend: React.FC<CustomLegendProps> = ({ payload = [] }) => {
+  const uniquePayload = payload.reduce<LegendPayloadItem[]>((acc, current) => {
+    return acc.some((item) => item.value === current.value)
+      ? acc
+      : [...acc, current];
   }, []);
 
   return (
     <ul className="flex flex-wrap relative justify-center space-x-4">
-      {uniquePayload.map((entry: any, index: number) => (
+      {uniquePayload.map((entry, index) => (
         <li key={`item-${index}`} className="flex items-center">
           <span
             style={{
@@ -78,7 +106,7 @@ const DynamicLineChart: React.FC<ExtendedDynamicLineChartProps> = ({
   dataSets,
   colorConfig,
 }) => {
-  const allData = dataSets.reduce((acc, set) => {
+  const allData = dataSets.reduce<Record<string, number>[]>((acc, set) => {
     set.data.forEach((item, index) => {
       if (!acc[index]) {
         acc[index] = { timestamp: item.timestamp };
@@ -86,7 +114,7 @@ const DynamicLineChart: React.FC<ExtendedDynamicLineChartProps> = ({
       acc[index][set.title] = item.value;
     });
     return acc;
-  }, [] as any[]);
+  }, []);
 
   const minValue = Math.floor(
     Math.min(...dataSets.flatMap((set) => set.data.map((d) => d.value))),

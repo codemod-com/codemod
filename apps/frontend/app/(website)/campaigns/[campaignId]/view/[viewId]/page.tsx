@@ -48,7 +48,7 @@ const MigrationDashboardCards: React.FC = () => {
   );
 };
 
-const DashboardPage: React.FC = () => {
+const DashboardPage: React.FC = ({ data: any }) => {
   return (
     <div className="w-full">
       <div className="px-m pb-[80px] lg:px-[64px]">

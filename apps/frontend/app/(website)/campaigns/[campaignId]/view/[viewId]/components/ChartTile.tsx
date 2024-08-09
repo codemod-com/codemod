@@ -1,4 +1,5 @@
 "use client";
+import { Title } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/Title";
 import { generateChartColors } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/utils";
 import type { ColorConfig } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
 import dynamic from "next/dynamic";
@@ -33,20 +34,21 @@ export const ChartTile: React.FC<ChartTileProps> = ({
   data: initialData,
 }) => {
   const [data, setData] = useState(initialData);
+  const [chartTitle, setChartTitle] = useState(title);
   const colorSets = dS ?? generateChartColors(data.length);
   const transformData = useCallback(
     (inputData: InputDataItem[]): ChartTileProps["data"] => {
       const groupedData = inputData.reduce(
-        (acc, item) => {
-          if (!acc[item.name]) {
-            acc[item.name] = [];
-          }
-          acc[item.name].push({
-            timestamp: new Date(item.timestamp).getTime(),
-            value: item.drift,
-          });
-          return acc;
-        },
+        (acc, item) => ({
+          ...acc,
+          [item.name]: [
+            ...(acc[item.name] || []),
+            {
+              timestamp: new Date(item.timestamp).getTime(),
+              value: item.drift,
+            },
+          ],
+        }),
         {} as { [key: string]: { timestamp: number; value: number }[] },
       );
 
@@ -70,9 +72,9 @@ export const ChartTile: React.FC<ChartTileProps> = ({
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">{title}</h3>
+        <Title title={chartTitle} onChange={setChartTitle} />
         <ImportDataButton<InputDataItem[]>
-          id={title || String(uuid())}
+          id={chartTitle || String(uuid())}
           onImport={handleImport}
           buttonText="Update Chart Data"
           className="text-blue-600 hover:text-blue-800 cursor-pointer flex items-center"
@@ -82,7 +84,7 @@ export const ChartTile: React.FC<ChartTileProps> = ({
       </div>
       <div className="h-64">
         <DynamicLineChart
-          title={title}
+          title={chartTitle}
           dataSets={data}
           colorConfig={colorSets}
         />
