@@ -1,6 +1,7 @@
 import { deepEqual, ok } from "node:assert";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { defaultJSCodeshiftParser } from "@codemod-com/codemod-utils";
 import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import jscodeshift from "jscodeshift";
@@ -20,7 +21,14 @@ const transform = async (json: DirectoryJSON) => {
   const api = buildApi<{
     jscodeshift: typeof jscodeshift;
     j: typeof jscodeshift;
-  }>(unifiedFileSystem, () => ({ jscodeshift, j: jscodeshift }), pathApi);
+  }>(
+    unifiedFileSystem,
+    () => ({
+      jscodeshift,
+      j: jscodeshift.withParser(defaultJSCodeshiftParser),
+    }),
+    pathApi,
+  );
 
   return executeFilemod(api, repomod, "/", {}, {}, null);
 };

@@ -22,7 +22,7 @@ Changes to the original file: changed tests structure
 */
 
 import assert from "node:assert";
-import { buildApi } from "@codemod-com/utilities";
+import { buildApi } from "@codemod-com/codemod-utils";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
@@ -47,7 +47,7 @@ describe("replace-react-fc-typescript", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -73,7 +73,7 @@ describe("replace-react-fc-typescript", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -102,7 +102,7 @@ describe("replace-react-fc-typescript", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -123,7 +123,7 @@ describe("replace-react-fc-typescript", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -160,7 +160,7 @@ describe("replace-react-fc-typescript", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -181,7 +181,7 @@ describe("replace-react-fc-typescript", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -212,7 +212,7 @@ describe("replace-react-fc-typescript", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -245,7 +245,7 @@ describe("replace-react-fc-typescript", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -270,7 +270,7 @@ describe("replace-react-fc-typescript", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),

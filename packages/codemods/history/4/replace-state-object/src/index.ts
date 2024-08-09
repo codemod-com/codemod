@@ -23,7 +23,7 @@ function transform(file: FileInfo, api: API): string | undefined {
       }
       const state = arg.properties.find(
         (property) =>
-          j.Property.check(property) &&
+          j.ObjectProperty.check(property) &&
           j.Identifier.check(property.key) &&
           property.key.name === "state",
       );
@@ -34,7 +34,7 @@ function transform(file: FileInfo, api: API): string | undefined {
 
       arg.properties = arg.properties.filter((property) => {
         if (
-          j.Property.check(property) &&
+          j.ObjectProperty.check(property) &&
           j.Identifier.check(property.key) &&
           property.key.name === "state"
         ) {

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildApi } from "@codemod-com/utilities";
+import { buildApi } from "@codemod-com/codemod-utils";
 import type { FileInfo } from "jscodeshift";
 import { describe, test } from "vitest";
 import transform from "../src/index.js";
@@ -17,10 +17,10 @@ describe("react-native v074 migrate to fireIntervalSeconds", () => {
 
     const output = `
     PushNotificationIOS.scheduleLocalNotification({
-        fireIntervalSeconds: 60,
+        fireIntervalSeconds: 60
     });
     PushNotificationIOS.scheduleLocalNotification({
-        fireIntervalSeconds: 31536000,
+        fireIntervalSeconds: 31536000
     });
 		`;
 
@@ -29,7 +29,7 @@ describe("react-native v074 migrate to fireIntervalSeconds", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 

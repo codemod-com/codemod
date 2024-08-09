@@ -4,6 +4,7 @@
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
     "@codemod-com/codemod-utils": "workspace:*",
+    "@codemod-com/codemod-utils": "workspace:*",
     "typescript": "^5.2.2",
     "ts-node": "^10.9.1",
     "jscodeshift": "^0.15.1",
