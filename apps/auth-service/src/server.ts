@@ -113,7 +113,7 @@ const clerkClient = createClerkClient({
 const routes: FastifyPluginCallback = (instance, _opts, done) => {
   instance.get("/", async (_, reply) => {
     reply.type("application/json").code(200);
-    return { data: { status: test } };
+    return { data: { status: "test" } };
   });
 
   instance.register(clerkPlugin, {
