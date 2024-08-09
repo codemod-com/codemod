@@ -1,4 +1,4 @@
-Sort package.json export order to prefer CJS over ESM
+Sort package.json export order to prefer ESM over CJS
 
 ```json
 "exports": {
@@ -18,8 +18,8 @@ Sort package.json export order to prefer CJS over ESM
 "exports": {
   ".": {
     "types": "./dist/index.d.ts",
-    "import": "./dist/index.js",
-    "require": "./dist/index.cjs"
+    "require": "./dist/index.cjs",
+    "import": "./dist/index.js"
   },
 }
 ```
@@ -30,8 +30,8 @@ Sort package.json export order to prefer CJS over ESM
 "exports": {
   ".": {
     "types": "./dist/index.d.ts",
-    "require": "./dist/index.cjs",
-    "import": "./dist/index.js"
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs"
   },
 }
 ```
