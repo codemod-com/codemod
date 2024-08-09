@@ -9,6 +9,7 @@ import {
 } from "@studio/store/utils/getSnippetInitialState";
 import type { TreeNode } from "@studio/types/tree";
 import { type RangeCommand, buildRanges } from "@studio/utils/tree";
+import { sleep } from "@studio/utils/validation/sleep";
 import { map, mapObjIndexed, omit, reduce, remove } from "ramda";
 import { parse } from "valibot";
 import { create } from "zustand";
@@ -164,24 +165,21 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
         editors,
       });
   },
-  clearAll: () => {
+  clearAll: async () => {
     set({
       selectedPairIndex: 0,
     });
-    setTimeout(
-      () =>
-        set({
-          editors: [
-            {
-              name: "Test 1",
-              before: getSnippetInitialState(),
-              after: getSnippetInitialState(),
-              output: getSnippetInitialState(),
-            },
-          ],
-        }),
-      100,
-    );
+    await sleep(1);
+    set({
+      editors: [
+        {
+          name: "Test 1",
+          before: getSnippetInitialState(),
+          after: getSnippetInitialState(),
+          output: getSnippetInitialState(),
+        },
+      ],
+    });
   },
   selectedPairIndex: 0,
   getAllNames: () => get().editors.map(({ name }) => name),
