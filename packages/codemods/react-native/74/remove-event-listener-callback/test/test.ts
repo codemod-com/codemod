@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildApi } from "@codemod-com/utilities";
+import { buildApi } from "@codemod-com/codemod-utils";
 import type { FileInfo } from "jscodeshift";
 import { describe, test } from "vitest";
 import transform from "../src/index.js";
@@ -21,7 +21,7 @@ describe("react-native v074 remove callback from PushNotificationIOS.removeEvent
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 
@@ -48,7 +48,7 @@ describe("react-native v074 remove callback from PushNotificationIOS.removeEvent
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 

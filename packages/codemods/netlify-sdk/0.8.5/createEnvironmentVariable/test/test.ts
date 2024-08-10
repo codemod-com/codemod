@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { buildApi } from "@codemod-com/utilities";
+import { buildApi } from "@codemod-com/codemod-utils";
 import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
@@ -24,7 +24,7 @@ describe("netlify 0.8.5 createEnvironmentVariable", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

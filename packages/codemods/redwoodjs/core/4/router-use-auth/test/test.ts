@@ -39,7 +39,7 @@ describe("@redwoodjs/core v4 router-use-auth", () => {
       },
     });
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 

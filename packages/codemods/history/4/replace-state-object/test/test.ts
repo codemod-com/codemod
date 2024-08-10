@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildApi } from "@codemod-com/utilities";
+import { buildApi } from "@codemod-com/codemod-utils";
 import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
@@ -27,7 +27,7 @@ describe("history v4 replace-state-object", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -57,7 +57,7 @@ describe("history v4 replace-state-object", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

@@ -1,4 +1,4 @@
-import { buildApi } from "@codemod-com/utilities";
+import { buildApi } from "@codemod-com/codemod-utils";
 import type { API, FileInfo, Options } from "jscodeshift";
 import type { PLazy } from "../PLazy.js";
 import { getFileContext } from "../contexts.js";

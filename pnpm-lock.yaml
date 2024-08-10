@@ -2183,6 +2183,9 @@ importers:
 
   packages/codemods/Feature Flags/remove-unused-feature-flags:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../utilities
@@ -2211,6 +2214,9 @@ importers:
 
   packages/codemods/antd/5/props-changed-migration:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2233,6 +2239,9 @@ importers:
         specifier: workspace:*
         version: link:../utils
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2255,6 +2264,9 @@ importers:
         specifier: workspace:*
         version: link:../utils
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2274,6 +2286,9 @@ importers:
         specifier: workspace:*
         version: link:../utils
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2310,6 +2325,9 @@ importers:
 
   packages/codemods/bull/bullmq:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../utilities
@@ -2350,6 +2368,9 @@ importers:
         specifier: 'catalog:'
         version: 5.0.0
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../filemod
@@ -2383,6 +2404,9 @@ importers:
 
   packages/codemods/cal.com/generate-metadata-tests-calcom:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../filemod
@@ -2416,6 +2440,9 @@ importers:
 
   packages/codemods/cal.com/generate-url-patterns:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../filemod
@@ -2449,6 +2476,9 @@ importers:
 
   packages/codemods/codemod-com/migrate-codemod-registry:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../filemod
@@ -2539,6 +2569,9 @@ importers:
 
   packages/codemods/ember/5/app-controller-router-props:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2563,6 +2596,9 @@ importers:
 
   packages/codemods/ember/5/array-wrapper:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2587,6 +2623,9 @@ importers:
 
   packages/codemods/ember/5/convert-module-for-to-setup-test:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2611,6 +2650,9 @@ importers:
 
   packages/codemods/ember/5/cp-property:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2635,6 +2677,9 @@ importers:
 
   packages/codemods/ember/5/cp-property-map:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2659,6 +2704,9 @@ importers:
 
   packages/codemods/ember/5/cp-volatile:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2683,6 +2731,9 @@ importers:
 
   packages/codemods/ember/5/deprecate-merge:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2707,6 +2758,9 @@ importers:
 
   packages/codemods/ember/5/deprecate-router-events:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2731,6 +2785,9 @@ importers:
 
   packages/codemods/ember/5/ember-jquery-legacy:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2755,6 +2812,9 @@ importers:
 
   packages/codemods/ember/5/es5-getter-ember-codemod:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2779,6 +2839,9 @@ importers:
 
   packages/codemods/ember/5/fpe-computed:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2803,6 +2866,9 @@ importers:
 
   packages/codemods/ember/5/fpe-observes:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2827,6 +2893,9 @@ importers:
 
   packages/codemods/ember/5/fpe-on:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2851,6 +2920,9 @@ importers:
 
   packages/codemods/ember/5/jquery-apis:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2875,6 +2947,9 @@ importers:
 
   packages/codemods/ember/5/jquery-event:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2899,6 +2974,9 @@ importers:
 
   packages/codemods/ember/5/notify-property-change:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2923,6 +3001,9 @@ importers:
 
   packages/codemods/ember/5/object-new-constructor:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -2950,6 +3031,9 @@ importers:
       '@biomejs/biome':
         specifier: 'catalog:'
         version: 1.5.3
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../../filemod
@@ -2980,6 +3064,9 @@ importers:
 
   packages/codemods/history/4/replace-state-object:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3004,6 +3091,9 @@ importers:
 
   packages/codemods/history/4/use-back:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3028,6 +3118,9 @@ importers:
 
   packages/codemods/history/4/use-block:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3052,6 +3145,9 @@ importers:
 
   packages/codemods/history/4/use-location:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3076,6 +3172,9 @@ importers:
 
   packages/codemods/i18n:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../filemod
@@ -3109,6 +3208,9 @@ importers:
 
   packages/codemods/immutable/0/add-deprecation-comment:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3133,6 +3235,9 @@ importers:
 
   packages/codemods/immutable/0/nest-from-js:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3157,6 +3262,9 @@ importers:
 
   packages/codemods/immutable/0/remove-from-js:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3181,6 +3289,9 @@ importers:
 
   packages/codemods/immutable/0/remove-import:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3205,6 +3316,9 @@ importers:
 
   packages/codemods/immutable/0/remove-to-js:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3229,6 +3343,9 @@ importers:
 
   packages/codemods/immutable/0/replace-get:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3253,6 +3370,9 @@ importers:
 
   packages/codemods/immutable/0/replace-get-in:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3277,6 +3397,9 @@ importers:
 
   packages/codemods/immutable/0/replace-merge:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3301,6 +3424,9 @@ importers:
 
   packages/codemods/immutable/0/replace-set:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3325,6 +3451,9 @@ importers:
 
   packages/codemods/immutable/0/replace-set-in:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3349,6 +3478,9 @@ importers:
 
   packages/codemods/immutable/4/isterable-to-iscollection:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3373,6 +3505,9 @@ importers:
 
   packages/codemods/immutable/4/map-to-array:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3397,6 +3532,9 @@ importers:
 
   packages/codemods/immutable/4/rename-to-seq:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3421,6 +3559,9 @@ importers:
 
   packages/codemods/jest/vitest:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../utilities
@@ -3449,6 +3590,9 @@ importers:
         specifier: 'catalog:'
         version: 0.34.0
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../../filemod
@@ -3479,6 +3623,9 @@ importers:
 
   packages/codemods/mocha/vitest/migrate-tests:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3505,6 +3652,9 @@ importers:
 
   packages/codemods/msw/2/callback-signature:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3526,6 +3676,9 @@ importers:
 
   packages/codemods/msw/2/ctx-fetch:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3547,6 +3700,9 @@ importers:
 
   packages/codemods/msw/2/imports:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3568,6 +3724,9 @@ importers:
 
   packages/codemods/msw/2/lifecycle-events-signature:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3589,6 +3748,9 @@ importers:
 
   packages/codemods/msw/2/print-handler:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3610,6 +3772,9 @@ importers:
 
   packages/codemods/msw/2/req-passthrough:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3631,6 +3796,9 @@ importers:
 
   packages/codemods/msw/2/request-changes:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3652,6 +3820,9 @@ importers:
 
   packages/codemods/msw/2/response-usages:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3673,6 +3844,9 @@ importers:
 
   packages/codemods/msw/2/type-args:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3696,6 +3870,9 @@ importers:
 
   packages/codemods/mui/5/core-styles-import:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3720,6 +3897,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.1/addBuildEventContext:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3744,6 +3924,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.1/addBuildEventHandler:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3768,6 +3951,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.1/disableBuildEventHandlers:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3792,6 +3978,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.1/enableBuildEventHandlers:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3816,6 +4005,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.1/exportZod:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3840,6 +4032,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.4/addApiHandler:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3864,6 +4059,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.5/createEnvironmentVariable:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3888,6 +4086,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.5/createOrUpdateVariable:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3912,6 +4113,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.5/createOrUpdateVariables:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3936,6 +4140,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.5/deleteEnvironmentVariable:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3960,6 +4167,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.5/deleteEnvironmentVariables:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -3984,6 +4194,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.5/getEnvironmentVariables:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4010,6 +4223,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.5/patchEnvironmentVariable:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4034,6 +4250,9 @@ importers:
 
   packages/codemods/netlify-sdk/0.8.5/updateEnvironmentVariable:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4088,6 +4307,9 @@ importers:
 
   packages/codemods/next-i18next/copy-keys:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../filemod
@@ -4121,6 +4343,9 @@ importers:
 
   packages/codemods/next/13/ab-test:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../../filemod
@@ -4170,6 +4395,9 @@ importers:
         specifier: 'catalog:'
         version: 5.0.0
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../../filemod
@@ -4205,6 +4433,9 @@ importers:
 
   packages/codemods/next/13/built-in-next-font:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4229,6 +4460,9 @@ importers:
 
   packages/codemods/next/13/comment-deletable-files:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4257,6 +4491,9 @@ importers:
         specifier: 'catalog:'
         version: 15.2.0
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4281,6 +4518,9 @@ importers:
 
   packages/codemods/next/13/new-image-experimental:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4305,6 +4545,9 @@ importers:
 
   packages/codemods/next/13/new-link:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4329,6 +4572,9 @@ importers:
 
   packages/codemods/next/13/next-image-to-legacy-image:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4353,6 +4599,9 @@ importers:
 
   packages/codemods/next/13/remove-get-static-props:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../../filemod
@@ -4386,6 +4635,9 @@ importers:
 
   packages/codemods/next/13/remove-next-export:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../../filemod
@@ -4419,6 +4671,9 @@ importers:
 
   packages/codemods/next/13/replace-api-routes:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../../filemod
@@ -4471,6 +4726,9 @@ importers:
         specifier: 'catalog:'
         version: 5.0.0
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../../filemod
@@ -4504,6 +4762,9 @@ importers:
 
   packages/codemods/next/13/replace-next-router:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4525,6 +4786,9 @@ importers:
 
   packages/codemods/next/13/replace-use-search-params:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../../filemod
@@ -4558,6 +4822,9 @@ importers:
 
   packages/codemods/next/13/upsert-use-client-directive:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4579,6 +4846,9 @@ importers:
 
   packages/codemods/next/14/metadata-to-viewport-export:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4603,6 +4873,9 @@ importers:
 
   packages/codemods/next/14/next-og-import:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4822,6 +5095,9 @@ importers:
         specifier: ^0.12.0
         version: 0.12.0
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../../../filemod
@@ -4856,10 +5132,49 @@ importers:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
 
+  packages/codemods/prisma/5/reject-on-not-found-client:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/prisma/5/reject-on-not-found-query:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
   packages/codemods/python/orjson/recipe: {}
 
   packages/codemods/react-native/74/migrate-to-fire-interval-seconds:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4884,6 +5199,9 @@ importers:
 
   packages/codemods/react-native/74/remove-alert-action:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4908,6 +5226,9 @@ importers:
 
   packages/codemods/react-native/74/remove-event-listener-callback:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4932,6 +5253,9 @@ importers:
 
   packages/codemods/react-redux/0/add-state-type:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4956,6 +5280,9 @@ importers:
 
   packages/codemods/react-router/4/add-exact-prop:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -4980,6 +5307,9 @@ importers:
 
   packages/codemods/react-router/4/browser-router:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5004,6 +5334,9 @@ importers:
 
   packages/codemods/react-router/4/create-hash-history:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5028,6 +5361,9 @@ importers:
 
   packages/codemods/react-router/4/hash-router:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5052,6 +5388,9 @@ importers:
 
   packages/codemods/react-router/4/index-route:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5094,6 +5433,9 @@ importers:
 
   packages/codemods/react-router/4/remove-with-props:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5118,6 +5460,9 @@ importers:
 
   packages/codemods/react-router/4/rename-imports:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5142,6 +5487,9 @@ importers:
 
   packages/codemods/react-router/4/replace-location-query:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5166,6 +5514,9 @@ importers:
 
   packages/codemods/react-router/4/replace-nested-routes:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5190,6 +5541,9 @@ importers:
 
   packages/codemods/react-router/4/replace-param-prop:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5214,6 +5568,9 @@ importers:
 
   packages/codemods/react-router/4/use-history-hook:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5241,6 +5598,9 @@ importers:
 
   packages/codemods/react-router/4/wrap-with-switch:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5265,6 +5625,9 @@ importers:
 
   packages/codemods/react-router/6/compat-route:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5289,6 +5652,9 @@ importers:
 
   packages/codemods/react-router/6/compat-router:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5313,6 +5679,9 @@ importers:
 
   packages/codemods/react-router/6/link-to-props:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5337,6 +5706,9 @@ importers:
 
   packages/codemods/react-router/6/match-path-arguments:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5361,6 +5733,9 @@ importers:
 
   packages/codemods/react-router/6/navlink-exact-end:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5385,6 +5760,9 @@ importers:
 
   packages/codemods/react-router/6/redirect-to-navigate:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5409,6 +5787,9 @@ importers:
 
   packages/codemods/react-router/6/remove-active-classname:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5433,6 +5814,9 @@ importers:
 
   packages/codemods/react-router/6/remove-active-style:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5457,6 +5841,9 @@ importers:
 
   packages/codemods/react-router/6/remove-compat-router:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5481,6 +5868,9 @@ importers:
 
   packages/codemods/react-router/6/remove-go-hooks:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5505,6 +5895,9 @@ importers:
 
   packages/codemods/react-router/6/remove-redirect-inside-switch:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5529,6 +5922,9 @@ importers:
 
   packages/codemods/react-router/6/rename-compat-imports:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5553,6 +5949,9 @@ importers:
 
   packages/codemods/react-router/6/static-router-imports:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5577,6 +5976,9 @@ importers:
 
   packages/codemods/react-router/6/use-location:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5601,6 +6003,9 @@ importers:
 
   packages/codemods/react-router/6/use-navigate:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5625,6 +6030,9 @@ importers:
 
   packages/codemods/react-router/6/use-params:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5649,6 +6057,9 @@ importers:
 
   packages/codemods/react-router/6/use-route-match:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5675,6 +6086,9 @@ importers:
 
   packages/codemods/react/19/remove-context-provider:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5918,6 +6332,9 @@ importers:
 
   packages/codemods/react/19/use-context-hook:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
@@ -5942,6 +6359,9 @@ importers:
 
   packages/codemods/react/prop-types-typescript:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../utilities
@@ -5966,6 +6386,9 @@ importers:
 
   packages/codemods/react/replace-react-fc-typescript:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../utilities
@@ -5990,6 +6413,9 @@ importers:
 
   packages/codemods/redwoodjs/core/4/auth-decoder:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../../utilities
@@ -6014,6 +6440,9 @@ importers:
 
   packages/codemods/redwoodjs/core/4/redwood-apollo-provider:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../../utilities
@@ -6038,6 +6467,9 @@ importers:
 
   packages/codemods/redwoodjs/core/4/router-use-auth:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../../utilities
@@ -6062,6 +6494,9 @@ importers:
 
   packages/codemods/redwoodjs/core/4/use-armor:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../../utilities
@@ -6086,6 +6521,9 @@ importers:
 
   packages/codemods/remove-unused-feature-flags-2:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../filemod
@@ -6164,6 +6602,9 @@ importers:
 
   packages/codemods/typescript/remove-public-modifier:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/tsconfig':
         specifier: workspace:*
         version: link:../../../tsconfig
@@ -6191,6 +6632,9 @@ importers:
 
   packages/codemods/typescript/use-template-literals:
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../codemod-utils
       '@codemod-com/tsconfig':
         specifier: workspace:*
         version: link:../../../tsconfig
@@ -6629,6 +7073,9 @@ importers:
         specifier: 'catalog:'
         version: 2.4.5
     devDependencies:
+      '@codemod-com/codemod-utils':
+        specifier: workspace:*
+        version: link:../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../utilities

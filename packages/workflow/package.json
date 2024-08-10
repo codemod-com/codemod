@@ -54,6 +54,7 @@
   },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
+    "@codemod-com/codemod-utils": "workspace:*",
     "@types/lodash-es": "catalog:",
     "esbuild": "^0.17.14",
     "typescript": "^5.2.2",

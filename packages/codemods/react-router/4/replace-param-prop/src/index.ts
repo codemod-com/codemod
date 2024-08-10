@@ -40,7 +40,7 @@ function transform(
       const firstProperty = targetArg.properties[0];
 
       if (
-        j.Property.check(firstProperty) &&
+        j.ObjectProperty.check(firstProperty) &&
         j.Identifier.check(firstProperty.key) &&
         firstProperty.key.name === "params"
       ) {
