@@ -21,6 +21,7 @@ import {
   isRecipeCodemod,
 } from "@codemod-com/utilities";
 import type { AuthServiceInterface } from "@codemod.com/workflow";
+import type { RunnerServiceInterface } from "#runner-service.js";
 import { getCodemodExecutable, getTransformer } from "#source-code.js";
 import { astGrepLanguageToPatterns } from "./engines/ast-grep.js";
 import type { Dependencies } from "./engines/filemod.js";
@@ -43,7 +44,8 @@ export class Runner {
   public constructor(
     protected readonly _options: {
       readonly flowSettings: FlowSettings;
-      readonly authService: AuthServiceInterface;
+      readonly authService?: AuthServiceInterface;
+      readonly runnerService?: RunnerServiceInterface;
     },
   ) {}
 
@@ -58,30 +60,43 @@ export class Runner {
     const printer = new Printer();
 
     try {
-      await this.executeCodemod({
-        codemod,
-        flowSettings: this._options.flowSettings,
-        onCommand: async (command) => {
-          if (this._options.flowSettings.dry) {
-            return;
-          }
+      if (
+        this._options.flowSettings.cloud &&
+        codemod.config.engine === "workflow"
+      ) {
+        await this.executeCodemodInACloud({
+          codemod,
+          flowSettings: this._options.flowSettings,
+          onError: (error) => executionErrors.push(error),
+          onSuccess,
+          printer,
+        });
+      } else {
+        await this.executeCodemod({
+          codemod,
+          flowSettings: this._options.flowSettings,
+          onCommand: async (command) => {
+            if (this._options.flowSettings.dry) {
+              return;
+            }
 
-          const shouldFormat =
-            this._options.flowSettings.format && "newData" in command;
+            const shouldFormat =
+              this._options.flowSettings.format && "newData" in command;
 
-          if (shouldFormat) {
-            command.newData = await formatText(
-              "oldPath" in command ? command.oldPath : command.newPath,
-              command.newData,
-            );
-          }
+            if (shouldFormat) {
+              command.newData = await formatText(
+                "oldPath" in command ? command.oldPath : command.newPath,
+                command.newData,
+              );
+            }
 
-          return this.modifyFileSystemUponCommand(command);
-        },
-        onError: (error) => executionErrors.push(error),
-        onSuccess,
-        printer,
-      });
+            return this.modifyFileSystemUponCommand(command);
+          },
+          onError: (error) => executionErrors.push(error),
+          onSuccess,
+          printer,
+        });
+      }
     } catch (error) {
       if (!(error instanceof Error)) {
         return;
@@ -91,6 +106,22 @@ export class Runner {
     }
 
     return executionErrors;
+  }
+
+  private async executeCodemodInACloud(options: {
+    codemod: Codemod;
+    flowSettings: FlowSettings;
+    onSuccess?: (runResult: RunResult) => Promise<void> | void;
+    onError?: CodemodExecutionErrorCallback;
+    printer: Printer;
+  }) {
+    const { codemod, flowSettings, onError, onSuccess, printer } = options;
+
+    const cloudRunner = await this._options.runnerService?.startCodemodRun({
+      source: await getCodemodExecutable(codemod.path),
+      engine: codemod.config.engine as "workflow",
+    });
+    console.log({ cloudRunner });
   }
 
   private async buildPatterns(

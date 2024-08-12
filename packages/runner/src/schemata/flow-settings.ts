@@ -43,6 +43,7 @@ export const flowSettingsSchema = v.object({
   install: v.optional(v.boolean(), DEFAULT_INSTALL),
   json: v.optional(v.boolean(), DEFAULT_USE_JSON),
   threads: v.optional(v.pipe(v.number(), v.minValue(0)), DEFAULT_THREAD_COUNT),
+  cloud: v.optional(v.boolean(), false),
 });
 
 export type FlowSettings = Omit<

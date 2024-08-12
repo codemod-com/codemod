@@ -130,5 +130,10 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       alias: "v",
       type: "boolean",
       description: "Prints the latest version of the codemod",
+    })
+    .option("cloud", {
+      type: "boolean",
+      description: "Run codemod in the cloud",
+      default: false,
     });
 };

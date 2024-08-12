@@ -8,6 +8,7 @@ const localProdBuildEnvs = {
   "process.env.CODEMOD_HOME_PAGE_URL": '"https://codemod.com"',
   "process.env.CODEMOD_STUDIO_URL": '"https://codemod.com/studio"',
   "process.env.IGNORE_TELEMETRY": "true",
+  "process.env.RUNNER_URL": '"https://backend.codemod.com/run"',
 };
 
 const publishEnvs = {
@@ -22,6 +23,7 @@ const localEnvs = {
   "process.env.CODEMOD_HOME_PAGE_URL": '"http://localhost:3000"',
   "process.env.CODEMOD_STUDIO_URL": '"http://localhost:3000/studio"',
   "process.env.IGNORE_TELEMETRY": "true",
+  "process.env.RUNNER_URL": '"http://localhost:8083"',
 };
 
 const argv = hideBin(process.argv);
