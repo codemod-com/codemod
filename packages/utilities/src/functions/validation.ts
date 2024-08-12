@@ -17,3 +17,6 @@ export const isJavaScriptName = (name: string) =>
   name.endsWith(".cjs") ||
   name.endsWith(".mts") ||
   name.endsWith(".cts");
+
+export const isJsxName = (name: string) =>
+  name.endsWith(".jsx") || name.endsWith(".tsx");

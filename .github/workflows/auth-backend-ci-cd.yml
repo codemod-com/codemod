@@ -1,4 +1,4 @@
-name: CI/CD Pipeline for Auth Backend
+name: CI/CD Pipeline for Auth Backend (Production)
 
 on:
   push:

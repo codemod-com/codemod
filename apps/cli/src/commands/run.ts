@@ -91,7 +91,7 @@ export const handleRunCliCommand = async (options: {
 }) => {
   const { printer, args, telemetry, onExit } = options;
 
-  const flowSettings = parseFlowSettings(args, printer);
+  const flowSettings = await parseFlowSettings(args, printer);
 
   if (
     !flowSettings.dry &&

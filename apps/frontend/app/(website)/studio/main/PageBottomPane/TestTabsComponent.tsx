@@ -1,10 +1,20 @@
 import { cn } from "@/utils";
+import { GenerateTestCasesButton } from "@chatbot/PromptPanel/GenerateTestCasesButton";
+import type { useAiService } from "@chatbot/useAiService";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Tabs from "@radix-ui/react-tabs";
 import { useSnippetsStore } from "@studio/store/snippets";
+import { useViewStore } from "@studio/store/view";
 import { useEffect, useRef, useState } from "react";
 
-export const TestTabsComponent = () => {
+export const TestTabsComponent = ({
+  autogenerateTestCases,
+  isTestCaseGenerated,
+}: {
+  autogenerateTestCases: ReturnType<typeof useAiService>[
+    | "autogenerateTestCases"
+    | "isTestCaseGenerated"];
+}) => {
   const {
     getSelectedEditors,
     addPair,
@@ -22,6 +32,8 @@ export const TestTabsComponent = () => {
   const inputRef = useRef(null);
   const [isEditedNameAlreadyInUse, setIsEditedNameAlreadyInUse] =
     useState(false);
+  const { activateModGpt } = useViewStore();
+
   useEffect(() => {
     if (inputRef.current) {
       setTimeout(() => inputRef.current.focus(), 0);
@@ -108,9 +120,15 @@ export const TestTabsComponent = () => {
           </div>
         ))}
         {!getHasReachedTabsLimit() && (
-          <button className="add-tab-button" onClick={() => addPair()}>
-            +
-          </button>
+          <>
+            <button className="add-tab-button" onClick={() => addPair()}>
+              +
+            </button>
+            <GenerateTestCasesButton
+              isTestCaseGenerated={isTestCaseGenerated}
+              handleButtonClick={autogenerateTestCases}
+            />
+          </>
         )}
       </Tabs.List>
     </Tabs.Root>

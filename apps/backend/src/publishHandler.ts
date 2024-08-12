@@ -51,7 +51,7 @@ export const publishHandler: RouteHandler<{
   await fs.promises.mkdir(unpackPath, { recursive: true });
 
   try {
-    const organizations = request.organizations!;
+    const allowedNamespaces = request.allowedNamespaces!;
 
     const {
       username,
@@ -185,14 +185,7 @@ export const publishHandler: RouteHandler<{
     if (!namespace) {
       if (name.startsWith("@") && name.includes("/")) {
         namespace = name.split("/").at(0)?.slice(1)!;
-
-        const allowedNamespaces = [
-          username,
-          ...organizations.map((org) => org.organization.slug),
-          environment.VERIFIED_PUBLISHERS.includes(username)
-            ? "codemod-com"
-            : null,
-        ].filter(isNeitherNullNorUndefined);
+        isPrivate = true;
 
         if (!allowedNamespaces.includes(namespace)) {
           return reply.code(403).send({
@@ -200,21 +193,21 @@ export const publishHandler: RouteHandler<{
             errorText: `You are not allowed to publish under namespace "${namespace}"`,
           });
         }
-
-        isPrivate = true;
+      } else {
+        namespace = username;
       }
-
-      namespace = username;
     }
 
+    // private flag in codemodrc as primary source of truth,
+    // fallback is to check if publishing under a namespace. if yes - set to private by default
     isPrivate = codemodRc.private ?? isPrivate;
+
+    // @TODO: remove this logic in favor of having the organization in Clerk
+    // Unless we roll our own auth, it requires to upgrade to Clerk B2B plan at $100/month
     const isVerified =
       namespace === "codemod-com" ||
       environment.VERIFIED_PUBLISHERS.includes(username);
     const author = isVerified ? "Codemod" : namespace;
-
-    // private flag in codemodrc as primary source of truth,
-    // fallback is to check if publishing under a namespace. if yes - set to private by default
 
     if (!isNeitherNullNorUndefined(name)) {
       return reply.code(400).send({

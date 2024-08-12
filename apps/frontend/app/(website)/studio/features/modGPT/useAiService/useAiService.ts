@@ -41,9 +41,11 @@ export const useAiService = ({
 
   const {
     wsMessage: codemodAIMessage,
+    autogenerateTestCases,
     startIterativeCodemodGeneration,
     serviceBusy,
     stopCodemodAi,
+    isTestCaseGenerated,
   } = useCodemodAI({
     messages,
     engine,
@@ -105,5 +107,7 @@ export const useAiService = ({
     setMessages,
     modGptSubmit,
     startIterativeCodemodGeneration,
+    autogenerateTestCases,
+    isTestCaseGenerated,
   };
 };

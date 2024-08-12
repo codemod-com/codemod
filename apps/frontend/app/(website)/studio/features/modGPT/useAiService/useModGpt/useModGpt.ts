@@ -7,7 +7,7 @@ import { useModStore } from "@studio/store/mod";
 import type { Message } from "ai";
 import { useChat } from "ai/react";
 import { useCallback, useState } from "react";
-import { getHeadersWithAuth, useHandlePrompt } from "./utils";
+import { getHeadersWithAuth } from "./utils";
 
 export const useModGPT = ({
   initialMessages,
@@ -28,7 +28,6 @@ export const useModGPT = ({
     },
   });
 
-  useHandlePrompt({ ...chat, id, setToken });
   const modGptSubmit = useModGptSubmit({ id, setToken, ...chat });
 
   const handleStop = useCallback(() => {

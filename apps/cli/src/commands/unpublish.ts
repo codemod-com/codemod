@@ -3,7 +3,7 @@ import { AxiosError } from "axios";
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
   doubleQuotify,
-  extractLibNameAndVersion,
+  extractNameAndVersion,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import { unpublish } from "#api.js";
@@ -21,7 +21,7 @@ export const handleUnpublishCliCommand = async (options: {
     printer,
   });
 
-  const { libName: codemodName, version } = extractLibNameAndVersion(name);
+  const { name: codemodName, version } = extractNameAndVersion(name);
 
   if (
     isNeitherNullNorUndefined(codemodName) &&

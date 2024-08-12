@@ -17,11 +17,13 @@ import {
   type ProjectDownloadInput,
   backtickify,
   doubleQuotify,
+  execPromise,
   getCodemodProjectFiles,
   isJavaScriptName,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { getCurrentUserData } from "#auth-utils.js";
+import { oraCheckmark } from "#utils/constants.js";
 import { detectCodemodEngine } from "#utils/detectCodemodEngine.js";
 import { isFile } from "#utils/general.js";
 
@@ -179,6 +181,32 @@ export const handleInitCliCommand = async (options: {
     "info",
     chalk.cyan("Codemod package created at", `${chalk.bold(codemodBaseDir)}.`),
   );
+
+  const installSpinner = printer.withLoaderMessage(
+    chalk.cyan("Installing npm dependencies..."),
+  );
+
+  // Install packages
+  try {
+    await execPromise("pnpm i", { cwd: codemodBaseDir });
+  } catch (err) {
+    try {
+      await execPromise("npm i", { cwd: codemodBaseDir });
+    } catch (err) {
+      installSpinner.fail();
+      printer.printConsoleMessage(
+        "error",
+        `Failed to install npm dependencies:\n${(err as Error).message}.`,
+      );
+    }
+  }
+
+  if (installSpinner.isSpinning) {
+    installSpinner.stopAndPersist({
+      symbol: oraCheckmark,
+      text: chalk.green("Dependencies installed."),
+    });
+  }
 
   const howToRunText = chalk(
     `Run ${chalk.bold(doubleQuotify(`codemod --source ${codemodBaseDir}`))}`,

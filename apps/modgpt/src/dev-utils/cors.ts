@@ -6,6 +6,7 @@ const ALLOWED_ORIGINS = [
   /^https?:\/\/.*-codemod\.vercel\.app$/,
   /^https?:\/\/localhost(:\d+)?$/,
   /^https?:\/\/codemod\.com$/,
+  /^https?:\/\/staging.codemod\.com$/,
 ];
 
 export const corsDisableHeaders = {

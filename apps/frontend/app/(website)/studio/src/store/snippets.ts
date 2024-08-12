@@ -9,6 +9,7 @@ import {
 } from "@studio/store/utils/getSnippetInitialState";
 import type { TreeNode } from "@studio/types/tree";
 import { type RangeCommand, buildRanges } from "@studio/utils/tree";
+import { sleep } from "@studio/utils/validation/sleep";
 import { map, mapObjIndexed, omit, reduce, remove } from "ramda";
 import { parse } from "valibot";
 import { create } from "zustand";
@@ -45,7 +46,10 @@ type SnippetsConfig = {
   tabsLimit: number;
   currentContent: string;
   currentType: EditorType;
-  addPair: (name?: string) => void;
+  addPair: (
+    name?: string,
+    snippets?: { before: string; after: string },
+  ) => void;
   clearAll: () => void;
   setInitialState: (state: Partial<SnippetsState>) => void;
   removePair: (index: number) => void;
@@ -103,16 +107,19 @@ type SnippetsSetters = {
   ) => SnippetSetters[x];
 };
 
-const getNewEditors = (name?: string) => ({
+const getNewEditors = (
+  name?: string,
+  snippets: { before: string; after: string } = { before: "", after: "" },
+) => ({
   name,
-  before: getSnippetInitialState(),
-  after: getSnippetInitialState(),
+  before: getSnippetInitialState(snippets?.before),
+  after: getSnippetInitialState(snippets?.after),
   output: getSnippetInitialState(),
 });
 export const useSnippetsStore = create<SnippetsState>((set, get) => ({
   tabsLimit: 12,
   getHasReachedTabsLimit: () => get().editors.length >= get().tabsLimit,
-  addPair: (name?: string) => {
+  addPair: (name, snippets) => {
     const pairName =
       name ||
       `Test ${
@@ -124,7 +131,7 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
           .filter(Boolean)
           .at(-1) || 0) + 1
       }`;
-    const newPair = getNewEditors(pairName);
+    const newPair = getNewEditors(pairName, snippets);
     set({
       editors: [...get().editors, newPair],
     });
@@ -158,24 +165,21 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
         editors,
       });
   },
-  clearAll: () => {
+  clearAll: async () => {
     set({
       selectedPairIndex: 0,
     });
-    setTimeout(
-      () =>
-        set({
-          editors: [
-            {
-              name: "Test 1",
-              before: getSnippetInitialState(),
-              after: getSnippetInitialState(),
-              output: getSnippetInitialState(),
-            },
-          ],
-        }),
-      100,
-    );
+    await sleep(1);
+    set({
+      editors: [
+        {
+          name: "Test 1",
+          before: getSnippetInitialState(),
+          after: getSnippetInitialState(),
+          output: getSnippetInitialState(),
+        },
+      ],
+    });
   },
   selectedPairIndex: 0,
   getAllNames: () => get().editors.map(({ name }) => name),

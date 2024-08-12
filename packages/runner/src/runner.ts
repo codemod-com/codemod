@@ -603,7 +603,7 @@ export class Runner {
             engine: "jscodeshift" | "ts-morph" | "ast-grep";
           };
         },
-        transformer,
+        codemodSource,
         onError,
       });
     });

@@ -5,7 +5,6 @@ import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import type { TreeNode } from "@studio/types/tree";
 import { prettify } from "@studio/utils/prettify";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { parseSnippet } from "../utils/babelParser";
 import mapBabelASTToRenderableTree from "../utils/mappers";
 import { type RangeCommand, buildRanges } from "../utils/tree";
@@ -47,20 +46,25 @@ export const buildDefaultCodemodSource = (engine: KnownEngines) => {
 };
 
 export type ModState = ModStateSetters & ModStateValues;
-const getInitialState = (): ModStateValues => {
-  const savedState = isServer ? null : localStorage.getItem("mod-store");
-  const initialState = savedState
-    ? JSON.parse(savedState).content
-    : buildDefaultCodemodSource("jscodeshift");
-  const parsed = parseSnippet(initialState);
 
+const getInitialState = (): ModStateValues => {
+  let initialContent: string;
+
+  if (isServer) {
+    initialContent = buildDefaultCodemodSource("jscodeshift");
+  } else {
+    const savedContent = localStorage.getItem("mod-store-content");
+    initialContent = savedContent || buildDefaultCodemodSource("jscodeshift");
+  }
+
+  const parsed = parseSnippet(initialContent);
   const parsedContent = isFile(parsed)
     ? mapBabelASTToRenderableTree(parsed)
     : null;
 
   return {
     name: "",
-    content: initialState,
+    content: initialContent,
     hasRuntimeErrors: false,
     parsedContent,
     ranges: [],
@@ -69,28 +73,32 @@ const getInitialState = (): ModStateValues => {
   };
 };
 
-export const useModStore = create<ModState>(
-  persist(
-    (set, get) => ({
-      ...getInitialState(),
-      setState: (newState) => set((state) => ({ ...state, ...newState })),
-      setContent: (content) => {
-        const parsed = parseSnippet(content);
-        const parsedContent = isFile(parsed)
-          ? mapBabelASTToRenderableTree(parsed)
-          : null;
-        set({ content, parsedContent });
-      },
-      setHasRuntimeErrors: (hasError) => set({ hasRuntimeErrors: hasError }),
-      setCodemodSelection: (command) => {
-        const { parsedContent } = get();
-        const ranges = buildRanges(parsedContent, command);
-        set({ ranges, rangesUpdatedAt: Date.now() });
-      },
-      setCurrentCommand: (command) => set({ command }),
-    }),
-    {
-      name: "mod-store",
-    },
-  ),
-);
+export const useModStore = create<ModState>((set, get) => ({
+  ...getInitialState(),
+  setState: (newState) => {
+    set((state) => {
+      const updatedState = { ...state, ...newState };
+      if (!isServer) {
+        localStorage.setItem("mod-store-content", updatedState.content || "");
+      }
+      return updatedState;
+    });
+  },
+  setContent: (content) => {
+    const parsed = parseSnippet(content);
+    const parsedContent = isFile(parsed)
+      ? mapBabelASTToRenderableTree(parsed)
+      : null;
+    set({ content, parsedContent });
+    if (!isServer) {
+      localStorage.setItem("mod-store-content", content);
+    }
+  },
+  setHasRuntimeErrors: (hasError) => set({ hasRuntimeErrors: hasError }),
+  setCodemodSelection: (command) => {
+    const { parsedContent } = get();
+    const ranges = buildRanges(parsedContent, command);
+    set({ ranges, rangesUpdatedAt: Date.now() });
+  },
+  setCurrentCommand: (command) => set({ command }),
+}));

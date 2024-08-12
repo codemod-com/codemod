@@ -25,6 +25,10 @@
       "dependsOn": ["^build"],
       "outputs": ["build/**", "dist/**"]
     },
+    "build:prod": {
+      "dependsOn": ["^build"],
+      "outputs": ["build/**", "dist/**"]
+    },
     "build:publish": {
       "dependsOn": ["^build"],
       "outputs": ["build/**", "dist/**"]

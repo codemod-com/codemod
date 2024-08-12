@@ -1,8 +1,7 @@
-import { LEARN_KEY } from "@/constants";
 import { cn } from "@/utils";
+import { useAiService } from "@chatbot/useAiService";
 import type { KnownEngines } from "@codemod-com/utilities";
 import { useTheme } from "@context/useTheme";
-import { getCodeDiff } from "@studio/api/getCodeDiff";
 import Panel from "@studio/components/Panel";
 import { BoundResizePanel } from "@studio/components/ResizePanel/BoundResizePanel";
 import ResizeHandle from "@studio/components/ResizePanel/ResizeHandler";
@@ -19,9 +18,10 @@ import { TestTabsComponent } from "@studio/main/PageBottomPane/TestTabsComponent
 import { AssistantTab } from "@studio/main/PaneLayout";
 import { LoginWarningModal } from "@studio/main/PaneLayout/LoginWarningModal";
 import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";
-import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
+import { useCFSStore } from "@studio/store/CFS";
+import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import Codemod from "./Codemod";
 import { Header } from "./Header/Header";
@@ -38,47 +38,20 @@ const Main = () => {
   const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
     useSnippetsPanels({ panelRefs });
 
-  const { engine, setEngine, getSelectedEditors } = useSnippetsStore();
+  const { engine, setEngine } = useSnippetsStore();
   const { isDark } = useTheme();
+  const { setContent } = useModStore();
+  const {
+    AIAssistant: { engine: llmEngine },
+  } = useCFSStore();
 
+  const aiAssistantData = useAiService({
+    setCodemod: setContent,
+    engine: llmEngine,
+  });
   const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
     setEngine(value as KnownEngines);
   };
-
-  const snippetStore = getSelectedEditors();
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
-
-    if (command === LEARN_KEY) {
-      (async () => {
-        try {
-          const engine = (searchParams.get(SEARCH_PARAMS_KEYS.ENGINE) ??
-            "jscodeshift") as KnownEngines;
-          const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
-          const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
-
-          if (!engine || !diffId || !iv) {
-            return;
-          }
-
-          const snippets = await getCodeDiff({ diffId, iv });
-
-          if (!snippets) {
-            return;
-          }
-
-          snippetStore.setBeforeSnippet(snippets.before);
-          snippetStore.setAfterSnippet(snippets.after);
-          setEngine(engine);
-        } catch (err) {
-          console.error(err);
-        }
-      })();
-      return;
-    }
-  }, [snippetStore]);
 
   const codemodHeader = (
     <Panel.Header className="h-[30px]">
@@ -167,6 +140,7 @@ const Main = () => {
       className="bg-gray-bg assistant"
     >
       <AssistantTab
+        aiAssistantData={aiAssistantData}
         panelRefs={panelRefs}
         beforePanel={beforePanel}
         afterPanel={afterPanel}
@@ -232,7 +206,10 @@ const Main = () => {
               panelRefs={panelRefs}
               className="bg-gray-bg"
             >
-              <TestTabsComponent />
+              <TestTabsComponent
+                isTestCaseGenerated={aiAssistantData.isTestCaseGenerated}
+                autogenerateTestCases={aiAssistantData.autogenerateTestCases}
+              />
               <PanelGroup direction="horizontal">
                 {beforeAndAfterPanel}
                 <ResizeHandle direction="horizontal" />
