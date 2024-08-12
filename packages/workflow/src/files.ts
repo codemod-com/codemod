@@ -56,28 +56,32 @@ export function filesLogic(
     .executor(async (next, self) => {
       const { globs, callback } = self.getArguments();
       const { cwd } = getCwdContext();
-      const files = await glob.glob(globs, {
-        cwd,
-        nodir: true,
-        ignore: [
-          "**/node_modules/**",
-          "**/.git/**",
-          "**/dist/**",
-          "**/build/**",
-        ],
-      });
+      const absolutePaths = globs.filter((g) => path.isAbsolute(g));
+      const relativePaths = globs.filter((g) => !path.isAbsolute(g));
+      const files = [
+        ...(
+          await glob.glob(relativePaths, {
+            cwd,
+            nodir: true,
+            ignore: [
+              "**/node_modules/**",
+              "**/.git/**",
+              "**/dist/**",
+              "**/build/**",
+            ],
+          })
+        ).map((f) => path.join(cwd, f)),
+        ...absolutePaths,
+      ];
 
       for (const file of files) {
-        await fileContext.run(
-          new FileContext({ file: path.join(cwd, file) }),
-          async () => {
-            if (callback) {
-              await callback(helpers);
-            }
+        await fileContext.run(new FileContext({ file }), async () => {
+          if (callback) {
+            await callback(helpers);
+          }
 
-            await next();
-          },
-        );
+          await next();
+        });
       }
     })
     .run() as any;
