@@ -455,6 +455,7 @@ const packageJson = ({
     devDeps["@types/node"] = "20.9.0";
     devDeps.typescript = "^5.2.2";
     devDeps.vitest = "^1.0.1";
+    devDeps["@codemod-com/codemod-utils"] = "*";
     scripts.test = "vitest run";
     scripts["test:watch"] = "vitest watch";
     content.files.push("/dist/index.cjs");
