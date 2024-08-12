@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-// Define the interface for the dashboard component data
 interface DashboardComponentData<T> {
   name: string;
   data: T;
@@ -8,7 +7,6 @@ interface DashboardComponentData<T> {
   config: any;
 }
 
-// Hook to manage component data with localStorage
 function useStorage<T>(
   name: string,
   componentName: string,

@@ -27,8 +27,8 @@ export function TableTile<T>({
   columns?: ColumnDefinition[];
   transformer?: Record<keyof T, (value: any) => React.ReactNode>;
 }) {
-  const shouldDeriveColumNames = !c;
   const [cardTitle, setCardTitle] = useState(title);
+  const shouldDeriveColumnsNames = !c;
   const [columns, setColumns] = useState<T[]>(c || []);
   const [data, setData] = useState<T[]>(initialData);
   const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
@@ -57,7 +57,7 @@ export function TableTile<T>({
   );
 
   useEffect(() => {
-    if (shouldDeriveColumNames) {
+    if (shouldDeriveColumnsNames) {
       setColumns(Object.keys(data[0] || {}));
     }
   }, [data]);
@@ -87,7 +87,7 @@ export function TableTile<T>({
     );
 
   const handleImport = (importedData: any) => {
-    if (shouldDeriveColumNames) {
+    if (shouldDeriveColumnsNames) {
       setData(importedData);
     } else {
       validateImportedData(importedData)
