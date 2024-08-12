@@ -1,12 +1,12 @@
 import { extname } from "node:path";
 import jscodeshift, { type API, type Parser } from "jscodeshift";
 
-import { defaultJSCodeshiftParser } from "@codemod-com/codemod-utils";
 import type {
   ArgumentRecord,
   EngineOptions,
   FileCommand,
 } from "@codemod-com/utilities";
+import { defaultJSCodeshiftParser } from "@codemod.com/codemod-utils";
 import { getAdapterByExtname } from "#adapters/index.js";
 import type { TransformFunction } from "#source-code.js";
 import { isTheSameData } from "#utils.js";

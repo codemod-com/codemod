@@ -1299,6 +1299,9 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
+      '@codemod.com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../packages/codemod-utils
       '@faker-js/faker':
         specifier: ^8.4.1
         version: 8.4.1
@@ -5699,12 +5702,12 @@ importers:
 
   packages/codemods/react/19/remove-forward-ref:
     devDependencies:
-      '@codemod-com/codemod-utils':
-        specifier: workspace:*
-        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
+      '@codemod.com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -5726,7 +5729,7 @@ importers:
 
   packages/codemods/react/19/remove-legacy-context:
     devDependencies:
-      '@codemod-com/codemod-utils':
+      '@codemod.com/codemod-utils':
         specifier: workspace:*
         version: link:../../../../codemod-utils
       '@types/jscodeshift':
@@ -5747,12 +5750,12 @@ importers:
 
   packages/codemods/react/19/remove-memoization:
     devDependencies:
-      '@codemod-com/codemod-utils':
-        specifier: workspace:*
-        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
+      '@codemod.com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -5792,7 +5795,7 @@ importers:
 
   packages/codemods/react/19/replace-create-factory:
     devDependencies:
-      '@codemod-com/codemod-utils':
+      '@codemod.com/codemod-utils':
         specifier: workspace:*
         version: link:../../../../codemod-utils
       '@types/jscodeshift':
@@ -5813,7 +5816,7 @@ importers:
 
   packages/codemods/react/19/replace-default-props:
     devDependencies:
-      '@codemod-com/codemod-utils':
+      '@codemod.com/codemod-utils':
         specifier: workspace:*
         version: link:../../../../codemod-utils
       '@types/jscodeshift':
@@ -5852,7 +5855,7 @@ importers:
 
   packages/codemods/react/19/replace-reactdom-render:
     devDependencies:
-      '@codemod-com/codemod-utils':
+      '@codemod.com/codemod-utils':
         specifier: workspace:*
         version: link:../../../../codemod-utils
       '@types/jscodeshift':
@@ -5873,12 +5876,12 @@ importers:
 
   packages/codemods/react/19/replace-string-ref:
     devDependencies:
-      '@codemod-com/codemod-utils':
-        specifier: workspace:*
-        version: link:../../../../codemod-utils
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../../../utilities
+      '@codemod.com/codemod-utils':
+        specifier: workspace:*
+        version: link:../../../../codemod-utils
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -6353,9 +6356,6 @@ importers:
       '@babel/types':
         specifier: ^7.24.0
         version: 7.24.7
-      '@codemod-com/codemod-utils':
-        specifier: workspace:*
-        version: link:../codemod-utils
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../filemod
@@ -6365,6 +6365,9 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../utilities
+      '@codemod.com/codemod-utils':
+        specifier: workspace:*
+        version: link:../codemod-utils
       '@codemod.com/workflow':
         specifier: workspace:*
         version: link:../workflow

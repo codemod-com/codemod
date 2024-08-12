@@ -40,6 +40,7 @@
     "@codemod-com/api-types": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@faker-js/faker": "^8.4.1",
+    "@codemod.com/codemod-utils": "workspace:*",
     "@hookform/resolvers": "catalog:",
     "@monaco-editor/react": "^4.4.6",
     "@phosphor-icons/react": "catalog:",

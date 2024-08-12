@@ -1,4 +1,4 @@
-import { defaultJSCodeshiftParser } from "@codemod-com/codemod-utils";
+import { defaultJSCodeshiftParser } from "@codemod.com/codemod-utils";
 import jscodeshift from "jscodeshift";
 
 export const isTheSameData = (oldData: string, newData: string) => {
