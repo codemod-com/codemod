@@ -1,5 +1,6 @@
 import * as fs from "node:fs/promises";
 import { formatText } from "@codemod-com/utilities";
+import { convertChangesToDMP, diffLines } from "diff";
 import MagicString from "magic-string";
 import { clc } from "../helpers.js";
 import { Context } from "./Context.js";
@@ -12,6 +13,7 @@ export class FileContext extends Context<FileContextData> {
   private _contents: string | undefined = undefined;
   private _magicString: MagicString | undefined = undefined;
   private _contentsChanged = false;
+  private _oldContents: string | undefined = undefined;
   public importsUpdates: { type: "add" | "remove"; import: string }[] = [];
 
   get file() {
@@ -21,6 +23,7 @@ export class FileContext extends Context<FileContextData> {
   async contents() {
     if (typeof this._contents === "undefined") {
       this._contents = await fs.readFile(this.file, { encoding: "utf-8" });
+      this._oldContents = this._contents;
     }
     if (typeof this._magicString !== "undefined") {
       return this._magicString.toString();
@@ -45,7 +48,11 @@ export class FileContext extends Context<FileContextData> {
     start,
     end,
     replacement,
-  }: { start: number; end: number; replacement: string }) {
+  }: {
+    start: number;
+    end: number;
+    replacement: string;
+  }) {
     const magicString = await this.magicString();
     magicString.update(start, end, replacement);
   }
@@ -58,14 +65,34 @@ export class FileContext extends Context<FileContextData> {
       contents = this._contents;
     }
     if (typeof contents === "string") {
-      await fs.writeFile(
-        this.file,
-        format ? await formatText(this.file, contents) : contents,
-      );
+      const oldContents = this._oldContents;
+      const newContents = format
+        ? await formatText(this.file, contents)
+        : contents;
+      await fs.writeFile(this.file, newContents);
+      this._oldContents = undefined;
       this._contents = undefined;
       this._magicString = undefined;
       this._contentsChanged = false;
-      console.log(`${clc.blueBright("FILE")} ${this.file}`);
+      console.error(`${clc.blueBright("FILE")} ${this.file}`);
+      // @TODO improve diffs
+      const changes = convertChangesToDMP(
+        diffLines(oldContents ?? newContents, newContents),
+      );
+      for (const [type, code] of changes) {
+        switch (type) {
+          // case 0:
+          //   process.stdout.write(code);
+          //   break;
+          case -1:
+            process.stdout.write(clc.red(code));
+            break;
+          case 1:
+            process.stdout.write(clc.green(code));
+            break;
+        }
+      }
+      process.stdout.write("\n");
     }
   }
 
