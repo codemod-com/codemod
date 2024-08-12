@@ -1,5 +1,5 @@
 {
-  "name": "@codemod-com/codemod-utils",
+  "name": "@codemod.com/codemod-utils",
   "author": "Codemod, Inc.",
   "imports": {
     "#*": "./src/*"

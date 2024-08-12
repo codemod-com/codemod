@@ -1,7 +1,7 @@
 import {
   getImportDeclaration,
   isCallExpressionLibraryMethod,
-} from "@codemod-com/codemod-utils";
+} from "@codemod.com/codemod-utils";
 import type { Collection, JSCodeshift } from "jscodeshift";
 
 export const findPatterns = (j: JSCodeshift, root: Collection) => {

@@ -3,7 +3,7 @@ import {
   isIdentifier,
   isMemberExpression,
 } from "@babel/types";
-import * as codemodUtils from "@codemod-com/codemod-utils";
+import * as codemodUtils from "@codemod.com/codemod-utils";
 import {
   type WebWorkerOutgoingMessage,
   parseWebWorkerIncomingMessage,
@@ -294,7 +294,7 @@ export const findTransformFunction = (
   return transformFunction ? j(transformFunction) : null;
 };
 
-// removes `@codemod-com/codemod-utils` import, passes utils as last argument to transform function instead
+// removes `@codemod.com/codemod-utils` import, passes utils as last argument to transform function instead
 const replaceUtilsImport = (
   j: JSCodeshift,
   root: Collection<any>,
@@ -305,7 +305,7 @@ const replaceUtilsImport = (
   const importDeclaration = codemodUtils.getImportDeclaration(
     j,
     root,
-    "@codemod-com/codemod-utils",
+    "@codemod.com/codemod-utils",
   );
 
   if (!importDeclaration) {
