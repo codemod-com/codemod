@@ -1,7 +1,13 @@
 import { memoize } from "lodash-es";
+import { getTmpDir } from "src/fs.js";
 import type { PLazy } from "../PLazy.js";
 import { codemod } from "../codemod.js";
-import { cwdContext, gitContext, repositoryContext } from "../contexts.js";
+import {
+  cwdContext,
+  gitContext,
+  parentCwdContext,
+  repositoryContext,
+} from "../contexts.js";
 import { GitContext } from "../contexts/GitContext.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { exec } from "../exec.js";
@@ -21,6 +27,8 @@ interface CloneOptions {
   shallow?: boolean;
 }
 
+export type CloneReturn = PLazy<CloneHelpers> & CloneHelpers;
+
 const mapCloneOptions = (options: string | CloneOptions): CloneOptions => {
   if (typeof options === "string") {
     return { repository: options, shallow: true };
@@ -29,19 +37,56 @@ const mapCloneOptions = (options: string | CloneOptions): CloneOptions => {
 };
 
 /**
- *
+ * @description Clone a repository (could be used as follow up for github.fork)
+ * @example
+ * ```ts
+ * import { github } from '@codemod.com/workflow'
+ * await github.fork('git://github.com/codemod-com/codemod.git')
+ *   .clone()
+ *   .branch('new-branch')
+ *   .files()
+ *   .jsFam()
+ *   .astGrep('console.log($$$ARGS)')
+ *   .replace('console.error($$$ARGS)')
+ * ```
  */
-export function cloneLogic(): PLazy<CloneHelpers> & CloneHelpers;
+export function cloneLogic(): CloneReturn;
+
 /**
- *
- * @param callback
+ * @description Clone a repository with a callback (could be used as follow up for github.fork)
+ * @param callback A callback would be called after the repositories are cloned with first argument as helpers
+ * @example
+ * ```ts
+ * import { github } from '@codemod.com/workflow'
+ * await github.fork('git://github.com/codemod-com/codemod.git')
+ *   .clone(({ branch, commit, push, files }) => {
+ *     await branch('new-branch')
+ *     await files()
+ *       .jsFam()
+ *       .astGrep('console.log($$$ARGS)')
+ *       .replace('console.error($$$ARGS)')
+ *     await commit('feat: new branch')
+ *     await push()
+ * })
+ * ```
  */
 export function cloneLogic(
   callback: (helpers: CloneHelpers) => void | Promise<void>,
-): PLazy<CloneHelpers> & CloneHelpers;
+): CloneReturn;
+
 /**
- *
- * @param rawRepositories
+ * @description Clone repositories
+ * @param rawRepositories List of repositories to clone, could be a string, template literals can be used to pass multiple repositories, array of strings, objects with repository and branch to clone
+ * @example
+ * ```ts
+ * import { github } from '@codemod.com/workflow'
+ * await github.clone('git://github.com/codemod-com/codemod.git')
+ *   .branch('new-branch')
+ *   .files()
+ *   .jsFam()
+ *   .astGrep('console.log($$$ARGS)')
+ *   .replace('console.error($$$ARGS)')
+ * ```
  */
 export function cloneLogic(
   rawRepositories:
@@ -50,11 +95,24 @@ export function cloneLogic(
     | readonly string[]
     | CloneOptions
     | CloneOptions[],
-): PLazy<CloneHelpers> & CloneHelpers;
+): CloneReturn;
+
 /**
- *
- * @param rawRepositories
- * @param callback
+ * @description Clone repositories with a callback
+ * @param rawRepositories List of repositories to clone, could be a string, template literals can be used to pass multiple repositories, array of strings, objects with repository and branch to clone
+ * @param callback A callback would be called after the repositories are cloned with first argument as helpers
+ * @example
+ * ```ts
+ * import { github } from '@codemod.com/workflow'
+ * await github.clone('git://github.com/codemod-com/codemod.git', ({ branch, commit, push, files }) => {
+ *   await branch('new-branch')
+ *   await files()
+ *     .jsFam()
+ *     .astGrep('console.log($$$ARGS)')
+ *     .replace('console.error($$$ARGS)')
+ *   await commit('feat: new branch')
+ *   await push()
+ * })
  */
 export function cloneLogic(
   rawRepositories:
@@ -64,13 +122,8 @@ export function cloneLogic(
     | CloneOptions
     | CloneOptions[],
   callback: (helpers: CloneHelpers) => void | Promise<void>,
-): PLazy<CloneHelpers> & CloneHelpers;
-/**
- *
- * @param rawRepositories
- * @param callback
- * @returns
- */
+): CloneReturn;
+
 export function cloneLogic(
   rawRepositories?:
     | (string | CloneOptions)[]
@@ -80,7 +133,7 @@ export function cloneLogic(
     | CloneOptions[]
     | ((helpers: CloneHelpers) => void | Promise<void>),
   callback?: (helpers: CloneHelpers) => void | Promise<void>,
-) {
+): CloneReturn {
   const memoizedCloneRepo = memoize(cloneRepository);
   const memoizedSyncForkedRepo = memoize(syncForkRepository);
   return new FunctionExecutor("clone")
@@ -127,11 +180,21 @@ export function cloneLogic(
             const id = `${repository}, ${String(index)}, ${String(
               shallow,
             )}, ${String(branch)}`;
+            const tmpDir = getTmpDir(`${repository}${String(index)}`);
+            const cwd = cwdContext.getStore();
+            const parentCwd = parentCwdContext.getStore();
+            if (cwd) {
+              cwd.cwd = tmpDir;
+            }
+            if (parentCwd) {
+              parentCwd.cwd = tmpDir;
+            }
             await memoizedCloneRepo(id, {
               repositoryUrl: repository,
               branch,
               shallow,
               extraName: String(index),
+              tmpDir,
             });
             if (repo?.forkedFrom) {
               await memoizedSyncForkedRepo(``, {
@@ -167,4 +230,4 @@ const cloneHelpers = {
   pr,
 };
 
-type CloneHelpers = typeof cloneHelpers;
+export type CloneHelpers = typeof cloneHelpers;

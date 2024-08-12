@@ -1,11 +1,30 @@
 import type { PLazy } from "../PLazy.js";
-import { getCwdContext, getRepositoryContext } from "../contexts.js";
+import { getCwdContext, repositoryContext } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { logger } from "../helpers.js";
 import { spawn } from "../spawn.js";
 import { push } from "./push.js";
 
-export function commitLogic(message: string): PLazy<Helpers> & Helpers {
+export type CommitReturn = PLazy<Helpers> & Helpers;
+
+/**
+ * @description Commit changes to the current repository, adds all the files with `git add .`
+ * @param message Commit message
+ * @example
+ * ```ts
+ * import { git } from '@codemod.com/workflow'
+ * await git.clone('git://github.com/codemod-com/codemod.git')
+ *   .branch('new-branch', async ({ files, commit, push }) => {
+ *     await files()
+ *       .jsFam()
+ *       .astGrep('console.log($$$ARGS)')
+ *       .replace('console.error($$$ARGS)')
+ *     await commit('feat: new branch')
+ *     await push()
+ *   })
+ * ```
+ */
+export function commitLogic(message: string): CommitReturn {
   return new FunctionExecutor("commit")
     .arguments(() => ({
       message,
@@ -14,9 +33,9 @@ export function commitLogic(message: string): PLazy<Helpers> & Helpers {
     .executor(async (next, self) => {
       const { message } = self.getArguments();
       const { cwd } = getCwdContext();
-      const { repository, branch } = getRepositoryContext();
+      const repoContext = repositoryContext.getStore();
       const log = logger(
-        `Committing to ${repository}/tree/${branch}${
+        `Committing${repoContext ? ` to ${repoContext.repository}/tree/${repoContext.branch}` : ""}${
           message ? ` with message: ${JSON.stringify(message)}` : ""
         }`,
       );
