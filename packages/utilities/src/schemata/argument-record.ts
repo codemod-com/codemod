@@ -1,11 +1,6 @@
 import * as v from "valibot";
 
-export const argumentSchema = v.union([
-  v.string(),
-  v.number(),
-  v.boolean(),
-  v.array(v.string()),
-]);
+export const argumentSchema = v.union([v.string(), v.number(), v.boolean()]);
 
 export const argumentRecordSchema = v.record(v.string(), argumentSchema);
 
