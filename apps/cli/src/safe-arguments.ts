@@ -70,6 +70,29 @@ export const buildSafeArgumentRecord = async (
         return false;
       }
 
+      if (descriptor.kind === "enum") {
+        if (
+          !descriptor.options.some(
+            (opt) =>
+              opt === stringArg || opt === Number(arg) || opt === Boolean(arg),
+          )
+        ) {
+          if (!skipInvalidFlagging) {
+            invalid.push({
+              ...descriptor,
+              err: `incorrect value. Valid options: ${descriptor.options.join(
+                ",",
+              )}`,
+            });
+          }
+
+          return false;
+        }
+
+        safeArgumentRecord[descriptor.name] = stringArg;
+        return true;
+      }
+
       if (descriptor.kind === "string") {
         safeArgumentRecord[descriptor.name] = stringArg;
         return true;
@@ -103,30 +126,7 @@ export const buildSafeArgumentRecord = async (
         return true;
       }
 
-      if (descriptor.kind === "enum") {
-        if (
-          !descriptor.options.some(
-            (opt) =>
-              opt === stringArg || opt === Number(arg) || opt === Boolean(arg),
-          )
-        ) {
-          if (!skipInvalidFlagging) {
-            invalid.push({
-              ...descriptor,
-              err: `incorrect value. Valid options: ${descriptor.options.join(
-                ",",
-              )}`,
-            });
-          }
-
-          return false;
-        }
-
-        safeArgumentRecord[descriptor.name] = stringArg;
-        return true;
-      }
-
-      return true;
+      return false;
     };
 
     if (Array.isArray(descriptor.kind)) {
