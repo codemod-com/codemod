@@ -94,6 +94,7 @@ export const handleRunCliCommand = async (options: {
 
   if (args.mode === "json") {
     process.stdout.write = () => false;
+    process.stderr.write = () => false;
   }
 
   const flowSettings = await parseFlowSettings(args, printer);
