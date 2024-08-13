@@ -12,5 +12,5 @@ export const runWorkflowCodemod = async (
     setAuthService(authService);
   }
 
-  await workflow(api);
+  await workflow(api, _safeArgumentRecord);
 };
