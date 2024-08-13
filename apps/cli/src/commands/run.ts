@@ -11,14 +11,13 @@ import { type Printer, chalk, colorLongString } from "@codemod-com/printer";
 import { Runner, parseFlowSettings } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
-  type Codemod,
   doubleQuotify,
   execPromise,
   getCodemodRc,
 } from "@codemod-com/utilities";
 import { version as cliVersion } from "#/../package.json";
 import { getDiff, getDiffScreen } from "#dryrun-diff.js";
-import { fetchCodemod } from "#fetch-codemod.js";
+import { fetchCodemod, populateCodemodArgs } from "#fetch-codemod.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 import { handleInstallDependencies } from "#install-dependencies.js";
 import { AuthService } from "#services/auth-service.js";
@@ -115,35 +114,34 @@ export const handleRunCliCommand = async (options: {
     throw new Error("Codemod to run was not specified!");
   }
 
-  let codemod: Codemod;
-  try {
-    codemod = await fetchCodemod({ nameOrPath, printer, argv: args });
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      if (
-        error.response?.status === 400 &&
-        error.response.data.error === CODEMOD_NOT_FOUND
-      ) {
-        printer.printConsoleMessage(
-          "error",
-          chalk.red(
-            "The specified command or codemod name could not be recognized.",
-            "\nTo view available commands, execute",
-            `${chalk.yellow.bold(doubleQuotify("codemod --help"))}.`,
-            "\nTo see a list of existing codemods, run",
-            `${chalk.yellow.bold(doubleQuotify("codemod search"))}`,
-            "or",
-            `${chalk.yellow.bold(doubleQuotify("codemod list"))}`,
-            "with a query representing the codemod you are looking for.",
-          ),
-        );
+  let codemod = await fetchCodemod({ nameOrPath, printer, argv: args }).catch(
+    (error: Error) => {
+      if (error instanceof AxiosError) {
+        if (
+          error.response?.status === 400 &&
+          error.response.data.error === CODEMOD_NOT_FOUND
+        ) {
+          printer.printConsoleMessage(
+            "error",
+            chalk.red(
+              "The specified command or codemod name could not be recognized.",
+              "\nTo view available commands, execute",
+              `${chalk.yellow.bold(doubleQuotify("codemod --help"))}.`,
+              "\nTo see a list of existing codemods, run",
+              `${chalk.yellow.bold(doubleQuotify("codemod search"))}`,
+              "or",
+              `${chalk.yellow.bold(doubleQuotify("codemod list"))}`,
+              "with a query representing the codemod you are looking for.",
+            ),
+          );
 
-        process.exit(1);
+          process.exit(1);
+        }
       }
-    }
 
-    throw new Error(`Error while fetching codemod ${nameOrPath}: ${error}`);
-  }
+      throw new Error(`Error while fetching codemod ${nameOrPath}: ${error}`);
+    },
+  );
 
   if (
     (args.readme || args.config || args.version) &&
@@ -199,6 +197,7 @@ export const handleRunCliCommand = async (options: {
     }
   }
 
+  codemod = await populateCodemodArgs({ codemod, argv: args, printer });
   const authService = new AuthService(printer);
   const runnerService = new RunnerService(printer);
   const runner = new Runner({

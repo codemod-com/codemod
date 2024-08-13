@@ -1,3 +1,5 @@
+import type { Argv } from "yargs";
+
 import {
   DEFAULT_CACHE,
   DEFAULT_DRY_RUN,
@@ -8,7 +10,6 @@ import {
   DEFAULT_THREAD_COUNT,
   DEFAULT_USE_JSON,
 } from "@codemod-com/runner";
-import type { Argv } from "yargs";
 
 export type GlobalArgvOptions = Awaited<
   ReturnType<ReturnType<typeof buildGlobalOptions>>["argv"]

@@ -92,15 +92,6 @@ export type FetchOptions = {
 };
 
 export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
-  return populateCodemodArgs({
-    ...options,
-    codemod: await fetchCodemodNoArgs(options),
-  });
-};
-
-export const fetchCodemodNoArgs = async (
-  options: FetchOptions,
-): Promise<Codemod> => {
   const { nameOrPath, printer, disableLogs = false, argv } = options;
 
   if (!nameOrPath) {
