@@ -1,5 +1,3 @@
-// types.ts
-
 export type DataPointKind =
   | "real_drift"
   | "estimated_drift"

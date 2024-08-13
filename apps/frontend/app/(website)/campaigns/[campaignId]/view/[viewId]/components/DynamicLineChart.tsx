@@ -7,6 +7,7 @@ import {
   Line,
   ResponsiveContainer,
   Tooltip,
+  type TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
@@ -17,26 +18,46 @@ interface ExtendedDynamicLineChartProps extends DynamicLineChartProps {
   title: string;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipPayloadItem {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface CustomTooltipProps extends TooltipProps<number, string> {
+  payload?: TooltipPayloadItem[];
+}
+
+export const CustomTooltip: React.FC<CustomTooltipProps> = ({
+  active,
+  payload,
+  label,
+}) => {
   if (active && payload && payload.length) {
-    const uniquePayload = payload.reduce((acc: any[], current: any) => {
-      if (!acc.find((item: any) => item.name === current.name)) {
-        acc.push(current);
-      }
-      return acc;
-    }, []);
+    const uniquePayload = payload.reduce<TooltipPayloadItem[]>(
+      (acc, current) => {
+        if (!acc.find((item) => item.name === current.name)) {
+          acc.push(current);
+        }
+        return acc;
+      },
+      [],
+    );
 
     return (
       <div className="custom-tooltip bg-white p-4 shadow-md rounded">
-        <p className="label">{`${new Date(label).toLocaleDateString("en-US", {
-          month: "long",
-          year: "numeric",
-        })}`}</p>
-        {uniquePayload.map((pld: any, index: number) => (
+        <p className="label">{`${new Date(label || "").toLocaleDateString(
+          "en-US",
+          {
+            month: "long",
+            year: "numeric",
+          },
+        )}`}</p>
+        {uniquePayload.map((pld, index) => (
           <p
             key={index}
             style={{ color: pld.color }}
-          >{`${pld.name}: ${pld.value}`}</p>
+          >{`${pld.name}: ${pld.value.toFixed(2)}`}</p>
         ))}
       </div>
     );
@@ -44,18 +65,25 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-const CustomLegend = (props: any) => {
-  const { payload } = props;
-  const uniquePayload = payload.reduce((acc: any[], current: any) => {
-    if (!acc.find((item: any) => item.value === current.value)) {
-      acc.push(current);
-    }
-    return acc;
+interface LegendPayloadItem {
+  value: string;
+  color: string;
+}
+
+interface CustomLegendProps {
+  payload?: { value: string; color: string }[];
+}
+
+const CustomLegend: React.FC<CustomLegendProps> = ({ payload = [] }) => {
+  const uniquePayload = payload.reduce<LegendPayloadItem[]>((acc, current) => {
+    return acc.some((item) => item.value === current.value)
+      ? acc
+      : [...acc, current];
   }, []);
 
   return (
-    <ul className="flex justify-center space-x-4">
-      {uniquePayload.map((entry: any, index: number) => (
+    <ul className="flex flex-wrap relative justify-center space-x-4">
+      {uniquePayload.map((entry, index) => (
         <li key={`item-${index}`} className="flex items-center">
           <span
             style={{
@@ -78,7 +106,7 @@ const DynamicLineChart: React.FC<ExtendedDynamicLineChartProps> = ({
   dataSets,
   colorConfig,
 }) => {
-  const allData = dataSets.reduce((acc, set) => {
+  const allData = dataSets.reduce<Record<string, number>[]>((acc, set) => {
     set.data.forEach((item, index) => {
       if (!acc[index]) {
         acc[index] = { timestamp: item.timestamp };
@@ -86,13 +114,13 @@ const DynamicLineChart: React.FC<ExtendedDynamicLineChartProps> = ({
       acc[index][set.title] = item.value;
     });
     return acc;
-  }, [] as any[]);
+  }, []);
 
-  const minValue = Math.min(
-    ...dataSets.flatMap((set) => set.data.map((d) => d.value)),
+  const minValue = Math.floor(
+    Math.min(...dataSets.flatMap((set) => set.data.map((d) => d.value))),
   );
-  const maxValue = Math.max(
-    ...dataSets.flatMap((set) => set.data.map((d) => d.value)),
+  const maxValue = Math.ceil(
+    Math.max(...dataSets.flatMap((set) => set.data.map((d) => d.value))),
   );
 
   return (
@@ -109,13 +137,17 @@ const DynamicLineChart: React.FC<ExtendedDynamicLineChartProps> = ({
             scale="time"
             domain={["auto", "auto"]}
             tickFormatter={(unixTime) =>
-              new Date(unixTime).toLocaleDateString("en-US", { month: "short" })
+              new Date(unixTime).toLocaleDateString("en-US", {
+                month: "short",
+                year: "numeric",
+              })
             }
             padding={{ left: 30, right: 30 }}
           />
           <YAxis
             domain={[minValue, maxValue]}
             padding={{ top: 20, bottom: 20 }}
+            tickFormatter={(value) => Math.round(value)}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend content={<CustomLegend />} />

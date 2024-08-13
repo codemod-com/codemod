@@ -1,8 +1,9 @@
 "use client";
+import { Title } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/Title";
 import { CaretDown, CaretRight, CaretUp, Info } from "@phosphor-icons/react";
 import { Toast, ToastProvider, ToastViewport } from "@radix-ui/react-toast";
 import Tooltip from "@studio/components/Tooltip/Tooltip";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ColumnDefinition, TableTileProps } from "../types";
 import ImportDataButton from "./ImportDataButton";
 
@@ -12,14 +13,23 @@ const camelToSpaced = (str: string): string =>
 export function TableTile<T>({
   title,
   data: initialData,
-  columns,
-  transformer,
-  fields,
+  columns: c,
+  transformer = new Proxy(
+    {},
+    {
+      get() {
+        return (fieldValue: { name: string } | number | string) =>
+          fieldValue instanceof Object ? fieldValue.name : fieldValue;
+      },
+    },
+  ),
 }: TableTileProps<T> & {
-  columns: ColumnDefinition[];
-  transformer: Record<keyof T, (value: any) => React.ReactNode>;
-  fields: (keyof T)[];
+  columns?: ColumnDefinition[];
+  transformer?: Record<keyof T, (value: any) => React.ReactNode>;
 }) {
+  const [cardTitle, setCardTitle] = useState(title);
+  const shouldDeriveColumnsNames = !c;
+  const [columns, setColumns] = useState<T[]>(c || []);
   const [data, setData] = useState<T[]>(initialData);
   const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -46,6 +56,12 @@ export function TableTile<T>({
     [data, sortColumn, sortDirection],
   );
 
+  useEffect(() => {
+    if (shouldDeriveColumnsNames) {
+      setColumns(Object.keys(data[0] || {}));
+    }
+  }, [data]);
+
   const displayData = showAll ? sortedData : sortedData.slice(0, 3);
 
   const handleSort = (column: keyof T) => {
@@ -65,12 +81,19 @@ export function TableTile<T>({
 
   const validateImportedData = (importedData: any): importedData is T[] =>
     Array.isArray(importedData) &&
-    importedData.every((item) => fields.every((field) => field in item));
+    importedData.every(
+      (item) =>
+        new Set(Object.keys(item)).difference(new Set(columns)).size === 0,
+    );
 
   const handleImport = (importedData: any) => {
-    validateImportedData(importedData)
-      ? setData(importedData)
-      : setShowToast(true);
+    if (shouldDeriveColumnsNames) {
+      setData(importedData);
+    } else {
+      validateImportedData(importedData)
+        ? setData(importedData)
+        : setShowToast(true);
+    }
   };
 
   const handleImportError = (error: Error) => {
@@ -83,7 +106,7 @@ export function TableTile<T>({
       <div className="bg-white rounded-lg shadow-md">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">{title}</h3>
+            <Title title={cardTitle} onChange={setCardTitle} />
             <ImportDataButton<any>
               id={`import-${title.replace(/\s+/g, "-").toLowerCase()}`}
               onImport={handleImport}

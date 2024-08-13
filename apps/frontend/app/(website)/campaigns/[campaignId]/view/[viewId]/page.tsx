@@ -1,6 +1,8 @@
 "use client";
 import {
   cardData,
+  customData,
+  customData2,
   depreciatedAPIData,
   heroData,
   migrationPrData,
@@ -13,6 +15,8 @@ import {
   ReviewTimeCard,
   TimeSavedCard,
 } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets";
+import { CustomChart } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/CustomChart";
+import { CustomTable } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/CustomTable";
 import { DepreciatedAPIChart } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/DepreciatedAPIChart";
 import { PrsMergedChart } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/PrsMergedChart";
 
@@ -44,7 +48,7 @@ const MigrationDashboardCards: React.FC = () => {
   );
 };
 
-const DashboardPage: React.FC = () => {
+const DashboardPage: React.FC = ({ data: any }) => {
   return (
     <div className="w-full">
       <div className="px-m pb-[80px] lg:px-[64px]">
@@ -65,6 +69,12 @@ const DashboardPage: React.FC = () => {
               <div className="bg-white rounded-lg shadow p-6">
                 <PrsMergedChart data={prsMergedData} />
               </div>
+              <div className="bg-white rounded-lg shadow p-6">
+                <CustomChart data={customData} />
+              </div>
+              <div className="bg-white rounded-lg shadow p-6">
+                <CustomChart data={customData2} />
+              </div>
             </div>
 
             <div className="p-6">
@@ -73,6 +83,10 @@ const DashboardPage: React.FC = () => {
 
             <div className="p-6">
               <HeroTable data={heroData} />
+            </div>
+
+            <div className="p-6">
+              <CustomTable data={migrationPrData.data} />
             </div>
           </div>
         </div>

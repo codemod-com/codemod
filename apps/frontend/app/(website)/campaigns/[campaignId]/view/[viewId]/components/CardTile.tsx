@@ -1,13 +1,17 @@
+import { Title } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/Title";
+import useStorage from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/hooks/useStorage";
 import { ArrowDown, ArrowUp } from "@phosphor-icons/react";
 import type React from "react";
 import { useState } from "react";
-import { uuid } from "valibot"; // Assuming ImportDataButton is in the same directory
+import { uuid } from "valibot";
 import type { CardTileProps } from "../types";
 import ImportDataButton from "./ImportDataButton";
 
 export const CardTile: React.FC<CardTileProps> = (props) => {
-  const [data, setData] = useState<CardTileProps | null>(null);
+  const [data, setData] = useStorage("myComponent", "MyComponent", props);
+
   const { title = "", value = "", change = 0, subtitle = "" } = props;
+  const [cardTitle, setCardTitle] = useState(title);
 
   const getChangeColor = (changeValue: number) => {
     if (changeValue > 0) return "text-green-600";
@@ -38,7 +42,7 @@ export const CardTile: React.FC<CardTileProps> = (props) => {
             justifyContent: "space-between",
           }}
         >
-          <h3 className="text-lg font-semibold mb-2">{displayData.title}</h3>
+          <Title title={cardTitle} onChange={setCardTitle} />
           <ImportDataButton<CardTileProps>
             id={title || String(uuid())}
             onImport={handleImport}
