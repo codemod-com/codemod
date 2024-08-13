@@ -5,12 +5,12 @@ import type { TransformFunction } from "#source-code.js";
 
 export const runWorkflowCodemod = async (
   workflow: TransformFunction,
-  _safeArgumentRecord: ArgumentRecord,
+  safeArgumentRecord: ArgumentRecord,
   authService?: AuthServiceInterface,
 ) => {
   if (authService !== undefined) {
     setAuthService(authService);
   }
 
-  return await workflow(api, _safeArgumentRecord);
+  return await workflow(api, safeArgumentRecord);
 };

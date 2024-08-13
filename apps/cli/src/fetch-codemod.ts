@@ -84,12 +84,23 @@ export const populateCodemodArgs = async (options: {
   };
 };
 
-export const fetchCodemod = async (options: {
+export type FetchOptions = {
   nameOrPath: string;
   argv: GlobalArgvOptions & RunArgvOptions;
   printer: Printer;
   disableLogs?: boolean;
-}): Promise<Codemod> => {
+};
+
+export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
+  return populateCodemodArgs({
+    ...options,
+    codemod: await fetchCodemodNoArgs(options),
+  });
+};
+
+export const fetchCodemodNoArgs = async (
+  options: FetchOptions,
+): Promise<Codemod> => {
   const { nameOrPath, printer, disableLogs = false, argv } = options;
 
   if (!nameOrPath) {
@@ -307,35 +318,6 @@ export const fetchCodemod = async (options: {
       chalk.cyan(`Fetching ${names.length} recipe codemods...`),
     );
 
-    const codemods = await Promise.all(
-      config.names.map(async (name) => {
-        const subCodemod = await fetchCodemod({
-          ...options,
-          disableLogs: true,
-          nameOrPath: name,
-        });
-
-        const populatedCodemod = await populateCodemodArgs({
-          codemod: subCodemod,
-          printer,
-          argv,
-        });
-
-        const validatedCodemod = safeParseKnownEnginesCodemod(populatedCodemod);
-
-        if (!validatedCodemod.success) {
-          subCodemodsSpinner.fail();
-          if (safeParseRecipeCodemod(populatedCodemod).success) {
-            throw new Error("Nested recipe codemods are not supported.");
-          }
-
-          throw new Error("Nested codemod is of incorrect structure.");
-        }
-
-        return validatedCodemod.output;
-      }),
-    );
-
     subCodemodsSpinner.stopAndPersist({
       symbol: oraCheckmark,
       text: chalk.cyan("Successfully fetched recipe codemods."),
@@ -346,7 +328,6 @@ export const fetchCodemod = async (options: {
       source: "remote",
       config,
       path,
-      codemods,
     } satisfies CodemodValidationInput);
   }
 
