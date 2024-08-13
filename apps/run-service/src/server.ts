@@ -140,7 +140,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         return reply.code(401).send();
       }
 
-      const { codemodSource, codemodEngine, repoUrl, branch } =
+      const { codemodSource, codemodEngine, repoUrl, branch, persistent } =
         parseCodemodRunBody(request.body);
 
       const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
@@ -149,6 +149,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         userId,
         repoUrl,
         branch,
+        persistent,
       });
 
       if (!job.id) {
@@ -196,7 +197,11 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
       const { jobId } = parseCodemodStatusParams(request.params);
 
-      const data = await redis.getdel(`job-${jobId}::output`);
+      const job = await queue?.getJob(jobId);
+
+      const data = job?.data.persistent
+        ? await redis.get(`job-${jobId}::output`)
+        : await redis.getdel(`job-${jobId}::output`);
       reply.type("application/json").code(200);
       return {
         success: true,
