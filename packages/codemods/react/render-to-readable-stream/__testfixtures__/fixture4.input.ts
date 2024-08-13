@@ -1,0 +1,1 @@
+renderToReadableStream(view, handleFailure, sessionContext);

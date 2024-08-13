@@ -1,0 +1,1 @@
+renderToReadableStream(element, handleError, globalContext);

@@ -1,0 +1,1 @@
+renderToReadableStream(component, handleFailure, userData);
