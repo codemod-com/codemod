@@ -1,5 +1,3 @@
-import type { Argv } from "yargs";
-
 import {
   DEFAULT_CACHE,
   DEFAULT_DRY_RUN,
@@ -10,6 +8,7 @@ import {
   DEFAULT_THREAD_COUNT,
   DEFAULT_USE_JSON,
 } from "@codemod-com/runner";
+import type { Argv } from "yargs";
 
 export type GlobalArgvOptions = Awaited<
   ReturnType<ReturnType<typeof buildGlobalOptions>>["argv"]
@@ -101,6 +100,13 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       type: "boolean",
       description: "Perform a dry run",
       default: DEFAULT_DRY_RUN,
+    })
+    .option("mode", {
+      alias: "m",
+      type: "string",
+      choices: ["json"] as const,
+      description:
+        "Output mode to run the codemod in:\n- json: Disables any stdout and only prints out JSON output if a codemod returns any.",
     })
     .option("install", {
       type: "boolean",

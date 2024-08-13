@@ -91,6 +91,10 @@ export const handleRunCliCommand = async (options: {
 }) => {
   const { printer, args, telemetry, onExit } = options;
 
+  if (args.mode === "json") {
+    process.stdout.write = () => false;
+  }
+
   const flowSettings = await parseFlowSettings(args, printer);
 
   if (
@@ -98,7 +102,8 @@ export const handleRunCliCommand = async (options: {
     !args["disable-tree-version-check"] &&
     !args.readme &&
     !args.config &&
-    !args.version
+    !args.version &&
+    args.mode !== "json"
   ) {
     await checkFileTreeVersioning(flowSettings.target);
   }
