@@ -71,5 +71,6 @@ export type KnownEnginesCodemodValidationInput = v.InferInput<
 
 export type RunResult = {
   codemod: Codemod;
+  output: unknown;
   commands: FileCommand[];
 };

@@ -25,6 +25,7 @@ import { AuthService } from "#services/auth-service.js";
 import { RunnerService } from "#services/runner-service.js";
 import type { TelemetryEvent } from "#telemetry.js";
 import type { NamedFileCommand } from "#types/commands.js";
+import { originalStdoutWrite } from "#utils/constants.js";
 import { writeLogs } from "#utils/logs.js";
 
 const checkFileTreeVersioning = async (target: string) => {
@@ -215,12 +216,22 @@ export const handleRunCliCommand = async (options: {
 
   const executionErrors = await runner.run({
     codemod,
-    onSuccess: async ({ codemod, commands }) => {
+    onSuccess: async ({ codemod, output, commands }) => {
       const modifiedFilePaths = [
         ...new Set(
           commands.map((c) => ("oldPath" in c ? c.oldPath : c.newPath)),
         ),
       ];
+
+      if (args.mode === "json" && typeof output === "object") {
+        process.stdout.write = originalStdoutWrite;
+        process.stdout.write(JSON.stringify(output, null, 2));
+      } else if (args.mode === "plain") {
+        process.stdout.write = originalStdoutWrite;
+        process.stdout.write(String(output));
+      }
+
+      process.stdout.write = () => false;
 
       let codemodName: string;
       if (codemod.type === "standalone") {

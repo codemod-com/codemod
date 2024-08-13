@@ -104,7 +104,7 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
     .option("mode", {
       alias: "m",
       type: "string",
-      choices: ["json"] as const,
+      choices: ["json", "plain", "silent"] as const,
       description:
         "Output mode to run the codemod in:\n- json: Disables any stdout and only prints out JSON output if a codemod returns any.",
     })
