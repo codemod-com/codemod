@@ -15,11 +15,11 @@ export type FunctionLike =
   | ArrowFunctionExpression;
 
 /**
- * Retrieves the name of a function-like node.
+ * Gets the name of a function-like node.
  *
  * @param j - The JSCodeshift instance.
  * @param path - The AST path to the function-like node.
- * @returns The name of the function, or null if it has no name.
+ * @returns The name of the function-like node, or `null` if the name cannot be determined.
  */
 export const getFunctionName = (
   j: JSCodeshift,
@@ -32,12 +32,12 @@ export const getFunctionName = (
     : path.value.id?.name ?? null;
 
 /**
- * Checks if a function-like node is exported as the default export.
+ * Checks if a function-like node is exported as the default export from the module.
  *
  * @param j - The JSCodeshift instance.
- * @param root - The root collection of the AST.
+ * @param root - The root of the AST.
  * @param path - The AST path to the function-like node.
- * @returns True if the function is exported as the default export, false otherwise.
+ * @returns `true` if the function-like node is exported as the default export, `false` otherwise.
  */
 export const isFunctionExportedByDefault = (
   j: JSCodeshift,

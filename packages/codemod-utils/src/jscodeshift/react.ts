@@ -4,16 +4,12 @@ import type {
   Collection,
   JSCodeshift,
 } from "jscodeshift";
+
 import { type FunctionLike, getFunctionName } from "./function.js";
 import { getImportDeclaration } from "./global.js";
 import { getImportDeclarationNames } from "./import-declaration.js";
 
-/**
- * Checks if a string is capitalized.
- *
- * @param str - The string to check.
- * @returns A boolean indicating whether the string is capitalized.
- */
+
 const isCapitalized = (str: string): boolean => {
   if (str.length === 0) {
     return false;
@@ -24,11 +20,11 @@ const isCapitalized = (str: string): boolean => {
 };
 
 /**
- * Retrieves all React class components from the root Collection.
+ * Finds all React class components in the given AST.
  *
- * @param j - The JSCodeshift API object used for AST manipulation.
- * @param root - The root Collection representing the AST of the source code.
- * @returns A Collection of ClassDeclaration nodes representing React class components, or null if no React import is found.
+ * @param j - The JSCodeshift instance.
+ * @param root - The root of the AST to search.
+ * @returns A collection of all React class components found in the AST, or `null` if no React import declaration was found.
  */
 export const getClassComponents = (
   j: JSCodeshift,
@@ -81,11 +77,11 @@ export const getClassComponents = (
 };
 
 /**
- * Retrieves all function components from the root Collection.
+ * Finds all React function components in the given AST.
  *
- * @param j - The JSCodeshift API object used for AST manipulation.
- * @param root - The root Collection representing the AST of the source code.
- * @returns An array of ASTPath nodes representing function components.
+ * @param j - The JSCodeshift instance.
+ * @param root - The root of the AST to search.
+ * @returns A collection of all React function components found in the AST.
  */
 export const getFunctionComponents = (j: JSCodeshift, root: Collection) => {
   const functionLikePaths: ASTPath<FunctionLike>[] = [
@@ -100,11 +96,11 @@ export const getFunctionComponents = (j: JSCodeshift, root: Collection) => {
 };
 
 /**
- * Checks if a given FunctionLike node is a React function component.
+ * Determines if the given function-like AST node represents a React function component.
  *
- * @param j - The JSCodeshift API object used for AST manipulation.
- * @param maybeComponent - The ASTPath of the FunctionLike node to check.
- * @returns A boolean indicating whether the node is a React function component.
+ * @param j - The JSCodeshift instance.
+ * @param maybeComponent - The function-like AST node to check.
+ * @returns `true` if the function-like node represents a React function component, `false` otherwise.
  */
 export const isReactFunctionComponent = (
   j: JSCodeshift,

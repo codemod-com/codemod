@@ -12,8 +12,8 @@ import type {
  *
  * @param j - The JSCodeshift API.
  * @param root - The root collection of the AST.
- * @param name - The source value to match against import declarations.
- * @returns The AST path of the matching import declaration, or null if not found.
+ * @param name - The source value to search for.
+ * @returns The AST path of the first matching import declaration, or null if not found.
  */
 export const getImportDeclaration = (
   j: JSCodeshift,
@@ -28,12 +28,12 @@ export const getImportDeclaration = (
     .at(0) ?? null;
 
 /**
- * Adds an import declaration with the specified source value if it doesn't already exist.
+ * Adds an import declaration to the AST with the specified source value.
  *
  * @param j - The JSCodeshift API.
  * @param root - The root collection of the AST.
- * @param name - The source value for the new import declaration.
- * @returns The AST path of the existing or newly added import declaration.
+ * @param name - The source value of the import declaration to add.
+ * @returns The AST path of the added import declaration.
  */
 export const addImportDeclaration = (
   j: JSCodeshift,
@@ -54,11 +54,11 @@ export const addImportDeclaration = (
 };
 
 /**
- * Inserts statements after the last import declaration in the program body.
+ * Inserts the provided statements after the last import declaration in the AST.
  *
  * @param j - The JSCodeshift API.
  * @param root - The root collection of the AST.
- * @param statements - The statements to insert after the import declarations.
+ * @param statements - The statements to insert after the last import declaration.
  */
 export const insertStatementAfterImports = (
   j: JSCodeshift,
@@ -75,7 +75,7 @@ export const insertStatementAfterImports = (
 };
 
 /**
- * Gets the first default export declaration in the AST.
+ * Gets the default export declaration from the provided AST root.
  *
  * @param j - The JSCodeshift API.
  * @param root - The root collection of the AST.
@@ -88,11 +88,11 @@ export const getDefaultExport = (
   root.find(j.ExportDefaultDeclaration).paths()?.at(0) ?? null;
 
 /**
- * Checks if the given path is defined in the global scope.
+ * Checks if the provided AST path is defined in the global scope.
  *
  * @param j - The JSCodeshift API.
  * @param path - The AST path to check.
- * @returns True if the path is defined in the global scope, false otherwise.
+ * @returns `true` if the path is defined in the global scope, `false` otherwise.
  */
 export const isDefinedInGlobalScope = (j: JSCodeshift, path: ASTPath<any>) => {
   return j(path).closest(j.BlockStatement).paths().length === 0;
