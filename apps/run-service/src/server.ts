@@ -186,6 +186,25 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
+  instance.get(
+    "/codemodRun/output/:jobId",
+    { preHandler: instance.authenticate },
+    async (request, reply) => {
+      if (!redis) {
+        throw new Error("Redis service is not running.");
+      }
+
+      const { jobId } = parseCodemodStatusParams(request.params);
+
+      const data = await redis.getdel(`job-${jobId}::output`);
+      reply.type("application/json").code(200);
+      return {
+        success: true,
+        output: data,
+      };
+    },
+  );
+
   done();
 };
 

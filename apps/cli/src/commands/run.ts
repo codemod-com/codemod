@@ -22,6 +22,7 @@ import { fetchCodemod } from "#fetch-codemod.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 import { handleInstallDependencies } from "#install-dependencies.js";
 import { AuthService } from "#services/auth-service.js";
+import { RunnerService } from "#services/runner-service.js";
 import type { TelemetryEvent } from "#telemetry.js";
 import type { NamedFileCommand } from "#types/commands.js";
 import { writeLogs } from "#utils/logs.js";
@@ -191,9 +192,12 @@ export const handleRunCliCommand = async (options: {
     }
   }
 
+  const authService = new AuthService(printer);
+  const runnerService = new RunnerService(printer);
   const runner = new Runner({
     flowSettings,
-    authService: new AuthService(printer),
+    authService,
+    runnerService,
   });
 
   const depsToInstall: Record<
@@ -293,11 +297,12 @@ export const handleRunCliCommand = async (options: {
 
   if (allExecutedCommands.length === 0) {
     printer.terminateExecutionProgress();
-    printer.printConsoleMessage(
-      "info",
-      chalk.yellow("\nNo changes were made during the codemod run."),
-    );
-
+    if (codemod.config.engine !== "workflow") {
+      printer.printConsoleMessage(
+        "info",
+        chalk.yellow("\nNo changes were made during the codemod run."),
+      );
+    }
     return finishRun();
   }
 

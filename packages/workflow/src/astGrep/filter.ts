@@ -2,6 +2,7 @@ import type { PLazy } from "../PLazy.js";
 import { ai } from "../ai/ai.js";
 import { getAstGrepNodeContext } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
+import { exists } from "./exists.js";
 import { map } from "./map.js";
 import { replace } from "./replace.js";
 
@@ -35,6 +36,6 @@ export function filterLogic(
 
 export const filter = fnWrapper("filter", filterLogic);
 
-const helpers = { map, filter, replace, ai };
+const helpers = { map, filter, replace, ai, exists };
 
 type Helpers = typeof helpers;

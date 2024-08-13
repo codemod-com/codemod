@@ -25,6 +25,7 @@ import {
 } from "@codemod-com/utilities";
 import { getCurrentUserData } from "#auth-utils.js";
 import { oraCheckmark } from "#utils/constants.js";
+import { detectCodemodEngine } from "#utils/detectCodemodEngine.js";
 import { isFile } from "#utils/general.js";
 
 const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [
@@ -84,6 +85,10 @@ export const handleInitCliCommand = async (options: {
 
   const isSourceAFile = source ? await isFile(source) : false;
 
+  const inferredCodemodEngine = isSourceAFile
+    ? await detectCodemodEngine(source as string)
+    : undefined;
+
   const userAnswers = await inquirer.prompt<{
     name: string;
     engine: KnownEngines;
@@ -101,12 +106,14 @@ export const handleInitCliCommand = async (options: {
       message: `Select a codemod engine ${isSourceAFile ? "your codemod is built with" : "you want to build your codemod with"}:`,
       pageSize: engineChoices.length,
       choices: engineChoices,
+      when: !inferredCodemodEngine,
     },
   ]);
 
   const downloadInput: ProjectDownloadInput = {
     ...defaultInput,
     ...userAnswers,
+    ...(inferredCodemodEngine && { engine: inferredCodemodEngine }),
   };
 
   if (source && isSourceAFile) {

@@ -62,9 +62,9 @@ export class FunctionExecutor<
   E extends ((...args: any[]) => Promise<any> | any) | undefined = undefined, // executor
   C extends ((...args: any[]) => Promise<any> | any) | undefined = undefined, // callback
   A extends
-    | ((self: { getChildArg: <T>(name: string) => T | undefined }) =>
-        | Promise<any>
-        | any)
+    | ((self: {
+        getChildArg: <T>(name: string) => T | undefined;
+      }) => Promise<any> | any)
     | undefined = undefined, // arguments parser
 > {
   // @ts-ignore
@@ -122,9 +122,9 @@ export class FunctionExecutor<
   }
 
   arguments<
-    AE extends (self: { getChildArg: <T>(name: string) => T | undefined }) =>
-      | Promise<any>
-      | any,
+    AE extends (self: {
+      getChildArg: <T>(name: string) => T | undefined;
+    }) => Promise<any> | any,
   >(args: AE): FunctionExecutor<I, H, R, W, E, C, AE> {
     this._arguments = args as any;
     return this as any;
@@ -158,11 +158,11 @@ export class FunctionExecutor<
     return mapValues(
       // @ts-ignore
       typeof this._helpers === "function" ? this._helpers(this) : this._helpers,
-      (value: any) =>
+      (fn: any) =>
         (...args: any[]) =>
           // @ts-ignore
           parentContext.run(this._context, () =>
-            wrapContext.run(this.context(), () => value(...args)),
+            wrapContext.run(this.context(), () => fn(...args)),
           ),
     ) as any;
   }
@@ -171,11 +171,11 @@ export class FunctionExecutor<
     return mapValues(
       // @ts-ignore
       helpers,
-      (value: any) =>
+      (fn: any) =>
         (...args: any[]) =>
           // @ts-ignore
           parentContext.run(this._context, () =>
-            wrapContext.run(this.context(), () => value(...args)),
+            wrapContext.run(this.context(), () => fn(...args)),
           ),
     ) as any;
   }
@@ -227,8 +227,10 @@ export class FunctionExecutor<
     : void {
     const promise = new PLazy((resolve, reject) => {
       (async () => {
-        await this.context()();
-        const res = await this._return?.(this);
+        let res: any;
+        await this.context()(async () => {
+          res = await this._return?.(this);
+        });
         return res;
       })()
         .then(resolve)

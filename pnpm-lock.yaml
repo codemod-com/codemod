@@ -6592,6 +6592,9 @@ importers:
       detect-newline:
         specifier: 'catalog:'
         version: 4.0.1
+      diff:
+        specifier: 'catalog:'
+        version: 5.2.0
       filenamify:
         specifier: 'catalog:'
         version: 6.0.0
@@ -6635,6 +6638,9 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../utilities
+      '@types/diff':
+        specifier: 'catalog:'
+        version: 5.2.1
       '@types/git-url-parse':
         specifier: ^9.0.3
         version: 9.0.3

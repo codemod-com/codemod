@@ -56,4 +56,6 @@ export const api = {
   setAuthService,
 };
 
+export { isWorkflowEngineFile } from "./isWorkflowEngineFile.js";
+
 export type Api = typeof api;
