@@ -86,21 +86,23 @@ const services: Array<{
     type: "http",
     available: true,
     webhook:
-      "https://api.instatus.com/v3/integrations/webhook/clyq266hw114703i9omvdjyenc5",
+      "https://api.instatus.com/v3/integrations/webhook/clzbu45yv92737kcn6m7edwvmb",
   },
   {
     name: "Auth Service",
     url: process.env.AUTH_SERVICE_URL ?? "",
     type: "http",
     available: true,
-    webhook: "",
+    webhook:
+      "https://api.instatus.com/v3/integrations/webhook/clzbu3lnj92520kcn6cl27ceck",
   },
   {
     name: "ModGPT Service",
     url: process.env.MODGPT_SERVICE_URL ?? "",
     type: "http",
     available: true,
-    webhook: "",
+    webhook:
+      "https://api.instatus.com/v3/integrations/webhook/clzbu4pvl93329kcn6h9mue4xs",
   },
   {
     name: "Codemod AI Service",
@@ -108,14 +110,15 @@ const services: Array<{
     type: "websocket",
     available: true,
     webhook:
-      "https://api.instatus.com/v3/integrations/webhook/clyq28duo110331hnomkmqg941v",
+      " https://api.instatus.com/v3/integrations/webhook/clzbu558m93630kcn6fnvj8yk8",
   },
   {
     name: "Run Service",
     url: process.env.RUN_SERVICE_URL ?? "",
     type: "http",
     available: true,
-    webhook: "",
+    webhook:
+      "https://api.instatus.com/v3/integrations/webhook/clzbu5gtk93796kcn684qhwhwj",
   },
 ];
 
