@@ -1,7 +1,10 @@
 "use client";
 import Tabs, { TabContent } from "@/components/shared/Tabs";
+import { CREATE_CAMPAIGN } from "@/mocks/endpoints/campaigns";
 import type { GithubRepository } from "@codemod-com/api-types";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
+import { useAPI } from "../studio/src/hooks/useAPI";
 import AddNewCampaignDialog from "./components/AddNewCampaign";
 import CampaignsTable from "./components/CampaignsTable";
 import RepositorySelector from "./components/RepositorySelector";
@@ -12,17 +15,24 @@ import { useCampaigns } from "./hooks/useCampaigns";
 const InsightsPage = () => {
   const tabsConfig = useCampaignTabsConfig();
   const campaigns = useCampaigns();
+  const queryClient = useQueryClient();
 
   const [repo, setRepo] = useState<GithubRepository | null>(null);
   const [repoSelectorOpen, setRepoSelectorOpen] = useState(false);
   const [addNewCampaignModalOpen, setAddNewCampaignModalOpen] = useState(false);
-  // useEffect(() => {
-  //   if (!repo) {
-  //     setOpen(true);
-  //   }
-  // }, [repo]);
 
-  console.log(campaigns, "????");
+  const { post: createCampaign } = useAPI(CREATE_CAMPAIGN);
+  const { mutateAsync } = useMutation({
+    mutationFn: createCampaign,
+    onSuccess: (data) => {
+      queryClient.setQueryData(["campaigns"], (old) => {
+        return [...old, data.data];
+      });
+    },
+  });
+
+  console.log(campaigns, "????Camp");
+
   return (
     <>
       <div className="relative flex flex-col items-center justify-center">
@@ -39,10 +49,7 @@ const InsightsPage = () => {
           >
             {tabsConfig.map(({ kind, label }) => (
               <TabContent forId={kind} key={label}>
-                <CampaignsTable
-                  campaigns={campaigns?.data?.data ?? []}
-                  type={kind}
-                />
+                <CampaignsTable campaigns={campaigns?.data ?? []} type={kind} />
               </TabContent>
             ))}
           </Tabs>
@@ -58,7 +65,7 @@ const InsightsPage = () => {
         onOpenChange={setRepoSelectorOpen}
       />
       <AddNewCampaignDialog
-        onAddCampaign={() => {}}
+        onAddCampaign={mutateAsync}
         open={addNewCampaignModalOpen}
         onOpenChange={setAddNewCampaignModalOpen}
       />
