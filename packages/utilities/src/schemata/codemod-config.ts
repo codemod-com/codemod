@@ -13,30 +13,35 @@ export const argumentsSchema = v.array(
       v.object({
         name: v.string(),
         kind: v.literal("string"),
+        description: v.optional(v.string()),
         required: v.optional(v.boolean(), false),
         default: v.optional(v.string()),
       }),
       v.object({
         name: v.string(),
         kind: v.literal("number"),
+        description: v.optional(v.string()),
         required: v.optional(v.boolean(), false),
         default: v.optional(v.number()),
       }),
       v.object({
         name: v.string(),
         kind: v.literal("boolean"),
+        description: v.optional(v.string()),
         required: v.optional(v.boolean(), false),
         default: v.optional(v.boolean()),
       }),
       v.object({
         name: v.string(),
         kind: v.literal("enum"),
+        description: v.optional(v.string()),
         options: v.array(argumentSchema),
         required: v.optional(v.boolean(), false),
         default: v.optional(argumentSchema),
       }),
       v.object({
         name: v.string(),
+        description: v.optional(v.string()),
         kind: v.array(
           v.union([
             v.literal("string"),

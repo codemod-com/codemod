@@ -473,11 +473,11 @@ export class Runner {
         });
 
         // run onSuccess after each codemod
-        await onSuccess?.({ codemod: subCodemod, commands });
+        await onSuccess?.({ codemod: subCodemod, output: commands, commands });
       }
 
       // run onSuccess for recipe itself
-      return await onSuccess?.({ codemod, commands: [] });
+      return await onSuccess?.({ codemod, output: "", commands: [] });
     }
 
     const codemodSource = await getCodemodExecutable(codemod.path);
@@ -498,14 +498,14 @@ export class Runner {
         userExcluded: [],
       });
 
-      await runWorkflowCodemod(
+      const output = await runWorkflowCodemod(
         transformer,
         codemod.safeArgumentRecord,
         this._options.authService,
       );
 
       // @TODO pass modified paths?
-      return await onSuccess?.({ codemod, commands: [] });
+      return await onSuccess?.({ codemod, output, commands: [] });
     }
 
     if (codemod.config.engine === "filemod") {
@@ -546,7 +546,11 @@ export class Runner {
         await onCommand(command);
       }
 
-      return await onSuccess?.({ codemod, commands: [...commands] });
+      return await onSuccess?.({
+        codemod,
+        output: commands,
+        commands: [...commands],
+      });
     }
 
     // jscodeshift or ts-morph or ast-grep
@@ -608,7 +612,7 @@ export class Runner {
       });
     });
 
-    return await onSuccess?.({ codemod, commands });
+    return await onSuccess?.({ codemod, output: commands, commands });
   }
 
   private async modifyFileSystemUponCommand(

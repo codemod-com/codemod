@@ -102,6 +102,13 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       description: "Perform a dry run",
       default: DEFAULT_DRY_RUN,
     })
+    .option("mode", {
+      alias: "m",
+      type: "string",
+      choices: ["json", "plain", "silent"] as const,
+      description:
+        "Output mode to run the codemod in:\n- json: Disables any stdout and only prints out JSON output if a codemod returns any.",
+    })
     .option("install", {
       type: "boolean",
       default: DEFAULT_INSTALL,
