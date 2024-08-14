@@ -1,6 +1,6 @@
 "use client";
-import { Title } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/Title";
-import { generateChartColors } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/utils";
+import { Title } from "@/app/(website)/campaigns/[campaignId]/components/Title";
+import { generateChartColors } from "@/app/(website)/campaigns/[campaignId]/components/utils";
 import type { ColorConfig } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
 import dynamic from "next/dynamic";
 import type React from "react";

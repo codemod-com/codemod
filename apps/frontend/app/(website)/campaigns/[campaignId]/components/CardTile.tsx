@@ -1,5 +1,5 @@
-import { Title } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/Title";
-import useStorage from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/hooks/useStorage";
+import { Title } from "@/app/(website)/campaigns/[campaignId]/components/Title";
+import useStorage from "@/app/(website)/campaigns/[campaignId]/hooks/useStorage";
 import { ArrowDown, ArrowUp } from "@phosphor-icons/react";
 import type React from "react";
 import { useState } from "react";

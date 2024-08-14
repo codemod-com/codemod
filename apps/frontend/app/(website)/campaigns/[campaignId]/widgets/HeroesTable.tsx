@@ -1,4 +1,4 @@
-import { TableTile } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/TableTile";
+import { TableTile } from "@/app/(website)/campaigns/[campaignId]/components/TableTile";
 import type {
   MigrationHeroData,
   TransformerType,

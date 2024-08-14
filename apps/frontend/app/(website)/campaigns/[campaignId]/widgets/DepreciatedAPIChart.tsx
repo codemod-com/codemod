@@ -1,7 +1,7 @@
 import {
   ChartTile,
   type ChartTileProps,
-} from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/ChartTile";
+} from "@/app/(website)/campaigns/[campaignId]/components/ChartTile";
 import type { ColorConfig } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
 
 export const depreciatedAPIChartColorSets: ColorConfig[] = [

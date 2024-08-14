@@ -1,6 +1,6 @@
-import { CardTile } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/CardTile";
+import { CardTile } from "@/app/(website)/campaigns/[campaignId]/components/CardTile";
+import { formatDuration } from "@/app/(website)/campaigns/[campaignId]/utils";
 import type { MetricCardProps } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
-import { formatDuration } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/utils";
 
 export const TimeSavedCard: React.FC<MetricCardProps> = ({
   data,

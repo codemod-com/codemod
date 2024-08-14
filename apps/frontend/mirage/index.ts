@@ -6,7 +6,6 @@ import {
   branchEndpoints,
   campaignEndpoints,
   codemodRunEndpoints,
-  executionStatusEndpoints,
   repositoryEndpoints,
 } from "./endpoints";
 import {
@@ -53,7 +52,7 @@ export const runServer = (environment: string) =>
       repositoryEndpoints(this);
       branchEndpoints(this);
       codemodRunEndpoints(this);
-      executionStatusEndpoints(this);
+      // executionStatusEndpoints(this);
 
       // Needed because Chrome recognizes that the Mirage Response is not a real response
       // with setting instantiateStreaming to null we fallback to legacy WebAssembly instantiation

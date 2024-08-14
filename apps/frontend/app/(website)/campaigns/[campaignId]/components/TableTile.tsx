@@ -1,5 +1,5 @@
 "use client";
-import { Title } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/Title";
+import { Title } from "@/app/(website)/campaigns/[campaignId]/components/Title";
 import { CaretDown, CaretRight, CaretUp, Info } from "@phosphor-icons/react";
 import { Toast, ToastProvider, ToastViewport } from "@radix-ui/react-toast";
 import Tooltip from "@studio/components/Tooltip/Tooltip";
