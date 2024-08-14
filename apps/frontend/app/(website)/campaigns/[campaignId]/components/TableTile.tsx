@@ -1,8 +1,10 @@
 "use client";
 import { Title } from "@/app/(website)/campaigns/[campaignId]/components/Title";
+import Button from "@/components/shared/Button";
 import { CaretDown, CaretRight, CaretUp, Info } from "@phosphor-icons/react";
 import { Toast, ToastProvider, ToastViewport } from "@radix-ui/react-toast";
 import Tooltip from "@studio/components/Tooltip/Tooltip";
+import { RefreshCw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { ColumnDefinition, TableTileProps } from "../types";
 import ImportDataButton from "./ImportDataButton";
@@ -23,6 +25,7 @@ export function TableTile<T>({
       },
     },
   ),
+  onRefreshData,
 }: TableTileProps<T> & {
   columns?: ColumnDefinition[];
   transformer?: Record<keyof T, (value: any) => React.ReactNode>;
@@ -107,13 +110,18 @@ export function TableTile<T>({
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <Title title={cardTitle} onChange={setCardTitle} />
-            <ImportDataButton<any>
-              id={`import-${title.replace(/\s+/g, "-").toLowerCase()}`}
-              onImport={handleImport}
-              className="text-blue-600 hover:text-blue-800 cursor-pointer flex items-center"
-              iconSize={20}
-              onError={handleImportError}
-            />
+            <div className="flex gap-2 min-w-[80px]">
+              <Button intent="secondary-icon-only">
+                <RefreshCw size={16} />
+              </Button>
+              <ImportDataButton<any>
+                id={`import-${title.replace(/\s+/g, "-").toLowerCase()}`}
+                onImport={handleImport}
+                className="text-blue-600 hover:text-blue-800 cursor-pointer flex items-center"
+                iconSize={20}
+                onError={handleImportError}
+              />
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">

@@ -1,34 +1,84 @@
-import { migrationPrData } from "@/app/(website)/campaigns/[campaignId]/mockData";
+"use client";
 import { CustomTable } from "@/app/(website)/campaigns/[campaignId]/widgets/CustomTable";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
 import SecondaryHeader from "./components/SecondaryHeader";
+import { useCodemodRunResult } from "./hooks/useCodemodRunResult";
+import { useRunCodemodMutation } from "./hooks/useRunCodemodMutation";
+import { useSelectedRepos } from "./hooks/useSelectedRepos";
+import { type Widget, useWidgets } from "./hooks/useWidgets";
 
-type Widget = {
-  kind: "Table";
-  title: string;
-  workflow: string;
-  data: any;
-};
-
-const widgets: Widget[] = [
-  {
-    kind: "Table",
-    workflow: "incompatible-packages",
-    title: "React 18.3.1 incompatible packages",
-    data: migrationPrData.data,
-  },
-];
-
-const renderWidget = (widget: Widget) => {
-  switch (widget.kind) {
-    case "Table": {
-      return <CustomTable title={widget.title} data={widget.data} />;
+const getRenderWidget =
+  ({
+    runCodemod,
+    isLoading,
+    error,
+  }: {
+    runCodemod(args: any): Promise<any>;
+    isLoading: boolean;
+    error: string;
+  }) =>
+  (widget: Widget) => {
+    switch (widget.kind) {
+      case "Table": {
+        return (
+          <CustomTable
+            title={widget.title}
+            data={widget.data}
+            workflow={widget.workflow}
+            // @TODO show loading indicator only for specific widgets
+            loading={isLoading}
+            error={error}
+            getData={runCodemod}
+          />
+        );
+      }
+      default:
+        return null;
     }
-    default:
-      return null;
-  }
-};
+  };
 
-const DashboardPage = () => {
+// @TODO
+const getPersistedWidgetData = () => null;
+
+const CampaignPage = () => {
+  const { campaignId } = useParams();
+  const repos = useSelectedRepos();
+
+  const widgets = useWidgets(campaignId as string);
+
+  const { executionIds, runCodemodMutation } = useRunCodemodMutation();
+
+  const runCodemod = async (request: any) =>
+    await runCodemodMutation.mutateAsync(request);
+
+  const { isLoading, error, result } = useCodemodRunResult(executionIds);
+
+  const renderWidget = getRenderWidget({
+    runCodemod,
+    isLoading,
+    error,
+    result,
+    executionIds,
+  });
+
+  const refreshAll = async () => {
+    const request = {
+      workflows: widgets.map(({ workflow }) => workflow),
+      repo: repos,
+    };
+
+    await runCodemodMutation.mutateAsync(request);
+  };
+
+  useEffect(() => {
+    const storedData = getPersistedWidgetData();
+
+    if (storedData === null) {
+      refreshAll();
+    }
+  }, []);
+
   return (
     <>
       <SecondaryHeader />
@@ -43,4 +93,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default CampaignPage;

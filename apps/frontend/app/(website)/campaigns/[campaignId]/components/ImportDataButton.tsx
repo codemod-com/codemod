@@ -44,7 +44,7 @@ function ImportDataButton<T>({
       htmlFor={id}
       className={`relative cursor-pointer flex items-center ${className}`}
     >
-      <Upload size={iconSize} className="m-0 absolute right-1/2 bottom-1/2" />
+      <Upload size={iconSize} className="m-0 right-1/2 bottom-1/2" />
       <input
         id={id}
         type="file"

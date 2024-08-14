@@ -45,6 +45,7 @@ export type ChartTileProps = {
 export type TableTileProps<T> = {
   title: string;
   data: T[];
+  onRefreshData(): void;
 };
 
 export type Reviewer =

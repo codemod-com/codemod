@@ -2,8 +2,8 @@ const GH_REPO_LIST = "/sourceControl/github/user/repos";
 const GH_BRANCH_LIST = "/sourceControl/github/repo/branches";
 const RUN_CODEMOD = "/run/codemodRun";
 
-const GET_EXECUTION_STATUS = (jobId: string) =>
-  `/run/codemodRun/status/${jobId}`;
+const GET_EXECUTION_STATUS = (jobIds: string[]) =>
+  `/run/codemodRun/status?ids=${jobIds.join(",")}`;
 
 const buildGetWorkflowRunUrl = (workflowRunId: string) =>
   `/workflow/runs/${workflowRunId}`;
