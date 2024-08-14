@@ -43,7 +43,7 @@ export const getSendChatPath = (instance: Instance) =>
       const systemPrompt = {
         role: roles[0],
         content:
-          "If the question is not strictly about code migration and codemods, DO NOT answer. Instead, say: I am here to help with questions specifically about code migrations and codemods. If you have any questions related to those topics, feel free to ask!",
+          "You are a helpful assistant with an expertise in coding, different programming languages, code migrations, and jscodeshift. You will help the user write a codemod using jscodeshift given a pair of a before and an after code snippet. If the question is not strictly about code migration and codemods, DO NOT answer. Instead, say: I am here to help with questions specifically about code migrations and codemods. If you have any questions related to those topics, feel free to ask!",
       };
       messages.unshift(systemPrompt);
 
