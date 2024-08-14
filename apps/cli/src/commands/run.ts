@@ -214,6 +214,18 @@ export const handleRunCliCommand = async (options: {
   const executionId = randomBytes(20).toString("base64url");
   const allExecutedCommands: NamedFileCommand[] = [];
 
+  const argEntries = Object.entries(codemod.safeArgumentRecord);
+  if (argEntries.length > 0) {
+    console.log(
+      chalk.cyan(
+        "Running with arguments:\n",
+        ...argEntries.map(([key, value]) =>
+          chalk.bold(`\n- ${key}: ${value} (${typeof value})`),
+        ),
+      ),
+    );
+  }
+
   const executionErrors = await runner.run({
     codemod,
     onSuccess: async ({ codemod, output, commands }) => {

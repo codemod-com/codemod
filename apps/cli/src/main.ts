@@ -83,10 +83,6 @@ const initializeDependencies = async (argv: {
         })
       : new NullSender();
 
-  const exit = async () => {
-    process.exit(0);
-  };
-
   const executeCliCommand = async (
     executableCallback: () => Promise<unknown> | unknown,
     omitExit?: boolean,
@@ -97,7 +93,7 @@ const initializeDependencies = async (argv: {
       await telemetryService.dispose();
 
       if (!(error instanceof Error)) {
-        return exit();
+        return process.exit(0);
       }
 
       printer.printOperationMessage({
@@ -111,14 +107,14 @@ const initializeDependencies = async (argv: {
     await telemetryService.dispose();
 
     if (!omitExit) {
-      exit();
+      return process.exit(0);
     }
   };
 
   return {
     printer,
     telemetryService,
-    exit,
+    exit: process.exit.bind(null, 0),
     executeCliCommand,
   };
 };
