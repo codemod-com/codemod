@@ -1,5 +1,6 @@
 import type { Monaco } from "@monaco-editor/react";
 import ASTTypes from "./dts/ast-types.txt?raw";
+import codemodUtils from "./dts/codemod-utils.txt?raw";
 import jsCodeShiftIndex from "./dts/jscodeshift.txt?raw";
 import recast from "./dts/recast.txt?raw";
 import tsmorph from "./dts/ts-morph.txt?raw";
@@ -26,5 +27,10 @@ export const applyExtraLibs = (m: Monaco) => {
   m.languages.typescript.typescriptDefaults.addExtraLib(
     tsmorph,
     "ts-morph/lib/ts-morph.d.ts",
+  );
+
+  m.languages.typescript.typescriptDefaults.addExtraLib(
+    codemodUtils,
+    "codemod-utils/index.d.ts",
   );
 };

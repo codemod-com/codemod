@@ -64,6 +64,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     /^https?:\/\/.*-codemod\.vercel\.app$/,
     /^https?:\/\/localhost(:\d+)?$/,
     /^https?:\/\/codemod\.com$/,
+    /^https?:\/\/staging.codemod\.com$/,
   ];
 
   await fastify.register(cors, {
@@ -156,7 +157,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       allowedNamespaces.unshift(user.username);
 
       if (environment.VERIFIED_PUBLISHERS.includes(user.username)) {
-        allowedNamespaces.push("codemod-com", "codemod.com");
+        allowedNamespaces.push("codemod-com");
       }
     }
 

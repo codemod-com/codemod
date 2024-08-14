@@ -1,5 +1,5 @@
 import {
-  type Output,
+  type InferOutput,
   array,
   literal,
   nullish,
@@ -101,4 +101,4 @@ export const eventSchema = union([
   }),
 ]);
 
-export type Event = Output<typeof eventSchema>;
+export type Event = InferOutput<typeof eventSchema>;

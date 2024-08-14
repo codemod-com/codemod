@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import * as fs from "node:fs";
-
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import axios from "axios";
 import type { RouteHandler } from "fastify";
@@ -23,16 +24,16 @@ import { prisma } from "@codemod-com/database";
 // Direct import because tree-shaking helps this to not throw.
 import { getCodemodExecutable } from "@codemod-com/runner/dist/source-code.js";
 import {
-  TarService,
   buildCodemodSlug,
   codemodNameRegex,
   getCodemodRc,
   getEntryPath,
   isNeitherNullNorUndefined,
+  tar,
+  untar,
+  unzip,
 } from "@codemod-com/utilities";
 
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { buildRevalidateHelper } from "./revalidate.js";
 import { environment } from "./util.js";
 
@@ -45,11 +46,12 @@ export const publishHandler: RouteHandler<{
     homedir(),
     ".codemod",
     "temp",
-    randomBytes(4).toString("hex"),
+    randomBytes(8).toString("hex"),
   );
+  await fs.promises.mkdir(unpackPath, { recursive: true });
 
   try {
-    const organizations = request.organizations!;
+    const allowedNamespaces = request.allowedNamespaces!;
 
     const {
       username,
@@ -66,7 +68,8 @@ export const publishHandler: RouteHandler<{
       });
     }
 
-    let codemodArchiveBuffer: Buffer | null = null;
+    let codemodTarArchiveBuffer: Buffer | null = null;
+    let codemodZipArchiveBuffer: Buffer | null = null;
 
     for await (const multipartFile of request.files({
       limits: { fileSize: 1024 * 1024 * 100 },
@@ -74,19 +77,39 @@ export const publishHandler: RouteHandler<{
       const buffer = await multipartFile.toBuffer();
 
       if (multipartFile.fieldname === "codemod.tar.gz") {
-        codemodArchiveBuffer = buffer;
+        codemodTarArchiveBuffer = buffer;
+      }
+
+      if (multipartFile.fieldname === "codemod.zip") {
+        codemodZipArchiveBuffer = buffer;
       }
     }
 
-    if (codemodArchiveBuffer === null) {
+    let codemodArchiveBuffer: Buffer;
+    if (codemodTarArchiveBuffer !== null) {
+      codemodArchiveBuffer = codemodTarArchiveBuffer;
+      const tarPath = join(unpackPath, "codemod.tar.gz");
+      await fs.promises.writeFile(tarPath, codemodTarArchiveBuffer);
+
+      await untar(tarPath, unpackPath);
+    } else if (codemodZipArchiveBuffer !== null) {
+      const zipPath = join(unpackPath, "codemod.zip");
+      await fs.promises.writeFile(zipPath, codemodZipArchiveBuffer);
+
+      await unzip(zipPath, unpackPath);
+
+      // For further uploading to S3
+      await fs.promises.rm(zipPath);
+
+      const tarPath = join(unpackPath, "codemod.tar.gz");
+      await tar(unpackPath, tarPath);
+      codemodArchiveBuffer = await fs.promises.readFile(tarPath);
+    } else {
       return reply.code(400).send({
         error: NO_CODEMOD_TO_PUBLISH,
         errorText: "No codemod archive was provided",
       });
     }
-
-    const tarService = new TarService(fs);
-    await tarService.unpack(unpackPath, codemodArchiveBuffer);
 
     const { config: codemodRc } = await getCodemodRc({
       source: unpackPath,
@@ -162,14 +185,7 @@ export const publishHandler: RouteHandler<{
     if (!namespace) {
       if (name.startsWith("@") && name.includes("/")) {
         namespace = name.split("/").at(0)?.slice(1)!;
-
-        const allowedNamespaces = [
-          username,
-          ...organizations.map((org) => org.organization.slug),
-          environment.VERIFIED_PUBLISHERS.includes(username)
-            ? "codemod-com"
-            : null,
-        ].filter(isNeitherNullNorUndefined);
+        isPrivate = true;
 
         if (!allowedNamespaces.includes(namespace)) {
           return reply.code(403).send({
@@ -177,21 +193,21 @@ export const publishHandler: RouteHandler<{
             errorText: `You are not allowed to publish under namespace "${namespace}"`,
           });
         }
-
-        isPrivate = true;
+      } else {
+        namespace = username;
       }
-
-      namespace = username;
     }
 
+    // private flag in codemodrc as primary source of truth,
+    // fallback is to check if publishing under a namespace. if yes - set to private by default
     isPrivate = codemodRc.private ?? isPrivate;
+
+    // @TODO: remove this logic in favor of having the organization in Clerk
+    // Unless we roll our own auth, it requires to upgrade to Clerk B2B plan at $100/month
     const isVerified =
       namespace === "codemod-com" ||
       environment.VERIFIED_PUBLISHERS.includes(username);
     const author = isVerified ? "Codemod" : namespace;
-
-    // private flag in codemodrc as primary source of truth,
-    // fallback is to check if publishing under a namespace. if yes - set to private by default
 
     if (!isNeitherNullNorUndefined(name)) {
       return reply.code(400).send({
@@ -384,27 +400,24 @@ export const publishHandler: RouteHandler<{
 
     if (latestVersion === null && !isVerified) {
       try {
-        await axios.post(
-          "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
-          {
-            codemod: {
-              name: isPublishedFromStudio ? `${name} (studio publish)` : name,
-              from: codemodRc.applicability?.from?.map((tuple) =>
-                tuple.join(" "),
-              ),
-              to: codemodRc.applicability?.to?.map((tuple) => tuple.join(" ")),
-              engine: codemodRc.engine,
-              publishedAt: createdAtTimestamp,
-            },
-            author: {
-              username,
-              name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,
-              email:
-                emailAddresses.find((e) => e.id === primaryEmailAddressId)
-                  ?.emailAddress ?? null,
-            },
+        await axios.post(environment.ZAPIER_PUBLISH_HOOK, {
+          codemod: {
+            name: isPublishedFromStudio ? `${name} (studio publish)` : name,
+            from: codemodRc.applicability?.from?.map((tuple) =>
+              tuple.join(" "),
+            ),
+            to: codemodRc.applicability?.to?.map((tuple) => tuple.join(" ")),
+            engine: codemodRc.engine,
+            publishedAt: createdAtTimestamp,
           },
-        );
+          author: {
+            username,
+            name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,
+            email:
+              emailAddresses.find((e) => e.id === primaryEmailAddressId)
+                ?.emailAddress ?? null,
+          },
+        });
       } catch (err) {
         console.error("Failed calling Zapier hook:", err);
       }

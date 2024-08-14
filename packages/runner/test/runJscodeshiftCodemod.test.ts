@@ -6,11 +6,9 @@ import { join } from "node:path";
 
 import { afterAll, describe, it } from "vitest";
 
-import type { ConsoleKind } from "@codemod-com/printer";
-
 import type { CodemodConfigInput } from "@codemod-com/utilities";
 import { runJscodeshiftCodemod } from "../src/engines/jscodeshift.js";
-import { getCodemodExecutable } from "../src/source-code.js";
+import { getCodemodExecutable, getTransformer } from "../src/source-code.js";
 
 const codemodSource = `
 import type { FileInfo, API, Options } from 'jscodeshift';
@@ -83,25 +81,21 @@ describe("runJscodeshiftCodemod", async () => {
   );
 
   const compiledSource = await getCodemodExecutable(directoryPath);
+  const transformer = getTransformer(compiledSource);
 
   afterAll(async () => {
     await rmdir(directoryPath, { recursive: true });
   });
 
   it("should return transformed output", () => {
-    const messages: [ConsoleKind, string][] = [];
-
     const oldData = "function mapStateToProps(state) {}";
 
     const fileCommands = runJscodeshiftCodemod(
-      compiledSource,
+      transformer!,
       "/index.ts",
       oldData,
       {},
       null,
-      (consoleKind, message) => {
-        messages.push([consoleKind, message]);
-      },
     );
 
     deepStrictEqual(fileCommands.length, 1);
@@ -116,7 +110,5 @@ describe("runJscodeshiftCodemod", async () => {
       oldData,
       newData,
     });
-
-    deepStrictEqual(messages, [["log", "/index.ts"]]);
   });
 });

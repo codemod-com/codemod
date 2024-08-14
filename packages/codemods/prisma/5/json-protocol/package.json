@@ -20,5 +20,8 @@
     "coverage": "vitest run --coverage"
   },
   "files": ["./README.md", "./.codemodrc.json", "./dist/index.cjs"],
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@mrleebo/prisma-ast": "^0.12.0"
+  }
 }

@@ -1,24 +1,24 @@
-import { type Output, literal, object, safeParse, union } from "valibot";
+import * as v from "valibot";
 
-export const jscodeshiftOptionsSchema = object({
-  engine: literal("jscodeshift"),
-  parser: union([
-    literal("babel"),
-    literal("babylon"),
-    literal("flow"),
-    literal("ts"),
-    literal("tsx"),
+export const jscodeshiftOptionsSchema = v.object({
+  engine: v.literal("jscodeshift"),
+  parser: v.union([
+    v.literal("babel"),
+    v.literal("babylon"),
+    v.literal("flow"),
+    v.literal("ts"),
+    v.literal("tsx"),
   ]),
 });
 
-export const engineOptionsSchema = union([jscodeshiftOptionsSchema]);
+export const engineOptionsSchema = v.union([jscodeshiftOptionsSchema]);
 
-export type EngineOptions = Output<typeof engineOptionsSchema>;
+export type EngineOptions = v.InferOutput<typeof engineOptionsSchema>;
 
 export const parseEngineOptions = (
   input: unknown,
-): Output<typeof engineOptionsSchema> | null => {
-  const options = safeParse(engineOptionsSchema, input);
+): v.InferOutput<typeof engineOptionsSchema> | null => {
+  const options = v.safeParse(engineOptionsSchema, input);
 
   if (!options.success) {
     return null;

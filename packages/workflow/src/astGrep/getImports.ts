@@ -2,6 +2,7 @@ import { astGrep } from "./astGrep.js";
 
 /**
  * Same as astGrep, but searches with single and double quotes
+ * @deprecated
  * @example
  * ```ts
  * await getImports("import React from 'react'");

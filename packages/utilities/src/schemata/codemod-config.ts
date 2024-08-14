@@ -1,50 +1,9 @@
 import semver from "semver";
-import { type Input, type Issues, type Output, ValiError } from "valibot";
+import type { InferInput, InferOutput } from "valibot";
 import * as v from "valibot";
 
-import { isNeitherNullNorUndefined } from "../functions/validation.js";
+import { extractNameAndVersion } from "../functions/formatting.js";
 import { argumentSchema } from "./argument-record.js";
-
-const getFirstValibotIssue = (issues: Issues) => {
-  let reasonableError: string | undefined;
-
-  for (const issue of issues) {
-    if (issue.issues) {
-      reasonableError = getFirstValibotIssue(issue.issues);
-    }
-
-    const firstIssueWithPath = issues.find((issue) =>
-      isNeitherNullNorUndefined(issue.path),
-    );
-
-    if (isNeitherNullNorUndefined(firstIssueWithPath)) {
-      reasonableError = `${
-        firstIssueWithPath.message
-      } at \`${firstIssueWithPath.path?.map((p) => p.key).join(".")}\``;
-      break;
-    }
-  }
-
-  if (!reasonableError) {
-    reasonableError = issues.at(0)?.message;
-  }
-
-  return reasonableError;
-};
-
-export const extractLibNameAndVersion = (val: string) => {
-  const parts = val.split("@");
-  let version: string | null = null;
-  let libName: string;
-  if (parts.length > 1) {
-    version = parts.pop() ?? null;
-    libName = parts.join("@");
-  } else {
-    libName = val;
-  }
-
-  return { libName, version };
-};
 
 export const codemodNameRegex = /[a-zA-Z0-9_/@-]+/;
 
@@ -54,30 +13,35 @@ export const argumentsSchema = v.array(
       v.object({
         name: v.string(),
         kind: v.literal("string"),
+        description: v.optional(v.string()),
         required: v.optional(v.boolean(), false),
         default: v.optional(v.string()),
       }),
       v.object({
         name: v.string(),
         kind: v.literal("number"),
+        description: v.optional(v.string()),
         required: v.optional(v.boolean(), false),
         default: v.optional(v.number()),
       }),
       v.object({
         name: v.string(),
         kind: v.literal("boolean"),
+        description: v.optional(v.string()),
         required: v.optional(v.boolean(), false),
         default: v.optional(v.boolean()),
       }),
       v.object({
         name: v.string(),
         kind: v.literal("enum"),
+        description: v.optional(v.string()),
         options: v.array(argumentSchema),
         required: v.optional(v.boolean(), false),
         default: v.optional(argumentSchema),
       }),
       v.object({
         name: v.string(),
+        description: v.optional(v.string()),
         kind: v.array(
           v.union([
             v.literal("string"),
@@ -95,8 +59,8 @@ export const argumentsSchema = v.array(
   ),
 );
 
-export type Arguments = Output<typeof argumentsSchema>;
-export type ArgumentsInput = Input<typeof argumentsSchema>;
+export type Arguments = InferOutput<typeof argumentsSchema>;
+export type ArgumentsInput = InferInput<typeof argumentsSchema>;
 
 // Source: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 
@@ -111,14 +75,17 @@ const versionUnion = v.union(
   "Invalid version range operator.",
 );
 
-const semVerValidationFunc = (val: string) =>
-  !!semver.valid(val) ||
+const semVerValidationFunc = (val: unknown) =>
+  (typeof val === "string" && !!semver.valid(val)) ||
   val === "*" ||
   val === "latest" ||
   val === "next" ||
   val === "canary" ||
   val === "beta" ||
   val === "alpha";
+
+const getSemVerValidationSchema = (msg: string) =>
+  v.custom<string>(semVerValidationFunc, msg);
 
 const getLibraryVersionTupleValidator = (msg: string) =>
   v.tuple(
@@ -127,11 +94,9 @@ const getLibraryVersionTupleValidator = (msg: string) =>
       versionUnion,
       v.union([
         // react < 18.0.2 (preferred)
-        v.string([
-          v.custom(semVerValidationFunc, `"version" has to be a valid semver.`),
-        ]),
+        getSemVerValidationSchema(`"version" has to be a valid semver.`),
         // react < 18 (for example, when no latest version of a given major is out yet)
-        v.string([v.regex(/^\d+$/)]),
+        v.pipe(v.string(), v.regex(/^\d+$/)),
       ]),
     ],
     msg,
@@ -148,14 +113,14 @@ export const knownEnginesSchema = v.union(
   knownEngines,
   "Specified engine is not supported.",
 );
-export type KnownEngines = Output<typeof knownEnginesSchema>;
+export type KnownEngines = InferOutput<typeof knownEnginesSchema>;
 
 const allEngines = [...knownEngines, v.literal("recipe")];
 export const allEnginesSchema = v.union(
   allEngines,
   "Specified engine is not supported.",
 );
-export type AllEngines = Output<typeof allEnginesSchema>;
+export type AllEngines = InferOutput<typeof allEnginesSchema>;
 
 export const isEngine = (engine: unknown) => v.is(allEnginesSchema, engine);
 
@@ -163,9 +128,7 @@ const configJsonBaseSchema = v.object({
   $schema: v.optional(v.string()),
   name: v.string(`"name" of the codemod has to be a string.`),
   description: v.optional(v.string(`"description" has to be a string.`)),
-  version: v.string([
-    v.custom(semVerValidationFunc, `"version" has to be a valid semver.`),
-  ]),
+  version: getSemVerValidationSchema(`"version" has to be a valid semver.`),
   engine: allEnginesSchema,
   // We should have custom logic for this in our code. For orgs, we default to private, for users, we default to public
   // just as npm does.
@@ -201,23 +164,25 @@ const configJsonBaseSchema = v.object({
   ),
   deps: v.optional(
     v.array(
-      v.string([
-        v.custom((val) => {
-          const { libName, version } = extractLibNameAndVersion(val);
-          // e.g. -jest
-          if (libName?.startsWith("-")) {
-            return true;
-          }
+      v.custom<string>((val) => {
+        if (typeof val !== "string") {
+          return false;
+        }
 
-          // e.g. vitest. This would install the latest version
-          if (version === null) {
-            return true;
-          }
+        const { name, version } = extractNameAndVersion(val);
+        // e.g. -jest
+        if (name?.startsWith("-")) {
+          return true;
+        }
 
-          return semVerValidationFunc(version);
-        }, `"deps" has to be an array of valid strings. E.g. libraryToAdd@2.0.0, libraryToAdd or -libraryToRemove`),
-      ]),
-      `"deps" has to be an array of strings.`,
+        // e.g. vitest. This would install the latest version
+        if (version === null) {
+          return true;
+        }
+
+        return semVerValidationFunc(version);
+      }, `"deps" has to be an array of valid strings. E.g. libraryToAdd@2.0.0, libraryToAdd or -libraryToRemove`),
+      `"deps" has to be an array.`,
     ),
   ),
   arguments: v.optional(argumentsSchema, []),
@@ -235,54 +200,43 @@ const configJsonBaseSchema = v.object({
   entry: v.optional(v.string("Codemod entry point path has to be a string.")),
 });
 
-export const knownEnginesCodemodConfigSchema = v.merge([
-  configJsonBaseSchema,
-  v.object({
+export const knownEnginesCodemodConfigSchema = v.object({
+  ...configJsonBaseSchema.entries,
+  ...v.object({
     engine: knownEnginesSchema,
-  }),
-]);
+  }).entries,
+});
 
-export const recipeCodemodConfigSchema = v.merge([
-  configJsonBaseSchema,
-  v.object({
+export const recipeCodemodConfigSchema = v.object({
+  ...configJsonBaseSchema.entries,
+  ...v.object({
     engine: v.literal("recipe"),
     names: v.array(v.string()),
-  }),
-]);
+  }).entries,
+});
 
 export const codemodConfigSchema = v.union([
   knownEnginesCodemodConfigSchema,
   recipeCodemodConfigSchema,
 ]);
 
-export const parseCodemodConfig = (config: unknown) => {
-  try {
-    return v.parse(codemodConfigSchema, config, { abortEarly: true });
-  } catch (err) {
-    if (!(err instanceof ValiError)) {
-      throw new Error("Error parsing config file");
-    }
-
-    throw new Error(
-      `Error parsing config file: ${getFirstValibotIssue(err.issues)}`,
-    );
-  }
-};
+export const parseCodemodConfig = (config: unknown) =>
+  v.parse(codemodConfigSchema, config, { abortEarly: true });
 
 export const safeParseCodemodConfig = (config: unknown) =>
   v.safeParse(codemodConfigSchema, config);
 
-export type CodemodConfig = Output<typeof codemodConfigSchema>;
-export type CodemodConfigInput = Input<typeof codemodConfigSchema>;
+export type CodemodConfig = InferOutput<typeof codemodConfigSchema>;
+export type CodemodConfigInput = InferInput<typeof codemodConfigSchema>;
 
-export type RecipeCodemodConfig = Output<typeof recipeCodemodConfigSchema>;
-export type RecipeCodemodConfigValidationInput = Input<
+export type RecipeCodemodConfig = InferOutput<typeof recipeCodemodConfigSchema>;
+export type RecipeCodemodConfigValidationInput = InferInput<
   typeof recipeCodemodConfigSchema
 >;
 
-export type KnownEnginesCodemodConfig = Output<
+export type KnownEnginesCodemodConfig = InferOutput<
   typeof knownEnginesCodemodConfigSchema
 >;
-export type KnownEnginesCodemodConfigValidationInput = Input<
+export type KnownEnginesCodemodConfigValidationInput = InferInput<
   typeof knownEnginesCodemodConfigSchema
 >;

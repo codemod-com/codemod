@@ -730,8 +730,9 @@ import { useMemo } from "react"
 
 <ResponseField name="exec(name, arguments)" />
 
-Executes cli command in current working directory.
-
+Executes any CLI command in the current working directory. 
+This example demonstrates the logic for extracting the name and arguments of a sample CLI command: `npm i -g codemod` translates to `exec('npm', ['i', '-g', 'codemod'])`. 
+Here are some examples in real scenarios.
 <CodeGroup>
 ```ts chain call
 import { exec, git } from '@codemod.com/workflow'

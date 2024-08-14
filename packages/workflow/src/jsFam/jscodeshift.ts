@@ -4,6 +4,8 @@ import type { PLazy } from "../PLazy.js";
 import { getFileContext } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 
+export type JscodeshiftReturn = PLazy<Helpers> & Helpers;
+
 /**
  * Run jscodeshift codemod for files in context
  * @param callback
@@ -14,7 +16,7 @@ export function jscodeshiftLogic(
     api: API,
     options: Options,
   ) => void | Promise<string> | Promise<void> | string,
-): PLazy<Helpers> & Helpers {
+): JscodeshiftReturn {
   const api = buildApi("tsx");
   return new FunctionExecutor("jscodeshift")
     .arguments(() => ({ callback }))

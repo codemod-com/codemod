@@ -1,5 +1,12 @@
 import { knownEnginesSchema } from "@codemod-com/utilities";
-import { type Output, array, object, optional, parse, string } from "valibot";
+import {
+  type InferOutput,
+  array,
+  object,
+  optional,
+  parse,
+  string,
+} from "valibot";
 
 export const editorsSnippetsSchema = object({
   name: string(),
@@ -14,6 +21,6 @@ const stateSchema = object({
   codemodSource: string(),
 });
 
-export type State = Output<typeof stateSchema>;
+export type State = InferOutput<typeof stateSchema>;
 
 export const parseState = (input: unknown) => parse(stateSchema, input);

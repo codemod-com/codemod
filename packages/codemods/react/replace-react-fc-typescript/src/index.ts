@@ -168,55 +168,50 @@ export default function transform(fileInfo: FileInfo, api: API) {
     n.replace(newVariableDeclarator);
   }
 
-  try {
-    const root = j(fileInfo.source);
-    let hasModifications = false;
-    const newSource = root
-      .find(j.VariableDeclarator, (n: unknown) => {
-        // @ts-expect-error n unknown
-        const identifier = n?.id;
-        let typeName: any;
-        if (
-          j.TSIntersectionType.check(identifier?.typeAnnotation?.typeAnnotation)
-        ) {
-          typeName = identifier.typeAnnotation.typeAnnotation.types[0].typeName;
-        } else {
-          typeName = identifier?.typeAnnotation?.typeAnnotation?.typeName;
-        }
+  const root = j(fileInfo.source);
+  let hasModifications = false;
+  const newSource = root
+    .find(j.VariableDeclarator, (n: unknown) => {
+      // @ts-expect-error n unknown
+      const identifier = n?.id;
+      let typeName: any;
+      if (
+        j.TSIntersectionType.check(identifier?.typeAnnotation?.typeAnnotation)
+      ) {
+        typeName = identifier.typeAnnotation.typeAnnotation.types[0].typeName;
+      } else {
+        typeName = identifier?.typeAnnotation?.typeAnnotation?.typeName;
+      }
 
-        const genericParamsType =
-          identifier?.typeAnnotation?.typeAnnotation?.typeParameters?.type;
-        // verify it is the shape of React.FC<Props> React.SFC<Props>, React.FC<{ type: string }>, FC<Props>, SFC<Props>, and so on
+      const genericParamsType =
+        identifier?.typeAnnotation?.typeAnnotation?.typeParameters?.type;
+      // verify it is the shape of React.FC<Props> React.SFC<Props>, React.FC<{ type: string }>, FC<Props>, SFC<Props>, and so on
 
-        const isEqualFcOrFunctionComponent = (name: string) =>
-          ["FC", "FunctionComponent"].includes(name);
-        const isFC =
-          (typeName?.left?.name === "React" &&
-            isEqualFcOrFunctionComponent(typeName?.right?.name)) ||
-          isEqualFcOrFunctionComponent(typeName?.name);
-        const isSFC =
-          (typeName?.left?.name === "React" &&
-            typeName?.right?.name === "SFC") ||
-          typeName?.name === "SFC";
+      const isEqualFcOrFunctionComponent = (name: string) =>
+        ["FC", "FunctionComponent"].includes(name);
+      const isFC =
+        (typeName?.left?.name === "React" &&
+          isEqualFcOrFunctionComponent(typeName?.right?.name)) ||
+        isEqualFcOrFunctionComponent(typeName?.name);
+      const isSFC =
+        (typeName?.left?.name === "React" && typeName?.right?.name === "SFC") ||
+        typeName?.name === "SFC";
 
-        return (
-          (isFC || isSFC) &&
-          (["TSQualifiedName", "TSTypeParameterInstantiation"].includes(
-            genericParamsType,
-          ) ||
-            !identifier?.typeAnnotation?.typeAnnotation?.typeParameters)
-        );
-      })
-      .forEach((n) => {
-        hasModifications = true;
-        addPropsTypeToComponentBody(n);
-        removeReactFCorSFCdeclaration(n);
-      })
-      .toSource();
-    return hasModifications ? newSource : null;
-  } catch (e) {
-    console.log(e);
-  }
+      return (
+        (isFC || isSFC) &&
+        (["TSQualifiedName", "TSTypeParameterInstantiation"].includes(
+          genericParamsType,
+        ) ||
+          !identifier?.typeAnnotation?.typeAnnotation?.typeParameters)
+      );
+    })
+    .forEach((n) => {
+      hasModifications = true;
+      addPropsTypeToComponentBody(n);
+      removeReactFCorSFCdeclaration(n);
+    })
+    .toSource();
+  return hasModifications ? newSource : null;
 }
 
 function extractPropsDefinitionFromReactFC(

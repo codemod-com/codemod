@@ -83,10 +83,6 @@ const initializeDependencies = async (argv: {
         })
       : new NullSender();
 
-  const exit = async () => {
-    process.exit(0);
-  };
-
   const executeCliCommand = async (
     executableCallback: () => Promise<unknown> | unknown,
     omitExit?: boolean,
@@ -97,7 +93,7 @@ const initializeDependencies = async (argv: {
       await telemetryService.dispose();
 
       if (!(error instanceof Error)) {
-        return exit();
+        return process.exit(0);
       }
 
       printer.printOperationMessage({
@@ -111,14 +107,14 @@ const initializeDependencies = async (argv: {
     await telemetryService.dispose();
 
     if (!omitExit) {
-      exit();
+      return process.exit(0);
     }
   };
 
   return {
     printer,
     telemetryService,
-    exit,
+    exit: process.exit.bind(null, 0),
     executeCliCommand,
   };
 };
@@ -310,18 +306,12 @@ export const main = async () => {
       "init",
       "initialize a codemod package",
       (y) =>
-        y
-          .option("target", {
-            alias: "t",
-            type: "string",
-            description: "Path to init codemod in",
-            default: process.cwd(),
-          })
-          .option("no-prompt", {
-            alias: "y",
-            type: "boolean",
-            description: "skip all prompts and use default values",
-          }),
+        y.option("target", {
+          alias: "t",
+          type: "string",
+          description: "Path to init codemod in",
+          default: process.cwd(),
+        }),
       async (args) => {
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
@@ -329,8 +319,7 @@ export const main = async () => {
         return executeCliCommand(() =>
           handleInitCliCommand({
             printer,
-            noPrompt: args.noPrompt,
-            target: args.target,
+            target: args.target ?? process.cwd(),
           }),
         );
       },

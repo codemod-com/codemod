@@ -6,6 +6,7 @@ import {
   DEFAULT_ENABLE_LOGGING,
   DEFAULT_ENABLE_PRETTIER,
   DEFAULT_INSTALL,
+  DEFAULT_INTERACTIVE,
   DEFAULT_TELEMETRY,
   DEFAULT_THREAD_COUNT,
   DEFAULT_USE_JSON,
@@ -102,6 +103,13 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       description: "Perform a dry run",
       default: DEFAULT_DRY_RUN,
     })
+    .option("mode", {
+      alias: "m",
+      type: "string",
+      choices: ["json", "plain", "silent"] as const,
+      description:
+        "Output mode to run the codemod in:\n- json: Disables any stdout and only prints out JSON output if a codemod returns any.",
+    })
     .option("install", {
       type: "boolean",
       default: DEFAULT_INSTALL,
@@ -111,11 +119,6 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       type: "boolean",
       description:
         "Disable packages installation for the codemod run if there is `deps` field declared in its configuration",
-    })
-    .option("disable-tree-version-check", {
-      type: "boolean",
-      description: "Disable the tree version check",
-      hidden: true,
     })
     .option("readme", {
       type: "boolean",
@@ -130,5 +133,19 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       alias: "v",
       type: "boolean",
       description: "Prints the latest version of the codemod",
+    })
+    .option("cloud", {
+      type: "boolean",
+      description: "Run codemod in the cloud",
+      default: false,
+    })
+    .option("interactive", {
+      type: "boolean",
+      default: DEFAULT_INTERACTIVE,
+      hidden: true,
+    })
+    .option("no-interactive", {
+      type: "boolean",
+      description: "Disable interactive mode",
     });
 };

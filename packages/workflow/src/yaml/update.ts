@@ -4,12 +4,14 @@ import type { PLazy } from "../PLazy.js";
 import { getFileContext } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 
+export type UpdateReturn = PLazy<Helpers> & Helpers;
+
 /**
  * Update the contents of a yaml file
  */
 export function updateLogic<T>(
   callback: (before: T) => T | Promise<T>,
-): PLazy<Helpers> & Helpers {
+): UpdateReturn {
   return new FunctionExecutor("update")
     .helpers(helpers)
     .arguments(() => ({ callback }))

@@ -178,16 +178,16 @@ export const getCodemodDownloadURI = async (
 };
 
 export const getCodemodList = async (options?: {
-  accessToken?: string;
+  token?: string;
   search: string | null;
   mine: boolean;
   all: boolean;
 }): Promise<CodemodListResponse> => {
-  const { accessToken, search, mine, all } = options ?? {};
+  const { token, search, mine, all } = options ?? {};
 
   const headers: RawAxiosRequestHeaders = {};
-  if (accessToken) {
-    headers.Authorization = `Bearer ${accessToken}`;
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
   }
 
   const url = new URL(`${process.env.BACKEND_URL}/codemods/list`);

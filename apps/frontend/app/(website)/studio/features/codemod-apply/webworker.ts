@@ -3,6 +3,7 @@ import {
   isIdentifier,
   isMemberExpression,
 } from "@babel/types";
+import * as codemodUtils from "@codemod.com/codemod-utils";
 import {
   type WebWorkerOutgoingMessage,
   parseWebWorkerIncomingMessage,
@@ -293,6 +294,43 @@ export const findTransformFunction = (
   return transformFunction ? j(transformFunction) : null;
 };
 
+// removes `@codemod.com/codemod-utils` import, passes utils as last argument to transform function instead
+const replaceUtilsImport = (
+  j: JSCodeshift,
+  root: Collection<any>,
+  transformCollection: Collection<
+    FunctionDeclaration | ArrowFunctionExpression | FunctionExpression
+  >,
+) => {
+  const importDeclaration = codemodUtils.getImportDeclaration(
+    j,
+    root,
+    "@codemod.com/codemod-utils",
+  );
+
+  if (!importDeclaration) {
+    return;
+  }
+
+  const specifiers =
+    importDeclaration?.node.specifiers?.filter((s) =>
+      j.ImportSpecifier.check(s),
+    ) ?? [];
+
+  const objectPattern = j.objectPattern(
+    specifiers.map((s) => {
+      const value = s.local?.name ?? "";
+      const key = s.imported.name;
+
+      return j.objectProperty(j.identifier(key), j.identifier(value));
+    }),
+  );
+
+  transformCollection.paths().at(0)?.node.params.push(objectPattern);
+
+  j(importDeclaration).remove();
+};
+
 function rewriteCodemod(input: string): string {
   const j = jscodeshift.withParser("tsx");
   const root = j(input);
@@ -352,6 +390,10 @@ function rewriteCodemod(input: string): string {
       },
     })
     ?.replaceWith(({ node }) => replaceCallExpression(j, node));
+
+  if (transformFunction !== null) {
+    replaceUtilsImport(j, root, transformFunction);
+  }
 
   root
     .find(j.CallExpression, {
@@ -537,7 +579,13 @@ const executeTransformFunction = (
     source: input,
   };
 
-  const output = transform.apply(undefined, [fileInfo, api, {}]);
+  const output = transform.apply(undefined, [
+    fileInfo,
+    api,
+    {},
+    // pass dependencies as last arg to transform function
+    codemodUtils,
+  ]);
 
   if (typeof output === "string" || output === undefined || output === null) {
     const events = eventManager.getEvents();

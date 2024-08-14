@@ -18,6 +18,12 @@ export const useCodemodOutputUpdate = () => {
   const { beforeSnippet, setOutputSnippet } = getSelectedEditors();
   const snippetBeforeHasOnlyWhitespaces = !/\S/.test(beforeSnippet);
   const codemodSourceHasOnlyWhitespaces = !/\S/.test(content ?? "");
+  const consoleLogs = Array.isArray(webWorkerState.events)
+    ? webWorkerState.events
+        ?.filter?.((e) => e.kind === "printedMessage")
+        .map?.((e) => e.message)
+        .join(" ")
+    : "";
 
   useEffect(() => {
     postMessage(engine, content ?? "", beforeSnippet);
@@ -32,10 +38,13 @@ export const useCodemodOutputUpdate = () => {
       setEvents([]);
     } else {
       setOutputSnippet(webWorkerState.output ?? "");
-      setHasRuntimeErrors(true);
-      setEvents(webWorkerState.events);
+      setHasRuntimeErrors(false);
+      setTimeout(() => {
+        setEvents(webWorkerState.events);
+      });
     }
   }, [
+    consoleLogs,
     // @ts-ignore
     webWorkerState.error?.message,
     webWorkerState.kind,

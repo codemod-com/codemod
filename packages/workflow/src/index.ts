@@ -4,7 +4,7 @@ export * from "./contexts.js";
 
 import { git } from "./git/git.js";
 
-import { astGrep } from "./astGrep/astGrep.js";
+import { SgNode, astGrep } from "./astGrep/astGrep.js";
 
 import { jsFiles } from "./jsFiles.js";
 
@@ -38,6 +38,7 @@ export {
   github,
   setAuthService,
   AuthServiceInterface,
+  SgNode,
 };
 
 export const api = {
@@ -54,5 +55,7 @@ export const api = {
   github,
   setAuthService,
 };
+
+export { isWorkflowEngineFile } from "./isWorkflowEngineFile.js";
 
 export type Api = typeof api;

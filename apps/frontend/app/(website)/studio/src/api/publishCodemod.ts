@@ -1,28 +1,22 @@
 import { apiClient } from "@/utils/apis/client";
 import type { ApiError, PublishResponse } from "@codemod-com/api-types";
+import type { TypeScriptProjectFiles } from "@codemod-com/utilities";
 import type { AxiosError } from "axios";
 import { Either } from "../utils/Either";
+import { buildCodemodArchive } from "../utils/download";
 
 export const publishCodemod = async (options: {
+  files: TypeScriptProjectFiles;
   token: string;
-  mainFileName: string;
-  files: {
-    mainFile: string;
-    codemodRc: string;
-  };
 }): Promise<Either<ApiError | string, PublishResponse>> => {
-  const {
-    token,
-    mainFileName,
-    files: { codemodRc, mainFile },
-  } = options;
+  const { token, files } = options;
 
   const formData = new FormData();
+  const codemodZip = await buildCodemodArchive(files);
 
-  formData.append(mainFileName, new Blob([mainFile], { type: "text/plain" }));
   formData.append(
-    ".codemodrc.json",
-    new Blob([codemodRc], { type: "text/plain" }),
+    "codemod.zip",
+    new Blob([codemodZip], { type: "application/gzip" }),
   );
 
   try {

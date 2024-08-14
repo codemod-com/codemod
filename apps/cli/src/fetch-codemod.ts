@@ -1,6 +1,5 @@
-import { createHash } from "node:crypto";
-import * as fs from "node:fs/promises";
-import { mkdir } from "node:fs/promises";
+import { createHash, randomBytes } from "node:crypto";
+import { lstat, mkdir, writeFile } from "node:fs/promises";
 import { join, parse as pathParse, resolve } from "node:path";
 import type { AxiosError } from "axios";
 import inquirer from "inquirer";
@@ -8,33 +7,29 @@ import semver from "semver";
 import { flatten } from "valibot";
 
 import { type Printer, chalk } from "@codemod-com/printer";
+import { bundleJS } from "@codemod-com/runner";
 import {
   type Codemod,
-  type KnownEnginesCodemodValidationInput,
-  type RecipeCodemodValidationInput,
-  type TarService,
+  type CodemodValidationInput,
   doubleQuotify,
   getCodemodRc,
+  isJavaScriptName,
   isRecipeCodemod,
   parseCodemod,
   parseEngineOptions,
-  parseKnownEnginesCodemod,
-  parseRecipeCodemod,
   safeParseCodemod,
   safeParseKnownEnginesCodemod,
   safeParseRecipeCodemod,
+  untar,
+  unzip,
 } from "@codemod-com/utilities";
 import { getCodemodDownloadURI } from "#api.js";
 import { getCurrentUserData } from "#auth-utils.js";
 import { handleInitCliCommand } from "#commands/init.js";
-import type { FileDownloadService } from "#file-download.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 import { buildSafeArgumentRecord } from "#safe-arguments.js";
-import {
-  codemodDirectoryPath,
-  oraCheckmark,
-  unpackZipCodemod,
-} from "#utils.js";
+import { codemodDirectoryPath, oraCheckmark } from "#utils/constants.js";
+import { downloadFile } from "#utils/download.js";
 
 export const populateCodemodArgs = async (options: {
   codemod: Codemod;
@@ -89,28 +84,21 @@ export const populateCodemodArgs = async (options: {
   };
 };
 
-export const fetchCodemod = async (options: {
+export type FetchOptions = {
   nameOrPath: string;
   argv: GlobalArgvOptions & RunArgvOptions;
   printer: Printer;
-  fileDownloadService: FileDownloadService;
-  tarService: TarService;
   disableLogs?: boolean;
-}): Promise<Codemod> => {
-  const {
-    nameOrPath,
-    printer,
-    fileDownloadService,
-    tarService,
-    disableLogs = false,
-    argv,
-  } = options;
+};
+
+export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
+  const { nameOrPath, printer, disableLogs = false, argv } = options;
 
   if (!nameOrPath) {
     throw new Error("Codemod to run was not specified!");
   }
 
-  const sourceStat = await fs.lstat(nameOrPath).catch(() => null);
+  const sourceStat = await lstat(nameOrPath).catch(() => null);
 
   // Local codemod
   if (sourceStat !== null) {
@@ -120,30 +108,46 @@ export const fetchCodemod = async (options: {
       // Codemod in .zip archive
       const { name, ext } = pathParse(nameOrPath);
       if (ext === ".zip") {
-        const resultPath = await unpackZipCodemod({
-          source: nameOrPath,
-          target: join(
-            codemodDirectoryPath,
-            "temp",
-            createHash("ripemd160").update(name).digest("base64url"),
-          ),
-        });
-
-        if (resultPath === null) {
-          throw new Error(`Could not find .codemodrc.json in the zip file.`);
-        }
+        const unzipPath = join(
+          codemodDirectoryPath,
+          "temp",
+          createHash("ripemd160").update(name).digest("base64url"),
+        );
+        await unzip(nameOrPath, unzipPath);
 
         return fetchCodemod({
           ...options,
-          nameOrPath: resultPath,
+          nameOrPath: unzipPath,
         });
       }
 
       // Standalone codemod
+      // For standalone codemods, before creating a compatible package, we attempt to
+      // build the binary because it might have other dependencies in the folder
+      const tempFolderPath = join(codemodDirectoryPath, "temp");
+      await mkdir(tempFolderPath, { recursive: true });
+
+      let codemodPath = nameOrPath;
+      if (isJavaScriptName(nameOrPath)) {
+        codemodPath = join(
+          tempFolderPath,
+          `${randomBytes(8).toString("hex")}.cjs`,
+        );
+
+        try {
+          const executable = await bundleJS({ entry: nameOrPath });
+          await writeFile(codemodPath, executable);
+        } catch (err) {
+          throw new Error(
+            `Error bundling codemod: ${(err as Error).message ?? "Unknown error"}`,
+          );
+        }
+      }
+
       const codemodPackagePath = await handleInitCliCommand({
         printer,
-        target: nameOrPath,
-        writeDirectory: join(codemodDirectoryPath, "temp"),
+        source: codemodPath,
+        target: tempFolderPath,
         useDefaultName: true,
         noLogs: true,
       });
@@ -154,20 +158,20 @@ export const fetchCodemod = async (options: {
       });
 
       if (config.engine === "recipe") {
-        return parseRecipeCodemod({
+        return parseCodemod({
           type: "standalone",
           source: "local",
           path: codemodPackagePath,
           config,
-        } satisfies RecipeCodemodValidationInput);
+        } satisfies CodemodValidationInput);
       }
 
-      return parseKnownEnginesCodemod({
+      return parseCodemod({
         type: "standalone",
         source: "local",
         path: codemodPackagePath,
         config,
-      } satisfies KnownEnginesCodemodValidationInput);
+      } satisfies CodemodValidationInput);
     }
 
     // Codemod package
@@ -198,7 +202,7 @@ export const fetchCodemod = async (options: {
         ),
       );
 
-      return parseRecipeCodemod({ ...codemod, codemods });
+      return parseCodemod({ ...codemod, codemods });
     }
 
     return parseCodemod(codemod satisfies Codemod);
@@ -233,26 +237,22 @@ export const fetchCodemod = async (options: {
   });
 
   const downloadPath = join(path, "codemod.tar.gz");
-
-  const { data, cacheUsed } = await fileDownloadService
-    .download({
-      url: linkResponse.link,
-      path: downloadPath,
-      cachePingPath: join(path, ".codemodrc.json"),
-    })
-    .catch((err) => {
-      spinner?.fail();
-      throw new Error(
-        (err as AxiosError<{ error: string }>).response?.data?.error ??
-          "Error downloading codemod from the registry",
-      );
-    });
+  const { cacheUsed } = await downloadFile({
+    url: linkResponse.link,
+    path: downloadPath,
+    cache: argv.cache,
+  }).catch((err) => {
+    spinner?.fail();
+    throw new Error(
+      (err as AxiosError<{ error: string }>).response?.data?.error ??
+        (err as Error).message,
+    );
+  });
 
   // If cache was used, the codemod is already unpacked
   if (!cacheUsed) {
     try {
-      await tarService.unpack(path, data);
-      await fs.unlink(downloadPath);
+      await untar(downloadPath, path);
     } catch (err) {
       spinner?.fail();
       throw new Error((err as Error).message ?? "Error unpacking codemod");
@@ -273,10 +273,7 @@ export const fetchCodemod = async (options: {
     throwOnNotFound: true,
   });
 
-  if (
-    fileDownloadService.cacheEnabled &&
-    semver.gt(linkResponse.version, config.version)
-  ) {
+  if (cacheUsed && semver.gt(linkResponse.version, config.version)) {
     if (!disableLogs) {
       printer.printConsoleMessage(
         "info",
@@ -297,48 +294,21 @@ export const fetchCodemod = async (options: {
   }
 
   if (config.engine === "recipe") {
-    const { names } = await inquirer.prompt<{ names: string[] }>({
-      name: "names",
-      type: "checkbox",
-      message:
-        "Select the codemods you would like to run. Codemods will be executed in order.",
-      choices: config.names,
-      default: config.names,
-    });
+    if (argv.interactive) {
+      const { names } = await inquirer.prompt<{ names: string[] }>({
+        name: "names",
+        type: "checkbox",
+        message:
+          "Select the codemods you would like to run. Codemods will be executed in order.",
+        choices: config.names,
+        default: config.names,
+      });
 
-    config.names = names;
+      config.names = names;
+    }
 
     const subCodemodsSpinner = printer.withLoaderMessage(
-      chalk.cyan(`Fetching ${names.length} recipe codemods...`),
-    );
-
-    const codemods = await Promise.all(
-      config.names.map(async (name) => {
-        const subCodemod = await fetchCodemod({
-          ...options,
-          disableLogs: true,
-          nameOrPath: name,
-        });
-
-        const populatedCodemod = await populateCodemodArgs({
-          codemod: subCodemod,
-          printer,
-          argv,
-        });
-
-        const validatedCodemod = safeParseKnownEnginesCodemod(populatedCodemod);
-
-        if (!validatedCodemod.success) {
-          subCodemodsSpinner.fail();
-          if (safeParseRecipeCodemod(populatedCodemod).success) {
-            throw new Error("Nested recipe codemods are not supported.");
-          }
-
-          throw new Error("Nested codemod is of incorrect structure.");
-        }
-
-        return validatedCodemod.output;
-      }),
+      chalk.cyan(`Fetching ${config.names.length} recipe codemods...`),
     );
 
     subCodemodsSpinner.stopAndPersist({
@@ -351,8 +321,7 @@ export const fetchCodemod = async (options: {
       source: "remote",
       config,
       path,
-      codemods,
-    } satisfies RecipeCodemodValidationInput);
+    } satisfies CodemodValidationInput);
   }
 
   return parseCodemod({
@@ -360,5 +329,5 @@ export const fetchCodemod = async (options: {
     source: "remote",
     config,
     path,
-  } satisfies KnownEnginesCodemodValidationInput);
+  } satisfies CodemodValidationInput);
 };

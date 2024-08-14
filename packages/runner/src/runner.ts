@@ -1,4 +1,4 @@
-import type * as INodeFs from "node:fs";
+import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { join as joinPosix } from "node:path/posix";
@@ -11,7 +11,6 @@ import {
   type Codemod,
   type CodemodConfig,
   type FileCommand,
-  type FileSystem,
   type KnownEnginesCodemod,
   type RunResult,
   formatText,
@@ -22,6 +21,7 @@ import {
   isRecipeCodemod,
 } from "@codemod-com/utilities";
 import type { AuthServiceInterface } from "@codemod.com/workflow";
+import type { RunnerServiceInterface } from "#runner-service.js";
 import { getCodemodExecutable, getTransformer } from "#source-code.js";
 import { astGrepLanguageToPatterns } from "./engines/ast-grep.js";
 import type { Dependencies } from "./engines/filemod.js";
@@ -43,9 +43,9 @@ const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
 export class Runner {
   public constructor(
     protected readonly _options: {
-      readonly fs: FileSystem;
       readonly flowSettings: FlowSettings;
-      readonly authService: AuthServiceInterface;
+      readonly authService?: AuthServiceInterface;
+      readonly runnerService?: RunnerServiceInterface;
     },
   ) {}
 
@@ -60,31 +60,43 @@ export class Runner {
     const printer = new Printer();
 
     try {
-      await this.executeCodemod({
-        fileSystem: this._options.fs,
-        codemod,
-        flowSettings: this._options.flowSettings,
-        onCommand: async (command) => {
-          if (this._options.flowSettings.dry) {
-            return;
-          }
+      if (
+        this._options.flowSettings.cloud &&
+        codemod.config.engine === "workflow"
+      ) {
+        await this.executeCodemodInACloud({
+          codemod,
+          flowSettings: this._options.flowSettings,
+          onError: (error) => executionErrors.push(error),
+          onSuccess,
+          printer,
+        });
+      } else {
+        await this.executeCodemod({
+          codemod,
+          flowSettings: this._options.flowSettings,
+          onCommand: async (command) => {
+            if (this._options.flowSettings.dry) {
+              return;
+            }
 
-          const shouldFormat =
-            this._options.flowSettings.format && "newData" in command;
+            const shouldFormat =
+              this._options.flowSettings.format && "newData" in command;
 
-          if (shouldFormat) {
-            command.newData = await formatText(
-              "oldPath" in command ? command.oldPath : command.newPath,
-              command.newData,
-            );
-          }
+            if (shouldFormat) {
+              command.newData = await formatText(
+                "oldPath" in command ? command.oldPath : command.newPath,
+                command.newData,
+              );
+            }
 
-          return this.modifyFileSystemUponCommand(this._options.fs, command);
-        },
-        onError: (error) => executionErrors.push(error),
-        onSuccess,
-        printer,
-      });
+            return this.modifyFileSystemUponCommand(command);
+          },
+          onError: (error) => executionErrors.push(error),
+          onSuccess,
+          printer,
+        });
+      }
     } catch (error) {
       if (!(error instanceof Error)) {
         return;
@@ -94,6 +106,22 @@ export class Runner {
     }
 
     return executionErrors;
+  }
+
+  private async executeCodemodInACloud(options: {
+    codemod: Codemod;
+    flowSettings: FlowSettings;
+    onSuccess?: (runResult: RunResult) => Promise<void> | void;
+    onError?: CodemodExecutionErrorCallback;
+    printer: Printer;
+  }) {
+    const { codemod, flowSettings, onError, onSuccess, printer } = options;
+
+    const cloudRunner = await this._options.runnerService?.startCodemodRun({
+      source: await getCodemodExecutable(codemod.path),
+      engine: codemod.config.engine as "workflow",
+    });
+    console.log({ cloudRunner });
   }
 
   private async buildPatterns(
@@ -187,7 +215,7 @@ export class Runner {
       }
 
       try {
-        const { path: astGrepRulePath, error: errorText } = await getEntryPath({
+        const { path: astGrepRulePath } = await getEntryPath({
           source: codemod.path,
           throwOnNotFound: true,
         });
@@ -275,7 +303,6 @@ export class Runner {
   }
 
   private async buildPathsGlob(
-    fileSystem: FileSystem,
     flowSettings: FlowSettings,
     patterns: {
       include: string[];
@@ -285,7 +312,6 @@ export class Runner {
     return glob(patterns.include, {
       absolute: true,
       cwd: flowSettings.target,
-      fs: fileSystem as typeof INodeFs,
       ignore: patterns.exclude,
       nodir: true,
       dot: true,
@@ -293,7 +319,6 @@ export class Runner {
   }
 
   private async *buildPathGlobGenerator(
-    fileSystem: FileSystem,
     flowSettings: FlowSettings,
     patterns: {
       include: string[];
@@ -303,7 +328,6 @@ export class Runner {
     const stream = globStream(patterns.include, {
       absolute: true,
       cwd: flowSettings.target,
-      fs: fileSystem as typeof INodeFs,
       ignore: patterns.exclude,
       nodir: true,
       dot: true,
@@ -412,7 +436,6 @@ export class Runner {
   }
 
   private async executeCodemod(options: {
-    fileSystem: FileSystem;
     codemod: Codemod;
     flowSettings: FlowSettings;
     onCommand: (command: FileCommand) => Promise<void>;
@@ -420,15 +443,8 @@ export class Runner {
     onError?: CodemodExecutionErrorCallback;
     printer: Printer;
   }) {
-    const {
-      fileSystem,
-      codemod,
-      flowSettings,
-      onCommand,
-      onError,
-      onSuccess,
-      printer,
-    } = options;
+    const { codemod, flowSettings, onCommand, onError, onSuccess, printer } =
+      options;
 
     const pathsAreEmpty = () =>
       printer.printMessage({
@@ -457,16 +473,23 @@ export class Runner {
         });
 
         // run onSuccess after each codemod
-        await onSuccess?.({ codemod: subCodemod, commands });
+        await onSuccess?.({ codemod: subCodemod, output: commands, commands });
       }
 
       // run onSuccess for recipe itself
-      return await onSuccess?.({ codemod, commands: [] });
+      return await onSuccess?.({ codemod, output: "", commands: [] });
     }
 
     const codemodSource = await getCodemodExecutable(codemod.path);
+    const transformer = getTransformer(codemodSource);
 
     if (codemod.config.engine === "workflow") {
+      if (transformer === null) {
+        throw new Error(
+          `The transformer cannot be null: ${codemod.path} ${codemod.config.engine}`,
+        );
+      }
+
       this.printRunSummary(printer, codemod, flowSettings, {
         include: ["**/*.*"],
         exclude: [],
@@ -475,22 +498,17 @@ export class Runner {
         userExcluded: [],
       });
 
-      await runWorkflowCodemod(
-        codemodSource,
+      const output = await runWorkflowCodemod(
+        transformer,
         codemod.safeArgumentRecord,
-        (kind, message) => {
-          printer.printMessage({ kind: "console", message, consoleKind: kind });
-        },
         this._options.authService,
       );
 
       // @TODO pass modified paths?
-      return await onSuccess?.({ codemod, commands: [] });
+      return await onSuccess?.({ codemod, output, commands: [] });
     }
 
     if (codemod.config.engine === "filemod") {
-      const transformer = getTransformer(codemodSource);
-
       if (transformer === null) {
         throw new Error(
           `The transformer cannot be null: ${codemod.path} ${codemod.config.engine}`,
@@ -503,11 +521,7 @@ export class Runner {
         transformer as Filemod<Dependencies, Record<string, unknown>>,
       );
 
-      const globPaths = await this.buildPathsGlob(
-        fileSystem,
-        flowSettings,
-        patterns,
-      );
+      const globPaths = await this.buildPathsGlob(flowSettings, patterns);
 
       if (globPaths.length === 0) {
         return pathsAreEmpty();
@@ -516,7 +530,6 @@ export class Runner {
       this.printRunSummary(printer, codemod, flowSettings, patterns);
 
       const commands = await runFilemod({
-        fileSystem,
         filemod: {
           ...transformer,
           includePatterns: globPaths,
@@ -529,20 +542,22 @@ export class Runner {
         ...flowSettings,
       });
 
-      // const commands = await buildFormattedFileCommands(fileCommands);
-
       for (const command of commands) {
         await onCommand(command);
       }
 
-      return await onSuccess?.({ codemod, commands: [...commands] });
+      return await onSuccess?.({
+        codemod,
+        output: commands,
+        commands: [...commands],
+      });
     }
 
     // jscodeshift or ts-morph or ast-grep
     const patterns = await this.buildPatterns(flowSettings, codemod, null);
 
     const pathGeneratorInitializer = () =>
-      this.buildPathGlobGenerator(fileSystem, flowSettings, patterns);
+      this.buildPathGlobGenerator(flowSettings, patterns);
     if (await isGeneratorEmpty(pathGeneratorInitializer)) {
       return pathsAreEmpty();
     }
@@ -550,12 +565,18 @@ export class Runner {
 
     this.printRunSummary(printer, codemod, flowSettings, patterns);
 
+    if (codemod.config.engine === "ast-grep") {
+      codemod.path = await getEntryPath({
+        source: codemod.path,
+        throwOnNotFound: true,
+      }).then(({ path }) => path);
+    }
+
     const commands: FileCommand[] = [];
     await new Promise<void>((resolve) => {
       let timeout: NodeJS.Timeout | null = null;
 
       const workerThreadManager = new WorkerManager({
-        fileSystem,
         flowSettings,
         onPrinterMessage: (message) => {
           printer.printMessage(message);
@@ -591,41 +612,40 @@ export class Runner {
       });
     });
 
-    return await onSuccess?.({ codemod, commands });
+    return await onSuccess?.({ codemod, output: commands, commands });
   }
 
   private async modifyFileSystemUponCommand(
-    fileSystem: FileSystem,
     command: FileCommand,
   ): Promise<void> {
     if (command.kind === "createFile") {
       const directoryPath = dirname(command.newPath);
 
-      await fileSystem.promises.mkdir(directoryPath, { recursive: true });
+      await fs.promises.mkdir(directoryPath, { recursive: true });
 
-      return fileSystem.promises.writeFile(command.newPath, command.newData);
+      return fs.promises.writeFile(command.newPath, command.newData);
     }
 
     if (command.kind === "deleteFile") {
-      return fileSystem.promises.unlink(command.oldPath);
+      return fs.promises.unlink(command.oldPath);
     }
 
     if (command.kind === "moveFile") {
-      await fileSystem.promises.copyFile(command.oldPath, command.newPath);
+      await fs.promises.copyFile(command.oldPath, command.newPath);
 
-      return fileSystem.promises.unlink(command.oldPath);
+      return fs.promises.unlink(command.oldPath);
     }
 
     if (command.kind === "updateFile") {
-      return fileSystem.promises.writeFile(command.oldPath, command.newData);
+      return fs.promises.writeFile(command.oldPath, command.newData);
     }
 
     if (command.kind === "copyFile") {
       const directoryPath = dirname(command.newPath);
 
-      await fileSystem.promises.mkdir(directoryPath, { recursive: true });
+      await fs.promises.mkdir(directoryPath, { recursive: true });
 
-      return fileSystem.promises.copyFile(command.oldPath, command.newPath);
+      return fs.promises.copyFile(command.oldPath, command.newPath);
     }
   }
 }

@@ -18,8 +18,10 @@ export async function getHumanCodemodName(
   codemod: string,
   token: string | null,
 ): Promise<string> {
+  let codemodName = "codemod";
+
   if (token === null) {
-    return "codemod";
+    return codemodName;
   }
 
   try {
@@ -27,7 +29,6 @@ export async function getHumanCodemodName(
       throw new Error("codemod content not found");
     }
 
-    let codemodName = "";
     if (token !== null) {
       // Ask LLM to come up with a name for the given codemod
       const codemodNameOrError = await sendChat({

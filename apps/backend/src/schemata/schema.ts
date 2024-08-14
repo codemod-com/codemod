@@ -6,13 +6,14 @@ import {
 import {
   array,
   boolean,
-  coerce,
+  custom,
   literal,
-  number,
   object,
   optional,
   parse,
+  pipe,
   string,
+  transform,
   union,
 } from "valibot";
 
@@ -30,6 +31,12 @@ const clientIdentifierSchema = union([
   literal("VSCE"),
   literal("CLI"),
 ]);
+
+export const queryParamBooleanSchema = pipe(
+  custom((input) => input === "true" || input === "false"),
+  transform((input) => input === "true"),
+  boolean(),
+);
 
 export const parseClientIdentifierSchema = (input: unknown) =>
   parse(clientIdentifierSchema, input);
@@ -85,13 +92,13 @@ export const parseGetRepoBranchesParams = (input: unknown) =>
   parse(providerSchema, input);
 
 export const getCodemodsQuerySchema = object({
-  search: optional(coerce(string(), String)),
+  search: optional(string()),
   category: optional(union([string(), array(string())])),
   author: optional(union([string(), array(string())])),
   framework: optional(union([string(), array(string())])),
-  verified: optional(coerce(boolean(), (input) => input === "true")),
-  page: optional(coerce(number(), Number)),
-  size: optional(coerce(number(), Number)),
+  verified: optional(queryParamBooleanSchema),
+  page: optional(pipe(string(), transform(Number))),
+  size: optional(pipe(string(), transform(Number))),
 });
 
 export const parseGetCodemodsQuery = (input: unknown) =>
@@ -113,8 +120,8 @@ export const parseGetCodemodLatestVersionQuery = (input: unknown) =>
 
 export const listCodemodsQuerySchema = object({
   search: optional(string()),
-  mine: optional(coerce(boolean(), (input) => input === "true")),
-  all: optional(coerce(boolean(), (input) => input === "true")),
+  mine: optional(queryParamBooleanSchema),
+  all: optional(queryParamBooleanSchema),
 });
 
 export const parseListCodemodsQuery = (input: unknown) =>

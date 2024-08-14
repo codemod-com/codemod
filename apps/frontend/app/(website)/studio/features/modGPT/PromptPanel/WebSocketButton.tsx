@@ -33,7 +33,7 @@ export const WebSocketButton = ({
       onClick={handleButtonClick}
       disabled={isLoading}
     >
-      Autogenerate with Codemod AI (BETA)
+      Autogenerate with Codemod AI
     </ButtonWithTooltip>
   );
 };

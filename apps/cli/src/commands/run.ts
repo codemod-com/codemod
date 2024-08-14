@@ -11,22 +11,21 @@ import { type Printer, chalk, colorLongString } from "@codemod-com/printer";
 import { Runner, parseFlowSettings } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
-  type Codemod,
-  TarService,
   doubleQuotify,
   execPromise,
   getCodemodRc,
 } from "@codemod-com/utilities";
 import { version as cliVersion } from "#/../package.json";
 import { getDiff, getDiffScreen } from "#dryrun-diff.js";
-import { fetchCodemod } from "#fetch-codemod.js";
-import { FileDownloadService } from "#file-download.js";
+import { fetchCodemod, populateCodemodArgs } from "#fetch-codemod.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 import { handleInstallDependencies } from "#install-dependencies.js";
 import { AuthService } from "#services/auth-service.js";
+import { RunnerService } from "#services/runner-service.js";
 import type { TelemetryEvent } from "#telemetry.js";
 import type { NamedFileCommand } from "#types/commands.js";
-import { writeLogs } from "#utils.js";
+import { originalStdoutWrite } from "#utils/constants.js";
+import { writeLogs } from "#utils/logs.js";
 
 const checkFileTreeVersioning = async (target: string) => {
   let force = true;
@@ -92,62 +91,57 @@ export const handleRunCliCommand = async (options: {
 }) => {
   const { printer, args, telemetry, onExit } = options;
 
-  const flowSettings = parseFlowSettings(args, printer);
+  if (args.mode === "json") {
+    process.stdout.write = () => false;
+    process.stderr.write = () => false;
+  }
+
+  const flowSettings = await parseFlowSettings(args, printer);
 
   if (
     !flowSettings.dry &&
-    !args["disable-tree-version-check"] &&
     !args.readme &&
     !args.config &&
-    !args.version
+    !args.version &&
+    args.interactive &&
+    !args.mode
   ) {
     await checkFileTreeVersioning(flowSettings.target);
   }
-
-  const fileDownloadService = new FileDownloadService(args.cache, fs, printer);
-
-  const tarService = new TarService(fs);
 
   const nameOrPath = args._.at(0)?.toString() ?? args.source ?? null;
   if (nameOrPath === null) {
     throw new Error("Codemod to run was not specified!");
   }
 
-  let codemod: Codemod;
-  try {
-    codemod = await fetchCodemod({
-      nameOrPath,
-      printer,
-      argv: args,
-      fileDownloadService,
-      tarService,
-    });
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      if (
-        error.response?.status === 400 &&
-        error.response.data.error === CODEMOD_NOT_FOUND
-      ) {
-        printer.printConsoleMessage(
-          "error",
-          chalk.red(
-            "The specified command or codemod name could not be recognized.",
-            "\nTo view available commands, execute",
-            `${chalk.yellow.bold(doubleQuotify("codemod --help"))}.`,
-            "\nTo see a list of existing codemods, run",
-            `${chalk.yellow.bold(doubleQuotify("codemod search"))}`,
-            "or",
-            `${chalk.yellow.bold(doubleQuotify("codemod list"))}`,
-            "with a query representing the codemod you are looking for.",
-          ),
-        );
+  let codemod = await fetchCodemod({ nameOrPath, printer, argv: args }).catch(
+    (error: Error) => {
+      if (error instanceof AxiosError) {
+        if (
+          error.response?.status === 400 &&
+          error.response.data.error === CODEMOD_NOT_FOUND
+        ) {
+          printer.printConsoleMessage(
+            "error",
+            chalk.red(
+              "The specified command or codemod name could not be recognized.",
+              "\nTo view available commands, execute",
+              `${chalk.yellow.bold(doubleQuotify("codemod --help"))}.`,
+              "\nTo see a list of existing codemods, run",
+              `${chalk.yellow.bold(doubleQuotify("codemod search"))}`,
+              "or",
+              `${chalk.yellow.bold(doubleQuotify("codemod list"))}`,
+              "with a query representing the codemod you are looking for.",
+            ),
+          );
 
-        process.exit(1);
+          process.exit(1);
+        }
       }
-    }
 
-    throw new Error(`Error while downloading codemod ${nameOrPath}: ${error}`);
-  }
+      throw new Error(`Error while fetching codemod ${nameOrPath}: ${error}`);
+    },
+  );
 
   if (
     (args.readme || args.config || args.version) &&
@@ -203,10 +197,13 @@ export const handleRunCliCommand = async (options: {
     }
   }
 
+  codemod = await populateCodemodArgs({ codemod, argv: args, printer });
+  const authService = new AuthService(printer);
+  const runnerService = new RunnerService(printer);
   const runner = new Runner({
-    fs,
     flowSettings,
-    authService: new AuthService(printer),
+    authService,
+    runnerService,
   });
 
   const depsToInstall: Record<
@@ -217,14 +214,37 @@ export const handleRunCliCommand = async (options: {
   const executionId = randomBytes(20).toString("base64url");
   const allExecutedCommands: NamedFileCommand[] = [];
 
+  const argEntries = Object.entries(codemod.safeArgumentRecord);
+  if (argEntries.length > 0) {
+    printer.printConsoleMessage(
+      "info",
+      chalk.cyan(
+        "Running with arguments:\n",
+        ...argEntries.map(([key, value]) =>
+          chalk.bold(`\n- ${key}: ${value} (${typeof value})`),
+        ),
+      ),
+    );
+  }
+
   const executionErrors = await runner.run({
     codemod,
-    onSuccess: async ({ codemod, commands }) => {
+    onSuccess: async ({ codemod, output, commands }) => {
       const modifiedFilePaths = [
         ...new Set(
           commands.map((c) => ("oldPath" in c ? c.oldPath : c.newPath)),
         ),
       ];
+
+      if (args.mode === "json" && typeof output === "object") {
+        process.stdout.write = originalStdoutWrite;
+        process.stdout.write(JSON.stringify(output, null, 2));
+      } else if (args.mode === "plain") {
+        process.stdout.write = originalStdoutWrite;
+        process.stdout.write(String(output));
+      }
+
+      process.stdout.write = () => false;
 
       let codemodName: string;
       if (codemod.type === "standalone") {
@@ -282,11 +302,11 @@ export const handleRunCliCommand = async (options: {
     },
   });
 
-  let printLogsNotice: (() => void) | null = null;
+  let finishRun = () => onExit();
 
   if (args.logs && executionErrors?.length) {
     const notice = await writeLogs({
-      prefix: "Codemod execution encountered errors.",
+      prefix: chalk.red("Codemod execution encountered errors."),
       content: executionErrors
         .map(
           (e) =>
@@ -297,17 +317,22 @@ export const handleRunCliCommand = async (options: {
         .join("\n\n"),
     });
 
-    printLogsNotice = () => printer.printConsoleMessage("info", notice);
+    finishRun = () => {
+      printer.terminateExecutionProgress();
+      printer.printConsoleMessage("info", notice);
+      return onExit();
+    };
   }
 
   if (allExecutedCommands.length === 0) {
     printer.terminateExecutionProgress();
-    printer.printConsoleMessage(
-      "info",
-      chalk.yellow("\nNo changes were made during the codemod run."),
-    );
-
-    return onExit();
+    if (codemod.config.engine !== "workflow") {
+      printer.printConsoleMessage(
+        "info",
+        chalk.yellow("\nNo changes were made during the codemod run."),
+      );
+    }
+    return finishRun();
   }
 
   if (flowSettings.dry && allExecutedCommands.length > 0) {
@@ -315,14 +340,12 @@ export const handleRunCliCommand = async (options: {
 
     screen.key(["escape", "q", "C-c"], () => {
       screen?.destroy();
-      printLogsNotice?.();
-      return onExit();
+      return finishRun();
     });
 
     return screen.render();
   }
 
-  printLogsNotice?.();
   if (flowSettings.install) {
     for (const [codemodName, { deps, affectedFiles }] of Object.entries(
       depsToInstall,
@@ -337,5 +360,5 @@ export const handleRunCliCommand = async (options: {
     }
   }
 
-  return onExit();
+  return finishRun();
 };

@@ -6,16 +6,53 @@ import { getFileContext } from "./contexts.js";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
 import { jscodeshift } from "./jsFam/jscodeshift.js";
 
+export type JsFamReturn = PLazy<Helpers> & Helpers;
+
 /**
- * @description Filter all js/ts files in current directory
+ * @description Adds javascript/typescript context to get specific helpers (jscodeshift, work with imports). Also, it will change glob pattern for `files()` search function.
+ * @example
+ * ```ts
+ * await files()
+ *   .jsFam()
+ *   .jscodeshift((file, api) => {
+ *     const j = api.jscodeshift;
+ *     return j(file.source)
+ *       .find(j.Identifier)
+ *       .forEach((path) => {
+ *         j(path).replaceWith(j.identifier("Hello"));
+ *       })
+ *   })
+ * ```
  */
-export function jsFamLogic(): PLazy<Helpers> & Helpers;
+export function jsFamLogic(): JsFamReturn;
+/**
+ * @description Adds javascript/typescript context to get specific helpers (jscodeshift, work with imports). Also, it will change glob pattern for `files()` search function.
+ * @param callback - A function that will be executed in the context of the javascript/typescript helpers.
+ * @example
+ * ```ts
+ * await files()
+ *   .jsFam(({ jscodeshift }) => {
+ *     jscodeshift((file, api) => {
+ *       const j = api.jscodeshift;
+ *       return j(file.source)
+ *         .find(j.Identifier)
+ *         .forEach((path) => {
+ *           j(path).replaceWith(j.identifier("Hello"));
+ *         })
+ *     })
+ *   })
+ * ```
+ * @see {@link astGrep}
+ * @see {@link jscodeshift}
+ * @see {@link addImport}
+ * @see {@link removeImport}
+ */
 export function jsFamLogic(
   callback: (helpers: Helpers) => void | Promise<void>,
-): PLazy<Helpers> & Helpers;
+): JsFamReturn;
 export function jsFamLogic(
   callback?: (helpers: Helpers) => void | Promise<void>,
-): PLazy<Helpers> & Helpers {
+): JsFamReturn {
   return new FunctionExecutor("jsFam")
     .arguments(() => {
       return { callback };

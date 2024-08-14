@@ -1,12 +1,16 @@
+import { defaultJSCodeshiftParser } from "@codemod.com/codemod-utils";
 import jscodeshift from "jscodeshift";
-import { defaultParser } from "#parsers/jscodeshift.js";
 
 export const isTheSameData = (oldData: string, newData: string) => {
+  if (oldData === newData) {
+    return true;
+  }
+
   try {
     // sometimes codemods produce newData even though they are literally no changes
     // by removing parentheses around return statements, we will likely find the pointless results
-    const oldRoot = jscodeshift.withParser(defaultParser)(oldData);
-    const newRoot = jscodeshift.withParser(defaultParser)(newData);
+    const oldRoot = jscodeshift.withParser(defaultJSCodeshiftParser)(oldData);
+    const newRoot = jscodeshift.withParser(defaultJSCodeshiftParser)(newData);
 
     oldRoot
       .find(jscodeshift.ParenthesizedExpression)

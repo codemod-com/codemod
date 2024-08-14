@@ -5,8 +5,8 @@ packages:
 catalog:
     "@ariakit/react": ^0.4.6
     "@artsy/fresnel": ^7.1.4
-    "@ast-grep/cli": ^0.24.0
-    "@ast-grep/napi": ^0.24.0
+    "@ast-grep/cli": ^0.25.4
+    "@ast-grep/napi": ^0.25.4
     "@aws-sdk/client-s3": ^3.549.0
     "@aws-sdk/s3-request-presigner": ^3.549.0
     "@babel/plugin-syntax-flow": ^7.14.5
@@ -68,6 +68,7 @@ catalog:
     "@tiptap/react": ^2.1.8
     "@tiptap/starter-kit": ^2.1.8
     "@total-typescript/ts-reset": ^0.5.1
+    "@types/adm-zip": ^0.5.5
     "@types/babel__traverse": ^7.20.1
     "@types/blessed": ^0.1.25
     "@types/chai": ^4.3.4
@@ -110,6 +111,7 @@ catalog:
     "@vscode/vsce": ^2.22.0
     "@vscode/webview-ui-toolkit": ^1.2.2
     "@vue/compiler-sfc": ^3.4.21
+    adm-zip: ^0.5.14
     applicationinsights: ^2.9.1
     assert: ^2.0.0
     ast-node-builder: ^4.2.1
@@ -117,7 +119,6 @@ catalog:
     autoprefixer: 10.4.17
     axios: ^1.6.8
     axios-retry: ^4.0.0
-    bl: ^6.0.11
     blessed: ^0.1.81
     boxen: ^7.1.1
     bullmq: ^5.7.5
@@ -252,6 +253,7 @@ catalog:
     tailwind-merge: ^1.10.0
     tailwindcss: 3.4.1
     tailwindcss-animate: ^1.0.7
+    tar: ^6.1.15
     tar-stream: ^3.1.7
     terminal-link: ^3.0.0
     tippy.js: ^6.3.7
@@ -266,7 +268,7 @@ catalog:
     unist-util-visit: ^5.0.0
     universal-base64url: ^1.1.0
     unzipper: ^0.11.6
-    valibot: ^0.24.1
+    valibot: ^0.34.0
     vaul: ^0.9.0
     vite: ^4.5.3
     vite-plugin-monaco-editor: ^1.1.0

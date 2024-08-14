@@ -1,16 +1,7 @@
-import { resolve } from "node:path";
-import {
-  type Output,
-  array,
-  boolean,
-  minValue,
-  number,
-  object,
-  optional,
-  parse,
-  string,
-} from "valibot";
+import { basename, dirname, resolve } from "node:path";
+import * as v from "valibot";
 
+import { constants, access, stat } from "node:fs/promises";
 import { type Printer, chalk } from "@codemod-com/printer";
 
 export const DEFAULT_EXCLUDE_PATTERNS = [
@@ -36,39 +27,40 @@ export const DEFAULT_ENABLE_PRETTIER = false;
 export const DEFAULT_ENABLE_LOGGING = false;
 export const DEFAULT_CACHE = true;
 export const DEFAULT_INSTALL = true;
+export const DEFAULT_INTERACTIVE = true;
 export const DEFAULT_USE_JSON = false;
 export const DEFAULT_THREAD_COUNT = 4;
 export const DEFAULT_DRY_RUN = false;
 export const DEFAULT_TELEMETRY = true;
 
-export const flowSettingsSchema = object({
-  _: array(string()),
-  include: optional(array(string())),
-  exclude: optional(array(string()), []),
-  target: optional(string()),
-  files: optional(array(string())),
-  dry: optional(boolean(), DEFAULT_DRY_RUN),
-  format: optional(boolean(), DEFAULT_ENABLE_PRETTIER),
-  cache: optional(boolean(), DEFAULT_CACHE),
-  install: optional(boolean(), DEFAULT_INSTALL),
-  json: optional(boolean(), DEFAULT_USE_JSON),
-  threads: optional(number([minValue(0)]), DEFAULT_THREAD_COUNT),
+export const flowSettingsSchema = v.object({
+  _: v.array(v.string()),
+  include: v.optional(v.array(v.string())),
+  exclude: v.optional(v.array(v.string()), []),
+  target: v.optional(v.string(), DEFAULT_INPUT_DIRECTORY_PATH),
+  files: v.optional(v.array(v.string())),
+  dry: v.optional(v.boolean(), DEFAULT_DRY_RUN),
+  format: v.optional(v.boolean(), DEFAULT_ENABLE_PRETTIER),
+  cache: v.optional(v.boolean(), DEFAULT_CACHE),
+  install: v.optional(v.boolean(), DEFAULT_INSTALL),
+  json: v.optional(v.boolean(), DEFAULT_USE_JSON),
+  threads: v.optional(v.pipe(v.number(), v.minValue(0)), DEFAULT_THREAD_COUNT),
+  cloud: v.optional(v.boolean(), false),
 });
 
-export type FlowSettings = Omit<Output<typeof flowSettingsSchema>, "target"> & {
-  target: string;
-};
+export type FlowSettings = v.InferOutput<typeof flowSettingsSchema>;
 
-export const parseFlowSettings = (
+export const parseFlowSettings = async (
   input: unknown,
   printer: Printer,
-): FlowSettings => {
-  const flowSettings = parse(flowSettingsSchema, input);
+): Promise<FlowSettings> => {
+  const flowSettings = v.parse(flowSettingsSchema, input);
 
   const positionalPassedTarget = flowSettings._.at(1);
   const argTarget = flowSettings.target;
 
-  let target: string;
+  let target =
+    positionalPassedTarget ?? argTarget ?? DEFAULT_INPUT_DIRECTORY_PATH;
   if (positionalPassedTarget && argTarget) {
     printer.printConsoleMessage(
       "info",
@@ -78,13 +70,20 @@ export const parseFlowSettings = (
     );
 
     target = argTarget;
-  } else {
-    target =
-      positionalPassedTarget ?? argTarget ?? DEFAULT_INPUT_DIRECTORY_PATH;
   }
 
-  return {
-    ...flowSettings,
-    target: resolve(target),
-  };
+  await access(target, constants.F_OK).catch(() => {
+    throw new Error(`Execution target does not exist:\n${target}`);
+  });
+
+  flowSettings.target = resolve(target);
+
+  if ((await stat(target)).isFile()) {
+    flowSettings.include = [basename(target)].concat(
+      flowSettings.include ?? [],
+    );
+    flowSettings.target = dirname(target);
+  }
+
+  return flowSettings;
 };

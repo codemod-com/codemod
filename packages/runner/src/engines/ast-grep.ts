@@ -87,51 +87,34 @@ export const runAstGrepCodemod = async (
   oldPath: string,
   oldData: string,
 ): Promise<readonly FileCommand[]> => {
-  let astGrepExecutablePath: string;
-
-  try {
-    // Try to look by the package.json of the CLI
-    astGrepExecutablePath = join(
-      require.resolve("@ast-grep/cli/package.json"),
-      "..",
-      "sg",
-    );
-    await access(astGrepExecutablePath, constants.X_OK);
-  } catch (err) {
-    try {
-      // If not, then try to get node_modules path and then look for .bin folder
-      astGrepExecutablePath = join(
-        __dirname,
-        "..",
-        "node_modules",
-        ".bin",
-        "sg",
-      );
-      await access(astGrepExecutablePath, constants.X_OK);
-    } catch (err) {
+  // Try to look by the package.json of the CLI
+  let astGrepExecutablePath = join(
+    require.resolve("@ast-grep/cli/package.json"),
+    "..",
+    "sg",
+  );
+  await access(astGrepExecutablePath, constants.F_OK).catch(async () => {
+    // If not, then try to get node_modules path and then look for .bin folder
+    astGrepExecutablePath = join(__dirname, "..", "node_modules", ".bin", "sg");
+    await access(astGrepExecutablePath, constants.X_OK).catch(async () => {
       // Finally, try to install it globally
       // First, use `which` command to check if the CLI is already installed
-      try {
-        await execPromise("which sg");
-        astGrepExecutablePath = "sg";
-      } catch (err) {
+      astGrepExecutablePath = "sg";
+      await execPromise("which sg").catch(async () => {
         // If not installed, try to install using npm globally
-        try {
-          const astInstallCommand = "npm install -g @ast-grep/cli";
-          if (process.platform === "win32") {
-            await execPromise(`powershell -Command ${astInstallCommand}`);
-          } else {
-            await execPromise(astInstallCommand);
-          }
-          astGrepExecutablePath = "sg";
-        } catch (err) {
+        const astInstallCommand = "npm install -g @ast-grep/cli";
+        await execPromise(
+          process.platform === "win32"
+            ? `powershell -Command ${astInstallCommand}`
+            : astInstallCommand,
+        ).catch(() => {
           throw new Error(
             `Could not locate the ast-grep CLI. Please install it with 'npm install -g @ast-grep/cli'.`,
           );
-        }
-      }
-    }
-  }
+        });
+      });
+    });
+  });
 
   const commands: FileCommand[] = [];
 

@@ -1,7 +1,7 @@
 import { sep } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-import { type Input, is } from "valibot";
+import { type InferInput, is } from "valibot";
 import type { Configuration as BiomeConfig } from "../types/biome.js";
 import type { JSONSchemaForESLintConfigurationFiles as EslintConfig } from "../types/eslint.js";
 import type { OptionsDefinition as PrettierConfig } from "../types/prettier.js";
@@ -157,7 +157,7 @@ export const repomod: Filemod<Dependencies, Options> = {
     }
 
     if (fileName.includes("package.json")) {
-      let packageJson: Input<typeof packageJsonSchema>;
+      let packageJson: InferInput<typeof packageJsonSchema>;
       try {
         const json = JSON.parse(data);
         if (!is(packageJsonSchema, json)) {

@@ -25,7 +25,7 @@ export const LoginWarningModal = () => {
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogContent>
+      <AlertDialogContent className="bg-white">
         <AlertDialogHeader>
           <AlertDialogTitle>Unlock AI&apos;s full potential</AlertDialogTitle>
         </AlertDialogHeader>
@@ -41,8 +41,8 @@ export const LoginWarningModal = () => {
             <Button variant="secondary">Proceed without AI</Button>
           </AlertDialogCancel>
           <AlertDialogAction asChild>
-            <SignInButton>
-              <Button>Sign in</Button>
+            <SignInButton className="text-white flex gap-1 rounded-md text-sm my-0 h-10 !py-0 bg-black hover:bg-accent hover:text-black">
+              <Button variant="primary">Sign in</Button>
             </SignInButton>
           </AlertDialogAction>
         </AlertDialogFooter>

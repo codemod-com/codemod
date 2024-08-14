@@ -8,7 +8,7 @@ import {
   Check as CheckIcon,
   Copy as CopyIcon,
 } from "@phosphor-icons/react";
-import { Button } from "@studio/components/ui/button";
+import ButtonWithTooltip from "@studio/components/button/BottonWithTooltip";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
 import { useModStore } from "@studio/store/mod";
 import { prettify } from "@studio/utils/prettify";
@@ -32,13 +32,38 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
     }
   };
 
+  const buttonClass =
+    "text-md text-primary-light dark:text-primary-dark hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0";
+
   const handleCopyToCodemodPanel = () => {
     setContent(prettify(value));
   };
 
-  const buttonClass =
-    "text-md text-primary-light dark:text-primary-dark hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0";
+  const copyToCodemodPanelBtn = (
+    <ButtonWithTooltip
+      tooltipContent={<>Copy to Codemod panel</>}
+      variant="ghost"
+      size="icon"
+      className={buttonClass}
+      onClick={handleCopyToCodemodPanel}
+    >
+      <ArrowArcRightIcon />
+      <span className="sr-only">Copy to Codemod panel</span>
+    </ButtonWithTooltip>
+  );
 
+  const copyToClipboardBtn = (
+    <ButtonWithTooltip
+      tooltipContent={<>Copy to clipboard</>}
+      variant="ghost"
+      size="icon"
+      className={buttonClass}
+      onClick={handleCopyToClipboard}
+    >
+      {isCopied ? <CheckIcon /> : <CopyIcon />}
+      <span className="sr-only">Copy to clipboard</span>
+    </ButtonWithTooltip>
+  );
   return (
     <div
       className={cn(
@@ -55,24 +80,8 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
           {language}
         </span>
         <div className="flex items-center space-x-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className={buttonClass}
-            onClick={handleCopyToClipboard}
-          >
-            {isCopied ? <CheckIcon /> : <CopyIcon />}
-            <span className="sr-only">Copy to clipboard</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={buttonClass}
-            onClick={handleCopyToCodemodPanel}
-          >
-            <ArrowArcRightIcon />
-            <span className="sr-only">Copy to Codemod panel</span>
-          </Button>
+          {copyToClipboardBtn}
+          {copyToCodemodPanelBtn}
         </div>
       </div>
       <SyntaxHighlighter

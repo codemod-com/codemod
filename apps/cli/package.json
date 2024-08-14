@@ -4,7 +4,7 @@
   "imports": {
     "#*": "./src/*"
   },
-  "version": "0.12.2",
+  "version": "0.13.5",
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,
@@ -48,7 +48,6 @@
     "@types/node": "18.11.9",
     "@types/prettyjson": "catalog:",
     "@types/semver": "^7.5.8",
-    "@types/unzipper": "catalog:",
     "@types/yargs": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "axios": "catalog:",
@@ -65,15 +64,15 @@
     "semver": "^7.6.2",
     "terminal-link": "catalog:",
     "ts-morph": "18.0.0",
-    "unzipper": "catalog:",
     "valibot": "catalog:",
     "vitest": "^1.0.1",
     "yargs": "catalog:"
   },
   "scripts": {
     "build": "tsc && node ./build.js",
-    "build:publish": "pnpm build -- --publish",
     "build:local": "pnpm build -- --local",
+    "build:prod": "pnpm build -- --prod",
+    "build:publish": "pnpm build -- --publish",
     "package": "pkg --compress GZip .",
     "test": "TEST=1 vitest run",
     "coverage": "TEST=1 vitest run --coverage",
@@ -93,9 +92,9 @@
   "dependencies": {
     "@ast-grep/cli": "catalog:",
     "@ast-grep/napi": "catalog:",
-    "blessed": "catalog:",
-    "esbuild": "^0.23.0",
     "keytar": "catalog:",
-    "@octokit/rest": "catalog:"
+    "@octokit/rest": "catalog:",
+    "blessed": "catalog:",
+    "esbuild": "^0.23.0"
   }
 }

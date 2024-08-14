@@ -7,6 +7,13 @@ import type {
   JSCodeshift,
 } from "jscodeshift";
 
+import {
+  addImportDeclaration,
+  addNamedImports,
+  getImportDeclaration,
+  getImportDeclarationNames,
+} from "@codemod.com/codemod-utils";
+
 const getMatcher =
   (
     j: JSCodeshift,
@@ -35,90 +42,6 @@ const getMatcher =
     return null;
   };
 
-const getImportDeclaration = (
-  j: JSCodeshift,
-  root: Collection<any>,
-  importName: string,
-) =>
-  root
-    .find(j.ImportDeclaration, {
-      source: { value: importName },
-    })
-    .paths()
-    .at(0)?.node;
-
-const buildImportDeclaration = (j: JSCodeshift, sourceName: string) => {
-  return j.importDeclaration([], j.literal(sourceName));
-};
-
-const addNamedImport = (
-  j: JSCodeshift,
-  root: Collection<any>,
-  importName: string,
-  sourceName: string,
-) => {
-  const existingImportDeclaration = getImportDeclaration(j, root, sourceName);
-  const importDeclaration =
-    existingImportDeclaration ?? buildImportDeclaration(j, sourceName);
-
-  const importSpecifier = j.importSpecifier(j.identifier(importName));
-
-  if (
-    importDeclaration.specifiers?.findIndex(
-      (s) =>
-        importSpecifier.imported &&
-        s.local?.name === importSpecifier.imported.name,
-    ) === -1
-  ) {
-    importDeclaration.specifiers?.push(importSpecifier);
-  }
-
-  if (!existingImportDeclaration) {
-    const body = root.get().node.program.body;
-    body.unshift(importDeclaration);
-  }
-};
-
-const collectImportNames = (
-  j: JSCodeshift,
-  root: Collection,
-  source: string,
-) => {
-  const importSpecifierLocalNames = new Map<string, string>();
-
-  let importDefaultSpecifierName: string | null = null;
-  let importNamespaceSpecifierName: string | null = null;
-
-  root
-    .find(j.ImportDeclaration, {
-      source: { value: source },
-    })
-    .forEach((path) => {
-      path.value.specifiers?.forEach((specifier) => {
-        if (j.ImportSpecifier.check(specifier)) {
-          importSpecifierLocalNames.set(
-            specifier.imported.name,
-            specifier.local?.name ?? "",
-          );
-        }
-
-        if (j.ImportDefaultSpecifier.check(specifier) && specifier.local) {
-          importDefaultSpecifierName = specifier.local.name;
-        }
-
-        if (j.ImportNamespaceSpecifier.check(specifier) && specifier.local) {
-          importNamespaceSpecifierName = specifier.local.name;
-        }
-      });
-    });
-
-  return {
-    importSpecifierLocalNames,
-    importDefaultSpecifierName,
-    importNamespaceSpecifierName,
-  };
-};
-
 const replaceHydrate = (
   j: JSCodeshift,
   root: Collection,
@@ -130,7 +53,8 @@ const replaceHydrate = (
     j.callExpression(j.identifier("hydrateRoot"), [args[1], args[0]]),
   );
 
-  addNamedImport(j, root, "hydrateRoot", "react-dom/client");
+  const importDeclaration = addImportDeclaration(j, root, "react-dom/client");
+  addNamedImports(j, ["hydrateRoot"], importDeclaration);
   path.parent.replace(hydrateRoot);
 };
 
@@ -155,7 +79,8 @@ const replaceRender = (
     ),
   );
 
-  addNamedImport(j, root, "createRoot", "react-dom/client");
+  const importDeclaration = addImportDeclaration(j, root, "react-dom/client");
+  addNamedImports(j, ["createRoot"], importDeclaration);
 
   path.parent.replace(createRoot);
   path.parent.insertAfter(render);
@@ -182,7 +107,8 @@ const replaceUnmountComponentAtNode = (
     ),
   );
 
-  addNamedImport(j, root, "createRoot", "react-dom/client");
+  const importDeclaration = addImportDeclaration(j, root, "react-dom/client");
+  addNamedImports(j, ["createRoot"], importDeclaration);
 
   path.parent.replace(createRoot);
   path.parent.insertAfter(unmount);
@@ -203,11 +129,17 @@ export default function transform(
 
   let isDirty = false;
 
+  const importDeclaration = getImportDeclaration(j, root, "react-dom");
+
+  if (!importDeclaration) {
+    return;
+  }
+
   const {
     importNamespaceSpecifierName,
     importDefaultSpecifierName,
     importSpecifierLocalNames,
-  } = collectImportNames(j, root, "react-dom");
+  } = getImportDeclarationNames(j, importDeclaration);
 
   const importedModuleName =
     importDefaultSpecifierName ?? importNamespaceSpecifierName ?? "";

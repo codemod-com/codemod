@@ -1,4 +1,11 @@
-import { type Output, array, nullish, object, parse, string } from "valibot";
+import {
+  type InferOutput,
+  array,
+  nullish,
+  object,
+  parse,
+  string,
+} from "valibot";
 import { eventSchema } from "./eventSchemata";
 
 export const webWorkerIncomingMessageSchema = object({
@@ -10,7 +17,7 @@ export const webWorkerIncomingMessageSchema = object({
 export const parseWebWorkerIncomingMessage = (input: unknown) =>
   parse(webWorkerIncomingMessageSchema, input);
 
-export type WebWorkerIncomingMessage = Output<
+export type WebWorkerIncomingMessage = InferOutput<
   typeof webWorkerIncomingMessageSchema
 >;
 
@@ -23,5 +30,5 @@ export const parseWebWorkerOutgoingMessage = (input: unknown) =>
   parse(webWorkerOutgoingMessageSchema, input);
 
 export type WebWorkerOutgoingMessage = Readonly<
-  Output<typeof webWorkerOutgoingMessageSchema>
+  InferOutput<typeof webWorkerOutgoingMessageSchema>
 >;

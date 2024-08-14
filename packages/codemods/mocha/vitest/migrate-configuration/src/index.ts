@@ -1,6 +1,5 @@
-import type { Filemod } from "@codemod-com/filemod";
 import {
-  type Input,
+  type InferInput,
   array,
   is,
   object,
@@ -8,14 +7,18 @@ import {
   record,
   string,
 } from "valibot";
-import type { FileCommand } from "../../../../../../../packages/filemod/src/internalCommands.js";
+
+import type {
+  Filemod,
+  FileCommand as FilemodCommand,
+} from "@codemod-com/filemod";
 
 const packageJsonSchema = object({
   name: optional(string()),
-  dependencies: optional(record(string())),
-  devDependencies: optional(record(string())),
-  scripts: optional(record(string())),
-  mocha: optional(record(string())),
+  dependencies: optional(record(string(), string())),
+  devDependencies: optional(record(string(), string())),
+  scripts: optional(record(string(), string())),
+  mocha: optional(record(string(), string())),
 });
 
 const tsconfigSchema = object({
@@ -32,7 +35,7 @@ export const repomod: Filemod<Record<string, never>, Record<string, never>> = {
   ],
   excludePatterns: ["**/node_modules/**"],
   handleFile: async (api, path, options) => {
-    const commands: FileCommand[] = [];
+    const commands: FilemodCommand[] = [];
 
     const fileName = path.split("/").at(-1);
     if (!fileName) {
@@ -89,7 +92,7 @@ export default defineConfig({
     }
 
     if (path.endsWith("package.json")) {
-      let packageJson: Input<typeof packageJsonSchema>;
+      let packageJson: InferInput<typeof packageJsonSchema>;
       try {
         const json = JSON.parse(data);
         if (!is(packageJsonSchema, json)) {
@@ -165,7 +168,7 @@ export default defineConfig({
     }
 
     if (path.endsWith("tsconfig.json")) {
-      let tsconfigJson: Input<typeof tsconfigSchema>;
+      let tsconfigJson: InferInput<typeof tsconfigSchema>;
       try {
         const json = JSON.parse(data);
         if (!is(tsconfigSchema, json)) {

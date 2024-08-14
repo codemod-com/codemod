@@ -12,30 +12,78 @@ import { commit } from "./commit.js";
 import { push } from "./push.js";
 
 interface BranchOptions {
+  /**
+   * @description Branch name to checkout
+   */
   branch: string;
+  /**
+   * @description Force checkout to branch
+   * @default true
+   */
   force?: boolean;
 }
 
+export type BranchReturn = PLazy<BranchHelpers> & BranchHelpers;
+
+/**
+ * @description Creates branch for every repository
+ * @param newBranch Branch name to checkout, could be a string or an object with branch and force
+ * @example
+ * ```ts
+ * // chain call
+ * import { git } from '@codemod.com/workflow'
+ * await git.clone('git@github.com:codemod-com/codemod.git')
+ *   .branch('new-branch')
+ * ```
+ * @example
+ * ```ts
+ * // existing branch
+ * import { git } from '@codemod.com/workflow'
+ * await git.clone('git@github.com:codemod-com/codemod.git')
+ *   .branch({
+ *     branch: 'new-branch',
+ *     force: false
+ *   })
+ * ```
+ * @see {@link jsFiles}
+ * @see {@link files}
+ * @see {@link dirs}
+ * @see {@link exec}
+ * @see {@link commit}
+ * @see {@link push}
+ * @see {@link codemod}
+ */
+export function branchLogic(newBranch: string | BranchOptions): BranchReturn;
+
 /**
  * Creates branch for current repository
+ * @param newBranch Branch name to checkout, could be a string or an object with branch and force
+ * @param callback A callback would be called after the branch is created with first argument as helpers
+ * @example
+ * ```ts
+ * // inside callback
+ * import { git } from '@codemod.com/workflow'
+ * await git.clone('git@github.com:codemod-com/codemod.git', async ({ branch }) => {
+ *   await branch('new-branch')
+ * })
+ * ```
+ * @see {@link jsFiles}
+ * @see {@link files}
+ * @see {@link dirs}
+ * @see {@link exec}
+ * @see {@link commit}
+ * @see {@link push}
+ * @see {@link codemod}
  */
 export function branchLogic(
-  rawBranches: string | BranchOptions,
-): PLazy<BranchHelpers> & BranchHelpers;
-/**
- * Creates branch for current repository
- */
-export function branchLogic(
-  rawBranches: string | BranchOptions,
+  newBranch: string | BranchOptions,
   callback: (helpers: BranchHelpers) => void | Promise<void>,
-): PLazy<BranchHelpers> & BranchHelpers;
-/**
- * Creates branch for current repository
- */
+): BranchReturn;
+
 export function branchLogic(
-  rawBranches: string | BranchOptions,
+  newBranch: string | BranchOptions,
   callback?: (helpers: BranchHelpers) => void | Promise<void>,
-) {
+): BranchReturn {
   const branchoutMemoized = memoize(
     (key: string, gitContext: GitContext, branch: string, force?: boolean) =>
       gitContext.checkout({ branch, force }),
@@ -44,9 +92,9 @@ export function branchLogic(
     .arguments(() => {
       return {
         branchArg:
-          typeof rawBranches === "string"
-            ? ({ branch: rawBranches, force: true } as BranchOptions)
-            : rawBranches,
+          typeof newBranch === "string"
+            ? ({ branch: newBranch, force: true } as BranchOptions)
+            : newBranch,
         callback,
       };
     })
@@ -76,4 +124,4 @@ export const branch = fnWrapper("branch", branchLogic);
 
 const branchHelpers = { jsFiles, commit, push, dirs, codemod, exec, files };
 
-type BranchHelpers = typeof branchHelpers;
+export type BranchHelpers = typeof branchHelpers;

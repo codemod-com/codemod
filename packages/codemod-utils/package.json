@@ -1,0 +1,39 @@
+{
+  "name": "@codemod.com/codemod-utils",
+  "author": "Codemod, Inc.",
+  "imports": {
+    "#*": "./src/*"
+  },
+  "version": "1.0.0",
+  "description": "Set of utilities for jscodeshift",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist",
+    "!**/*.test.js",
+    "!**/*.test.d.ts",
+    "LICENSE",
+    "README.md",
+    "tsconfig.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "coverage": "vitest run --coverage"
+  },
+  "keywords": [],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "20.10.3",
+    "@vitest/coverage-v8": "catalog:",
+    "ts-node": "10.9.1",
+    "vitest": "^1.0.1"
+  },
+  "dependencies": {
+    "@types/jscodeshift": "^0.11.11",
+    "@babel/parser": "^7.24.4",
+    "jscodeshift": "^0.16.1"
+  }
+}

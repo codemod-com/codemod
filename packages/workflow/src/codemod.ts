@@ -5,26 +5,28 @@ import { exec } from "./exec.js";
 import { clc } from "./helpers.js";
 import { spawn } from "./spawn.js";
 
+export type CodemodReturn = PLazy<CodemodHelpers> & CodemodHelpers;
+
 /**
  * Run a codemod in current working directory
  * @param name The name of the codemod (check for available codemods at https://codemod.com/registry)
  * @param args Arguments to pass to the codemod, e.g. `{ dry: true }`, where `dry` is a flag that the codemod accepts
  *
  * @example
- * Simple run
  * ```ts
+ * // Simple run
  * await codemod("valibot/upgrade-v0.31");
  * ```
  *
  * @example
- * Run with arguments
  * ```ts
+ * // Run with arguments
  * await codemod("valibot/upgrade-v0.31", { dry: true });
  * ```
  *
  * @example
- * Chaining codemods
  * ```ts
+ * // Chaining codemods
  * await codemod("valibot/upgrade-v0.31")
  *   .codemod("valibot/upgrade-v0.32")
  *   .codemod("valibot/upgrade-v0.33");
@@ -36,7 +38,7 @@ export function codemodLogic(
     string,
     string | number | boolean | (string | number | boolean)[]
   >,
-): PLazy<CodemodHelpers> & CodemodHelpers {
+): CodemodReturn {
   return new FunctionExecutor("codemod")
     .arguments(() => ({
       name,
@@ -54,7 +56,7 @@ export function codemodLogic(
           }
           return acc;
         },
-        [] as string[],
+        ["--no-interactive"] as string[],
       );
       console.log(
         `${clc.blueBright(`codemod ${name} ${args.join(" ")}`)} ${cwd}`,
@@ -62,6 +64,7 @@ export function codemodLogic(
       await spawn("npx", ["codemod@latest", name, ...args], {
         cwd,
         doNotThrowError: true,
+        printOutput: true,
       });
       await next?.();
     })

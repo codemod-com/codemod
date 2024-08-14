@@ -9,11 +9,13 @@ import { FileContext } from "./contexts/FileContext.js";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
 import { parseMultistring } from "./helpers.js";
 
+export type JsFilesReturn = PLazy<Helpers> & Helpers;
+
 /**
  * @description Filter all js/ts files in current directory
  * @deprecated Use `files().jsFam()` instead
  */
-export function jsFilesLogic(): PLazy<Helpers> & Helpers;
+export function jsFilesLogic(): JsFilesReturn;
 /**
  * @description Filter file by glob pattern
  * @deprecated Use `files(glob).jsFam()` instead
@@ -23,9 +25,7 @@ export function jsFilesLogic(): PLazy<Helpers> & Helpers;
  *   await jsFiles('src/app.ts,src/**∕*.tsx').astGrep`import React from 'react'`;
  * ```
  */
-export function jsFilesLogic(
-  globs: string | readonly string[],
-): PLazy<Helpers> & Helpers;
+export function jsFilesLogic(globs: string | readonly string[]): JsFilesReturn;
 /**
  * @description Filter file by glob pattern and apply callback
  * @deprecated Use `files(glob).jsFam(callback)` instead
@@ -33,21 +33,21 @@ export function jsFilesLogic(
 export function jsFilesLogic(
   globs: string | readonly string[],
   callback: (helpers: Helpers) => void | Promise<void>,
-): PLazy<Helpers> & Helpers;
+): JsFilesReturn;
 /**
  * @description Filter all js/ts files in current directory and apply callback
  * @deprecated Use `files().jsFam(callback)` instead
  */
 export function jsFilesLogic(
   callback: (helpers: Helpers) => void | Promise<void>,
-): PLazy<Helpers> & Helpers;
+): JsFilesReturn;
 export function jsFilesLogic(
   rawGlobs?:
     | string
     | readonly string[]
     | ((helpers: Helpers) => void | Promise<void>),
   maybeCallback?: (helpers: Helpers) => void | Promise<void>,
-): PLazy<Helpers> & Helpers {
+): JsFilesReturn {
   return new FunctionExecutor("jsFiles")
     .arguments(() => {
       const globs = parseMultistring(

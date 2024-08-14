@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto";
-import * as fs from "node:fs";
 
 import supertest from "supertest";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
@@ -12,9 +11,14 @@ import {
   UNAUTHORIZED,
 } from "@codemod-com/api-types";
 import { BUILT_SOURCE_PATH } from "@codemod-com/runner/dist/source-code.js";
-import { type CodemodConfigInput, TarService } from "@codemod-com/utilities";
+import {
+  type CodemodConfigInput,
+  tarInMemory,
+  zipInMemory,
+} from "@codemod-com/utilities";
 
 import { runServer } from "./server.js";
+import { environment } from "./util.js";
 
 const GET_USER_RETURN = {
   user: {
@@ -140,8 +144,8 @@ describe("/publish route", async () => {
     { name: "README.md", data: readmeBuf },
   ];
 
-  const tarService = new TarService(fs);
-  const codemodArchiveBuf = await tarService.pack(fileArray);
+  const codemodTarBuf = await tarInMemory(fileArray);
+  const codemodZipBuf = await zipInMemory(fileArray);
 
   it("should go through the happy path with expected result and calling expected stubs", async () => {
     mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
@@ -156,7 +160,7 @@ describe("/publish route", async () => {
     const response = await supertest(fastify.server)
       .post("/publish")
       .set("Authorization", "auth-header")
-      .attach("codemod.tar.gz", codemodArchiveBuf, {
+      .attach("codemod.tar.gz", codemodTarBuf, {
         contentType: "multipart/form-data",
         filename: "codemod.tar.gz",
       })
@@ -179,7 +183,7 @@ describe("/publish route", async () => {
     expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
       Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
       Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
-      Body: codemodArchiveBuf,
+      Body: codemodTarBuf,
     });
 
     expect(clientInstance.send).toHaveBeenCalledOnce();
@@ -189,7 +193,7 @@ describe("/publish route", async () => {
 
     expect(mocks.axios.post).toHaveBeenCalledOnce();
     expect(mocks.axios.post).toHaveBeenCalledWith(
-      "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
+      environment.ZAPIER_PUBLISH_HOOK,
       {
         codemod: {
           name: codemodRcContents.name,
@@ -216,12 +220,43 @@ describe("/publish route", async () => {
     });
   });
 
+  it("should go through the happy path when codemod comes as a zip", async () => {
+    mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
+    mocks.prisma.codemod.findUnique.mockImplementation(() => null);
+
+    mocks.prisma.codemod.upsert.mockImplementation(() => {
+      return { createdAt: { getTime: () => MOCK_TIMESTAMP } };
+    });
+
+    const expectedCode = 200;
+
+    const response = await supertest(fastify.server)
+      .post("/publish")
+      .set("Authorization", "auth-header")
+      .attach("codemod.zip", codemodZipBuf, {
+        contentType: "multipart/form-data",
+        filename: "codemod.zip",
+      })
+      .expect((res) => {
+        if (res.status !== expectedCode) {
+          console.log(JSON.stringify(res.body, null, 2));
+        }
+      })
+      .expect("Content-Type", "application/json; charset=utf-8")
+      .expect(expectedCode);
+
+    expect(response.body).toEqual({
+      name: codemodRcContents.name,
+      version: codemodRcContents.version,
+    });
+  });
+
   it("should not allow further execution if required files were not provided", async () => {
     mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
 
     const expectedCode = 400;
 
-    const archiveWithoutMainFile = await tarService.pack(
+    const archiveWithoutMainFile = await tarInMemory(
       fileArray.filter(
         (f) => f.name !== "/src/index.ts" && f.name !== BUILT_SOURCE_PATH,
       ),
@@ -261,7 +296,7 @@ describe("/publish route", async () => {
     const response = await supertest(fastify.server)
       .post("/publish")
       .set("Authorization", "auth-header")
-      .attach("codemod.tar.gz", codemodArchiveBuf, {
+      .attach("codemod.tar.gz", codemodTarBuf, {
         contentType: "multipart/form-data",
         filename: "codemod.tar.gz",
       })
@@ -295,7 +330,7 @@ describe("/publish route", async () => {
     const response = await supertest(fastify.server)
       .post("/publish")
       .set("Authorization", "auth-header")
-      .attach("codemod.tar.gz", codemodArchiveBuf, {
+      .attach("codemod.tar.gz", codemodTarBuf, {
         contentType: "multipart/form-data",
         filename: "codemod.tar.gz",
       })
@@ -326,7 +361,7 @@ describe("/publish route", async () => {
     const response = await supertest(fastify.server)
       .post("/publish")
       .set("Authorization", "auth-header")
-      .attach("codemod.tar.gz", codemodArchiveBuf, {
+      .attach("codemod.tar.gz", codemodTarBuf, {
         contentType: "multipart/form-data",
         filename: "codemod.tar.gz",
       })
@@ -371,7 +406,7 @@ describe("/publish route", async () => {
       const response = await supertest(fastify.server)
         .post("/publish")
         .set("Authorization", "auth-header")
-        .attach("codemod.tar.gz", codemodArchiveBuf, {
+        .attach("codemod.tar.gz", codemodTarBuf, {
           contentType: "multipart/form-data",
           filename: "codemod.tar.gz",
         })
@@ -427,7 +462,7 @@ describe("/publish route", async () => {
       const response = await supertest(fastify.server)
         .post("/publish")
         .set("Authorization", "auth-header")
-        .attach("codemod.tar.gz", codemodArchiveBuf, {
+        .attach("codemod.tar.gz", codemodTarBuf, {
           contentType: "multipart/form-data",
           filename: "codemod.tar.gz",
         })
@@ -495,7 +530,7 @@ describe("/publish route", async () => {
         },
       };
 
-      const updatedArchive = await tarService.pack([
+      const updatedArchive = await tarInMemory([
         ...fileArray.filter((f) => f.name !== ".codemodrc.json"),
         {
           name: ".codemodrc.json",
@@ -547,7 +582,7 @@ describe("/publish route", async () => {
         },
       };
 
-      const updatedArchive = await tarService.pack([
+      const updatedArchive = await tarInMemory([
         ...fileArray.filter((f) => f.name !== ".codemodrc.json"),
         {
           name: ".codemodrc.json",

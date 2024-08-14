@@ -66,6 +66,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     /^https?:\/\/.*-codemod\.vercel\.app$/,
     /^https?:\/\/localhost(:\d+)?$/,
     /^https?:\/\/codemod\.com$/,
+    /^https?:\/\/staging.codemod\.com$/,
   ];
 
   await fastify.register(cors, {
@@ -139,7 +140,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         return reply.code(401).send();
       }
 
-      const { codemodSource, codemodEngine, repoUrl, branch } =
+      const { codemodSource, codemodEngine, repoUrl, branch, persistent } =
         parseCodemodRunBody(request.body);
 
       const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
@@ -148,6 +149,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         userId,
         repoUrl,
         branch,
+        persistent,
       });
 
       if (!job.id) {
@@ -181,6 +183,29 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
               progress?: { processed: number; total: number };
             })
           : null,
+      };
+    },
+  );
+
+  instance.get(
+    "/codemodRun/output/:jobId",
+    { preHandler: instance.authenticate },
+    async (request, reply) => {
+      if (!redis) {
+        throw new Error("Redis service is not running.");
+      }
+
+      const { jobId } = parseCodemodStatusParams(request.params);
+
+      const job = await queue?.getJob(jobId);
+
+      const data = job?.data.persistent
+        ? await redis.get(`job-${jobId}::output`)
+        : await redis.getdel(`job-${jobId}::output`);
+      reply.type("application/json").code(200);
+      return {
+        success: true,
+        output: data,
       };
     },
   );

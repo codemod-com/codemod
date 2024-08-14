@@ -30,5 +30,6 @@ build({
     "detect-newline",
     "@octokit/rest",
     "git-url-parse",
+    "diff",
   ],
 });

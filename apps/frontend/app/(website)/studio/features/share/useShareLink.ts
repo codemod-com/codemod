@@ -1,3 +1,4 @@
+import { isServer } from "@studio/config";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
@@ -44,6 +45,7 @@ export const useShareLink = () => {
         [SEARCH_PARAMS_KEYS.COMPRESSED_SHAREABLE_CODEMOD]: output,
       });
 
+      if (isServer) return new URL("");
       const url = new URL(window.location.href);
       url.search = searchParams.toString();
 

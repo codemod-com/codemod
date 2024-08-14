@@ -1,50 +1,44 @@
 import {
-  type Output,
-  type ValiError,
+  type InferOutput,
   array,
-  coerce,
-  number,
   object,
   parse,
+  pipe,
   string,
+  transform,
+  unknown,
 } from "valibot";
 
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 
 export const environmentSchema = object({
-  PORT: coerce(number(), (input) => Number(input)),
+  PORT: pipe(string(), transform(Number)),
   ENCRYPTION_KEY: string(),
   CLERK_PUBLISH_KEY: string(),
   CLERK_SECRET_KEY: string(),
   CLERK_JWT_KEY: string(),
   APP_TOKEN_TEMPLATE: string(),
-  VERIFIED_PUBLISHERS: coerce(array(string()), (input) => {
-    if (!isNeitherNullNorUndefined(input)) {
+  VERIFIED_PUBLISHERS: pipe(
+    unknown(),
+    transform((input) => {
+      if (!isNeitherNullNorUndefined(input)) {
+        return [];
+      }
+
+      if (Array.isArray(input)) {
+        return parse(array(string()), input);
+      }
+
+      if (typeof input === "string") {
+        return input.split(",").map((p) => p.trim());
+      }
+
       return [];
-    }
-
-    if (Array.isArray(input)) {
-      return input;
-    }
-
-    if (typeof input === "string") {
-      return input.split(",").map((p) => p.trim());
-    }
-
-    return [];
-  }),
+    }),
+  ),
 });
 
-export type Environment = Output<typeof environmentSchema>;
+export type Environment = InferOutput<typeof environmentSchema>;
 
-export const parseEnvironment = (input: unknown) => {
-  try {
-    return parse(environmentSchema, input);
-  } catch (err) {
-    throw new Error(
-      `Invalid environment: ${(err as ValiError).issues
-        .map((i) => i.path?.map((p) => p.key).join("."))
-        .join(", ")}`,
-    );
-  }
-};
+export const parseEnvironment = (input: unknown) =>
+  parse(environmentSchema, input);
