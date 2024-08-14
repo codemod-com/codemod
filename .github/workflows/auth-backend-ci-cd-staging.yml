@@ -1,4 +1,4 @@
-name: CI/CD Pipeline for Auth Backend (Production)
+name: CI/CD Pipeline for Auth Backend (Staging)
 
 on:
   push:
@@ -52,7 +52,7 @@ jobs:
           docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.STAGING_ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION
 
       - name: Decode SSH Key
-        run: echo "${{ secrets.AWS_SSH_KEY }}" | base64 --decode > private_key.pem
+        run: echo "${{ secrets.AWS_SSH_KEY_STAGING }}" | base64 --decode > private_key.pem
 
       - name: Set file permissions
         run: chmod 600 private_key.pem
@@ -60,7 +60,7 @@ jobs:
       - name: Deploy to EC2
         if: steps.check_version.outputs.should_deploy == 'true'
         run: |
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.AWS_EC2_USER_NAME }}@${{ secrets.AWS_EC2_HOST }} '
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.AWS_EC2_USER_NAME }}@${{ secrets.AWS_EC2_HOST_STAGING }} '
             export AWS_REGION=${{ secrets.AWS_REGION }}
             export ECR_REGISTRY=${{ secrets.ECR_REGISTRY }}
             export STAGING_ECR_REPOSITORY_AUTH_BACKEND_NAME=${{ secrets.STAGING_ECR_REPOSITORY_AUTH_BACKEND_NAME }}
