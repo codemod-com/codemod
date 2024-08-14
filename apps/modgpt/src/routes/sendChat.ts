@@ -40,6 +40,12 @@ export const getSendChatPath = (instance: Instance) =>
         return reply.code(400).send();
       }
 
+      const systemPrompt = {
+        role: "system",
+        content: "If the question is not strictly about code migration and codemods, DO NOT answer. Instead, say: I am here to help with questions specifically about code migrations and codemods. If you have any questions related to those topics, feel free to ask!"
+      };
+      messages.unshift(systemPrompt);
+
       let completion: string | ChatMessage | null = null;
       try {
         if (engine === "claude-2.0" || engine === "claude-instant-1.2") {
