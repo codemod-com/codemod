@@ -70,7 +70,7 @@ jobs:
             LATEST_IMAGE_VERSION=$(aws ecr describe-images --repository-name $ECR_REPOSITORY_AUTH_BACKEND_NAME --region $AWS_REGION --query "sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]" --output text)
             echo "Latest image version: $LATEST_IMAGE_VERSION"
 
-            cd nginx/
+            cd backend/
             sed -i -E "s|(auth-backend:)[0-9]+\.[0-9]+\.[0-9]+|\1$LATEST_IMAGE_VERSION|g" docker-compose.yml
             if [ $? -eq 0 ]; then
               echo "Image version updated successfully in docker-compose.yml."
