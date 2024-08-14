@@ -1,6 +1,6 @@
 import type { API, FileInfo, JSCodeshift } from "jscodeshift";
 
-import { getClassComponents } from "@codemod-com/codemod-utils";
+import { getClassComponents } from "@codemod.com/codemod-utils";
 
 const buildCallbackRef = (j: JSCodeshift, refName: string) =>
   j.jsxAttribute(

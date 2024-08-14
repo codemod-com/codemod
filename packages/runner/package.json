@@ -4,7 +4,7 @@
   "imports": {
     "#*": "./src/*"
   },
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "The codemod runner used in Codemod.com ecosystem",
   "type": "module",
   "main": "./dist/index.js",
@@ -43,7 +43,7 @@
     "@babel/preset-typescript": "catalog:",
     "@babel/traverse": "catalog:",
     "@babel/types": "^7.24.0",
-    "@codemod-com/codemod-utils": "workspace:*",
+    "@codemod.com/codemod-utils": "workspace:*",
     "@codemod-com/filemod": "workspace:*",
     "@codemod-com/printer": "workspace:*",
     "@codemod-com/utilities": "workspace:*",

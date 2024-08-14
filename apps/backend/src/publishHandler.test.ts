@@ -18,6 +18,7 @@ import {
 } from "@codemod-com/utilities";
 
 import { runServer } from "./server.js";
+import { environment } from "./util.js";
 
 const GET_USER_RETURN = {
   user: {
@@ -192,7 +193,7 @@ describe("/publish route", async () => {
 
     expect(mocks.axios.post).toHaveBeenCalledOnce();
     expect(mocks.axios.post).toHaveBeenCalledWith(
-      "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
+      environment.ZAPIER_PUBLISH_HOOK,
       {
         codemod: {
           name: codemodRcContents.name,

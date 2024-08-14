@@ -12,7 +12,6 @@ import { unified } from "unified";
 import { filter } from "unist-util-filter";
 import { visit } from "unist-util-visit";
 
-import { defaultJSCodeshiftParser } from "@codemod-com/codemod-utils";
 import {
   type CallbackService,
   type Filemod,
@@ -25,6 +24,7 @@ import {
 } from "@codemod-com/filemod";
 import type { Printer } from "@codemod-com/printer";
 import type { Codemod, FileCommand } from "@codemod-com/utilities";
+import { defaultJSCodeshiftParser } from "@codemod.com/codemod-utils";
 import { isTheSameData } from "#utils.js";
 import type { CodemodExecutionErrorCallback } from "../schemata/callbacks.js";
 

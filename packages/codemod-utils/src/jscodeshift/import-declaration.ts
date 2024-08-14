@@ -9,11 +9,12 @@ import type {
 } from "jscodeshift";
 
 /**
- * Retrieves a named import specifier from an import declaration.
+ * Finds the named import specifier within the given import declaration.
+ *
  * @param j - The JSCodeshift API.
  * @param importDeclaration - The import declaration to search.
- * @param name - The imported name of the named import to retrieve.
- * @returns The import specifier if found, otherwise null.
+ * @param name - The name of the import to find.
+ * @returns The import specifier if found, otherwise `null`.
  */
 export const getNamedImport = (
   j: JSCodeshift,
@@ -26,10 +27,11 @@ export const getNamedImport = (
   ) ?? null;
 
 /**
- * Retrieves the default import specifier from an import declaration.
+ * Finds the default import specifier within the given import declaration.
+ *
  * @param j - The JSCodeshift API.
  * @param importDeclaration - The import declaration to search.
- * @returns The default import specifier if found, otherwise null.
+ * @returns The default import specifier if found, otherwise `null`.
  */
 export const getDefaultImport = (
   j: JSCodeshift,
@@ -40,10 +42,11 @@ export const getDefaultImport = (
   ) ?? null;
 
 /**
- * Retrieves the namespace import specifier from an import declaration.
+ * Finds the namespace import specifier within the given import declaration.
+ *
  * @param j - The JSCodeshift API.
  * @param importDeclaration - The import declaration to search.
- * @returns The namespace import specifier if found, otherwise null.
+ * @returns The namespace import specifier if found, otherwise `null`.
  */
 export const getNamespaceImport = (
   j: JSCodeshift,
@@ -54,9 +57,10 @@ export const getNamespaceImport = (
   ) ?? null;
 
 /**
- * Renames the default import specifier in an import declaration.
+ * Renames the default import specifier in the given import declaration.
+ *
  * @param j - The JSCodeshift API.
- * @param newName - The new name for the default import.
+ * @param newName - The new name for the default import specifier.
  * @param importDeclaration - The import declaration to modify.
  * @returns True if the import declaration was modified, otherwise false.
  */
@@ -80,11 +84,12 @@ export const renameDefaultImport = (
 };
 
 /**
- * Adds named import specifiers to an import declaration.
+ * Adds new named import specifiers to an existing import declaration.
+ *
  * @param j - The JSCodeshift API.
  * @param names - The names of the imports to add.
  * @param importDeclaration - The import declaration to modify.
- * @returns True if the import declaration was modified, otherwise false.
+ * @returns True if any new import specifiers were added, otherwise false.
  */
 export const addNamedImports = (
   j: JSCodeshift,
@@ -114,11 +119,12 @@ export const addNamedImports = (
 };
 
 /**
- * Removes named import specifiers from an import declaration.
+ * Removes the specified named imports from an import declaration.
+ *
  * @param j - The JSCodeshift API.
  * @param names - The names of the imports to remove.
  * @param importDeclaration - The import declaration to modify.
- * @returns True if the import declaration was modified, otherwise false.
+ * @returns True if any named imports were removed, otherwise false.
  */
 export const removeNamedImports = (
   j: JSCodeshift,
@@ -150,10 +156,11 @@ export const removeNamedImports = (
 };
 
 /**
- * Removes the default import specifier from an import declaration.
+ * Removes the default import from an import declaration.
+ *
  * @param j - The JSCodeshift API.
  * @param importDeclaration - The import declaration to modify.
- * @returns True if the import declaration was modified, otherwise false.
+ * @returns True if the default import was removed, otherwise false.
  */
 export const removeDefaultImport = (
   j: JSCodeshift,
@@ -169,10 +176,11 @@ export const removeDefaultImport = (
 };
 
 /**
- * Removes the namespace import specifier from an import declaration.
+ * Removes the namespace import from an import declaration.
+ *
  * @param j - The JSCodeshift API.
  * @param importDeclaration - The import declaration to modify.
- * @returns True if the import declaration was modified, otherwise false.
+ * @returns True if the namespace import was removed, otherwise false.
  */
 export const removeNamespaceImport = (
   j: JSCodeshift,
@@ -186,13 +194,6 @@ export const removeNamespaceImport = (
   return importDeclaration.value.specifiers.length !== initialLength;
 };
 
-/**
- * Checks if an identifier is used in the code.
- * @param j - The JSCodeshift API.
- * @param root - The root collection to search.
- * @param name - The name of the identifier to check.
- * @returns True if the identifier is used, otherwise false.
- */
 const isIdentifierUsed = (
   j: JSCodeshift,
   root: Collection,
@@ -205,9 +206,11 @@ const isIdentifierUsed = (
 
 /**
  * Removes unused import specifiers from an import declaration.
+ *
  * @param j - The JSCodeshift API.
- * @param root - The root collection to search.
+ * @param root - The root of the AST.
  * @param importDeclaration - The import declaration to modify.
+ * @returns True if any specifiers were removed, otherwise false.
  */
 export const removeUnusedSpecifiers = (
   j: JSCodeshift,
@@ -245,12 +248,11 @@ type ImportDeclarationNames = {
 };
 
 /**
- * Extracts the local names of import specifiers from an import declaration.
+ * Retrieves the names of the import specifiers, default import, and namespace import from an import declaration.
  *
- * @param j - The JSCodeshift library.
- * @param importDeclaration - The import declaration path.
- * @returns An object containing the local names of import specifiers,
- *          the name of the default import specifier, and the name of the namespace import specifier.
+ * @param j - The JSCodeshift API.
+ * @param importDeclaration - The import declaration to extract the names from.
+ * @returns An object containing the names of the import specifiers, default import, and namespace import.
  */
 export const getImportDeclarationNames = (
   j: JSCodeshift,
@@ -286,13 +288,12 @@ export const getImportDeclarationNames = (
 };
 
 /**
- * Checks if an import declaration has a specified local name.
- * import { a as b } from 'lib' // "a" is imported name, "b" is local name
+ * Checks if an import declaration contains a local name matching the provided name.
  *
- * @param j - The JSCodeshift library.
- * @param name - The local name to check for.
- * @param importDeclaration - The import declaration path.
- * @returns True if the import declaration contains the specified local name, false otherwise.
+ * @param j - The JSCodeshift API.
+ * @param name - The name to check for in the import declaration.
+ * @param importDeclaration - The import declaration to check.
+ * @returns `true` if the import declaration contains a local name matching the provided name, `false` otherwise.
  */
 export const importDeclarationHasLocalName = (
   j: JSCodeshift,
@@ -315,12 +316,12 @@ export const importDeclarationHasLocalName = (
 };
 
 /**
- * Retrieves the local name of a named import from an ImportDeclaration.
+ * Gets the local name of a named import in an import declaration.
  *
- * @param j - The JSCodeshift API object used for AST manipulation.
- * @param name - The local name of the named import to look for.
- * @param importDeclaration - The ImportDeclaration AST node to search within.
- * @returns The local name of the named import if found, otherwise undefined.
+ * @param j - The JSCodeshift API.
+ * @param name - The name of the imported module to find the local name for.
+ * @param importDeclaration - The import declaration to search.
+ * @returns The local name of the named import, or `null` if the name is not found.
  */
 export const getNamedImportLocalName = (
   j: JSCodeshift,

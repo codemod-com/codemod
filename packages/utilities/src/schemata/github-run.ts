@@ -9,6 +9,7 @@ export const codemodRunBodySchema = v.object({
   ]),
   repoUrl: v.optional(v.string()),
   branch: v.optional(v.string()),
+  persistent: v.optional(v.boolean()),
 });
 
 export type CodemodRunResponse = { success: boolean; codemodRunId: string };

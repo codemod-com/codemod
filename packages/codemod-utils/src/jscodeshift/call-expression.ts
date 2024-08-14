@@ -30,6 +30,17 @@ const getMemberExpressionRootObject = (
   return null;
 };
 
+/**
+ * Retrieves the name of the callee in a CallExpression.
+ *
+ * If the callee is an Identifier, it returns the name of the Identifier.
+ * If the callee is a MemberExpression, it recursively retrieves the name of the root object of the MemberExpression.
+ * If the callee is neither an Identifier nor a MemberExpression, it returns null.
+ *
+ * @param j - The JSCodeshift API object used for AST manipulation.
+ * @param callee - The Expression representing the callee of a CallExpression.
+ * @returns The name of the callee, or null if the callee is not an Identifier or MemberExpression.
+ */
 export const getCalleeName = (j: JSCodeshift, callee: Expression) => {
   if (j.Identifier.check(callee)) {
     return callee.name;
@@ -45,12 +56,12 @@ export const getCalleeName = (j: JSCodeshift, callee: Expression) => {
 };
 
 /**
- * Retrieves all CallExpression nodes from the root Collection that use functions imported by the given ImportDeclaration.
+ * Retrieves all CallExpression nodes in the given AST root that have a callee imported from the specified ImportDeclaration.
  *
  * @param j - The JSCodeshift API object used for AST manipulation.
- * @param root - The root Collection representing the AST of the source code.
+ * @param root - The root AST node to search for CallExpression nodes.
  * @param importDeclaration - The ImportDeclaration AST node to match the imported functions against.
- * @returns A Collection of CallExpression nodes that correspond to the imported functions.
+ * @returns A collection of CallExpression nodes whose callee is imported from the given ImportDeclaration.
  */
 export const getCallExpressionsByImport = (
   j: JSCodeshift,
@@ -69,12 +80,12 @@ export const getCallExpressionsByImport = (
 };
 
 /**
- * Checks if the callee of a CallExpression is imported from the given ImportDeclaration.
+ * Checks if the callee of a CallExpression is imported from the specified ImportDeclaration.
  *
  * @param j - The JSCodeshift API object used for AST manipulation.
  * @param importDeclaration - The ImportDeclaration AST node to match the imported functions against.
- * @param callExpression - The CallExpression AST node whose callee is being checked.
- * @returns A boolean indicating whether the callee is imported from the given ImportDeclaration.
+ * @param callExpression - The CallExpression AST node being checked.
+ * @returns A boolean indicating whether the callee of the CallExpression is imported from the specified ImportDeclaration.
  */
 export const isCalleeImportedFromImportDeclaration = (
   j: JSCodeshift,
@@ -92,13 +103,13 @@ export const isCalleeImportedFromImportDeclaration = (
 };
 
 /**
- * Checks if the given CallExpression is a known method call from a given library.
+ * Checks if a CallExpression's callee is a known library method imported from the specified ImportDeclaration.
  *
  * @param j - The JSCodeshift API object used for AST manipulation.
  * @param callExpression - The CallExpression AST node being checked.
  * @param importDeclaration - The ImportDeclaration AST node to match the imported functions against.
- * @param knownMethodNames - An array of method names known to be imported from the library.
- * @returns A boolean indicating whether the CallExpression is a method call from the known library.
+ * @param knownMethodNames - An array of known library method names to check against.
+ * @returns A boolean indicating whether the callee of the CallExpression is a known library method imported from the specified ImportDeclaration.
  */
 export const isCallExpressionLibraryMethod = (
   j: JSCodeshift,
