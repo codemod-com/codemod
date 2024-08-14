@@ -6,6 +6,7 @@ import {
   DEFAULT_ENABLE_LOGGING,
   DEFAULT_ENABLE_PRETTIER,
   DEFAULT_INSTALL,
+  DEFAULT_INTERACTIVE,
   DEFAULT_TELEMETRY,
   DEFAULT_THREAD_COUNT,
   DEFAULT_USE_JSON,
@@ -143,9 +144,13 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       description: "Run codemod in the cloud",
       default: false,
     })
+    .option("interactive", {
+      type: "boolean",
+      default: DEFAULT_INTERACTIVE,
+      hidden: true,
+    })
     .option("no-interactive", {
       type: "boolean",
       description: "Disable interactive mode",
-      default: false,
     });
 };
