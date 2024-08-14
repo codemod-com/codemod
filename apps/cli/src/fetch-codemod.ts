@@ -237,7 +237,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
   });
 
   const downloadPath = join(path, "codemod.tar.gz");
-  const { cacheUsed } = await downloadFile({
+  const { cached: cacheUsed } = await downloadFile({
     url: linkResponse.link,
     path: downloadPath,
     cache: argv.cache,
@@ -249,14 +249,11 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
     );
   });
 
-  // If cache was used, the codemod is already unpacked
-  if (!cacheUsed) {
-    try {
-      await untar(downloadPath, path);
-    } catch (err) {
-      spinner?.fail();
-      throw new Error((err as Error).message ?? "Error unpacking codemod");
-    }
+  try {
+    await untar(downloadPath, path);
+  } catch (err) {
+    spinner?.fail();
+    throw new Error((err as Error).message ?? "Error unpacking codemod");
   }
 
   spinner?.stopAndPersist({
