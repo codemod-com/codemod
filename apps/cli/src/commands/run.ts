@@ -104,7 +104,7 @@ export const handleRunCliCommand = async (options: {
     !args.readme &&
     !args.config &&
     !args.version &&
-    args.mode !== "json"
+    !args.mode
   ) {
     await checkFileTreeVersioning(flowSettings.target);
   }
