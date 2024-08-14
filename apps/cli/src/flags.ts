@@ -142,5 +142,10 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       type: "boolean",
       description: "Run codemod in the cloud",
       default: false,
+    })
+    .option("no-interactive", {
+      type: "boolean",
+      description: "Disable interactive mode",
+      default: false,
     });
 };
