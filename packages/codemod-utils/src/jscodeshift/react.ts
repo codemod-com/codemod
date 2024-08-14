@@ -9,7 +9,6 @@ import { type FunctionLike, getFunctionName } from "./function.js";
 import { getImportDeclaration } from "./global.js";
 import { getImportDeclarationNames } from "./import-declaration.js";
 
-
 const isCapitalized = (str: string): boolean => {
   if (str.length === 0) {
     return false;
