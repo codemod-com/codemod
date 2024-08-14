@@ -25,7 +25,7 @@ jobs:
         id: get_version
         run: |
           VERSION=$(cat apps/auth-service/package.json | jq -r '.version')
-          echo "VERSION=${VERSION}-staging" >> $GITHUB_ENV
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
       - name: Login to Amazon ECR
         run: |
@@ -34,7 +34,7 @@ jobs:
       - name: Check latest image version in ECR
         id: check_version
         run: |
-          LATEST_ECR_VERSION=$(aws ecr describe-images --repository-name ${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }} --region ${{ secrets.AWS_REGION }} --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
+          LATEST_ECR_VERSION=$(aws ecr describe-images --repository-name ${{ secrets.STAGING_ECR_REPOSITORY_AUTH_BACKEND_NAME }} --region ${{ secrets.AWS_REGION }} --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
           if [ "$VERSION" == "$LATEST_ECR_VERSION" ]; then
             echo "::set-output name=should_deploy::false"
           else
@@ -44,12 +44,12 @@ jobs:
       - name: Build Docker image
         if: steps.check_version.outputs.should_deploy == 'true'
         run: |
-          docker build -f apps/auth-service/Dockerfile --no-cache --progress=plain -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION .
+          docker build -f apps/auth-service/Dockerfile --no-cache --progress=plain -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.STAGING_ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION .
 
       - name: Push Docker image to Amazon ECR
         if: steps.check_version.outputs.should_deploy == 'true'
         run: |
-          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION
+          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.STAGING_ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION
 
       - name: Decode SSH Key
         run: echo "${{ secrets.AWS_SSH_KEY_STAGING }}" | base64 --decode > private_key.pem
@@ -63,11 +63,11 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.AWS_EC2_USER_NAME }}@${{ secrets.AWS_EC2_HOST_STAGING }} '
             export AWS_REGION=${{ secrets.AWS_REGION }}
             export ECR_REGISTRY=${{ secrets.ECR_REGISTRY }}
-            export ECR_REPOSITORY_AUTH_BACKEND_NAME=${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }}
+            export STAGING_ECR_REPOSITORY_AUTH_BACKEND_NAME=${{ secrets.STAGING_ECR_REPOSITORY_AUTH_BACKEND_NAME }}
 
             aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $ECR_REGISTRY
 
-            LATEST_IMAGE_VERSION=$(aws ecr describe-images --repository-name $ECR_REPOSITORY_AUTH_BACKEND_NAME --region $AWS_REGION --query "sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]" --output text)
+            LATEST_IMAGE_VERSION=$(aws ecr describe-images --repository-name $STAGING_ECR_REPOSITORY_AUTH_BACKEND_NAME --region $AWS_REGION --query "sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]" --output text)
             echo "Latest image version: $LATEST_IMAGE_VERSION"
 
             cd backend/
