@@ -27,6 +27,7 @@ export const DEFAULT_ENABLE_PRETTIER = false;
 export const DEFAULT_ENABLE_LOGGING = false;
 export const DEFAULT_CACHE = true;
 export const DEFAULT_INSTALL = true;
+export const DEFAULT_INTERACTIVE = true;
 export const DEFAULT_USE_JSON = false;
 export const DEFAULT_THREAD_COUNT = 4;
 export const DEFAULT_DRY_RUN = false;

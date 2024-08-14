@@ -294,19 +294,21 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
   }
 
   if (config.engine === "recipe") {
-    const { names } = await inquirer.prompt<{ names: string[] }>({
-      name: "names",
-      type: "checkbox",
-      message:
-        "Select the codemods you would like to run. Codemods will be executed in order.",
-      choices: config.names,
-      default: config.names,
-    });
+    if (argv.interactive) {
+      const { names } = await inquirer.prompt<{ names: string[] }>({
+        name: "names",
+        type: "checkbox",
+        message:
+          "Select the codemods you would like to run. Codemods will be executed in order.",
+        choices: config.names,
+        default: config.names,
+      });
 
-    config.names = names;
+      config.names = names;
+    }
 
     const subCodemodsSpinner = printer.withLoaderMessage(
-      chalk.cyan(`Fetching ${names.length} recipe codemods...`),
+      chalk.cyan(`Fetching ${config.names.length} recipe codemods...`),
     );
 
     subCodemodsSpinner.stopAndPersist({

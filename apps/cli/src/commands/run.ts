@@ -100,10 +100,10 @@ export const handleRunCliCommand = async (options: {
 
   if (
     !flowSettings.dry &&
-    !args["disable-tree-version-check"] &&
     !args.readme &&
     !args.config &&
     !args.version &&
+    args.interactive &&
     !args.mode
   ) {
     await checkFileTreeVersioning(flowSettings.target);

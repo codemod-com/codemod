@@ -6,6 +6,7 @@ import {
   DEFAULT_ENABLE_LOGGING,
   DEFAULT_ENABLE_PRETTIER,
   DEFAULT_INSTALL,
+  DEFAULT_INTERACTIVE,
   DEFAULT_TELEMETRY,
   DEFAULT_THREAD_COUNT,
   DEFAULT_USE_JSON,
@@ -119,11 +120,6 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       description:
         "Disable packages installation for the codemod run if there is `deps` field declared in its configuration",
     })
-    .option("disable-tree-version-check", {
-      type: "boolean",
-      description: "Disable the tree version check",
-      hidden: true,
-    })
     .option("readme", {
       type: "boolean",
       description:
@@ -142,5 +138,14 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       type: "boolean",
       description: "Run codemod in the cloud",
       default: false,
+    })
+    .option("interactive", {
+      type: "boolean",
+      default: DEFAULT_INTERACTIVE,
+      hidden: true,
+    })
+    .option("no-interactive", {
+      type: "boolean",
+      description: "Disable interactive mode",
     });
 };
