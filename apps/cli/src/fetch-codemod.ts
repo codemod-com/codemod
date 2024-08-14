@@ -233,7 +233,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
   });
 
   const downloadPath = join(path, "codemod.tar.gz");
-  const { cached: cacheUsed } = await downloadFile({
+  const { cached } = await downloadFile({
     url: linkResponse.link,
     path: downloadPath,
     cache: argv.cache,
@@ -255,7 +255,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
   spinner?.stopAndPersist({
     symbol: oraCheckmark,
     text: chalk.cyan(
-      cacheUsed
+      cached
         ? `Successfully fetched ${printableName} from local cache.`
         : `Successfully downloaded ${printableName} from the registry.`,
     ),
@@ -266,7 +266,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
     throwOnNotFound: true,
   });
 
-  if (cacheUsed && semver.gt(linkResponse.version, config.version)) {
+  if (cached && semver.gt(linkResponse.version, config.version)) {
     if (!disableLogs) {
       printer.printConsoleMessage(
         "info",
@@ -279,11 +279,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
       );
     }
 
-    return fetchCodemod({
-      ...options,
-      argv: { ...argv, cache: false },
-      disableLogs: true,
-    });
+    return fetchCodemod({ ...options, argv: { ...argv, cache: false } });
   }
 
   if (config.engine === "recipe") {
