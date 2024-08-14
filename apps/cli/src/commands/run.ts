@@ -216,7 +216,8 @@ export const handleRunCliCommand = async (options: {
 
   const argEntries = Object.entries(codemod.safeArgumentRecord);
   if (argEntries.length > 0) {
-    console.log(
+    printer.printConsoleMessage(
+      "info",
       chalk.cyan(
         "Running with arguments:\n",
         ...argEntries.map(([key, value]) =>
