@@ -11,6 +11,7 @@ import { bundleJS } from "@codemod-com/runner";
 import {
   type Codemod,
   type CodemodValidationInput,
+  buildCodemodSlug,
   doubleQuotify,
   getCodemodRc,
   isJavaScriptName,
@@ -208,12 +209,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
     return parseCodemod(codemod satisfies Codemod);
   }
 
-  // make the codemod directory
-  const hashDigest = createHash("ripemd160")
-    .update(nameOrPath)
-    .digest("base64url");
-
-  const path = join(codemodDirectoryPath, hashDigest);
+  const path = join(codemodDirectoryPath, buildCodemodSlug(nameOrPath));
   await mkdir(path, { recursive: true });
 
   const printableName = chalk.cyan.bold(doubleQuotify(nameOrPath));
@@ -237,7 +233,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
   });
 
   const downloadPath = join(path, "codemod.tar.gz");
-  const { cacheUsed } = await downloadFile({
+  const { cached } = await downloadFile({
     url: linkResponse.link,
     path: downloadPath,
     cache: argv.cache,
@@ -249,20 +245,17 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
     );
   });
 
-  // If cache was used, the codemod is already unpacked
-  if (!cacheUsed) {
-    try {
-      await untar(downloadPath, path);
-    } catch (err) {
-      spinner?.fail();
-      throw new Error((err as Error).message ?? "Error unpacking codemod");
-    }
+  try {
+    await untar(downloadPath, path);
+  } catch (err) {
+    spinner?.fail();
+    throw new Error((err as Error).message ?? "Error unpacking codemod");
   }
 
   spinner?.stopAndPersist({
     symbol: oraCheckmark,
     text: chalk.cyan(
-      cacheUsed
+      cached
         ? `Successfully fetched ${printableName} from local cache.`
         : `Successfully downloaded ${printableName} from the registry.`,
     ),
@@ -273,7 +266,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
     throwOnNotFound: true,
   });
 
-  if (cacheUsed && semver.gt(linkResponse.version, config.version)) {
+  if (cached && semver.gt(linkResponse.version, config.version)) {
     if (!disableLogs) {
       printer.printConsoleMessage(
         "info",
@@ -286,11 +279,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
       );
     }
 
-    return fetchCodemod({
-      ...options,
-      argv: { ...argv, cache: false },
-      disableLogs: true,
-    });
+    return fetchCodemod({ ...options, argv: { ...argv, cache: false } });
   }
 
   if (config.engine === "recipe") {

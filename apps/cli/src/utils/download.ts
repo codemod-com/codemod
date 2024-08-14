@@ -1,38 +1,28 @@
 import { readFile, stat, writeFile } from "node:fs/promises";
 import axios from "axios";
 
+const FILE_BASED_CACHE_TTL = 1000 * 60 * 60 * 24 * 7; // 1 week
+
 export const downloadFile = async (options: {
   url: string;
   path: string;
   cache?: boolean;
-}): Promise<{ data: Buffer; path: string; cacheUsed: boolean }> => {
-  const { url, path, cache = true } = options;
+}): Promise<{ data: Buffer; path: string; cached: boolean }> => {
+  const { url, path } = options;
 
-  if (cache) {
-    const localCodemodLastModified = await stat(path)
-      .catch(() => null)
-      .then((stats) => stats?.mtime.getTime() ?? null);
+  const lastModified = await stat(path)
+    .catch(() => null)
+    .then((stats) => stats?.mtime.getTime() ?? null);
 
-    const response = await axios
-      .head(url, { timeout: 15000 })
-      .catch(() => null);
-    const lastModifiedS3 = response?.headers["last-modified"];
-    const remoteCodemodLastModified = lastModifiedS3
-      ? Date.parse(lastModifiedS3)
-      : null;
+  const cache =
+    lastModified !== null && lastModified + FILE_BASED_CACHE_TTL > Date.now();
 
-    if (
-      localCodemodLastModified !== null &&
-      remoteCodemodLastModified !== null
-    ) {
-      const tDataOut = await readFile(path);
-
-      return {
-        data: Buffer.from(tDataOut),
-        path,
-        cacheUsed: true,
-      };
-    }
+  if (cache && options.cache) {
+    return {
+      data: Buffer.from(await readFile(path)),
+      path,
+      cached: true,
+    };
   }
 
   const { data } = await axios.get(url, {
@@ -43,5 +33,5 @@ export const downloadFile = async (options: {
 
   await writeFile(path, buffer);
 
-  return { data: buffer, path, cacheUsed: false };
+  return { data: buffer, path, cached: false };
 };
