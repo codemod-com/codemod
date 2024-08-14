@@ -5,7 +5,7 @@ import * as openAiEdge from "openai-edge";
 import { environment } from "../dev-utils/configs.js";
 import { corsDisableHeaders } from "../dev-utils/cors.js";
 import type { Instance } from "../fastifyInstance.js";
-import { parseSendChatBody } from "../schemata/schema.js";
+import { parseSendChatBody, roles } from "../schemata/schema.js";
 import { ClaudeService } from "../services/claudeService.js";
 import { ReplicateService } from "../services/replicateService.js";
 
@@ -41,7 +41,7 @@ export const getSendChatPath = (instance: Instance) =>
       }
 
       const systemPrompt = {
-        role: "system",
+        role: roles[0],
         content:
           "If the question is not strictly about code migration and codemods, DO NOT answer. Instead, say: I am here to help with questions specifically about code migrations and codemods. If you have any questions related to those topics, feel free to ask!",
       };
