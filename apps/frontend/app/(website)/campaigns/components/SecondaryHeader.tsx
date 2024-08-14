@@ -3,20 +3,22 @@ import Button from "@/components/shared/Button";
 import Icon from "@/components/shared/Icon";
 import { useViewStore } from "@/store/view";
 import { Separator } from "@studio/components/ui/separator";
-import { AlignJustify, Folder, Settings } from "lucide-react";
+import { AlignJustify, Folder, Plus, Settings } from "lucide-react";
 import CampaignsCounter from "./CampaignsCounter";
 import SearchBox from "./SearchBox";
 
 type Props = {
-  onOpenRepoSelector(): void;
   selectedRepoName: string;
   campaignCount: number;
+  onOpenRepoSelector(): void;
+  onAddNewCampaign(): void;
 };
 
 const SecondaryHeader = ({
   selectedRepoName,
   campaignCount,
   onOpenRepoSelector,
+  onAddNewCampaign,
 }: Props) => {
   const { toggleSidebar, setInsightsSearchTerm } = useViewStore();
 
@@ -59,6 +61,15 @@ const SecondaryHeader = ({
       <Button intent="secondary" className="!py-xxs !px-xs">
         <span className="flex flex-row flex-nowrap gap-xs items-center">
           <Settings size={16} /> Display
+        </span>
+      </Button>
+      <Button
+        intent="secondary"
+        className="!py-xxs !px-xs"
+        onClick={onAddNewCampaign}
+      >
+        <span className="flex flex-row flex-nowrap gap-xs items-center">
+          <Plus size={16} /> Add
         </span>
       </Button>
       <Separator

@@ -71,6 +71,7 @@ const CampaignPage = () => {
     await runCodemodMutation.mutateAsync(request);
   };
 
+  // refresh if no data stored
   useEffect(() => {
     const storedData = getPersistedWidgetData();
 

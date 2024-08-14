@@ -3,6 +3,7 @@ import { Table } from "@radix-ui/themes";
 
 import Button from "@/components/shared/Button";
 import { useViewStore } from "@/store/view";
+import type { Campaign } from "@codemod-com/api-types";
 import { MoreVertical, Star } from "lucide-react";
 import Link from "next/link";
 import { memo, useMemo } from "react";
@@ -10,44 +11,17 @@ import type { TabsConfig } from "../hooks/useCampaigTabsConfig";
 
 type InsightKind = TabsConfig[number]["kind"];
 
-type Campaign = {
-  id: string;
-  name: string;
-  owner: string;
-  category: string;
-  createdAt: string;
-};
-
-const mockCampaigns: Campaign[] = [
-  {
-    id: "123",
-    name: "Technical debt remediation campaign",
-    owner: "Alex",
-    category: "Technical debt",
-    createdAt: new Date().toLocaleDateString(),
-  },
-];
-
 const CampaignsTable = ({
-  type,
   campaigns,
-}: { type: InsightKind; campaigns: any }) => {
+}: { type: InsightKind; campaigns: Campaign }) => {
   const { campaignsSearchTerm } = useViewStore();
-
-  // const migrations = useMemo(() => {
-  //   return insights.migrations.filter(
-  //     (migration) =>
-  //       (migration.type === type || type === "all") &&
-  //       migration.name.includes(campaignsSearchTerm),
-  //   );
-  // }, [type, insights, campaignsSearchTerm]);
 
   const filteredCampaigns = useMemo(
     () =>
-      mockCampaigns.filter((campaign) =>
+      campaigns.filter((campaign) =>
         campaign.name.includes(campaignsSearchTerm),
       ),
-    [campaignsSearchTerm, mockCampaigns],
+    [campaignsSearchTerm, campaigns],
   );
 
   return (

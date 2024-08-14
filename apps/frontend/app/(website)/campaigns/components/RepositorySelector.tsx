@@ -10,8 +10,8 @@ import {
 } from "@studio/components/ui/dialog";
 
 import Button from "@/components/shared/Button";
+import type { GithubRepository } from "@codemod-com/api-types";
 import useDebounce from "@studio/hooks/useDebounce";
-import type { GithubRepository } from "be-types";
 import { Folder } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useRepositories } from "../hooks/useRepositories";
