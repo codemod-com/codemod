@@ -54,7 +54,7 @@ export function prLogic({ title, body, draft }: PrOptions): PrReturn {
     .arguments(() => {
       return {
         title,
-        body: typeof body === "string" ? body : body?.join(""),
+        body,
       };
     })
     .helpers(helpers)
