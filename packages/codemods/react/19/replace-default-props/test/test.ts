@@ -180,4 +180,32 @@ describe("react/19/replace-default-props", () => {
       OUTPUT.replace(/W/gm, ""),
     );
   });
+
+  it("should correctly transform when some but not all props are defaulted", async () => {
+    const INPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/partial-default-props.input.tsx"),
+      "utf-8",
+    );
+    const OUTPUT = await readFile(
+      join(
+        __dirname,
+        "..",
+        "__testfixtures__/partial-default-props.output.tsx",
+      ),
+      "utf-8",
+    );
+
+    const actualOutput = transform(
+      {
+        path: "index.js",
+        source: INPUT,
+      },
+      buildApi("tsx"),
+    );
+
+    assert.deepEqual(
+      actualOutput?.replace(/W/gm, ""),
+      OUTPUT.replace(/W/gm, ""),
+    );
+  });
 });
