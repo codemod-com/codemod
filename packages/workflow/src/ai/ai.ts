@@ -198,9 +198,19 @@ ${before.text}
   }
 }
 
-export function aiLogic(
-  rawPrompt: string | readonly string[],
-): PLazy<AiHelpers> & AiHelpers {
+export type AiReturn = PLazy<AiHelpers> & AiHelpers;
+
+/**
+ * @description Replaces code found with `ast-grep` pattern using instructions provided to LLM. Whole file would be passed as a context. Currently, it only supports OpenAI's GPT-4 Turbo model. You will have to provide your OpenAI API key to use this function when you call codemod in CLI - provide `--OPENAI_API_KEY`.
+ * @param prompt - The prompt to be used for LLM.
+ * @example
+ * ```ts
+ * await files()
+ *   .astGrep('console.log($$$A)')
+ *   .ai`Convert console.log to console.error`
+ * ```
+ */
+export function aiLogic(rawPrompt: string | readonly string[]): AiReturn {
   const prompt = typeof rawPrompt === "string" ? rawPrompt : rawPrompt.join("");
   const aiHandler = new AiHandler(prompt);
 

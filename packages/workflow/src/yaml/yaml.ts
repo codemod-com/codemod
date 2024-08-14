@@ -3,16 +3,18 @@ import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { map } from "./map.js";
 import { update } from "./update.js";
 
+export type YamlReturn = PLazy<Helpers> & Helpers;
+
 /**
  * Filter all yaml files
  */
 export function yamlLogic(): PLazy<Helpers> & Helpers;
 export function yamlLogic(
   callback: (helpers: Helpers) => void | Promise<void>,
-): PLazy<Helpers> & Helpers;
+): YamlReturn;
 export function yamlLogic(
   callback?: (helpers: Helpers) => void | Promise<void>,
-): PLazy<Helpers> & Helpers {
+): YamlReturn {
   return new FunctionExecutor("yaml")
     .arguments(() => {
       return { callback };

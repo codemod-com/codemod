@@ -49,6 +49,15 @@ const mapCloneOptions = (options: string | CloneOptions): CloneOptions => {
  *   .astGrep('console.log($$$ARGS)')
  *   .replace('console.error($$$ARGS)')
  * ```
+ * @see {@link branch}
+ * @see {@link commit}
+ * @see {@link push}
+ * @see {@link files}
+ * @see {@link jsFiles}
+ * @see {@link pr}
+ * @see {@link codemod}
+ * @see {@link dirs}
+ * @see {@link exec}
  */
 export function cloneLogic(): CloneReturn;
 
@@ -69,6 +78,15 @@ export function cloneLogic(): CloneReturn;
  *     await push()
  * })
  * ```
+ * @see {@link branch}
+ * @see {@link commit}
+ * @see {@link push}
+ * @see {@link files}
+ * @see {@link jsFiles}
+ * @see {@link pr}
+ * @see {@link codemod}
+ * @see {@link dirs}
+ * @see {@link exec}
  */
 export function cloneLogic(
   callback: (helpers: CloneHelpers) => void | Promise<void>,
@@ -76,7 +94,7 @@ export function cloneLogic(
 
 /**
  * @description Clone repositories
- * @param rawRepositories List of repositories to clone, could be a string, template literals can be used to pass multiple repositories, array of strings, objects with repository and branch to clone
+ * @param repositories List of repositories to clone, could be a string, template literals can be used to pass multiple repositories, array of strings, objects with repository and branch to clone
  * @example
  * ```ts
  * import { github } from '@codemod.com/workflow'
@@ -87,9 +105,18 @@ export function cloneLogic(
  *   .astGrep('console.log($$$ARGS)')
  *   .replace('console.error($$$ARGS)')
  * ```
+ * @see {@link branch}
+ * @see {@link commit}
+ * @see {@link push}
+ * @see {@link files}
+ * @see {@link jsFiles}
+ * @see {@link pr}
+ * @see {@link codemod}
+ * @see {@link dirs}
+ * @see {@link exec}
  */
 export function cloneLogic(
-  rawRepositories:
+  repositories:
     | (string | CloneOptions)[]
     | string
     | readonly string[]
@@ -99,7 +126,7 @@ export function cloneLogic(
 
 /**
  * @description Clone repositories with a callback
- * @param rawRepositories List of repositories to clone, could be a string, template literals can be used to pass multiple repositories, array of strings, objects with repository and branch to clone
+ * @param repositories List of repositories to clone, could be a string, template literals can be used to pass multiple repositories, array of strings, objects with repository and branch to clone
  * @param callback A callback would be called after the repositories are cloned with first argument as helpers
  * @example
  * ```ts
@@ -113,9 +140,19 @@ export function cloneLogic(
  *   await commit('feat: new branch')
  *   await push()
  * })
+ * ```
+ * @see {@link branch}
+ * @see {@link commit}
+ * @see {@link push}
+ * @see {@link files}
+ * @see {@link jsFiles}
+ * @see {@link pr}
+ * @see {@link codemod}
+ * @see {@link dirs}
+ * @see {@link exec}
  */
 export function cloneLogic(
-  rawRepositories:
+  repositories:
     | (string | CloneOptions)[]
     | string
     | readonly string[]

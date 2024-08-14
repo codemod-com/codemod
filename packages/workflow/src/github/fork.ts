@@ -40,14 +40,23 @@ export const forkRepository = async (
   }
 };
 
+export type ForkReturn = PLazy<Helpers> & Helpers;
+
+export type ForkOptions =
+  | string
+  | readonly string[]
+  | ForkConfig
+  | (ForkConfig | string)[];
+
+/**
+ * @description Forks a repository in github, requires authentication via Codemod CLI and Github permissions.
+ * @param urlOrParameters - The URL of the repository to fork or an array of URLs to fork.
+ * @param callback - A callback function to run after the fork is complete.
+ */
 export function forkLogic(
-  urlOrParameters:
-    | string
-    | readonly string[]
-    | ForkConfig
-    | (ForkConfig | string)[],
+  urlOrParameters: ForkOptions,
   callback?: (helpers: Helpers) => void | Promise<void>,
-): PLazy<Helpers> & Helpers {
+): ForkReturn {
   const fork = memoize(forkRepository);
   return new FunctionExecutor("fork")
     .arguments(() => {
@@ -115,4 +124,4 @@ export const fork = fnWrapper("fork", forkLogic);
 
 const helpers = { clone, pr };
 
-type Helpers = typeof helpers;
+export type Helpers = typeof helpers;

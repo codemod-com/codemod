@@ -45,6 +45,13 @@ export type BranchReturn = PLazy<BranchHelpers> & BranchHelpers;
  *     force: false
  *   })
  * ```
+ * @see {@link jsFiles}
+ * @see {@link files}
+ * @see {@link dirs}
+ * @see {@link exec}
+ * @see {@link commit}
+ * @see {@link push}
+ * @see {@link codemod}
  */
 export function branchLogic(newBranch: string | BranchOptions): BranchReturn;
 
@@ -60,6 +67,13 @@ export function branchLogic(newBranch: string | BranchOptions): BranchReturn;
  *   await branch('new-branch')
  * })
  * ```
+ * @see {@link jsFiles}
+ * @see {@link files}
+ * @see {@link dirs}
+ * @see {@link exec}
+ * @see {@link commit}
+ * @see {@link push}
+ * @see {@link codemod}
  */
 export function branchLogic(
   newBranch: string | BranchOptions,

@@ -1,8 +1,20 @@
 import { getAstGrepNodeContext } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 
+/**
+ * @description Map each found with astGrep node and return resulting array. Could be used to retrieve some information from code.
+ * @param callback - Callback function that will be called for each found node.
+ * @example
+ * ```ts
+ * // Retrieve first argument for every console.log expression
+ * await astGrep`console.log($A)`
+ *   .map(({ getMatch }) => getMatch('A'))
+ * ```
+ */
 export function mapLogic<
-  CALLBACK extends (helpers: Helpers) => ReturnType<CALLBACK>,
+  CALLBACK extends (
+    helpers: Helpers,
+  ) => ReturnType<CALLBACK> | Promise<ReturnType<CALLBACK>>,
   RETURN extends ReturnType<CALLBACK>,
 >(callback: CALLBACK): Promise<RETURN[]> {
   const response = [] as RETURN[];
@@ -28,4 +40,4 @@ const helpers = {
     getAstGrepNodeContext().node.getMultipleMatches(m),
 };
 
-type Helpers = typeof helpers;
+export type Helpers = typeof helpers;

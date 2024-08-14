@@ -7,15 +7,54 @@ import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { getDefaultBranchFromRemote } from "../git/helpers.js";
 import { logger } from "../helpers.js";
 
-export function prLogic(
-  title: string,
-  body?: string | readonly string[],
-): PLazy<Helpers> & Helpers {
+export type PrOptions = {
+  /**
+   * Title of the PR
+   */
+  title: string;
+  /**
+   * Body of the PR
+   */
+  body?: string;
+  /**
+   * Whether the PR should be a draft
+   */
+  draft?: boolean;
+};
+
+export type PrReturn = PLazy<Helpers> & Helpers;
+
+/**
+ * @description Create a PR (should be used together with fork)
+ * @param options Options for creating a PR
+ * @param options.title Title of the PR
+ * @param options.body Body of the PR
+ * @param options.draft Whether the PR should be a draft
+ * @example
+ * ```ts
+ * await github.fork`https://github.com/codemod-com/codemod.git`
+ *   .clone(async ({ commit, files, push, pr, branch }) => {
+ *     await branch`console-log-to-error`;
+ *     await files()
+ *       .jsFam()
+ *       .astGrep`console.log($$$A)`
+ *       .replace`console.error($$$A)`
+ *     await commit`Change console.log to console.error`
+ *     await push()
+ *     await pr({
+ *       title: "Change console.log to console.error",
+ *       body: "This PR changes all console.log to console.error",
+ *       draft: true,
+ *     })
+ *   })
+ * ```
+ */
+export function prLogic({ title, body, draft }: PrOptions): PrReturn {
   return new FunctionExecutor("pr")
     .arguments(() => {
       return {
         title,
-        body: typeof body === "string" ? body : body?.join(""),
+        body,
       };
     })
     .helpers(helpers)
@@ -56,6 +95,7 @@ export function prLogic(
               gitContext.get("repository"),
             )) as string,
             body,
+            draft,
           };
         const log = logger(`Creating PR for ${owner}/${repo}`);
 

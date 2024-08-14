@@ -159,32 +159,25 @@ const runExternalAstGrepRule = async (rule: any, filepath: string) => {
   ]);
 };
 
-type AstGrepHelpers = typeof astGrepHelpers;
-type AstGrepAPIHelpers = typeof astGrepAPIHelpers;
+export type AstGrepHelpers = typeof astGrepHelpers;
+export type AstGrepAPIHelpers = typeof astGrepAPIHelpers;
 
 /**
- * Search for a pattern in the file using [ast-grep](https://ast-grep.github.io/)
- *
+ * @description Search for a pattern in the file using [ast-grep](https://ast-grep.github.io/). There are 2 ways to use this function: controlled and uncontrolled. If you will provide `id` in the `query` object - it will be passed to ast-grep CLI (`uncontrolled` mode). In all other cases `controlled` mode will be used with Napi (Node.js bindings to Rust).
  * @param query It could be a string, string literal, [NapiConfig object](https://ast-grep.github.io/reference/api.html#napiconfig)
- * #### Simple usage
- * * string - pattern to search using [relaxed strictness](https://ast-grep.github.io/guide/rule-config/atomic-rule.html#strictness) (will ignore comments and non-significant synxtax constructs, like double and single quotes in JavaScript are same)
- * * string literal - same as string
- * #### Advanced usage
- * * YAML inside string literal - pass YAML code inside string literal, which will be converted to [NapiConfig object](https://ast-grep.github.io/reference/api.html#napiconfig)
- * * NapiConfig - [see ast-grep documentation](https://ast-grep.github.io/reference/api.html#napiconfig)
- * @param callback Function which will be called for each found node wich accepts one argument - object with helpers, which could be used to manipulate the found nodes
- *
- *
- * @example Pass parameter as string
+ * @example
  * ```ts
+ * // Pass parameter as string
  * await astGrep("import React from 'react'")
  * ```
- * @example Pass parameter as string literal
+ * @example
  * ```ts
+ * // Pass parameter as string literal
  * await astGrep`import React from 'react'`
  * ```
- * @example Pass parameter as NapiConfig [see ast-grep documentation](https://ast-grep.github.io/reference/api.html#napiconfig)
+ * @example
  * ```ts
+ * // Pass parameter as NapiConfig
  * await astGrep({
  *   rule: {
  *     pattern: {
@@ -193,7 +186,10 @@ type AstGrepAPIHelpers = typeof astGrepAPIHelpers;
  *     },
  *   },
  * })
- *
+ * ```
+ * @example
+ * ```ts
+ * // Pass parameter as YAML string literal
  * await astGrep`
  *   rule:
  *     pattern:
@@ -201,18 +197,79 @@ type AstGrepAPIHelpers = typeof astGrepAPIHelpers;
  *       strictness: "relaxed"
  * `
  * ```
- * @example Use callback
+ * @see {@link map}
+ * @see {@link filter}
+ * @see {@link exists}
+ * @see {@link replace}
+ * @see {@link ai}
+ */
+export function astGrepLogic(
+  query: string | readonly string[] | NapiConfig,
+): ReturnType;
+
+/**
+ * @description Search for a pattern in the file using [ast-grep](https://ast-grep.github.io/). There are 2 ways to use this function: controlled and uncontrolled. If you will provide `id` in the `query` object - it will be passed to ast-grep CLI (`uncontrolled` mode). In all other cases `controlled` mode will be used with Napi (Node.js bindings to Rust).
+ * @description This function is used for `uncontrolled` mode. You can chain call multiple `astGrep` functions to search for multiple patterns in the file using this mode.
+ * @param query It could be a string, string literal, [NapiConfig object](https://ast-grep.github.io/reference/api.html#napiconfig)
+ * @example
  * ```ts
+ * // Pass directly to ast-grep CLI
+ * await astGrep({
+ *   id: "unique-id",
+ *   rule: {
+ *     pattern: {
+ *       context: "import React from 'react'",
+ *       strictness: "relaxed",
+ *     },
+ *   },
+ *   fix: "import * as React from 'react'",
+ * })
+ * ```
+ * @example
+ * ```ts
+ * // Chain call
+ * await astGrep({
+ *   id: "unique-id",
+ *   rule: {
+ *     pattern: {
+ *       context: "import React from 'react'",
+ *       strictness: "relaxed",
+ *     },
+ *   },
+ *   fix: "import * as React from 'react'",
+ * })
+ *   .astGrep({
+ *     id: "another-unique-id",
+ *     rule: {
+ *       pattern: {
+ *         context: "import { useState } from 'react'",
+ *         strictness: "relaxed",
+ *       },
+ *     },
+ *     fix: "import { useRef } from 'react'",
+ *   })
+ * ```
+ */
+export function astGrepLogic(apiQuery: AstGrepAPI): ReturnTypeAPI;
+
+/**
+ * @description Search for a pattern in the file using [ast-grep](https://ast-grep.github.io/). There are 2 ways to use this function: controlled and uncontrolled. If you will provide `id` in the `query` object - it will be passed to ast-grep CLI (`uncontrolled` mode). In all other cases `controlled` mode will be used with Napi (Node.js bindings to Rust).
+ * @param query It could be a string, string literal, [NapiConfig object](https://ast-grep.github.io/reference/api.html#napiconfig)
+ * @param callback Function which will be called for each found node wich accepts one argument - object with helpers, which could be used to manipulate the found nodes. Callback will have all the helpers that `astGrep` returns, like `map`, `replace` etc...
+ * @example
+ * ```ts
+ * // Use callback
  * await astGrep("console.log($$$ARGS)", async ({ map, replace }) => {
  *   console.log(`Found code occurencies: ${(await map(({ getNode }) => getNode().text())).join(", ")}`);
  *   await replace("console.error($$$ARGS)");
  * })
  * ```
+ * @see {@link map}
+ * @see {@link filter}
+ * @see {@link exists}
+ * @see {@link replace}
+ * @see {@link ai}
  */
-export function astGrepLogic(
-  query: string | readonly string[] | NapiConfig,
-): ReturnType;
-export function astGrepLogic(apiQuery: AstGrepAPI): ReturnTypeAPI;
 export function astGrepLogic(
   query: string | readonly string[] | NapiConfig,
   callback: (helpers: AstGrepHelpers) => Promise<void> | void,
