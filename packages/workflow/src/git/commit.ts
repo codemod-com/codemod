@@ -23,6 +23,7 @@ export type CommitReturn = PLazy<Helpers> & Helpers;
  *     await push()
  *   })
  * ```
+ * @see {@link push}
  */
 export function commitLogic(message: string): CommitReturn {
   return new FunctionExecutor("commit")

@@ -3,16 +3,18 @@ import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { map } from "./map.js";
 import { update } from "./update.js";
 
+export type JsonReturn = PLazy<Helpers> & Helpers;
+
 /**
  * @description Filter all json files
  */
 export function jsonLogic(): PLazy<Helpers> & Helpers;
 export function jsonLogic(
   callback: (helpers: Helpers) => void | Promise<void>,
-): PLazy<Helpers> & Helpers;
+): JsonReturn;
 export function jsonLogic(
   callback?: (helpers: Helpers) => void | Promise<void>,
-): PLazy<Helpers> & Helpers {
+): JsonReturn {
   return new FunctionExecutor("json")
     .arguments(() => {
       return { callback };

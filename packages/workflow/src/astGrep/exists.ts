@@ -1,10 +1,17 @@
-import { getAstGrepNodeContext } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 
+/**
+ * @description Returns true if astGrep found at least one node that matches the given query.
+ * @example
+ * ```ts
+ * // Check if there is at least one console.log in the code
+ * const areConsoleLogExist = await astGrep`console.log($$$A)`
+ *   .exists()
+ * ```
+ */
 export function existsLogic(): Promise<boolean> {
   let result = false;
   return new FunctionExecutor("exists")
-    .helpers(helpers)
     .executor(async (next, self) => {
       result = true;
       await next?.();
@@ -14,12 +21,3 @@ export function existsLogic(): Promise<boolean> {
 }
 
 export const exists = fnWrapper("exists", existsLogic);
-
-const helpers = {
-  getNode: () => getAstGrepNodeContext().node,
-  getMatch: (m: string) => getAstGrepNodeContext().node.getMatch(m),
-  getMultipleMatches: (m: string) =>
-    getAstGrepNodeContext().node.getMultipleMatches(m),
-};
-
-type Helpers = typeof helpers;

@@ -2,9 +2,7 @@ import type { PLazy } from "./PLazy.js";
 import { codemod } from "./codemod.js";
 import { getCwdContext } from "./contexts.js";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
-import { files } from "./files.js";
 import { clc } from "./helpers.js";
-import { jsFiles } from "./jsFiles.js";
 import { spawn } from "./spawn.js";
 
 /**
@@ -51,7 +49,6 @@ export function execLogic(
       await spawn(command, args ?? [], {
         cwd,
         doNotThrowError: true,
-        printOutput: true,
       });
       await next?.();
     })

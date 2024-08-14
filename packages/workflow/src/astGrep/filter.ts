@@ -13,12 +13,29 @@ const callbackHelpers = {
     getAstGrepNodeContext().node.getMultipleMatches(m),
 };
 
+export type CallbackHelpers = typeof callbackHelpers;
+
+export type FilterReturn = PLazy<Helpers> & Helpers;
+
+/**
+ * @description Filter the nodes found with astGrep using callback function. If function returns true - node will be included in the result, otherwise - excluded.
+ * @param callback - Callback function that will be executed for each node found with astGrep. If function returns true - node will be included in the result, otherwise - excluded.
+ * @example
+ * ```ts
+ * // Replace all console.log calls with "2" where the first argument is "1"
+ * await astGrep`console.log($A)`
+ *   .filter(({ getMatch }) => getMatch("A") === "1")
+ *   .replace`console.log(2)`
+ * ```
+ * @see {@link map}
+ * @see {@link replace}
+ * @see {@link filter}
+ * @see {@link exists}
+ * @see {@link ai}
+ */
 export function filterLogic(
-  callback: (helpers: typeof callbackHelpers) => Promise<boolean> | boolean,
-): PLazy<Helpers> & Helpers;
-export function filterLogic(
-  callback: (helpers: typeof callbackHelpers) => Promise<boolean> | boolean,
-): PLazy<Helpers> & Helpers {
+  callback: (helpers: CallbackHelpers) => Promise<boolean> | boolean,
+): FilterReturn {
   return new FunctionExecutor("replace")
     .arguments(() => {
       return { callback };
