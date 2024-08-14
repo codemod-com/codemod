@@ -11,6 +11,7 @@ import { bundleJS } from "@codemod-com/runner";
 import {
   type Codemod,
   type CodemodValidationInput,
+  buildCodemodSlug,
   doubleQuotify,
   getCodemodRc,
   isJavaScriptName,
@@ -208,12 +209,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
     return parseCodemod(codemod satisfies Codemod);
   }
 
-  // make the codemod directory
-  const hashDigest = createHash("ripemd160")
-    .update(nameOrPath)
-    .digest("base64url");
-
-  const path = join(codemodDirectoryPath, hashDigest);
+  const path = join(codemodDirectoryPath, buildCodemodSlug(nameOrPath));
   await mkdir(path, { recursive: true });
 
   const printableName = chalk.cyan.bold(doubleQuotify(nameOrPath));

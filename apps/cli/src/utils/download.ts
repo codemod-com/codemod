@@ -15,10 +15,9 @@ export const downloadFile = async (options: {
     .then((stats) => stats?.mtime.getTime() ?? null);
 
   const cache =
-    options.cache ??
-    (lastModified === null || lastModified + FILE_BASED_CACHE_TTL < Date.now());
+    lastModified !== null && lastModified + FILE_BASED_CACHE_TTL > Date.now();
 
-  if (cache) {
+  if (cache && options.cache) {
     return {
       data: Buffer.from(await readFile(path)),
       path,
