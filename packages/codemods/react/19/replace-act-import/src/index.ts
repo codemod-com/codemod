@@ -101,6 +101,9 @@ export default function transform(
 
       const existingReactImportCollection = root.find(j.ImportDeclaration, {
         source: { value: "react" },
+        importKind(value) {
+          return value === "value" || value == null;
+        },
         specifiers: [{ type: "ImportSpecifier" }],
       });
 
