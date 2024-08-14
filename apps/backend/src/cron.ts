@@ -78,36 +78,47 @@ const services: Array<{
   url: string;
   type: "http" | "websocket";
   available: boolean;
+  webhook: string;
 }> = [
   {
     name: "Backend API",
     url: process.env.BACKEND_API_URL ?? "",
     type: "http",
     available: true,
+    webhook:
+      "https://api.instatus.com/v3/integrations/webhook/clzbu45yv92737kcn6m7edwvmb",
   },
   {
     name: "Auth Service",
     url: process.env.AUTH_SERVICE_URL ?? "",
     type: "http",
     available: true,
+    webhook:
+      "https://api.instatus.com/v3/integrations/webhook/clzbu3lnj92520kcn6cl27ceck",
   },
   {
     name: "ModGPT Service",
     url: process.env.MODGPT_SERVICE_URL ?? "",
     type: "http",
     available: true,
+    webhook:
+      "https://api.instatus.com/v3/integrations/webhook/clzbu4pvl93329kcn6h9mue4xs",
   },
   {
     name: "Codemod AI Service",
     url: process.env.CODEMOD_AI_SERVICE_URL ?? "",
     type: "websocket",
     available: true,
+    webhook:
+      " https://api.instatus.com/v3/integrations/webhook/clzbu558m93630kcn6fnvj8yk8",
   },
   {
     name: "Run Service",
     url: process.env.RUN_SERVICE_URL ?? "",
     type: "http",
     available: true,
+    webhook:
+      "https://api.instatus.com/v3/integrations/webhook/clzbu5gtk93796kcn684qhwhwj",
   },
 ];
 
@@ -130,6 +141,10 @@ const systemHealthCheckCron = new CronJob(
             const response = await axios.get(service.url);
 
             if (response.status === 200 && service.available === false) {
+              await axios.post(service.webhook, {
+                trigger: "up",
+              });
+
               await web.chat.postMessage({
                 channel: channel,
                 text: `[${env}]: ${service.name} is now up.`,
@@ -142,6 +157,10 @@ const systemHealthCheckCron = new CronJob(
 
               ws.on("open", async () => {
                 if (service.available === false) {
+                  await axios.post(service.webhook, {
+                    trigger: "up",
+                  });
+
                   await web.chat.postMessage({
                     channel: channel,
                     text: `[${env}]: ${service.name} is now up.`,
@@ -162,6 +181,10 @@ const systemHealthCheckCron = new CronJob(
           }
         } catch (error) {
           if (service.available === true) {
+            await axios.post(service.webhook, {
+              trigger: "down",
+            });
+
             await web.chat.postMessage({
               channel: channel,
               text: `[${env}]: ${service.name} is down. Error: ${error}`,
