@@ -25,6 +25,9 @@ export function TableTile<T>({
       },
     },
   ),
+  loading,
+  statusMessage,
+  error,
   onRefreshData,
 }: TableTileProps<T> & {
   columns?: ColumnDefinition[];
@@ -111,7 +114,7 @@ export function TableTile<T>({
           <div className="flex justify-between items-center mb-4">
             <Title title={cardTitle} onChange={setCardTitle} />
             <div className="flex gap-2 min-w-[80px]">
-              <Button intent="secondary-icon-only">
+              <Button intent="secondary-icon-only" onClick={onRefreshData}>
                 <RefreshCw size={16} />
               </Button>
               <ImportDataButton<any>
@@ -124,54 +127,60 @@ export function TableTile<T>({
             </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  {columns.map((column) => (
-                    <th
-                      key={getColumnTitle(column)}
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                      onClick={() =>
-                        handleSort(getColumnTitle(column) as keyof T)
-                      }
-                    >
-                      <div className="flex items-center">
-                        {camelToSpaced(getColumnTitle(column))}
-                        {sortColumn === getColumnTitle(column) &&
-                          (sortDirection === "asc" ? (
-                            <CaretUp className="ml-1" size={14} />
-                          ) : (
-                            <CaretDown className="ml-1" size={14} />
-                          ))}
-                        {getColumnDescription(column) && (
-                          <Tooltip
-                            trigger={<Info />}
-                            content={column.description}
-                          />
-                        )}
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {displayData.map((item, index) => (
-                  <tr key={index}>
+            {error ? (
+              error
+            ) : loading ? (
+              statusMessage
+            ) : (
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
                     {columns.map((column) => (
-                      <td
+                      <th
                         key={getColumnTitle(column)}
-                        className="px-6 py-4 whitespace-nowrap"
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        onClick={() =>
+                          handleSort(getColumnTitle(column) as keyof T)
+                        }
                       >
-                        {transformer[getColumnTitle(column) as keyof T](
-                          item[getColumnTitle(column) as keyof T],
-                        )}
-                      </td>
+                        <div className="flex items-center">
+                          {camelToSpaced(getColumnTitle(column))}
+                          {sortColumn === getColumnTitle(column) &&
+                            (sortDirection === "asc" ? (
+                              <CaretUp className="ml-1" size={14} />
+                            ) : (
+                              <CaretDown className="ml-1" size={14} />
+                            ))}
+                          {getColumnDescription(column) && (
+                            <Tooltip
+                              trigger={<Info />}
+                              content={column.description}
+                            />
+                          )}
+                        </div>
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {displayData.map((item, index) => (
+                    <tr key={index}>
+                      {columns.map((column) => (
+                        <td
+                          key={getColumnTitle(column)}
+                          className="px-6 py-4 whitespace-nowrap"
+                        >
+                          {transformer[getColumnTitle(column) as keyof T](
+                            item[getColumnTitle(column) as keyof T],
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
         {!showAll && data.length > 3 && (

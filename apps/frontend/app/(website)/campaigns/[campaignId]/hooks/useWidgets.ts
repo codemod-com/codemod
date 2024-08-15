@@ -11,7 +11,7 @@ export const useWidgets = (campaignId: string) => {
   const widgets: Widget[] = [
     {
       kind: "Table",
-      workflow: "incompatible-packages",
+      workflow: "drift_analyzer",
       title: "React 18.3.1 incompatible packages",
       data: migrationPrData.data,
     },

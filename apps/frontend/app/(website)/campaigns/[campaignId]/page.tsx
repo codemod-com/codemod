@@ -1,5 +1,6 @@
 "use client";
 import { CustomTable } from "@/app/(website)/campaigns/[campaignId]/widgets/CustomTable";
+import { useMirageServer } from "@/hooks/useMirageServer";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import SecondaryHeader from "./components/SecondaryHeader";
@@ -13,12 +14,16 @@ const getRenderWidget =
     runCodemod,
     isLoading,
     error,
+    executionIds,
   }: {
     runCodemod(args: any): Promise<any>;
     isLoading: boolean;
     error: string;
+    executionIds: { id: string; workflow: string }[];
   }) =>
   (widget: Widget) => {
+    const activeWorkflows = executionIds.map(({ workflow }) => workflow);
+
     switch (widget.kind) {
       case "Table": {
         return (
@@ -26,8 +31,8 @@ const getRenderWidget =
             title={widget.title}
             data={widget.data}
             workflow={widget.workflow}
-            // @TODO show loading indicator only for specific widgets
-            loading={isLoading}
+            // @TODO currently workflow can be used once on the dashboard, so we can find needed widget by workflow name, later we will need to associate the workflow with specific widget
+            loading={isLoading && activeWorkflows.includes(widget.workflow)}
             error={error}
             getData={runCodemod}
           />
@@ -42,6 +47,7 @@ const getRenderWidget =
 const getPersistedWidgetData = () => null;
 
 const CampaignPage = () => {
+  useMirageServer(true);
   const { campaignId } = useParams();
   const repos = useSelectedRepos();
 
@@ -49,10 +55,15 @@ const CampaignPage = () => {
 
   const { executionIds, runCodemodMutation } = useRunCodemodMutation();
 
-  const runCodemod = async (request: any) =>
-    await runCodemodMutation.mutateAsync(request);
+  const runCodemod = async (workflow: any) =>
+    await runCodemodMutation.mutateAsync({
+      workflows: [workflow],
+      repos,
+    });
 
-  const { isLoading, error, result } = useCodemodRunResult(executionIds);
+  const { isLoading, error, result } = useCodemodRunResult(
+    executionIds.map(({ id }) => id),
+  );
 
   const renderWidget = getRenderWidget({
     runCodemod,
@@ -62,21 +73,21 @@ const CampaignPage = () => {
     executionIds,
   });
 
-  const refreshAll = async () => {
-    const request = {
-      workflows: widgets.map(({ workflow }) => workflow),
-      repo: repos,
-    };
+  // const refreshAll = async () => {
+  //   const request = {
+  //     workflows: widgets.map(({ workflow }) => workflow),
+  //     repos,
+  //   };
 
-    await runCodemodMutation.mutateAsync(request);
-  };
+  //   await runCodemodMutation.mutateAsync(request);
+  // };
 
   // refresh if no data stored
   useEffect(() => {
     const storedData = getPersistedWidgetData();
 
     if (storedData === null) {
-      refreshAll();
+      // refreshAll();
     }
   }, []);
 

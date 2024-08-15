@@ -6,6 +6,14 @@ import type { AppRegistry } from "..";
 export const codemodRunEndpoints = (server: Server<AppRegistry>) => {
   server.post(
     RUN_CODEMOD,
-    () => new Response(200, {}, { codemodRunId: "1", success: true }),
+    () =>
+      new Response(
+        200,
+        {},
+        {
+          codemodRunIds: [{ id: "1", workflow: "drift_analyzer" }],
+          success: true,
+        },
+      ),
   );
 };

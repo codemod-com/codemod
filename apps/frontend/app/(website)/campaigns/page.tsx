@@ -31,8 +31,6 @@ const InsightsPage = () => {
     },
   });
 
-  console.log(campaigns, "????Camp");
-
   return (
     <>
       <div className="relative flex flex-col items-center justify-center">

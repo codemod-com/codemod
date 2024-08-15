@@ -45,6 +45,9 @@ export type ChartTileProps = {
 export type TableTileProps<T> = {
   title: string;
   data: T[];
+  loading: boolean;
+  statusMessage?: string;
+  error: string;
   onRefreshData(): void;
 };
 

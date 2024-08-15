@@ -8,35 +8,39 @@ const DEFAULT_POLLING_INTERVAL = 1000;
 export const useCodemodRunResult = (
   executionIds: string[],
   pollingInterval = DEFAULT_POLLING_INTERVAL,
-): { isLoading: boolean; error: string | null; result: string | null } => {
-  const [isLoading, setIsLoading] = useState(false);
+): { progress: any[]; error: string | null; result: string[] } => {
+  const [progress, setProgress] = useState<any[] | null>([]);
 
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<string[]>([]);
 
   const { get: getExecutionStatus } = useAPI<GetExecutionStatusResponse>(
     GET_EXECUTION_STATUS(executionIds),
   );
 
   const onError = (errorMessage: string) => {
-    setResult(null);
+    setResult([]);
     setError(`Server error: ${errorMessage}`);
-    setIsLoading(false);
+    setProgress(null);
   };
 
-  const onSuccess = (result: string) => {
+  const onSuccess = (result: string[]) => {
     setError(null);
     setResult(result);
-    setIsLoading(false);
+    setProgress(null);
   };
 
   const onReset = () => {
     setError(null);
-    setResult(null);
-    setIsLoading(false);
+    setResult([]);
+    setProgress(null);
   };
 
   useEffect(() => {
+    if (executionIds.length === 0 || result.length !== 0) {
+      return;
+    }
+
     let intervalId: number;
 
     const pollCodemodRunResult = async () => {
@@ -44,7 +48,6 @@ export const useCodemodRunResult = (
         let response: GetExecutionStatusResponse | null = null;
 
         try {
-          setIsLoading(true);
           response = (await getExecutionStatus<GetExecutionStatusResponse>())
             .data;
         } catch (e) {
@@ -59,22 +62,25 @@ export const useCodemodRunResult = (
           clearInterval(intervalId);
         }
 
-        if (response?.result?.status === "done" && response?.success) {
-          onSuccess(response?.result.link);
+        if (
+          response?.result?.every(({ status }) => status === "done") &&
+          response?.success
+        ) {
+          onSuccess(response?.result.map(({ link }) => link));
           clearInterval(intervalId);
         }
       }, pollingInterval);
     };
 
-    if (executionIds.length !== 0) {
-      pollCodemodRunResult();
-    }
+    console.log("rerendered");
+    pollCodemodRunResult();
 
     return () => {
       onReset();
       clearInterval(intervalId);
     };
-  }, [executionIds]);
+    // @TODO why
+  }, [executionIds.join(",")]);
 
-  return { isLoading, error, result };
+  return { progress, error, result };
 };

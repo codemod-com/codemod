@@ -1,7 +1,6 @@
 import type { Result } from "@codemod-com/api-types";
-import { Response, type Server } from "miragejs";
+import type { Server } from "miragejs";
 import type { AppRegistry } from "..";
-import { EXECUTION_STATUS } from "../../mocks/endpoints/gh-run";
 
 const isSuccess = true;
 const errorExecutionResult: Result = {
@@ -11,31 +10,44 @@ const errorExecutionResult: Result = {
 
 const buildGetResponse = () => {
   const responses = [
-    {
-      status: "progress",
-      message: "progress msg 1",
-    },
-    {
-      status: "progress",
-      message: "progress msg 2",
-    },
-    {
-      status: "executing codemod",
-      progress: { processed: 0, total: 100 },
-    },
-    {
-      status: "executing codemod",
-      progress: { processed: 30, total: 100 },
-    },
-    {
-      status: "executing codemod",
-      progress: { processed: 80, total: 100 },
-    },
+    [
+      {
+        status: "progress",
+        message: "progress msg 1",
+        id: "1",
+      },
+    ],
+    [
+      {
+        status: "progress",
+        message: "progress msg 2",
+      },
+    ],
+    [
+      {
+        status: "executing codemod",
+        progress: { processed: 0, total: 100 },
+      },
+    ],
+    [
+      {
+        status: "executing codemod",
+        progress: { processed: 30, total: 100 },
+      },
+    ],
+    [
+      {
+        status: "executing codemod",
+        progress: { processed: 80, total: 100 },
+      },
+    ],
     isSuccess
-      ? {
-          status: "done",
-          link: "https://www.google.com", // PR Link
-        }
+      ? [
+          {
+            status: "done",
+            link: "https://www.google.com", // PR Link
+          },
+        ]
       : errorExecutionResult,
   ];
 
@@ -44,25 +56,20 @@ const buildGetResponse = () => {
   return () => {
     const currentResponse = responses[index];
 
-    index++;
+    if (index < responses.length - 1) {
+      index++;
+    }
 
     return currentResponse;
   };
 };
 
-const responsesMap = new Map<string, () => Result>();
+const getResponse = buildGetResponse();
 
 export const executionStatusEndpoints = (server: Server<AppRegistry>) => {
-  server.get(EXECUTION_STATUS, (_, request) => {
-    const codemodRunId = request.params.id ?? "";
-
-    if (!responsesMap.has(codemodRunId)) {
-      responsesMap.set(codemodRunId, buildGetResponse());
-    }
-
-    const getResponse = responsesMap.get(codemodRunId)!;
+  server.get("/run/codemodRun/status", (_, request) => {
     const nextResponse = getResponse();
 
-    return new Response(200, {}, { result: nextResponse, success: true });
+    return { result: nextResponse, success: true };
   });
 };
