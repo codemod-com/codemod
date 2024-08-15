@@ -4,7 +4,7 @@
   "imports": {
     "#*": "./src/*"
   },
-  "version": "0.13.5",
+  "version": "0.13.6",
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,

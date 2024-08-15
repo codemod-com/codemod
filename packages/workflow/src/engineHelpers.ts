@@ -228,9 +228,14 @@ export class FunctionExecutor<
     const promise = new PLazy((resolve, reject) => {
       (async () => {
         let res: any;
+        let isCalled = false;
         await this.context()(async () => {
           res = await this._return?.(this);
+          isCalled = true;
         });
+        if (!isCalled) {
+          res = await this._return?.(this);
+        }
         return res;
       })()
         .then(resolve)
