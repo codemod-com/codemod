@@ -7,6 +7,8 @@ import { doubleQuotify } from "@codemod-com/utilities";
 import { version } from "#/../package.json";
 import { codemodDirectoryPath } from "./constants.js";
 
+export const logsPath = join(codemodDirectoryPath, "logs");
+
 export const writeLogs = async (options: {
   prefix: string;
   content: string;
@@ -14,7 +16,6 @@ export const writeLogs = async (options: {
 }): Promise<string> => {
   const { prefix, content, fatal } = options;
 
-  const logsPath = join(codemodDirectoryPath, "logs");
   const logFilePath = join(
     logsPath,
     `${fatal ? "FATAL-" : ""}${new Date().toISOString()}-error.log`,

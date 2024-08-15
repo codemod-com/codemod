@@ -55,7 +55,7 @@ export const populateCodemodArgs = async (options: {
       ...codemod,
       codemods: await Promise.all(
         codemod.codemods.map(async (subCodemod) => {
-          const codemod = populateCodemodArgs({
+          const codemod = await populateCodemodArgs({
             ...options,
             codemod: subCodemod,
           });
@@ -63,11 +63,11 @@ export const populateCodemodArgs = async (options: {
           const parsedCodemod = safeParseKnownEnginesCodemod(codemod);
 
           if (!parsedCodemod.success) {
-            if (safeParseRecipeCodemod(codemod).success) {
-              throw new Error("Nested recipe codemods are not supported.");
-            }
-
-            throw new Error("Nested codemod is of incorrect structure.");
+            throw new Error(
+              `Nested codemod is of incorrect structure: ${flatten(
+                parsedCodemod.issues,
+              )}`,
+            );
           }
 
           return parsedCodemod.output;
@@ -300,6 +300,27 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
       chalk.cyan(`Fetching ${config.names.length} recipe codemods...`),
     );
 
+    const codemods = await Promise.all(
+      config.names.map(async (name) => {
+        const subCodemod = await fetchCodemod({
+          ...options,
+          disableLogs: true,
+          nameOrPath: name,
+        });
+
+        if (safeParseRecipeCodemod(subCodemod).success) {
+          throw new Error("Nested recipe codemods are not supported.");
+        }
+
+        const validatedCodemod = safeParseKnownEnginesCodemod(subCodemod);
+        if (!validatedCodemod.success) {
+          throw new Error("Nested codemod is of incorrect structure.");
+        }
+
+        return validatedCodemod.output;
+      }),
+    );
+
     subCodemodsSpinner.stopAndPersist({
       symbol: oraCheckmark,
       text: chalk.cyan("Successfully fetched recipe codemods."),
@@ -310,6 +331,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
       source: "remote",
       config,
       path,
+      codemods,
     } satisfies CodemodValidationInput);
   }
 

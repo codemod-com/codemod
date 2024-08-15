@@ -15,6 +15,7 @@ import {
   execPromise,
   getCodemodRc,
 } from "@codemod-com/utilities";
+import open from "open";
 import { version as cliVersion } from "#/../package.json";
 import { getDiff, getDiffScreen } from "#dryrun-diff.js";
 import { fetchCodemod, populateCodemodArgs } from "#fetch-codemod.js";
@@ -25,7 +26,7 @@ import { RunnerService } from "#services/runner-service.js";
 import type { TelemetryEvent } from "#telemetry.js";
 import type { NamedFileCommand } from "#types/commands.js";
 import { originalStdoutWrite } from "#utils/constants.js";
-import { writeLogs } from "#utils/logs.js";
+import { logsPath, writeLogs } from "#utils/logs.js";
 
 const checkFileTreeVersioning = async (target: string) => {
   let force = true;
@@ -98,19 +99,12 @@ export const handleRunCliCommand = async (options: {
 
   const flowSettings = await parseFlowSettings(args, printer);
 
-  if (
-    !flowSettings.dry &&
-    !args.readme &&
-    !args.config &&
-    !args.version &&
-    args.interactive &&
-    !args.mode
-  ) {
-    await checkFileTreeVersioning(flowSettings.target);
-  }
-
   const nameOrPath = args._.at(0)?.toString() ?? args.source ?? null;
   if (nameOrPath === null) {
+    if (args.logs) {
+      return open(logsPath);
+    }
+
     throw new Error("Codemod to run was not specified!");
   }
 
@@ -205,6 +199,10 @@ export const handleRunCliCommand = async (options: {
     authService,
     runnerService,
   });
+
+  if (!flowSettings.dry && args.interactive) {
+    await checkFileTreeVersioning(flowSettings.target);
+  }
 
   const depsToInstall: Record<
     string,
