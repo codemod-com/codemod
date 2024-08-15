@@ -1,15 +1,24 @@
-import { useCallback, useState } from "react";
+import type { Message } from "ai";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import { useAuth } from "@/app/auth/useAuth";
 import { env } from "@/env";
+
+import { fetchStream } from "../api/fetch-stream";
 import type { CodemodAIOutput } from "../types";
 
 export const useCodemodAi = () => {
   const { getToken } = useAuth();
   // @TODO: use from persistent zustand
-  const [messages, setMessages] = useState<CodemodAIOutput[]>([]);
+  const [messages, setMessages] = useState<
+    (Pick<Message, "role" | "content"> & CodemodAIOutput)[]
+  >([]);
   const { signal, abort } = new AbortController();
+
+  useEffect(() => {
+    return abort;
+  }, [abort]);
 
   const send = useCallback(async () => {
     const token = await getToken();
@@ -31,20 +40,17 @@ export const useCodemodAi = () => {
         }
 
         if (data.execution_status === "finished" && "codemod" in data) {
-          // const showCodemodCopiedToast = () =>
           // toast.success("Codemod copied to the right pane", {
           //   position: "top-center",
           //   duration: 12000,
           // });
           return setMessages((prev) => [
             ...prev,
-            data,
-            // {
-            //   codemod: data.codemod,
-            //   content: `\`\`\`ts ${data.codemod}\`\`\``,
-            //   role: "assistant",
-            //   id: Date.now().toString(),
-            // },
+            {
+              ...data,
+              role: "assistant",
+              content: `\`\`\`ts ${data.codemod}\`\`\``,
+            },
           ]);
         }
 
@@ -52,28 +58,26 @@ export const useCodemodAi = () => {
           // setIsTestCaseGenerated(false);
           return setMessages((prev) => [
             ...prev,
-            data,
-            // {
-            //   content: `Test cases created and added to a new test tab`,
-            //   role: "assistant",
-            //   id: Date.now().toString(),
-            // },
+            {
+              ...data,
+              role: "assistant",
+              content: `Test cases created and added to a new test tab`,
+            },
           ]);
           // addPair(undefined, data);
         }
 
         return setMessages((prev) => [
           ...prev,
-          data,
-          // {
-          //   content: data.message,
-          //   role: "assistant",
-          //   id: Date.now().toString(),
-          // },
+          {
+            ...data,
+            role: "assistant",
+            content: data.message,
+          },
         ]);
       },
     });
   }, [getToken, signal, abort]);
 
-  return { send, messages };
+  return { send, abort, messages };
 };

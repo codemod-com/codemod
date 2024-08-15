@@ -1,4 +1,4 @@
-async function fetchStream(opts: {
+export async function fetchStream(opts: {
   url: string;
   token: string;
   onChunk: (chunk: string) => Promise<unknown>;
