@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import * as fs from "node:fs";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 import { glob } from "glob";
 import inquirer from "inquirer";
 import * as semver from "semver";
@@ -238,10 +238,16 @@ export const handlePublishCliCommand = async (options: {
   });
 
   const codemodFileBuffers = await Promise.all(
-    codemodFilePaths.map(async (path) => ({
-      name: path.replace(new RegExp(`.*${source}/`), ""),
-      data: await fs.promises.readFile(path),
-    })),
+    codemodFilePaths.map(async (path) => {
+      const searchTerm = `${source}${sep}`;
+
+      return {
+        name: path
+          .slice(path.indexOf(searchTerm) + searchTerm.length)
+          .replace(/\\/g, "/"),
+        data: await fs.promises.readFile(path),
+      };
+    }),
   );
 
   if (codemodRc.engine !== "recipe") {
@@ -284,6 +290,7 @@ export const handlePublishCliCommand = async (options: {
     ),
   );
 
+  console.log(formData);
   try {
     await publish(token, formData);
     publishSpinner.succeed();
