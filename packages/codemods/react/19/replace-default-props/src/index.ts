@@ -97,12 +97,14 @@ export default function transform(
           return;
         }
 
-        isDirty = true;
-        property.value = buildPropertyWithDefaultValue(
-          j,
-          property,
-          defaultPropsMap.get(property.key.name),
-        );
+        if (defaultPropsMap.has(property.key.name)) {
+          isDirty = true;
+          property.value = buildPropertyWithDefaultValue(
+            j,
+            property,
+            defaultPropsMap.get(property.key.name),
+          );
+        }
       });
     }
 
