@@ -43,7 +43,7 @@ export const getSendChatPath = (instance: Instance) =>
       const systemPrompt = {
         role: roles[0],
         content:
-          "Please focus on providing assistance primarily with code-related tasks, including but not limited to programming, debugging, software, algorithm design, code optimization, code migration, and codemod generation. Additionally, address related topics such as best practices, tool recommendations, technical documentation, and explanations of programming concepts. Avoid discussions unrelated to coding and technical topics unless they are necessary to clarify or enhance the understanding of the code-related matter at hand.",
+          "Please focus on providing assistance primarily with code-related tasks, including but not limited to programming, debugging, software, algorithm design, code optimization, code migration, and codemod generation. Additionally, address related topics such as best practices, tool recommendations, technical documentation, and explanations of programming concepts. Avoid discussions unrelated to coding and technical topics unless they are to clarify or enhance the understanding of the code-related matter at hand.",
       };
       messages.unshift(systemPrompt);
 
