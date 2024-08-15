@@ -13,7 +13,7 @@ export const useModGPT = (engine: LLMEngine): ReturnType<typeof useChat> => {
   const { getToken } = useAuth();
 
   const chat = useChat({
-    api: `${env.NEXT_PUBLIC_AI_API_URL}/${SEND_CHAT}`,
+    api: `${env.NEXT_PUBLIC_MODGPT_API_URL}/${SEND_CHAT}`,
     onResponse,
     body: { engine },
   });

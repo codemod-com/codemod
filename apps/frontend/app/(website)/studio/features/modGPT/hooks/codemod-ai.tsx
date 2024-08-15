@@ -28,7 +28,7 @@ export const useCodemodAi = () => {
     }
 
     await fetchStream({
-      url: env.NEXT_PUBLIC_AI_API_URL,
+      url: env.NEXT_PUBLIC_CODEMODAI_API_URL,
       token,
       options: { signal },
       onChunk: async (rawData) => {
