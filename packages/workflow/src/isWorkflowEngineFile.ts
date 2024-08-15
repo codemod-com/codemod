@@ -1,5 +1,13 @@
 import { files } from "./files.js";
 
 export async function isWorkflowEngineFile(filename: string) {
-  return await files(filename).astGrep`module.exports={workflow}`.exists();
+  const maybeWorkflowFiles = files(filename);
+  return (
+    (await maybeWorkflowFiles.astGrep`module.exports={workflow}`.exists()) ||
+    (await maybeWorkflowFiles.astGrep`
+rule:
+  pattern:
+    context: "{ workflow: () => $B }"
+`.exists())
+  );
 }

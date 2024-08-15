@@ -6,7 +6,9 @@ import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
  * Map yaml file contents
  */
 export function mapLogic<
-  CALLBACK extends (helpers: Helpers) => ReturnType<CALLBACK>,
+  CALLBACK extends (
+    helpers: Helpers,
+  ) => ReturnType<CALLBACK> | Promise<ReturnType<CALLBACK>>,
   RETURN extends ReturnType<CALLBACK>,
 >(callback: CALLBACK): Promise<Awaited<RETURN>[]> {
   const response = [] as Awaited<RETURN>[];
