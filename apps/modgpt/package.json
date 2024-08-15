@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/modgpt",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "type": "module",
   "scripts": {
     "build": "tsc && node esbuild.config.js",
