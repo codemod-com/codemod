@@ -3,17 +3,17 @@ import { Table } from "@radix-ui/themes";
 
 import Button from "@/components/shared/Button";
 import { useViewStore } from "@/store/view";
-import type { Campaign } from "@codemod-com/api-types";
 import { MoreVertical, Star } from "lucide-react";
 import Link from "next/link";
 import { memo, useMemo } from "react";
 import type { TabsConfig } from "../hooks/useCampaigTabsConfig";
+import type { Campaign } from "../hooks/useCampaigns";
 
 type InsightKind = TabsConfig[number]["kind"];
 
 const CampaignsTable = ({
   campaigns,
-}: { type: InsightKind; campaigns: Campaign }) => {
+}: { type: InsightKind; campaigns: Campaign[] }) => {
   const { campaignsSearchTerm } = useViewStore();
 
   const filteredCampaigns = useMemo(
@@ -29,7 +29,6 @@ const CampaignsTable = ({
       <Table.Header>
         <Table.Row align="start">
           <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Category</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Updated On</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Owner</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Link</Table.ColumnHeaderCell>
@@ -41,8 +40,7 @@ const CampaignsTable = ({
         {filteredCampaigns.map((campaign) => (
           <Table.Row>
             <Table.Cell>{campaign.name}</Table.Cell>
-            <Table.Cell>{campaign.category}</Table.Cell>
-            <Table.Cell>{campaign.createdAt}</Table.Cell>
+            <Table.Cell>{campaign.updatedAt}</Table.Cell>
             <Table.Cell>{campaign.owner}</Table.Cell>
             <Table.Cell>
               <Link href={`/campaigns/${campaign.id}`}>Open</Link>

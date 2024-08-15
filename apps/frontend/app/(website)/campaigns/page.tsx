@@ -1,35 +1,26 @@
 "use client";
 import Tabs, { TabContent } from "@/components/shared/Tabs";
-import { CREATE_CAMPAIGN } from "@/mocks/endpoints/campaigns";
-import type { GithubRepository } from "@codemod-com/api-types";
 import { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
-import { useAPI } from "../studio/src/hooks/useAPI";
+
 import AddNewCampaignDialog from "./components/AddNewCampaign";
 import CampaignsTable from "./components/CampaignsTable";
 import RepositorySelector from "./components/RepositorySelector";
 import SecondaryHeader from "./components/SecondaryHeader";
+
+import { useViewStore } from "@/store/view";
 import { useCampaignTabsConfig } from "./hooks/useCampaigTabsConfig";
 import { useCampaigns } from "./hooks/useCampaigns";
+import { useCreateCampaignMutation } from "./hooks/useCreateCampaignMutation";
 
-const InsightsPage = () => {
+const CampaignsPage = () => {
   const tabsConfig = useCampaignTabsConfig();
   const campaigns = useCampaigns();
-  const queryClient = useQueryClient();
 
-  const [repo, setRepo] = useState<GithubRepository | null>(null);
+  const { selectedRepos, setSelectedRepos } = useViewStore();
   const [repoSelectorOpen, setRepoSelectorOpen] = useState(false);
   const [addNewCampaignModalOpen, setAddNewCampaignModalOpen] = useState(false);
 
-  const { post: createCampaign } = useAPI(CREATE_CAMPAIGN);
-  const { mutateAsync } = useMutation({
-    mutationFn: createCampaign,
-    onSuccess: (data) => {
-      queryClient.setQueryData(["campaigns"], (old) => {
-        return [...old, data.data];
-      });
-    },
-  });
+  const { mutateAsync } = useCreateCampaignMutation();
 
   return (
     <>
@@ -37,8 +28,8 @@ const InsightsPage = () => {
         <SecondaryHeader
           onOpenRepoSelector={() => setRepoSelectorOpen(true)}
           onAddNewCampaign={() => setAddNewCampaignModalOpen(true)}
-          campaignCount={0}
-          selectedRepoName={repo?.name ?? "Select Repository"}
+          campaignCount={campaigns.data?.length ?? 0}
+          selectedRepoName={selectedRepos.join(",") ?? "Select Repository"}
         />
         <div className="flex w-full justify-start">
           <Tabs
@@ -57,7 +48,7 @@ const InsightsPage = () => {
       <RepositorySelector
         open={repoSelectorOpen}
         onConfirm={(repo) => {
-          setRepo(repo);
+          setSelectedRepos([repo]);
           setRepoSelectorOpen(false);
         }}
         onOpenChange={setRepoSelectorOpen}
@@ -71,4 +62,4 @@ const InsightsPage = () => {
   );
 };
 
-export default InsightsPage;
+export default CampaignsPage;

@@ -1,24 +1,34 @@
-// import type { CodemodRunStatus } from "@codemod-com/api-types";
 import { RUN_CODEMOD as RUN_CODEMOD_URL } from "@mocks/endpoints/gh-run";
 import { useAPI } from "@studio/hooks/useAPI";
 import { useState } from "react";
 import { useMutation } from "react-query";
 
-type CodemodRunStatus = {
-  codemodRunIds: Array<{ id: string; workflow: string }>;
+// @TODO
+type CodemodRunResponse = {
+  codemodRunIds: Array<{ id: string; codemod: string }>;
+};
+
+type CodemodRunRequest = {
+  codemods: string[];
+  repos: string[];
 };
 
 export const useRunCodemodMutation = () => {
   const [executionIds, setExecutionIds] = useState<
-    { id: string; workflow: string }[]
+    CodemodRunResponse["codemodRunIds"]
   >([]);
-  const { post: runCodemod } = useAPI<CodemodRunStatus>(RUN_CODEMOD_URL);
+
+  const { post: runCodemod } = useAPI<CodemodRunResponse>(RUN_CODEMOD_URL);
 
   const runCodemodMutation = useMutation({
-    mutationFn: async (request) => {
+    mutationFn: async (
+      request: CodemodRunRequest,
+    ): Promise<CodemodRunResponse> => {
       const result = await runCodemod(request);
 
       setExecutionIds(result.data.codemodRunIds);
+
+      return result.data;
     },
   });
 

@@ -1,4 +1,3 @@
-// @TODO move to shared or global
 import Input from "@/components/shared/Input";
 import {
   Dialog,
@@ -19,12 +18,11 @@ import RepoList from "./RepoList";
 
 export type Props = {
   open: boolean;
-  onConfirm: (repo: GithubRepository) => void;
+  onConfirm: (repo: string) => void;
   onOpenChange: (open: boolean) => void;
 };
 
 const RepositorySelector = ({ onConfirm, onOpenChange, open }: Props) => {
-  // @TODO handle error
   const { data, isLoading } = useRepositories();
 
   const [search, setSearch] = useState("");
@@ -38,7 +36,7 @@ const RepositorySelector = ({ onConfirm, onOpenChange, open }: Props) => {
       return;
     }
 
-    onConfirm(selectedRepository);
+    onConfirm(selectedRepository.html_url);
   };
 
   const repos = data?.data ?? [];
@@ -91,8 +89,6 @@ const RepositorySelector = ({ onConfirm, onOpenChange, open }: Props) => {
             <Button
               disabled={!selectedRepository}
               intent="primary"
-              // @TODO
-              // hint={''}
               onClick={handleButtonClick}
             >
               Continue

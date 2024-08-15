@@ -1,7 +1,14 @@
 import { GET_ALL_CAMPAIGNS } from "@/mocks/endpoints/campaigns";
-import type { Campaign } from "@codemod-com/api-types";
 import { useAPI } from "@studio/hooks/useAPI";
 import { useQuery } from "react-query";
+
+// @TODO get from api-types
+export type Campaign = {
+  id: string;
+  name: string;
+  owner: string;
+  updatedAt: string;
+};
 
 export const useCampaigns = () => {
   const { get: getCampaigns } = useAPI<Campaign[]>(GET_ALL_CAMPAIGNS);
