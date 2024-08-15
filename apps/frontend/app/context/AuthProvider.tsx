@@ -15,6 +15,10 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ClerkProvider
       appearance={{
+        variables: {
+          colorPrimary: "white",
+          colorNeutral: "grey",
+        },
         baseTheme: dark,
       }}
       publishableKey={clerkPubKey as string}
