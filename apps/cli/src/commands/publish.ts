@@ -150,57 +150,66 @@ export const handlePublishCliCommand = async (options: {
     });
   }
 
-  if (!codemodRc.meta?.git) {
-    const { gitUrl } = await inquirer.prompt<{
-      gitUrl: string;
-    }>({
-      type: "input",
-      name: "gitUrl",
-      suffix: " (leave empty if none)",
-      message:
-        "Enter the URL of the git repository where this codemod is located.",
-      validate: (input) => {
-        const stringParsingResult = v.safeParse(v.string(), input);
-        if (stringParsingResult.success === false) {
-          return stringParsingResult.issues[0].message;
-        }
+  let gitUrl = codemodRc.meta?.git ?? null;
+  if (gitUrl === null) {
+    const repoGitUrl = await execPromise("git config --get remote.origin.url", {
+      cwd: source,
+    }).catch(() => null);
 
-        const stringInput = stringParsingResult.output;
-        if (stringInput.length === 0) {
+    if (repoGitUrl !== null) {
+      const url = repoGitUrl.stdout.trim();
+
+      gitUrl = url.startsWith("git@")
+        ? `https://${url.slice(4).replace(":", "/")}`
+        : url;
+    } else {
+      const { gitUrl: userAnsweredGitUrl } = await inquirer.prompt<{
+        gitUrl: string;
+      }>({
+        type: "input",
+        name: "gitUrl",
+        suffix: " (leave empty if none)",
+        message:
+          "Enter the URL of the git repository where this codemod is located.",
+        validate: (input) => {
+          const stringParsingResult = v.safeParse(v.string(), input);
+          if (stringParsingResult.success === false) {
+            return stringParsingResult.issues[0].message;
+          }
+
+          const stringInput = stringParsingResult.output;
+          if (stringInput.length === 0) {
+            return true;
+          }
+
+          const urlParsingResult = v.safeParse(
+            v.pipe(v.string(), v.url()),
+            stringInput,
+          );
+          if (urlParsingResult.success === false) {
+            return urlParsingResult.issues[0].message;
+          }
+
           return true;
-        }
+        },
+      });
 
-        const urlParsingResult = v.safeParse(
-          v.pipe(v.string(), v.url()),
-          stringInput,
-        );
-        if (urlParsingResult.success === false) {
-          return urlParsingResult.issues[0].message;
-        }
+      if (userAnsweredGitUrl?.length > 0) {
+        gitUrl = userAnsweredGitUrl;
 
-        return true;
-      },
-    });
-
-    if (gitUrl) {
-      try {
-        await execPromise("git init", { cwd: source });
-
-        await execPromise(`git remote add origin ${gitUrl}`, {
-          cwd: source,
-        });
-
-        codemodRc.meta = { tags: [], ...codemodRc.meta, git: gitUrl };
-
-        await updateCodemodRC(codemodRc);
-      } catch (err) {
-        printer.printConsoleMessage(
-          "error",
-          `Failed to initialize a git package with provided repository link:\n${
-            (err as Error).message
-          }. Setting it to null...`,
-        );
+        try {
+          await execPromise("git init", { cwd: source });
+          await execPromise(`git remote add origin ${userAnsweredGitUrl}`, {
+            cwd: source,
+          });
+        } catch (err) {}
       }
+    }
+
+    // If it was null but we changed it, we need to update the RC file
+    if (gitUrl !== null) {
+      codemodRc.meta = { tags: [], ...codemodRc.meta, git: gitUrl };
+      await updateCodemodRC(codemodRc);
     }
   }
 
@@ -290,7 +299,6 @@ export const handlePublishCliCommand = async (options: {
     ),
   );
 
-  console.log(formData);
   try {
     await publish(token, formData);
     publishSpinner.succeed();
