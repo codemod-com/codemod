@@ -1,7 +1,7 @@
+import type { LLMMessage } from "@/app/(website)/studio/features/modgpt/types";
 import { cn } from "@/utils";
-import type { LLMMessage } from "@chatbot/types";
 import { Separator } from "@studio/components/ui/separator";
-import { ChatMessage } from "./ChatMessage";
+import { ChatMessage } from "../ChatMessage";
 
 interface Props {
   messages: LLMMessage[];

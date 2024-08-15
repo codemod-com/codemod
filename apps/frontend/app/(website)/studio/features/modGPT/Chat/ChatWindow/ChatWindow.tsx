@@ -1,5 +1,5 @@
+import type { LLMMessage } from "@/app/(website)/studio/features/modgpt/types";
 import { cn } from "@/utils";
-import type { LLMMessage } from "@chatbot/types";
 import { ChatMessages } from "./ChatMessages";
 import { ChatScrollAnchor } from "./ChatScrollAnchor";
 import { EngineSelector } from "./ModelSelector";

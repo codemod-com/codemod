@@ -1,5 +1,8 @@
+import {
+  devToken,
+  isDevelopment,
+} from "@/app/(website)/studio/features/modgpt/config";
 import { useRedirectWhenSigned } from "@/hooks/useRedirectWhenSigned";
-import { devToken, isDevelopment } from "@chatbot/config";
 import { useAuth as useClerk } from "@clerk/nextjs";
 import { authUrl } from "@studio/config";
 import {

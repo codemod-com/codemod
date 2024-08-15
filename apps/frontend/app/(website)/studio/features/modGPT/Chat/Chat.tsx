@@ -1,7 +1,9 @@
-import type { useAiService } from "@chatbot/useAiService";
+import type { useAiService } from "@/app/(website)/studio/features/modgpt/useAiService";
 import { memo } from "react";
-import { ChatWindow } from "./ChatWindow";
-import { PromptPanel } from "./PromptPanel";
+import { useCodemodAi } from "../hooks/codemod-ai";
+import { useModGPT } from "../hooks/modgpt";
+import { ChatWindow } from "./Chat/ChatWindow";
+import { PromptPanel } from "./Chat/PromptPanel";
 
 type Props = {
   aiProps: ReturnType<typeof useAiService>;
@@ -9,22 +11,24 @@ type Props = {
   isSignedIn: boolean;
 };
 
-const ChatBase = ({
-  aiProps: {
-    isLoading,
-    handleStop,
-    reload,
-    messages,
-    input,
-    setInput,
-    startIterativeCodemodGeneration,
-    resetMessages,
-    modGptSubmit,
-    autogenerateTestCases,
-  },
-  className,
-  isSignedIn,
-}: Props) => {
+const ChatBase = ({ className, isSignedIn }: Props) => {
+  // const
+  // const aiProps = {
+  //   isLoading,
+  //   handleStop,
+  //   reload,
+  //   messages,
+  //   input,
+  //   setInput,
+  //   startIterativeCodemodGeneration,
+  //   resetMessages,
+  //   modGptSubmit,
+  //   autogenerateTestCases,
+  // };
+
+  const modGPT = useModGPT("gpt-4o");
+  const { send: callCodemodAI, messages } = useCodemodAi("gpt-4o");
+
   return (
     <>
       <ChatWindow

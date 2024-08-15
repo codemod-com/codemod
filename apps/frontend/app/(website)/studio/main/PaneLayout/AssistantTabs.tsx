@@ -1,5 +1,4 @@
 import { cn } from "@/utils";
-import type { useAiService } from "@chatbot/useAiService";
 import { useAuth } from "@clerk/nextjs";
 import Text from "@studio/components/Text";
 import {
@@ -9,15 +8,19 @@ import {
   TabsTrigger,
 } from "@studio/components/ui/tabs";
 import type { PanelData, PanelsRefs } from "@studio/main/PageBottomPane";
-import {
-  type TabContent,
-  type TabHeader,
-  type TabsWithContents,
-  useTabsData,
-} from "@studio/main/PaneLayout/tabsData";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { TabNames, useViewStore } from "@studio/store/view";
-import { useCallback, useEffect, useRef } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
+import { PanelGroup } from "react-resizable-panels";
+import { Chat } from "../../features/modgpt/Chat/Chat";
+import LiveIcon from "../../src/icons/LiveIcon";
+import { AstSection } from "../ASTViewer/AstSectionBase";
+import Table from "../Log/Table";
+import { SignInRequired } from "./SignInRequired";
+
+export type TabsWithContents = { tabs: ReactNode[]; contents: ReactNode[] };
+export type TabHeader = { value: string; name: ReactNode };
+export type TabContent = TabHeader & { content: ReactNode };
 
 const reduceTabs = (acc: TabsWithContents, { value, name }: TabHeader) => [
   ...acc.tabs,
@@ -30,12 +33,12 @@ export const AssistantTab = ({
   panelRefs,
   beforePanel,
   afterPanel,
-  aiAssistantData,
+  // aiAssistantData,
 }: {
   panelRefs: PanelsRefs;
   beforePanel: PanelData;
   afterPanel: PanelData;
-  aiAssistantData: ReturnType<typeof useAiService>;
+  // aiAssistantData: ReturnType<typeof useAiService>;
 }) => {
   const { activeTab } = useViewStore();
   const { engine } = useSnippetsStore();
@@ -80,22 +83,57 @@ export const AssistantTab = ({
     </TabsContent>,
   ];
 
-  const tabsData = useTabsData({
-    beforePanel,
-    afterPanel,
-    isSignedIn,
-    engine,
-    panelRefs,
-    aiAssistantData,
-  })
-    .filter(Boolean)
-    .reduce(
-      (acc: TabsWithContents, curr) => ({
-        tabs: reduceTabs(acc, curr),
-        contents: reduceContents(acc, curr),
-      }),
-      { tabs: [], contents: [] },
-    );
+  const tabs = useMemo(
+    () => [
+      {
+        value: TabNames.MODGPT,
+        name: "Assistant",
+        content: (
+          <>
+            <Chat isSignedIn={isSignedIn} />
+            {!isSignedIn && <SignInRequired />}
+          </>
+        ),
+      },
+      {
+        value: TabNames.AST,
+        name: "AST",
+        content: (
+          <PanelGroup direction="horizontal">
+            {engine === "jscodeshift" ? (
+              <AstSection
+                panels={[beforePanel, afterPanel]}
+                panelRefs={panelRefs}
+              />
+            ) : (
+              "The AST View is not yet supported for tsmorph"
+            )}
+          </PanelGroup>
+        ),
+      },
+      {
+        value: TabNames.DEBUG,
+        name: (
+          <>
+            <LiveIcon />
+            <span className="flex items-center justify-center justify-content-center z-30">
+              Debug
+            </span>
+          </>
+        ),
+        content: <Table />,
+      },
+    ],
+    [afterPanel, beforePanel, engine, isSignedIn, panelRefs],
+  );
+
+  const tabsData = tabs.reduce(
+    (acc: TabsWithContents, curr) => ({
+      tabs: reduceTabs(acc, curr),
+      contents: reduceContents(acc, curr),
+    }),
+    { tabs: [], contents: [] },
+  );
 
   if (engine === "ts-morph") {
     return (

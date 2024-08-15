@@ -3,4 +3,4 @@ export * from "./ChatScrollAnchor";
 export * from "./ChatWindow";
 export * from "./ModelSelector";
 export * from "./WelcomeScreen";
-export * from "./ChatMessage";
+export * from "../ChatMessage";

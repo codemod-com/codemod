@@ -1,5 +1,5 @@
-import type { PromptPreset } from "@chatbot/prompts";
-import { autoGenerateCodemodPrompt } from "@chatbot/prompts";
+import type { PromptPreset } from "@/app/(website)/studio/features/modgpt/prompts";
+import { autoGenerateCodemodPrompt } from "@/app/(website)/studio/features/modgpt/prompts";
 import type { LLMEngine } from "@codemod-com/utilities";
 import type { SendMessageResponse } from "@studio/api/sendMessage";
 import { create } from "zustand";

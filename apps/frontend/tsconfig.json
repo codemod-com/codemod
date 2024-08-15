@@ -28,7 +28,7 @@
       "@features/*": ["./app/(website)/studio/features/*"],
       "@studio/main/*": ["./app/(website)/studio/main/*"],
       "@studio/*": ["./app/(website)/studio/src/*"],
-      "@chatbot/*": ["./app/(website)/studio/features/modGPT/*"],
+      "@chatbot/*": ["app/(website)/studio/features/modgpt/*"],
       "@gr-run/*": ["./app/(website)/studio/features/GHRun/*"],
       "tslib": ["node_modules/tslib"],
       "ts-morph": ["node_modules/ts-morph"],

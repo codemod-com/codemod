@@ -1,4 +1,4 @@
-import type { Message } from "ai";
+import type { LLMEngine } from "@codemod-com/utilities";
 
 export type LLMMessage = {
   content: string;
@@ -8,12 +8,26 @@ export type LLMMessage = {
   name?: string;
 };
 
-export type MessageToWs = {
-  execution_status: "in-progress" | "finished" | "error";
-  message: string;
-  error?: string;
-  codemod?: string;
-  id: string;
+export type CodemodAIInput = {
+  config: { llm_engine: LLMEngine; generate_test?: boolean };
+  previous_context: LLMMessage[];
+  before: string[];
+  after: string[];
 };
 
-export type MessageFromWs = Message & { codemod?: string };
+export type CodemodAIOutput =
+  | {
+      execution_status: "in-progress" | "error";
+      message: string;
+    }
+  // Finished generating codemod
+  | {
+      execution_status: "finished";
+      codemod: string;
+    }
+  // Finished generating test case
+  | {
+      execution_status: "finished";
+      before: string[];
+      after: string[];
+    };

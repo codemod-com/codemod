@@ -1,10 +1,10 @@
-import { AliasButtons } from "@chatbot/PromptPanel/AliasButtons";
-import { ControlButtons } from "@chatbot/PromptPanel/ControlButtons";
-import { WebSocketButton } from "@chatbot/PromptPanel/WebSocketButton";
-import { insertValue } from "@chatbot/PromptPanel/utils";
-import type { useAiService } from "@chatbot/useAiService/useAiService";
-import type { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
-import { getOrderedAliasList } from "@chatbot/utils";
+import { AliasButtons } from "@/app/(website)/studio/features/modgpt/PromptPanel/AliasButtons";
+import { ControlButtons } from "@/app/(website)/studio/features/modgpt/PromptPanel/ControlButtons";
+import { WebSocketButton } from "@/app/(website)/studio/features/modgpt/PromptPanel/WebSocketButton";
+import { insertValue } from "@/app/(website)/studio/features/modgpt/PromptPanel/utils";
+import type { useAiService } from "@/app/(website)/studio/features/modgpt/useAiService/useAiService";
+import type { useModGptSubmit } from "@/app/(website)/studio/features/modgpt/useAiService/useModGpt/useModGptSubmit";
+import { getOrderedAliasList } from "@/app/(website)/studio/features/modgpt/utils";
 import { useAuth } from "@clerk/nextjs";
 import { useGetAliases } from "@studio/store/CFS/alias";
 import type { UseChatHelpers } from "ai/react";

@@ -1,5 +1,5 @@
-import type { useAiService } from "@chatbot/useAiService";
-import type { useCodemodAI } from "@chatbot/useAiService/codemodAI/useCodemodAI";
+import type { useAiService } from "@/app/(website)/studio/features/modgpt/useAiService";
+import type { useCodemodAI } from "@/app/(website)/studio/features/modgpt/useAiService/codemodAI/useCodemodAI";
 import ButtonWithTooltip from "@studio/components/button/BottonWithTooltip";
 import Link from "next/link";
 
