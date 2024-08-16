@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { migrationPrData } from "../mockData";
 
 export type Widget = {
@@ -9,7 +10,8 @@ export type Widget = {
 };
 
 export const useWidgets = (campaignId: string) => {
-  const widgets: Widget[] = [
+  // @TODO from BE
+  const [widgets] = useState<Widget[]>(() => [
     {
       id: "1",
       kind: "Chart",
@@ -17,7 +19,7 @@ export const useWidgets = (campaignId: string) => {
       title: "Project freshness analysis",
       data: migrationPrData.data,
     },
-  ];
+  ]);
 
   return widgets;
 };

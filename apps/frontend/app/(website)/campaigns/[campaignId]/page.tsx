@@ -2,6 +2,7 @@
 import { useMirageServer } from "@/hooks/useMirageServer";
 import { useViewStore } from "@/store/view";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
 import { ChartTile } from "./components/ChartTile";
 import SecondaryHeader from "./components/SecondaryHeader";
 import { TableTile } from "./components/TableTile";
@@ -68,6 +69,14 @@ const CampaignPage = () => {
   const codemodRunResults = useCodemodRunResult(
     executionIds.map(({ id }) => id),
   );
+
+  // refresh all
+  useEffect(() => {
+    runCodemodMutation.mutateAsync({
+      codemods: widgets.map(({ workflow }) => workflow),
+      repos: selectedRepos,
+    });
+  }, [widgets]);
 
   return (
     <>
