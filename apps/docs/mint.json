@@ -22,6 +22,10 @@
   },
   "tabs": [
     {
+      "name": "API reference",
+      "url": "api"
+    },
+    {
       "name": "Guides",
       "url": "guides"
     },
@@ -53,6 +57,10 @@
       "pages": ["codemod-registry/introduction"]
     },
     {
+      "group": "Workflow Engine",
+      "pages": ["deploying-codemods/workflow-engine"]
+    },
+    {
       "group": "CLI",
       "pages": ["deploying-codemods/cli"]
     },
@@ -71,6 +79,40 @@
     {
       "group": "Other Resources",
       "pages": ["more-resources/changelog"]
+    },
+    {
+      "group": "Git operations",
+      "pages": [
+        "api/git/clone",
+        "api/git/branch",
+        "api/git/commit",
+        "api/git/push"
+      ]
+    },
+    {
+      "group": "File operations",
+      "pages": ["api/file/files", "api/file/dirs", "api/file/move"]
+    },
+    {
+      "group": "Code transformation",
+      "pages": [
+        "api/transformation/codemod",
+        "api/transformation/jsfam",
+        {
+          "group": "ast-grep",
+          "pages": [
+            "api/transformation/astgrep/overview",
+            "api/transformation/astgrep/reference"
+          ]
+        },
+        "api/transformation/jscodeshift",
+        "api/transformation/addimport",
+        "api/transformation/removeimport"
+      ]
+    },
+    {
+      "group": "Command-line operations",
+      "pages": ["api/command/exec"]
     },
     {
       "group": "Guides & Examples",
@@ -92,19 +134,6 @@
     {
       "group": "Sharing codemods",
       "pages": ["guides/sharing/publishing-codemods"]
-    },
-    {
-      "group": "Engines",
-      "pages": [
-        {
-          "group": "Codemod Workflow Engine",
-          "pages": [
-            "guides/engines/workflow-engine",
-            "guides/engines/workflow-engine/core-concepts",
-            "guides/engines/workflow-engine/api-reference"
-          ]
-        }
-      ]
     },
     {
       "group": "Migrations",

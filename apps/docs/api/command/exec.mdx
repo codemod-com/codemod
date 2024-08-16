@@ -1,12 +1,13 @@
 ---
-title: "exec"
-icon: "terminal"
+title: exec
+sidebarTitle: exec
 ---
 
-<ResponseField name="exec(name, arguments)" />
+## `exec(name, arguments)`
 
-Executes cli command in current working directory.
-
+Executes any CLI command in the current working directory. 
+This example demonstrates the logic for extracting the name and arguments of a sample CLI command: `npm i -g codemod` translates to `exec('npm', ['i', '-g', 'codemod'])`. 
+Here are some examples in real scenarios.
 <CodeGroup>
 ```ts chain call
 import { exec, git } from '@codemod.com/workflow'
@@ -33,7 +34,7 @@ await exec('pnpm', ['install'])
 ```
 </CodeGroup>
 
-**Parameters:**
+## Parameters
 <ParamField path="name" type="string" required>
   Command name.
 </ParamField>
@@ -42,6 +43,6 @@ await exec('pnpm', ['install'])
   Arguments passed to command.
 </ParamField>
 
-**Returns:**
-- [codemod](./codemod)
-- [exec](./exec)
+## Returns
+- [codemod](/api/transformation/codemod)
+- [exec](/api/command/exec)

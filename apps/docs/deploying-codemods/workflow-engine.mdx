@@ -1,17 +1,22 @@
 ---
-title: Core Technical Concepts
-sidebarTitle: Core Concepts
-icon: book
+title: "Overview"
+icon: 'book-open-cover'
+sidebarTitle: 'Overview'
 ---
 
-### Context Propagation
+Codemod Workflow Engine is a TypeScript library designed to manage migration tasks at various levels, from code changes to handling repositories and pull requests (PRs). 
+
+Automations built with the Workflow Engine function like any other codemods. Below, you can learn about the core concepts of Workflow Engine. To start building codemods with Workflow Engine, refer to the [API reference](#TODO).
+
+
+## Context Propagation
 
 Every migration requires ability to work on different levels simultaneously:
 
-- repository - [clone](/guides/engines/workflow-engine/api-reference#clone), [branch](/guides/engines/workflow-engine/api-reference#branch), [commit](/guides/engines/workflow-engine/api-reference#commit), [push](/guides/engines/workflow-engine/api-reference#push)
-- directories - [iterate](/guides/engines/workflow-engine/api-reference#dirs), copy, move, remove
-- files - [iterate](/guides/engines/workflow-engine/api-reference#files), copy, move, remove
-- code blocks - [iterate](/guides/engines/workflow-engine/api-reference#astgrep), [change](/guides/engines/workflow-engine/api-reference/ast-grep#replace), [remove](/guides/engines/workflow-engine/api-reference/ast-grep#replace)
+- repository - [clone](/api/git/clone), [branch](/api/git/branch), [commit](/api/git/commit), [push](/api/git/push)
+- directories - [iterate](/api/file/dirs), copy, move, remove
+- files - [iterate](/api/file/files), copy, move, remove
+- code blocks - [iterate](/api/transformation/astgrep), [change](/api/transformation/astgrep/reference#replace-replacement), [remove](/api/transformation/astgrep/reference#replace-replacement)
 
 You need ability to jump between those levels quickly. Child level should be able to access data from parent level. Core principle in workflow engine is passing context. We are using [Asyncronous Context Tracking](https://nodejs.org/api/async_context.html#class-asynclocalstorage) to able to pass context between function calls. When you run a function within context, it will be propagated down to all other function calls. Similar how React context is getting passed down to all the children components.
 
@@ -51,7 +56,7 @@ await git
   </Tab>
 </Tabs>
 
-### Saving and Reusing Context
+## Saving and Reusing Context
 
 Function calls with context can be saved and reused:
 
@@ -101,7 +106,7 @@ await repository
   </Tab>
 </Tabs>
 
-### Callback Context Retrieval
+## Callback Context Retrieval
 
 Another option to retrieve parent context is inside callback function:
 
@@ -124,7 +129,7 @@ await git
 	});
 ```
 
-### Plugin Creation
+## Plugin Creation
 
 Thanks to callback context retrieval, plugins can be created as functions:
 
@@ -149,7 +154,7 @@ async function getImports() {
 }
 ```
 
-### Remote Execution
+## Remote Execution
 
 Passing context and ability to retrieve it will open for us more interesting possibilities. **We can wrap every function with higher order function and make child call in different process or even different server.**
 
@@ -174,7 +179,7 @@ await git.clone([
 }));
 ```
 
-### Chain Calls
+## Chain Calls
 
 Another interesting feature is **ability to retrieve some data from chain calls and use it later**. For example we can retrieve all usages of `console.log` in our codebase:
 
@@ -204,7 +209,7 @@ Most of the functions will have 2 arguments:
 1. actual function parameters
 2. callback that will have context inside (optional)
 
-### Promises vs Futures
+## Promises vs Futures
 
 In JavaScript every promise you instantiate is getting called immediately. For example
 
@@ -253,7 +258,7 @@ await targetRepo
 
 That should help you **better structure code and parallelize tasks.** It is recommended to use `await` whenever you need execute tasks, otherwise just save links to task execution flow and use it later: `const repo1Packages = git.clone('repo1').dirs('packages/*')` is definition of flow, not actual execution.
 
-### Types and chain calls
+## Types and chain calls
 
 Every function is typed and has jsdoc description.
 
@@ -274,7 +279,7 @@ await repoLink.exec('pnpm', ['install']) // execute command for repository
 
 Once you type `repoLink.` - you will get autocomplete in your IDE with list of possible functions.
 
-### Current working directory context
+## Current working directory context
 
 Current working directory is also propagated between function calls. You can call getCwdContext() anytime and get directory. Here is how it works in details:
 
@@ -301,3 +306,15 @@ await git.clone('repo', async () => {
   })
 });
 ```
+
+## Getting started
+
+<CardGroup>
+	<Card
+		title="API reference"
+		icon="code"
+		href="/api"
+	>
+		
+	</Card>
+</CardGroup>

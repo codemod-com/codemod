@@ -59,7 +59,7 @@ v.pipe(v.string(), v.email(), v.endsWith('@gmail.com'))
 
 <Note>`ai(instructions)` requires `--OPENAI_API_KEY=somekey` to be passed to workflow.</Note>
 
-**Parameters:**
+## Parameters
 
 <ParamField path="instructions" type="string | readonly string[]" required>
 Instructions to LLM in natural language with before and after examples.
@@ -110,7 +110,7 @@ console.log(allUsagesOfConsoleLog)
 ```
 </CodeGroup>
 
-**Parameters:**
+## Parameters
 
 <ParamField path="callback" type="CallbackFunction" required>
 ```ts
@@ -180,7 +180,7 @@ console.log('debug')
 ```
 </CodeGroup>
 
-**Parameters:**
+## Parameters
 
 <ParamField path="replacement" type="string | ReplacementFunction" required>
 ```ts
