@@ -87,7 +87,7 @@ type CallbackFunction =
 
 Allows to use JavaScript/TypeScript specific subcommands and helpers. Inside callback you can use `addImport` and `removeImport` to add or remove imports, `astGrep` to search for code patterns and `jscodeshift` to transform code.
 
-`jsFam` is always should be used together with [files](/api/file/files) command. It automatically adds glob to find all js/ts files, so calling `files().jsFam()` is equivalent to `files('**/*.{js,jsx,ts,tsx,cjs,mjs}').jsFam()`.
+`jsFam` is always should be used together with [files](/api-reference/file/files) command. It automatically adds glob to find all js/ts files, so calling `files().jsFam()` is equivalent to `files('**/*.{js,jsx,ts,tsx,cjs,mjs}').jsFam()`.
 
 Callback helpers:
 - `addImport(imports)` - Accepts code with imports and automatically merges file imports with provided imports.
@@ -96,5 +96,5 @@ Callback helpers:
 </ParamField>
 
 ## Returns
-- [astGrep](/api/transformation/astgrep)
-- [jscodeshift](/api/transformation/jscodeshift)
+- [astGrep](/api-reference/transformation/astgrep)
+- [jscodeshift](/api-reference/transformation/jscodeshift)
