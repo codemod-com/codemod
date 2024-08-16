@@ -299,6 +299,28 @@ codemod [codemod-name] --no-telemetry
 
 </ResponseField>
 
+<ResponseField name="--no-interactive" type="boolean">
+  Can be used to skip interactive prompts (run the CLI in no output mode).
+
+```bash
+codemod [codemod-name] --no-interactive
+```
+
+</ResponseField>
+
+</ResponseField>
+
+<ResponseField name="--engine" type="boolean">
+  Used to specify the engine for standalone codemod runs.
+
+  <Note>When running standalone codemods (the ones that do not have a [codemod-compatible directory structure](/codemod-registry/introduction#required-codemod-package-structure)), you will be prompted to select a codemod engine that your codemod was built with. To support non-interactive mode, we added this optional flag.</Note>
+
+```bash
+codemod [codemod-name] --no-interactive
+```
+
+</ResponseField>
+
 <ResponseField name="--json (-j)" type="boolean">
   Can be used to switch the CLI responses to JSON format.
 

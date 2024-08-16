@@ -13,8 +13,10 @@ import terminalLink from "terminal-link";
 
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
+  ALL_ENGINES,
   type KnownEngines,
   type ProjectDownloadInput,
+  allEnginesSchema,
   backtickify,
   doubleQuotify,
   execPromise,
@@ -23,24 +25,17 @@ import {
   isTypeScriptProjectFiles,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
+import { safeParse } from "valibot";
 import { getCurrentUserData } from "#auth-utils.js";
 import { oraCheckmark } from "#utils/constants.js";
 import { detectCodemodEngine } from "#utils/detectCodemodEngine.js";
 import { isFile } from "#utils/general.js";
 
-const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [
-  "jscodeshift",
-  "recipe",
-  "ts-morph",
-  "filemod",
-  "ast-grep",
-  "workflow",
-];
-
 export const handleInitCliCommand = async (options: {
   printer: Printer;
   target: string;
   source?: string;
+  engine?: string;
   noLogs?: boolean;
   useDefaultName?: boolean;
 }) => {
@@ -48,6 +43,7 @@ export const handleInitCliCommand = async (options: {
     printer,
     target,
     source,
+    engine,
     useDefaultName = false,
     noLogs = false,
   } = options;
@@ -69,7 +65,7 @@ export const handleInitCliCommand = async (options: {
 
   let engineChoices: string[];
   if (!source) {
-    engineChoices = CODEMOD_ENGINE_CHOICES;
+    engineChoices = ALL_ENGINES;
   } else if (isJavaScriptName(basename(source))) {
     engineChoices = ["jscodeshift", "ts-morph", "filemod", "workflow"];
   } else if (basename(source) === ".codemodrc.json") {
@@ -80,13 +76,15 @@ export const handleInitCliCommand = async (options: {
   ) {
     engineChoices = ["ast-grep"];
   } else {
-    engineChoices = CODEMOD_ENGINE_CHOICES;
+    engineChoices = ALL_ENGINES;
   }
 
   const isSourceAFile = source ? await isFile(source) : false;
 
+  const argvEngine = safeParse(allEnginesSchema, engine);
   const inferredCodemodEngine = isSourceAFile
-    ? await detectCodemodEngine(source as string)
+    ? (await detectCodemodEngine(source as string)) ??
+      (argvEngine.success ? argvEngine.output : undefined)
     : undefined;
 
   const userAnswers = await inquirer.prompt<{
