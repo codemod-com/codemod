@@ -12,9 +12,7 @@ export const codemodRunEndpoints = (server: Server<AppRegistry>) => {
       200,
       {},
       {
-        codemodRunIds: [
-          { id: currentId.toString(), workflow: "drift_analyzer" },
-        ],
+        ids: [{ id: currentId.toString(), workflow: "drift_analyzer" }],
       },
     );
   });

@@ -144,20 +144,22 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
       const { codemods, repoUrl, branch } = parseCodemodRunBody(request.body);
 
-      const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
-        codemods,
-        userId,
-        repoUrl,
-        branch,
-        persistent,
-      });
+      const createdIds = await Promise.all(
+        codemods.map(async (codemod) => {
+          // biome-ignore lint: TypeScript does not infer that queue is not null
+          const job = await queue!.add(TaskManagerJobs.CODEMOD_RUN, {
+            codemod,
+            userId,
+            repoUrl,
+            branch,
+          });
 
-      if (!job.id) {
-        return reply.code(500).send();
-      }
+          return job.id;
+        }),
+      );
 
       reply.type("application/json").code(200);
-      return { success: true, codemodRunId: job.id };
+      return { success: true, ids: createdIds.filter(Boolean) };
     },
   );
 

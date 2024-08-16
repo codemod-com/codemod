@@ -53,3 +53,16 @@ export const codemodRunStatusSchema = v.union([
 
 export type CodemodRunStatusInput = v.InferInput<typeof codemodRunStatusSchema>;
 export type CodemodRunStatus = v.InferOutput<typeof codemodRunStatusSchema>;
+
+export type GetExecutionStatusRequest = Readonly<{
+  token?: string | null;
+  executionId?: string | null;
+}>;
+
+export type CodemodRunRequest = {
+  codemodEngine: "jscodeshift" | "ts-morph";
+  repoUrl: string;
+  codemodSource: string;
+  codemodName: string;
+  branch: string;
+};

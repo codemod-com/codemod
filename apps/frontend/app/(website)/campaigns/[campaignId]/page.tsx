@@ -62,8 +62,9 @@ const CampaignPage = () => {
 
   const runCodemod = async (workflow: string) =>
     await runCodemodMutation.mutateAsync({
-      codemods: [workflow],
-      repos: selectedRepos,
+      codemods: [
+        { name: workflow, engine: "workflow", args: { repos: selectedRepos } },
+      ],
     });
 
   const codemodRunResults = useCodemodRunResult(
@@ -73,8 +74,11 @@ const CampaignPage = () => {
   // refresh all
   useEffect(() => {
     runCodemodMutation.mutateAsync({
-      codemods: widgets.map(({ workflow }) => workflow),
-      repos: selectedRepos,
+      codemods: widgets.map((widget) => ({
+        name: widget.workflow,
+        engine: "workflow",
+        args: { repos: selectedRepos },
+      })),
     });
   }, [widgets]);
 
