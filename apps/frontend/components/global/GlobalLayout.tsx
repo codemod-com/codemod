@@ -6,6 +6,7 @@ import { cn } from "@/utils";
 import { usePathname } from "next/navigation";
 import Footer from "./Footer";
 import Navigation from "./Navigation";
+import PlatformHeader from "./PlatformHeader";
 
 export default function GlobalLayout({
   data,
@@ -19,7 +20,8 @@ export default function GlobalLayout({
   const hideMenu = useHideMenu();
   const pathname = usePathname();
 
-  console.log(pathname, "???");
+  const isPlatformPage = pathname.startsWith("/campaigns");
+
   return (
     <div
       className={cn(
@@ -27,10 +29,14 @@ export default function GlobalLayout({
         className,
       )}
     >
-      {(!hideMenu || pathname.startsWith("/campaigns")) && data && (
-        <Navigation data={data.navigation} />
-      )}
       {/* @TODO refactor this logic */}
+      {isPlatformPage ? (
+        <PlatformHeader />
+      ) : (
+        !hideMenu && data && <Navigation data={data.navigation} />
+      )}
+      {}
+
       <main
         className={cn(
           "w-full",

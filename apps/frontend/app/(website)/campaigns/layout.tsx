@@ -13,7 +13,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <Theme>
       <QueryClientProvider client={client}>
-        <div className="h-[100vh] pt-[calc(var(--header-height))] flex">
+        <div className="h-[100vh] flex">
           {isSidebarActive && <Sidebar />}
           <div className="flex-grow h-full overflow-y-auto">{children}</div>
         </div>

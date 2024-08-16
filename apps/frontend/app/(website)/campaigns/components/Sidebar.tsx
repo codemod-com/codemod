@@ -49,7 +49,7 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <div className="w-[160px] h-full p-[8px] flex flex-col justify-between">
+    <div className="w-[160px] h-full p-[8px] flex flex-col justify-between border-r border-emphasis-light">
       <ul className="flex flex-col gap-[4px] m-0">
         {topNavLinks.map(({ href, label, Icon }) => (
           <li key={href}>
