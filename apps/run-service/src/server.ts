@@ -8,7 +8,11 @@ import {
   getAuthPlugin,
 } from "@codemod-com/auth";
 
-import type { CodemodRunStatus } from "@codemod-com/utilities";
+import type {
+  CodemodRunResponse,
+  CodemodRunStatus,
+  CodemodRunStatusResponse,
+} from "@codemod-com/api-types";
 import {
   parseCodemodRunBody,
   parseCodemodStatusData,
@@ -129,7 +133,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     return { version: packageJson.default.version };
   });
 
-  instance.post(
+  instance.post<{ Reply: CodemodRunResponse }>(
     "/codemodRun",
     { preHandler: [instance.authenticate, instance.getUserData] },
     async (request: UserDataPopulatedRequest, reply) => {
@@ -142,16 +146,21 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         return reply.code(401).send();
       }
 
-      const { codemods, repoUrl, branch } = parseCodemodRunBody(request.body);
+      const { codemods, repoUrl, branch, persistent } = parseCodemodRunBody(
+        request.body,
+      );
 
       const createdIds = await Promise.all(
         codemods.map(async (codemod) => {
           // biome-ignore lint: TypeScript does not infer that queue is not null
           const job = await queue!.add(TaskManagerJobs.CODEMOD_RUN, {
-            codemod,
+            codemodEngine: codemod.engine,
+            codemodName: codemod.name,
+            codemodSource: codemod.source,
             userId,
             repoUrl,
             branch,
+            persistent,
           });
 
           return job.id;
@@ -163,7 +172,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
-  instance.get(
+  instance.get<{ Reply: CodemodRunStatusResponse }>(
     "/codemodRun/status/:jobId",
     { preHandler: instance.authenticate },
     async (request, reply) => {
@@ -192,7 +201,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
-  instance.get(
+  instance.get<{ Reply: CodemodRunStatusResponse }>(
     "/codemodRun/output/:jobId",
     { preHandler: instance.authenticate },
     async (request, reply) => {
@@ -200,18 +209,27 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         throw new Error("Redis service is not running.");
       }
 
-      const { jobId } = parseCodemodStatusParams(request.params);
+      const { ids } = parseCodemodStatusParams(request.params);
 
-      const job = await queue?.getJob(jobId);
+      const data: CodemodRunStatus[] = await Promise.all(
+        ids.map(async (id) => {
+          const job = await queue?.getJob(id);
+          const redisData = await redis![
+            job?.data.persistent ? "get" : "getdel"
+          ](`job-${id}::status`);
 
-      const data = job?.data.persistent
-        ? await redis.get(`job-${jobId}::output`)
-        : await redis.getdel(`job-${jobId}::output`);
-      reply.type("application/json").code(200);
-      return {
-        success: true,
-        output: data,
-      };
+          if (!redisData) {
+            return { status: "error", message: "Job not found" };
+          }
+
+          return parseCodemodStatusData(JSON.parse(redisData));
+        }),
+      );
+
+      return reply
+        .type("application/json")
+        .code(200)
+        .send({ success: true, result: data });
     },
   );
 

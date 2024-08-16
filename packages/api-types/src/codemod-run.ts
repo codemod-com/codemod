@@ -1,26 +1,17 @@
 import * as v from "valibot";
 
-const codemodToRunBaseSchema = v.object({
-  engine: v.union([
-    v.literal("jscodeshift"),
-    v.literal("ts-morph"),
-    v.literal("workflow"),
-  ]),
-  args: v.optional(v.record(v.string(), v.any())),
-});
-
 export const codemodRunBodySchema = v.object({
   codemods: v.array(
-    v.union([
-      v.object({
-        ...codemodToRunBaseSchema.entries,
-        name: v.string(),
-      }),
-      v.object({
-        ...codemodToRunBaseSchema.entries,
-        source: v.string(),
-      }),
-    ]),
+    v.object({
+      engine: v.union([
+        v.literal("jscodeshift"),
+        v.literal("ts-morph"),
+        v.literal("workflow"),
+      ]),
+      name: v.string(),
+      source: v.optional(v.string()),
+      args: v.optional(v.record(v.string(), v.any())),
+    }),
   ),
   repoUrl: v.optional(v.string()),
   branch: v.optional(v.string()),
@@ -54,15 +45,25 @@ export const codemodRunStatusSchema = v.union([
 export type CodemodRunStatusInput = v.InferInput<typeof codemodRunStatusSchema>;
 export type CodemodRunStatus = v.InferOutput<typeof codemodRunStatusSchema>;
 
-export type GetExecutionStatusRequest = Readonly<{
-  token?: string | null;
-  executionId?: string | null;
-}>;
-
-export type CodemodRunRequest = {
-  codemodEngine: "jscodeshift" | "ts-morph";
-  repoUrl: string;
-  codemodSource: string;
+export type CodemodRunJobData = {
+  userId: string;
+  codemodEngine: "jscodeshift" | "ts-morph" | "workflow";
+  repoUrl?: string;
+  branch?: string;
+  createPullRequest?: boolean;
   codemodName: string;
-  branch: string;
+  codemodSource?: string;
+  persistent?: boolean;
+};
+
+export type CodemodRunRequestPayload = Omit<CodemodRunJobData, "userId">;
+
+// export type GetExecutionStatusRequest = Readonly<{
+//   token?: string | null;
+//   executionId?: string | null;
+// }>;
+export type CodemodRunResponse = { ids: string[] };
+export type CodemodRunStatusResponse = {
+  success: boolean;
+  result: CodemodRunStatus[];
 };

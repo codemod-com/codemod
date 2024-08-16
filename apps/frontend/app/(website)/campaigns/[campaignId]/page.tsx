@@ -67,9 +67,7 @@ const CampaignPage = () => {
       ],
     });
 
-  const codemodRunResults = useCodemodRunResult(
-    executionIds.map(({ id }) => id),
-  );
+  const codemodRunResults = useCodemodRunResult(executionIds);
 
   // refresh all
   useEffect(() => {

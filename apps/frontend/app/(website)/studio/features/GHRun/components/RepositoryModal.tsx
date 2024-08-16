@@ -1,5 +1,5 @@
 import type {
-  CodemodRunRequest,
+  CodemodRunRequestPayload,
   GHBranch,
   GithubRepository,
 } from "@codemod-com/api-types";
@@ -14,7 +14,7 @@ import { isNil } from "ramda";
 import { useState } from "react";
 
 export type RepositoryModalProps = {
-  onCodemodRun: (request: CodemodRunRequest) => Promise<void>;
+  onCodemodRun: (request: CodemodRunRequestPayload) => Promise<void>;
   hideRepositoryModal: VoidFunction;
   isRepositoryModalShown: boolean;
   repositoriesToShow: GithubRepository[];

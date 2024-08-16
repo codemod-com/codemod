@@ -2,7 +2,7 @@ import {
   codemodRunBodySchema,
   codemodRunStatusSchema,
   validateCodemodStatusParamsSchema,
-} from "@codemod-com/utilities";
+} from "@codemod-com/api-types";
 
 import { parse } from "valibot";
 
