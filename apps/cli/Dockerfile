@@ -45,7 +45,7 @@ COPY --from=builder /app/out/json/ .
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY --from=builder /app/out/full/ .
-RUN pnpm build --filter codemod
+RUN pnpm build:prod --filter codemod
 
 RUN pnpm deploy --filter=codemod --prod /prod/cli
 

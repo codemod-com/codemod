@@ -88,23 +88,24 @@ export function isAstGrepProjectFiles(
 const beautify = (input: string, options?: Parameters<typeof js>[1]) =>
   js(input, { brace_style: "preserve-inline", indent_size: 2, ...options });
 
-const readme = ({ cases, vanillaJs }: ProjectDownloadInput) => {
-  return `Short description
+const readme = ({ cases }: ProjectDownloadInput) => {
+  return `
 
-Detailed description
 
 ## Example
 ${cases?.map(({ before, after }) => {
-  return `
+  return `This codemod turns X into Y. It also does Z.
+Note: this is a contrived example. Please modify it.
+
 ### Before
 
-\`\`\`${vanillaJs ? "js" : "ts"}
+\`\`\`ts
 ${beautify(before)}
 \`\`\`
 
 ### After
 
-\`\`\`${vanillaJs ? "js" : "ts"}
+\`\`\`ts
 ${beautify(after)}
 \`\`\`
 `;
