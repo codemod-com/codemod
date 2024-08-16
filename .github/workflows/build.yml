@@ -26,6 +26,7 @@ jobs:
         run: pnpm build
         env:
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_test_c3VtbWFyeS13YWxydXMtMjUuY2xlcmsuYWNjb3VudHMuZGV2JA'
+          CLERK_SECRET_KEY: 'sk_test_BbZwR4JbuQGtEZe6QlXXWJoLCufSnsh0uw52Jy5smq'
           NEXT_PUBLIC_API_URL: 'http://localhost:8081'
           NEXT_PUBLIC_AI_API_URL: 'http://localhost:8081'
           NEXT_PUBLIC_AUTH_API_URL: 'http://localhost:8080'
