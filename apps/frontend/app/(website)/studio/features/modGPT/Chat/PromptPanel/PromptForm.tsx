@@ -9,6 +9,9 @@ import { useEnterSubmit } from "@studio/hooks/useEnterSubmit";
 import type { UseChatHelpers } from "ai/react";
 import * as React from "react";
 import Textarea from "react-textarea-autosize";
+import { useCodemodAi } from "../../hooks/codemod-ai";
+import { useModGPT } from "../../hooks/modgpt";
+import { useChatStore } from "../../store/chat-state";
 
 export interface Props extends Pick<UseChatHelpers, "input" | "setInput"> {
   onSubmit: (value: string) => Promise<void>;
@@ -17,7 +20,12 @@ export interface Props extends Pick<UseChatHelpers, "input" | "setInput"> {
 }
 
 export const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
-  ({ onSubmit, onReset, input, setInput, isLoading }, ref) => {
+  ({ input, setInput }, ref) => {
+    const { messages, reset, isGeneratingCodemod, isGeneratingTestCases } =
+      useChatStore();
+    const modGPT = useModGPT("gpt-4o");
+    const { send: callCodemodAI, abort } = useCodemodAi("gpt-4o");
+
     const { formRef, onKeyDown } = useEnterSubmit();
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
 

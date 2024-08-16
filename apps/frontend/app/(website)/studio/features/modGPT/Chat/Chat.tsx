@@ -1,7 +1,5 @@
 import type { useAiService } from "@/app/(website)/studio/features/modgpt/useAiService";
 import { memo } from "react";
-import { useCodemodAi } from "../hooks/codemod-ai";
-import { useModGPT } from "../hooks/modgpt";
 import { ChatWindow } from "./Chat/ChatWindow";
 import { PromptPanel } from "./Chat/PromptPanel";
 
@@ -26,28 +24,25 @@ const ChatBase = ({ className, isSignedIn }: Props) => {
   //   autogenerateTestCases,
   // };
 
-  const modGPT = useModGPT("gpt-4o");
-  const { send: callCodemodAI, messages } = useCodemodAi("gpt-4o");
-
   return (
     <>
       <ChatWindow
-        isLoading={isLoading}
-        messages={messages}
-        isSignedIn={isSignedIn}
-        className={className}
+      // isLoading={isLoading}
+      // messages={messages}
+      // isSignedIn={isSignedIn}
+      // className={className}
       />
       <PromptPanel
-        autogenerateTestCases={autogenerateTestCases}
-        handleSubmit={modGptSubmit}
-        resetMessages={resetMessages}
-        isLoading={isLoading}
-        stop={handleStop}
-        reload={reload}
-        messages={messages}
-        input={input}
-        setInput={setInput}
-        startIterativeCodemodGeneration={startIterativeCodemodGeneration}
+      // autogenerateTestCases={autogenerateTestCases}
+      // handleSubmit={modGptSubmit}
+      // resetMessages={resetMessages}
+      // isLoading={isLoading}
+      // stop={handleStop}
+      // reload={reload}
+      // messages={messages}
+      // input={input}
+      // setInput={setInput}
+      // startIterativeCodemodGeneration={startIterativeCodemodGeneration}
       />
     </>
   );

@@ -1,7 +1,7 @@
 import { WebClient } from "@slack/web-api";
 import axios from "axios";
 import { CronJob } from "cron";
-import WebSocket from "ws";
+import { WebSocket } from "ws";
 
 import { prisma } from "@codemod-com/database";
 
@@ -107,10 +107,10 @@ const services: Array<{
   {
     name: "Codemod AI Service",
     url: process.env.CODEMOD_AI_SERVICE_URL ?? "",
-    type: "websocket",
+    type: "http",
     available: true,
     webhook:
-      " https://api.instatus.com/v3/integrations/webhook/clzbu558m93630kcn6fnvj8yk8",
+      "https://api.instatus.com/v3/integrations/webhook/clzbu558m93630kcn6fnvj8yk8",
   },
   {
     name: "Run Service",

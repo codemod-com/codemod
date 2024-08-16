@@ -1,68 +1,88 @@
-import { GenerateTestCasesButton } from "@/app/(website)/studio/features/modgpt/Chat/PromptPanel/GenerateTestCasesButton";
 import { cn } from "@/utils";
+import { MagicWand } from "@phosphor-icons/react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Tabs from "@radix-ui/react-tabs";
+import Tooltip from "@studio/components/Tooltip/Tooltip";
 import { useSnippetsStore } from "@studio/store/snippets";
-import { useViewStore } from "@studio/store/view";
-import { useEffect, useRef, useState } from "react";
+import { useCodemodAi } from "../../features/modgpt/hooks/codemod-ai";
+import { useChatStore } from "../../features/modgpt/store/chat-state";
 
 export const TestTabsComponent = () => {
   const {
     getSelectedEditors,
+    getAllSnippets,
     addPair,
     removePair,
     selectedPairIndex,
     setSelectedPairIndex,
     editors,
-    renameEditor,
+    // renameEditor,
     getHasReachedTabsLimit,
   } = useSnippetsStore();
 
-  const [editingIndex, setEditingIndex] = useState(null);
-  const [newName, setNewName] = useState("");
-  const tabsRef = useRef(null);
-  const inputRef = useRef(null);
-  const [isEditedNameAlreadyInUse, setIsEditedNameAlreadyInUse] =
-    useState(false);
-  const { activateModGpt } = useViewStore();
+  const { messages, appendMessage } = useChatStore();
+  const { before, after } = getAllSnippets();
 
-  useEffect(() => {
-    if (inputRef.current) {
-      setTimeout(() => inputRef.current.focus(), 0);
-    }
-  }, [editingIndex]);
+  const { send: initiateTestGeneration, isLoading } = useCodemodAi({
+    input: {
+      type: "generate_test",
+      before,
+      after,
+      context: "",
+      description: "",
+    },
+    onFinish: () =>
+      appendMessage({
+        role: "assistant",
+        content: "Test case created and added to a new test tab",
+      }),
+  });
 
-  const handleRename = (index) => {
-    setEditingIndex(index);
-    setNewName(editors[index].name);
-  };
+  // const [editingIndex, setEditingIndex] = useState(null);
+  // const [newName, setNewName] = useState("");
+  // const tabsRef = useRef(null);
+  // const inputRef = useRef(null);
+  // const [isEditedNameAlreadyInUse, setIsEditedNameAlreadyInUse] =
+  //   useState(false);
+  // const { activateModGpt } = useViewStore();
 
-  const handleBlur = (index) => {
-    if (
-      newName.trim() === "" ||
-      editors.some((editor, i) => editor.name === newName && i !== index)
-    ) {
-      handleRename(index);
-    } else {
-      renameEditor(index)(newName);
-    }
-    setEditingIndex(null);
-    setIsEditedNameAlreadyInUse(false);
-  };
+  // useEffect(() => {
+  //   if (inputRef.current) {
+  //     setTimeout(() => inputRef.current.focus(), 0);
+  //   }
+  // }, [editingIndex]);
 
-  const onChange = (e) => {
-    const value = e.target.value;
-    setIsEditedNameAlreadyInUse(
-      editors.some((editor) => editor.name === value),
-    );
-    setNewName(value);
-  };
+  // const handleRename = (index) => {
+  //   setEditingIndex(index);
+  //   setNewName(editors[index].name);
+  // };
 
-  const handleKeyPress = (e, index) => {
-    if (e.key === "Enter") {
-      handleBlur(index);
-    }
-  };
+  // const handleBlur = (index) => {
+  //   if (
+  //     newName.trim() === "" ||
+  //     editors.some((editor, i) => editor.name === newName && i !== index)
+  //   ) {
+  //     handleRename(index);
+  //   } else {
+  //     renameEditor(index)(newName);
+  //   }
+  //   setEditingIndex(null);
+  //   setIsEditedNameAlreadyInUse(false);
+  // };
+
+  // const onChange = (e) => {
+  //   const value = e.target.value;
+  //   setIsEditedNameAlreadyInUse(
+  //     editors.some((editor) => editor.name === value),
+  //   );
+  //   setNewName(value);
+  // };
+
+  // const handleKeyPress = (e, index) => {
+  //   if (e.key === "Enter") {
+  //     handleBlur(index);
+  //   }
+  // };
 
   return (
     <Tabs.Root defaultValue="0" className="tabs">
@@ -98,7 +118,9 @@ export const TestTabsComponent = () => {
             </Tabs.Trigger>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <button className="dots-button">⋮</button>
+                <button type="button" className="dots-button">
+                  ⋮
+                </button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content className="dropdown-menu-content">
                 <DropdownMenu.Item
@@ -113,12 +135,33 @@ export const TestTabsComponent = () => {
         ))}
         {!getHasReachedTabsLimit() && (
           <>
-            <button className="add-tab-button" onClick={() => addPair()}>
+            <button
+              type="bu"
+              className="add-tab-button"
+              onClick={() => addPair()}
+            >
               +
             </button>
-            <GenerateTestCasesButton
-              isTestCaseGenerated={isTestCaseGenerated}
-              handleButtonClick={autogenerateTestCases}
+            <Tooltip
+              trigger={
+                <button
+                  type="submit"
+                  onClick={() => {}}
+                  className={cn(
+                    "cursor-pointer border-hidden align-text-top  p-3 bg-green hover:bg-[#D6FF62]",
+                    isTestCaseGenerated && "bg-[#D6FF62]",
+                  )}
+                >
+                  <MagicWand size={"30px"} />
+                </button>
+              }
+              content={
+                <p>
+                  {" "}
+                  Generate a new pair of before/after based on your existing
+                  code examples OR based on the natural language description.
+                </p>
+              }
             />
           </>
         )}

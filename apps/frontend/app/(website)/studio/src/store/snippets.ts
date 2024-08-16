@@ -75,7 +75,7 @@ export type Editors = {
 };
 
 export type EditorsSnippets = {
-  [x in Omit<keyof Editors, "output">]: string;
+  [x in keyof Omit<Editors, "output">]: string;
 };
 
 const toEditorSnippets = (editors: Editors): EditorsSnippets => ({

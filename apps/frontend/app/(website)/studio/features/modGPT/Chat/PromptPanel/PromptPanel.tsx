@@ -1,53 +1,62 @@
 import { AliasButtons } from "@/app/(website)/studio/features/modgpt/PromptPanel/AliasButtons";
 import { ControlButtons } from "@/app/(website)/studio/features/modgpt/PromptPanel/ControlButtons";
-import { WebSocketButton } from "@/app/(website)/studio/features/modgpt/PromptPanel/WebSocketButton";
-import { insertValue } from "@/app/(website)/studio/features/modgpt/PromptPanel/utils";
-import type { useAiService } from "@/app/(website)/studio/features/modgpt/useAiService/useAiService";
-import type { useModGptSubmit } from "@/app/(website)/studio/features/modgpt/useAiService/useModGpt/useModGptSubmit";
 import { getOrderedAliasList } from "@/app/(website)/studio/features/modgpt/utils";
+import ButtonWithTooltip from "@/app/(website)/studio/src/components/button/BottonWithTooltip";
+import { useSnippetsStore } from "@/app/(website)/studio/src/store/snippets";
 import { useAuth } from "@clerk/nextjs";
 import { useGetAliases } from "@studio/store/CFS/alias";
-import type { UseChatHelpers } from "ai/react";
+import Link from "next/link";
 import { useRef, useState } from "react";
+import { useCodemodAi } from "../../hooks/codemod-ai";
+import { useModGPT } from "../../hooks/modgpt";
+import { useChatStore } from "../../store/chat-state";
 import { PromptForm } from "./PromptForm";
 import { ScrollToBottomButton } from "./ScrollToBottomButton";
 
-export type PromptPanelProps = Pick<
-  UseChatHelpers,
-  "isLoading" | "reload" | "messages" | "stop" | "input" | "setInput"
-> & {
-  handleSubmit: ReturnType<typeof useModGptSubmit>;
-  startIterativeCodemodGeneration: ReturnType<
-    typeof useAiService
-  >["startIterativeCodemodGeneration"];
-  resetMessages: ReturnType<typeof useAiService>["resetMessages"];
-};
-
-export function PromptPanel(props: PromptPanelProps) {
+export function PromptPanel() {
   const {
-    handleSubmit,
-    isLoading,
-    stop,
+    reset,
+    isGeneratingCodemod,
+    isGeneratingTestCases,
+    messages,
+    appendMessage,
     input,
     setInput,
-    messages,
-    startIterativeCodemodGeneration,
-    resetMessages,
-  } = props;
+  } = useChatStore();
+
+  const { getAllSnippets } = useSnippetsStore();
+
+  const { before, after } = getAllSnippets();
+  const modGPT = useModGPT("gpt-4o");
+  const { send: startCodemodGeneration, abort } = useCodemodAi({
+    input: {
+      type: "generate_codemod",
+      before,
+      after,
+      context: "",
+      description: "",
+    },
+    onFinish: () =>
+      appendMessage({
+        role: "assistant",
+        content: "Codemod created and added to a new tab",
+      }),
+  });
+
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [expandedHelper, setExpandedHelper] = useState(true);
   const { isSignedIn } = useAuth();
   const aliases = useGetAliases();
   const aliasList = getOrderedAliasList(aliases);
 
-  const handleInsertValue = (value: string) => {
-    const textArea = textAreaRef.current;
-    if (textArea) {
-      const updatedInput = insertValue(textArea, input, value);
-      setInput(updatedInput);
-      textArea.focus();
-    }
-  };
+  // const handleInsertValue = (value: string) => {
+  //   const textArea = textAreaRef.current;
+  //   if (textArea) {
+  //     const updatedInput = insertValue(textArea, input, value);
+  //     setInput(updatedInput);
+  //     textArea.focus();
+  //   }
+  // };
 
   return (
     <div className="chatPanel absolute bottom-0 mx-auto w-full sm:pl-8 sm:pr-16">
@@ -61,10 +70,28 @@ export function PromptPanel(props: PromptPanelProps) {
       {expandedHelper && (
         <>
           <div className="mb-1 flex w-full gap-1 overflow-x-auto px-1 items-center justify-content-center actions">
-            <WebSocketButton
-              handleButtonClick={() => startIterativeCodemodGeneration()}
-              isLoading={isLoading}
-            />
+            <ButtonWithTooltip
+              tooltipContent={
+                <>
+                  with selected model and Codemod’s iterative AI system.
+                  <Link
+                    style={{ color: "blue" }}
+                    href="https://codemod.com/blog/iterative-ai-system"
+                  >
+                    {" "}
+                    Learn more
+                  </Link>
+                </>
+              }
+              variant="default"
+              size="sm"
+              className="text-white flex gap-1 text-xs my-0 h-8 !py-0 bg-black hover:bg-accent hover:text-black"
+              // className="group my-0 h-8 whitespace-nowrap !py-0 text-xs font-bold bg-primary"
+              onClick={() => startCodemodGeneration()}
+              disabled={isGeneratingCodemod}
+            >
+              Autogenerate with Codemod AI
+            </ButtonWithTooltip>
           </div>
           <AliasButtons
             aliasList={aliasList}
@@ -75,11 +102,9 @@ export function PromptPanel(props: PromptPanelProps) {
       <div className="relative">
         <PromptForm
           ref={textAreaRef}
-          onSubmit={handleSubmit}
           input={input}
           setInput={setInput}
-          isLoading={isLoading}
-          onReset={resetMessages}
+          onReset={reset}
         />
       </div>
     </div>

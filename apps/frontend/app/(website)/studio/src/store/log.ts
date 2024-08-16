@@ -45,6 +45,7 @@ export const useLogStore = create<LogState>((set, get) => ({
       activeEventHashDigest: hashDigest,
     }));
   },
+  consoleLogs: [],
 }));
 
 export const useSelectActiveEvent = () => {

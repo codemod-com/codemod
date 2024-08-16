@@ -6,14 +6,20 @@ export async function fetchStream(opts: {
 }) {
   const { url, onChunk, options } = opts;
 
-  const response = await fetch(url, options);
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...options?.headers,
+      Authorization: `Bearer ${opts.token}`,
+    },
+  });
 
   if (response.body === null) {
     throw new Error("ReadableStream not yet supported in this browser.");
   }
 
   for await (const chunk of response.body as any) {
-    if (options?.signal?.aborted) break; // just break out of loop
+    if (options?.signal?.aborted) break;
 
     onChunk(chunk.toString());
   }

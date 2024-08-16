@@ -20,6 +20,8 @@ import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { useRef } from "react";
 import { PanelGroup } from "react-resizable-panels";
+import { useCFSStore } from "../src/store/CFS";
+import { useModStore } from "../src/store/mod";
 import Codemod from "./Codemod";
 import { Header } from "./Header/Header";
 import Layout from "./Layout";
@@ -37,15 +39,11 @@ const Main = () => {
 
   const { engine, setEngine } = useSnippetsStore();
   const { isDark } = useTheme();
-  // const { setContent } = useModStore();
-  // const {
-  //   AIAssistant: { engine: llmEngine },
-  // } = useCFSStore();
+  const { setContent } = useModStore();
+  const {
+    AIAssistant: { engine: llmEngine },
+  } = useCFSStore();
 
-  // const aiAssistantData = useAiService({
-  //   setCodemod: setContent,
-  //   engine: llmEngine,
-  // });
   const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
     setEngine(value as KnownEngines);
   };
@@ -203,10 +201,7 @@ const Main = () => {
               panelRefs={panelRefs}
               className="bg-gray-bg"
             >
-              <TestTabsComponent
-                isTestCaseGenerated={aiAssistantData.isTestCaseGenerated}
-                autogenerateTestCases={aiAssistantData.autogenerateTestCases}
-              />
+              <TestTabsComponent />
               <PanelGroup direction="horizontal">
                 {beforeAndAfterPanel}
                 <ResizeHandle direction="horizontal" />

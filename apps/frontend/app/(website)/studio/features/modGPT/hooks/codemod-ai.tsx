@@ -1,19 +1,37 @@
-import type { Message } from "ai";
-import { useCallback, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { useCallback, useEffect } from "react";
 
 import { useAuth } from "@/app/auth/useAuth";
 import { env } from "@/env";
 
 import { fetchStream } from "../api/fetch-stream";
-import type { CodemodAIOutput } from "../types";
+import { useChatStore } from "../store/chat-state";
+import type {
+  CodemodAIFinishedOutput,
+  CodemodAIInput,
+  CodemodAIOutput,
+  CodemodAIProgressOutput,
+  CodemodAITestFinishedOutput,
+} from "../types";
 
-export const useCodemodAi = () => {
+export function useCodemodAi(settings: {
+  input: CodemodAIInput;
+  onFinish?: (
+    finishMessage: CodemodAITestFinishedOutput | CodemodAIFinishedOutput,
+  ) => unknown | Promise<unknown>;
+  onError?: (err: string) => void;
+  onMessage?: (message: CodemodAIProgressOutput) => unknown | Promise<unknown>;
+}) {
+  const { input, onFinish, onError, onMessage } = settings;
+
   const { getToken } = useAuth();
-  // @TODO: use from persistent zustand
-  const [messages, setMessages] = useState<
-    (Pick<Message, "role" | "content"> & CodemodAIOutput)[]
-  >([]);
+  const {
+    setIsGeneratingCodemod,
+    setIsGeneratingTestCases,
+    isGeneratingCodemod,
+    isGeneratingTestCases,
+    messages,
+    appendMessage,
+  } = useChatStore();
   const { signal, abort } = new AbortController();
 
   useEffect(() => {
@@ -21,63 +39,62 @@ export const useCodemodAi = () => {
   }, [abort]);
 
   const send = useCallback(async () => {
+    const setLoading = (state: boolean) =>
+      input.type === "generate_test"
+        ? setIsGeneratingTestCases(state)
+        : setIsGeneratingCodemod(state);
     const token = await getToken();
     if (token === null) {
       console.error("unauth");
       return;
     }
 
+    setLoading(true);
     await fetchStream({
       url: env.NEXT_PUBLIC_CODEMODAI_API_URL,
       token,
-      options: { signal },
+      options: { method: "POST", body: JSON.stringify(input), signal },
       onChunk: async (rawData) => {
         const data = JSON.parse(rawData) as CodemodAIOutput;
 
-        if (data.execution_status === "error") {
-          toast.error(`Codemod AI error: ${data.message}`);
-          return abort();
-        }
-
-        if (data.execution_status === "finished" && "codemod" in data) {
-          // toast.success("Codemod copied to the right pane", {
-          //   position: "top-center",
-          //   duration: 12000,
-          // });
-          return setMessages((prev) => [
-            ...prev,
-            {
-              ...data,
-              role: "assistant",
-              content: `\`\`\`ts ${data.codemod}\`\`\``,
-            },
-          ]);
-        }
-
-        if (data.execution_status === "finished" && "before" in data) {
-          // setIsTestCaseGenerated(false);
-          return setMessages((prev) => [
-            ...prev,
-            {
-              ...data,
-              role: "assistant",
-              content: `Test cases created and added to a new test tab`,
-            },
-          ]);
-          // addPair(undefined, data);
-        }
-
-        return setMessages((prev) => [
-          ...prev,
-          {
-            ...data,
+        if (data.execution_status === "in_progress") {
+          await onMessage?.(data);
+          appendMessage({
             role: "assistant",
             content: data.message,
-          },
-        ]);
+          });
+          return;
+        }
+
+        if (data.execution_status === "error") {
+          await onError?.(data.message);
+        } else if (data.execution_status === "finished") {
+          await onFinish?.(data);
+        }
+
+        setLoading(false);
+        return abort();
       },
     });
-  }, [getToken, signal, abort]);
+  }, [
+    getToken,
+    signal,
+    abort,
+    setIsGeneratingCodemod,
+    setIsGeneratingTestCases,
+    input,
+    onFinish,
+    onError,
+    onMessage,
+    appendMessage,
+  ]);
 
-  return { send, abort, messages };
-};
+  return {
+    send,
+    abort,
+    isLoading:
+      input.type === "generate_test"
+        ? isGeneratingTestCases
+        : isGeneratingCodemod,
+  };
+}
