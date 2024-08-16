@@ -1,56 +1,60 @@
 import { addMilliseconds } from "date-fns";
 
 type CommitData = {
-    date: Date;
-    commit: string;
-}
-
-export const getAllCommits = async (exec: (...args: any[]) => Promise<string>): Promise<CommitData[]> => {
-    const command = `git log --pretty=format:"%H %ci"`;
-    const result = await exec(command);
-
-    return result.split("\n").map((line) => {
-        const [commit, ...dateParts] = line.split(" ");
-        return { commit, date: new Date(dateParts.join(" ")) };
-    });
+  date: Date;
+  commit: string;
 };
 
-export const getCommitsWithInterval = async (allCommits: CommitData[], intervalDuration: number) => {
-    if (allCommits.length === 0) return [];
+export const getAllCommits = async (
+  exec: (...args: any[]) => Promise<string>,
+): Promise<CommitData[]> => {
+  const command = `git log --pretty=format:"%H %ci"`;
+  const result = await exec(command);
 
-    const totalCommits = allCommits.length;
-    const firstCommitDate = allCommits[totalCommits - 1].date.getTime();
-    const lastCommitDate = allCommits[0].date.getTime();
+  return result.split("\n").map((line) => {
+    const [commit, ...dateParts] = line.split(" ");
+    return { commit, date: new Date(dateParts.join(" ")) };
+  });
+};
 
-    const commitsWithInterval: CommitData[] = [];
-    let nextTargetDate = firstCommitDate;
+export const getCommitsWithInterval = async (
+  allCommits: CommitData[],
+  intervalDuration: number,
+) => {
+  if (allCommits.length === 0) return [];
 
-    let i = 0;
-    while (lastCommitDate && nextTargetDate < lastCommitDate) {
-        let closestCommit = allCommits[0];
-        let minTimeDiff = Math.abs(nextTargetDate - closestCommit.date.getTime());
+  const totalCommits = allCommits.length;
+  const firstCommitDate = allCommits[totalCommits - 1].date.getTime();
+  const lastCommitDate = allCommits[0].date.getTime();
 
-        for (const commit of allCommits) {
-            const timeDiff = Math.abs(nextTargetDate - commit.date.getTime());
-            if (timeDiff < minTimeDiff) {
-                minTimeDiff = timeDiff;
-                closestCommit = commit;
-            }
-        }
+  const commitsWithInterval: CommitData[] = [];
+  let nextTargetDate = firstCommitDate;
 
-        commitsWithInterval.push({
-            commit: closestCommit.commit,
-            timestamp: closestCommit.date.toISOString(),
-        });
+  let i = 0;
+  while (lastCommitDate && nextTargetDate < lastCommitDate) {
+    let closestCommit = allCommits[0];
+    let minTimeDiff = Math.abs(nextTargetDate - closestCommit.date.getTime());
 
-        nextTargetDate = addMilliseconds(
-            firstCommitDate,
-            intervalDuration * (i + 1),
-        ).getTime();
-
-        i++;
+    for (const commit of allCommits) {
+      const timeDiff = Math.abs(nextTargetDate - commit.date.getTime());
+      if (timeDiff < minTimeDiff) {
+        minTimeDiff = timeDiff;
+        closestCommit = commit;
+      }
     }
 
-    return commitsWithInterval;
-};
+    commitsWithInterval.push({
+      commit: closestCommit.commit,
+      timestamp: closestCommit.date.toISOString(),
+    });
 
+    nextTargetDate = addMilliseconds(
+      firstCommitDate,
+      intervalDuration * (i + 1),
+    ).getTime();
+
+    i++;
+  }
+
+  return commitsWithInterval;
+};

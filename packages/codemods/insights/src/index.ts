@@ -7,15 +7,14 @@ import {
   normalizePackageRegistryData,
 } from "./registry-utils.js";
 
-import { getPackages } from './package.js';
-import { getAllCommits, getCommitsWithInterval } from './commits.js';
+import { getAllCommits, getCommitsWithInterval } from "./commits.js";
 import libyearAnalysis from "./libyearAnalysis.js";
+import { getPackages } from "./package.js";
 
 type Options = {
   repos: string[];
   onlyProd: boolean;
 };
-
 
 type PnpmWorkspace = {
   catalog?: Record<string, string>;
@@ -50,7 +49,9 @@ const COMMITS_COUNT = 10;
 
 const getCommitsToCheck = async (exec: any) => {
   const commits = await getAllCommits(exec);
-  const intervalDuration = (commits.at(0)?.date.getTime() - commits.at(-1)?.date.getTime()) / COMMITS_COUNT;
+  const intervalDuration =
+    (commits.at(0)?.date.getTime() - commits.at(-1)?.date.getTime()) /
+    COMMITS_COUNT;
   return await getCommitsWithInterval(commits, intervalDuration);
 };
 
@@ -59,44 +60,59 @@ const getCommitsToCheck = async (exec: any) => {
  */
 const getAnalyzePackageJson =
   (options: Options, pnpmWorkspace?: PnpmWorkspace | null) =>
-    async ({
-      getContents,
-    }: { getContents(): Promise<Record<string, string>> }) => {
-      const packageJson = await getContents();
+  async ({
+    getContents,
+  }: { getContents(): Promise<Record<string, string>> }) => {
+    const packageJson = await getContents();
 
-      const getPackageCatalogVersionRange = (packageData: { packageName: string, packageVersionRange: string }) => packageData.packageVersionRange === 'catalog:' ? ({ ...packageData, packageVersionRange: pnpmWorkspace?.catalog?.[packageData.packageName] }) : packageData;
-      const isValidVersionRange = ({ packageVersionRange }: { packageName: string, packageVersionRange?: string | null }) => packageVersionRange !== null && semver.validRange(packageVersionRange);
-
-      const packagesAnalysis = await Promise.all(
-        getPackages(packageJson, options)
-          .map(getPackageCatalogVersionRange)
-          .filter(isValidVersionRange)
-          .map(({ packageName, packageVersionRange }) => analyzePackage(packageName, packageVersionRange)));
-
-
-      return packagesAnalysis.filter(Boolean).reduce(
-        (acc, pkg) => {
-          if (pkg?.drift) {
-            acc.drift += pkg.drift;
+    const getPackageCatalogVersionRange = (packageData: {
+      packageName: string;
+      packageVersionRange: string;
+    }) =>
+      packageData.packageVersionRange === "catalog:"
+        ? {
+            ...packageData,
+            packageVersionRange:
+              pnpmWorkspace?.catalog?.[packageData.packageName],
           }
+        : packageData;
+    const isValidVersionRange = ({
+      packageVersionRange,
+    }: { packageName: string; packageVersionRange?: string | null }) =>
+      packageVersionRange !== null && semver.validRange(packageVersionRange);
 
-          return acc;
-        },
-        {
-          drift: 0,
-          package: packageJson.name,
-        },
-      );
-    };
+    const packagesAnalysis = await Promise.all(
+      getPackages(packageJson, options)
+        .map(getPackageCatalogVersionRange)
+        .filter(isValidVersionRange)
+        .map(({ packageName, packageVersionRange }) =>
+          analyzePackage(packageName, packageVersionRange),
+        ),
+    );
+
+    return packagesAnalysis.filter(Boolean).reduce(
+      (acc, pkg) => {
+        if (pkg?.drift) {
+          acc.drift += pkg.drift;
+        }
+
+        return acc;
+      },
+      {
+        drift: 0,
+        package: packageJson.name,
+      },
+    );
+  };
 
 const getAnalyzeWorkspace =
   (options: Options) =>
-    async ({ getContents }) => {
-      const pnpmWorkspace = await getContents();
-      // @TODO
+  async ({ getContents }) => {
+    const pnpmWorkspace = await getContents();
+    // @TODO
 
-      return pnpmWorkspace;
-    };
+    return pnpmWorkspace;
+  };
 
 export async function workflow({ git }: Api, options: Options) {
   const analysis = [];
