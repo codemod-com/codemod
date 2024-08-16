@@ -1,5 +1,6 @@
 import {
   codemodRunBodySchema,
+  codemodRunStatusSchema,
   validateCodemodStatusParamsSchema,
 } from "@codemod-com/utilities";
 
@@ -10,3 +11,6 @@ export const parseCodemodRunBody = (input: unknown) =>
 
 export const parseCodemodStatusParams = (input: unknown) =>
   parse(validateCodemodStatusParamsSchema, input);
+
+export const parseCodemodStatusData = (input: unknown) =>
+  parse(codemodRunStatusSchema, input);

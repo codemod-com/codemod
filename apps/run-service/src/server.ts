@@ -8,8 +8,10 @@ import {
   getAuthPlugin,
 } from "@codemod-com/auth";
 
+import type { CodemodRunStatus } from "@codemod-com/utilities";
 import {
   parseCodemodRunBody,
+  parseCodemodStatusData,
   parseCodemodStatusParams,
 } from "./schemata/schema.js";
 import { queue, redis } from "./services/Redis.js";
@@ -140,12 +142,10 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         return reply.code(401).send();
       }
 
-      const { codemodSource, codemodEngine, repoUrl, branch, persistent } =
-        parseCodemodRunBody(request.body);
+      const { codemods, repoUrl, branch } = parseCodemodRunBody(request.body);
 
       const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
-        codemodSource,
-        codemodEngine,
+        codemods,
         userId,
         repoUrl,
         branch,
@@ -169,21 +169,24 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         throw new Error("Redis service is not running.");
       }
 
-      const { jobId } = parseCodemodStatusParams(request.params);
+      const { ids } = parseCodemodStatusParams(request.params);
 
-      const data = await redis.get(`job-${jobId}::status`);
-      reply.type("application/json").code(200);
-      return {
-        success: true,
-        result: data
-          ? (JSON.parse(data) as {
-              status: string;
-              message?: string;
-              link?: string;
-              progress?: { processed: number; total: number };
-            })
-          : null,
-      };
+      const data: CodemodRunStatus[] = await Promise.all(
+        ids.map(async (id) => {
+          const redisData = await redis!.get(`job-${id}::status`);
+
+          if (!redisData) {
+            return { status: "error", message: "Job not found" };
+          }
+
+          return parseCodemodStatusData(JSON.parse(redisData));
+        }),
+      );
+
+      return reply
+        .type("application/json")
+        .code(200)
+        .send({ success: true, result: data });
     },
   );
 
