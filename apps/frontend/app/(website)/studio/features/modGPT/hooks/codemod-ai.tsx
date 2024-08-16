@@ -14,14 +14,14 @@ import type {
 } from "../types";
 
 export function useCodemodAi(settings: {
-  input: CodemodAIInput;
+  data: CodemodAIInput;
   onFinish?: (
     finishMessage: CodemodAITestFinishedOutput | CodemodAIFinishedOutput,
   ) => unknown | Promise<unknown>;
   onError?: (err: string) => void;
   onMessage?: (message: CodemodAIProgressOutput) => unknown | Promise<unknown>;
 }) {
-  const { input, onFinish, onError, onMessage } = settings;
+  const { data, onFinish, onError, onMessage } = settings;
 
   const { getToken } = useAuth();
   const {
@@ -40,7 +40,7 @@ export function useCodemodAi(settings: {
 
   const send = useCallback(async () => {
     const setLoading = (state: boolean) =>
-      input.type === "generate_test"
+      data.type === "generate_test"
         ? setIsGeneratingTestCases(state)
         : setIsGeneratingCodemod(state);
     const token = await getToken();
@@ -53,7 +53,7 @@ export function useCodemodAi(settings: {
     await fetchStream({
       url: env.NEXT_PUBLIC_CODEMODAI_API_URL,
       token,
-      options: { method: "POST", body: JSON.stringify(input), signal },
+      options: { method: "POST", body: JSON.stringify(data), signal },
       onChunk: async (rawData) => {
         const data = JSON.parse(rawData) as CodemodAIOutput;
 
@@ -82,7 +82,7 @@ export function useCodemodAi(settings: {
     abort,
     setIsGeneratingCodemod,
     setIsGeneratingTestCases,
-    input,
+    data,
     onFinish,
     onError,
     onMessage,
@@ -93,7 +93,7 @@ export function useCodemodAi(settings: {
     send,
     abort,
     isLoading:
-      input.type === "generate_test"
+      data.type === "generate_test"
         ? isGeneratingTestCases
         : isGeneratingCodemod,
   };

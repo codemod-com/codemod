@@ -200,6 +200,8 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
         get().editors,
       ),
     ),
+  // beforeSnippets: () => get().editors.map(({ before }) => before),
+  // afterSnippets: () => get().editors.map(({ after }) => after),
   setSelectedPairIndex: (i: number) => {
     set({ selectedPairIndex: i });
   },

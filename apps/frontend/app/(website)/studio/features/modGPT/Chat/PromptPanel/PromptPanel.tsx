@@ -29,7 +29,7 @@ export function PromptPanel() {
   const { before, after } = getAllSnippets();
   const modGPT = useModGPT("gpt-4o");
   const { send: startCodemodGeneration, abort } = useCodemodAi({
-    input: {
+    data: {
       type: "generate_codemod",
       before,
       after,

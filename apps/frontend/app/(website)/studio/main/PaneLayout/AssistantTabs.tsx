@@ -90,7 +90,7 @@ export const AssistantTab = ({
         name: "Assistant",
         content: (
           <>
-            <Chat isSignedIn={isSignedIn} />
+            <Chat />
             {!isSignedIn && <SignInRequired />}
           </>
         ),

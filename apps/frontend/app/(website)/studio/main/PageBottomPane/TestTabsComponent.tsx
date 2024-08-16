@@ -24,7 +24,7 @@ export const TestTabsComponent = () => {
   const { before, after } = getAllSnippets();
 
   const { send: initiateTestGeneration, isLoading } = useCodemodAi({
-    input: {
+    data: {
       type: "generate_test",
       before,
       after,

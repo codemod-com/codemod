@@ -7,6 +7,8 @@ export type ChatStore = {
   appendMessage: (message: LLMMessage) => void;
   reset: () => void;
 
+  isLoading: boolean;
+
   isGeneratingCodemod: boolean;
   setIsGeneratingCodemod: (isGenerating: boolean) => void;
 
@@ -21,6 +23,8 @@ export const useChatStore = create<ChatStore>()(
       appendMessage: (message) =>
         set({ messages: [...get().messages, message] }),
       reset: () => set({ messages: [] }),
+
+      isLoading: get().isGeneratingCodemod || get().isGeneratingTestCases,
 
       isGeneratingCodemod: false,
       setIsGeneratingCodemod: (isGenerating) =>
