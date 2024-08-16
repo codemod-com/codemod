@@ -40,7 +40,11 @@ const getKeytar = async () => {
   try {
     return await import("keytar");
   } catch (err) {
-    if (!alreadyWarned) {
+    const isShimLoggedIn = await keytarShim.default
+      .findCredentials(SERVICE)
+      .then((creds) => creds.length > 0);
+
+    if (!alreadyWarned && !isShimLoggedIn) {
       alreadyWarned = true;
       console.warn(
         chalk.red(
