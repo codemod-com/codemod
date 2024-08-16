@@ -83,36 +83,40 @@
     {
       "group": "Git operations",
       "pages": [
-        "api/git/clone",
-        "api/git/branch",
-        "api/git/commit",
-        "api/git/push"
+        "api-reference/git/clone",
+        "api-reference/git/branch",
+        "api-reference/git/commit",
+        "api-reference/git/push"
       ]
     },
     {
       "group": "File operations",
-      "pages": ["api/file/files", "api/file/dirs", "api/file/move"]
+      "pages": [
+        "api-reference/file/files",
+        "api-reference/file/dirs",
+        "api-reference/file/move"
+      ]
     },
     {
       "group": "Code transformation",
       "pages": [
-        "api/transformation/codemod",
-        "api/transformation/jsfam",
+        "api-reference/transformation/codemod",
+        "api-reference/transformation/jsfam",
         {
           "group": "ast-grep",
           "pages": [
-            "api/transformation/astgrep/overview",
-            "api/transformation/astgrep/reference"
+            "api-reference/transformation/astgrep/overview",
+            "api-reference/transformation/astgrep/reference"
           ]
         },
-        "api/transformation/jscodeshift",
-        "api/transformation/addimport",
-        "api/transformation/removeimport"
+        "api-reference/transformation/jscodeshift",
+        "api-reference/transformation/addimport",
+        "api-reference/transformation/removeimport"
       ]
     },
     {
       "group": "Command-line operations",
-      "pages": ["api/command/exec"]
+      "pages": ["api-reference/command/exec"]
     },
     {
       "group": "Guides & Examples",
