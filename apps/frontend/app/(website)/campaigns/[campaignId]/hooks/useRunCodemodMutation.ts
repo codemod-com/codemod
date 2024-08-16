@@ -8,19 +8,17 @@ import { useState } from "react";
 import { useMutation } from "react-query";
 
 export const useRunCodemodMutation = () => {
-  const [executionIds, setExecutionIds] = useState<CodemodRunResponse["ids"]>(
-    [],
-  );
+  const [executionIds, setExecutionIds] = useState<string[]>([]);
 
   const { post: runCodemod } = useAPI<CodemodRunResponse>(RUN_CODEMOD_URL);
 
   const runCodemodMutation = useMutation({
     mutationFn: async (
       request: CodemodRunBody,
-    ): Promise<CodemodRunResponse> => {
-      const result = await runCodemod(request);
+    ): Promise<CodemodRunResponse["data"]> => {
+      const { data: result } = await runCodemod(request);
 
-      setExecutionIds(result.data.ids);
+      setExecutionIds(result.data.map(({ jobId }) => jobId));
 
       return result.data;
     },

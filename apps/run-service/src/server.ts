@@ -8,10 +8,12 @@ import {
   getAuthPlugin,
 } from "@codemod-com/auth";
 
-import type {
-  CodemodRunResponse,
-  CodemodRunStatus,
-  CodemodRunStatusResponse,
+import {
+  type ApiResponse,
+  type CodemodRunResponse,
+  type CodemodRunStatus,
+  type CodemodRunStatusResponse,
+  UNAUTHORIZED,
 } from "@codemod-com/api-types";
 import {
   parseCodemodRunBody,
@@ -133,7 +135,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     return { version: packageJson.default.version };
   });
 
-  instance.post<{ Reply: CodemodRunResponse }>(
+  instance.post<{ Reply: ApiResponse<CodemodRunResponse> }>(
     "/codemodRun",
     { preHandler: [instance.authenticate, instance.getUserData] },
     async (request: UserDataPopulatedRequest, reply) => {
@@ -143,32 +145,39 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
       const userId = request.user?.id;
       if (!userId) {
-        return reply.code(401).send();
+        return reply
+          .code(401)
+          .send({ error: UNAUTHORIZED, errorText: "Unauthorized" });
       }
 
       const { codemods, repoUrl, branch, persistent } = parseCodemodRunBody(
         request.body,
       );
 
-      const createdIds = await Promise.all(
-        codemods.map(async (codemod) => {
-          // biome-ignore lint: TypeScript does not infer that queue is not null
-          const job = await queue!.add(TaskManagerJobs.CODEMOD_RUN, {
-            codemodEngine: codemod.engine,
-            codemodName: codemod.name,
-            codemodSource: codemod.source,
-            userId,
-            repoUrl,
-            branch,
-            persistent,
-          });
+      const created: (CodemodRunResponse["data"][number] | null)[] =
+        await Promise.all(
+          codemods.map(async (codemod) => {
+            if (!queue) return null;
 
-          return job.id;
-        }),
-      );
+            const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
+              codemodEngine: codemod.engine,
+              codemodName: codemod.name,
+              codemodSource: codemod.source,
+              userId,
+              repoUrl,
+              branch,
+              persistent,
+            });
+
+            if (!job.id) return null;
+            return { jobId: job.id, codemodName: codemod.name };
+          }),
+        );
 
       reply.type("application/json").code(200);
-      return { success: true, ids: createdIds.filter(Boolean) };
+      return reply
+        .code(401)
+        .send({ success: true, data: created.filter(Boolean) });
     },
   );
 
@@ -182,9 +191,10 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
       const { ids } = parseCodemodStatusParams(request.params);
 
-      const data: CodemodRunStatus[] = await Promise.all(
+      const data: (CodemodRunStatus | null)[] = await Promise.all(
         ids.map(async (id) => {
-          const redisData = await redis!.get(`job-${id}::status`);
+          if (!redis) return null;
+          const redisData = await redis.get(`job-${id}::status`);
 
           if (!redisData) {
             return { status: "error", message: "Job not found" };
@@ -197,7 +207,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       return reply
         .type("application/json")
         .code(200)
-        .send({ success: true, result: data });
+        .send({ success: true, data: data.filter(Boolean) });
     },
   );
 
@@ -229,7 +239,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       return reply
         .type("application/json")
         .code(200)
-        .send({ success: true, result: data });
+        .send({ success: true, data });
     },
   );
 

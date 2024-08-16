@@ -24,12 +24,23 @@ export const validateCodemodStatusParamsSchema = v.object({
   ids: v.array(v.string()),
 });
 
+const statusBaseSchema = v.object({
+  // job id
+  id: v.string(),
+  // name
+  codemod: v.string(),
+  // progress from CLI ?
+  progress: v.number(),
+});
+
 export const codemodRunStatusSchema = v.union([
   v.object({
+    ...statusBaseSchema.entries,
     status: v.union([v.literal("progress"), v.literal("error")]),
     message: v.string(),
   }),
   v.object({
+    ...statusBaseSchema.entries,
     status: v.literal("executing codemod"),
     progress: v.object({
       processed: v.number(),
@@ -37,6 +48,7 @@ export const codemodRunStatusSchema = v.union([
     }),
   }),
   v.object({
+    ...statusBaseSchema.entries,
     status: v.literal("done"),
     link: v.string(),
   }),
@@ -62,8 +74,11 @@ export type CodemodRunRequestPayload = Omit<CodemodRunJobData, "userId">;
 //   token?: string | null;
 //   executionId?: string | null;
 // }>;
-export type CodemodRunResponse = { ids: string[] };
+export type CodemodRunResponse = {
+  success: true;
+  data: { jobId: string; codemodName: string }[];
+};
 export type CodemodRunStatusResponse = {
-  success: boolean;
-  result: CodemodRunStatus[];
+  success: true;
+  data: CodemodRunStatus[];
 };
