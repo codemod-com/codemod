@@ -23,6 +23,7 @@ export const GenerateTestCasesButton = ({
     <Tooltip
       trigger={
         <button
+          type="button"
           onClick={handleButtonClick}
           className={cn(
             "cursor-pointer border-hidden align-text-top  p-3 bg-green hover:bg-[#D6FF62]",

@@ -1,7 +1,7 @@
 import type { useAiService } from "@/app/(website)/studio/features/modgpt/useAiService";
 import { memo } from "react";
-import { ChatWindow } from "./Chat/ChatWindow";
-import { PromptPanel } from "./Chat/PromptPanel";
+import { ChatWindow } from "./ChatWindow";
+import { PromptPanel } from "./PromptPanel";
 
 type Props = {
   aiProps: ReturnType<typeof useAiService>;
@@ -10,7 +10,6 @@ type Props = {
 };
 
 const ChatBase = ({ className, isSignedIn }: Props) => {
-  // const
   // const aiProps = {
   //   isLoading,
   //   handleStop,
