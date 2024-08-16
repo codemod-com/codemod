@@ -28,7 +28,7 @@ export function TableTile<T>({
   loading,
   statusMessage,
   error,
-  onRefreshData,
+  getData,
 }: TableTileProps<T> & {
   columns?: ColumnDefinition[];
   transformer?: Record<keyof T, (value: any) => React.ReactNode>;
@@ -114,7 +114,7 @@ export function TableTile<T>({
           <div className="flex justify-between items-center mb-4">
             <Title title={cardTitle} onChange={setCardTitle} />
             <div className="flex gap-2 min-w-[80px]">
-              <Button intent="secondary-icon-only" onClick={onRefreshData}>
+              <Button intent="secondary-icon-only" onClick={getData}>
                 <RefreshCw size={16} />
               </Button>
               <ImportDataButton<any>

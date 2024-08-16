@@ -3,16 +3,22 @@ import { useAPI } from "@studio/hooks/useAPI";
 import { useEffect, useState } from "react";
 
 const DEFAULT_POLLING_INTERVAL = 1000;
-const DEFAULT_POLLING_TIMEOUT = 1000 * 60 * 10;
 
-type GetExecutionStatusResponse = Array<
+export type GetExecutionStatusResponse = Array<
   | {
       status: "queued" | "in_progress" | "errored";
       message: string;
+      codemod: string;
+      progress: number;
+      id: string;
     }
   | {
       status: "success";
       result: string;
+      codemod: string;
+      progress: number;
+      message: string;
+      id: string;
     }
 >;
 

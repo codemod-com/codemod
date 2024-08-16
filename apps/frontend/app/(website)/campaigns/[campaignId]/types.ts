@@ -48,7 +48,7 @@ export type TableTileProps<T> = {
   loading: boolean;
   statusMessage?: string;
   error: string;
-  onRefreshData(): void;
+  getData(): void;
 };
 
 export type Reviewer =

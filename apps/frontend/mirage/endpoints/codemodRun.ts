@@ -12,7 +12,6 @@ export const codemodRunEndpoints = (server: Server<AppRegistry>) => {
         {},
         {
           codemodRunIds: [{ id: "1", workflow: "drift_analyzer" }],
-          success: true,
         },
       ),
   );
