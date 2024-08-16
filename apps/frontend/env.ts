@@ -21,6 +21,7 @@ export const env = createEnv({
     HUBSPOT_CONTACT_FORM_ID: z.string(),
     HUBSPOT_NEWSLETTER_FORM_ID: z.string(),
     IS_PREVIEW: z.string().optional(),
+    CLERK_SECRET_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_API_URL: z.string(),
@@ -64,5 +65,6 @@ export const env = createEnv({
     HUBSPOT_CONTACT_FORM_ID: process.env.HUBSPOT_CONTACT_FORM_ID,
     HUBSPOT_NEWSLETTER_FORM_ID: process.env.HUBSPOT_NEWSLETTER_FORM_ID,
     IS_PREVIEW: process.env.IS_PREVIEW,
+    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
   },
 });

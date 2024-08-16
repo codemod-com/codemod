@@ -50,7 +50,6 @@ const getWidgetPropsFromStatus = (
 };
 
 const CampaignPage = () => {
-  // @TODO
   useMirageServer(true);
 
   const { campaignId } = useParams<{ campaignId: string }>();

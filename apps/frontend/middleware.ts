@@ -1,18 +1,16 @@
 import { getRedirect } from "@/data/sanity/redirects";
-// @TODO @codemod-com/utilities imports node runtime libs, cannot be used in midddleware
-// @TODO modular import @codemod-com/utilities/constants
-// import {
-//   CODEMOD_STUDIO_URL,
-//   OLD_STUDIO_HOSTNAME,
-// } from "@codemod-com/utilities";
+import { env } from "@/env";
 
 const CODEMOD_STUDIO_URL = "https://codemod.com/studio";
 const OLD_STUDIO_HOSTNAME = "codemod.studio";
 
 import { type NextRequest, NextResponse } from "next/server";
 
-// @TODO: Handle redirects from Sanity
-export async function middleware(request: NextRequest) {
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+
+const isProtectedRoute = createRouteMatcher(["/campaigns(.*)"]);
+
+async function middleware(request: NextRequest) {
   if (request.nextUrl.hostname === OLD_STUDIO_HOSTNAME) {
     return NextResponse.redirect(new URL(CODEMOD_STUDIO_URL));
   }
@@ -95,6 +93,20 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 }
+
+export default clerkMiddleware(
+  (auth, req) => {
+    if (isProtectedRoute(req)) {
+      auth().protect();
+    }
+
+    return middleware(req);
+  },
+  {
+    publishableKey: env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    secretKey: env.CLERK_SECRET_KEY,
+  },
+);
 
 export const config = {
   matcher: [
