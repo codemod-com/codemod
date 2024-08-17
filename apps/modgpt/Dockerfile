@@ -7,6 +7,7 @@ RUN npm install -g pnpm
 COPY package.json turbo.json pnpm-workspace.yaml pnpm-lock.yaml ./
 
 COPY apps/modgpt/package.json apps/modgpt/
+COPY apps/modgpt/reset.d.ts apps/modgpt/
 COPY packages/tsconfig packages/tsconfig/
 COPY packages/utilities packages/utilities/
 COPY packages/filemod packages/filemod/

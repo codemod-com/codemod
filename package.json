@@ -67,7 +67,7 @@
     "@biomejs/biome": "^1.6.4",
     "@codemod-com/tsconfig": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@total-typescript/ts-reset": "^0.4.2",
+    "@total-typescript/ts-reset": "catalog:",
     "@types/node": "^20.5.1",
     "@vitest/coverage-v8": "^1.0.1",
     "commitizen": "^4.3.0",

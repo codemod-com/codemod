@@ -7,11 +7,11 @@ import {
   generateUserLoginIntent,
   getCLIAccessToken,
 } from "#api.js";
-import { getCurrentUserData } from "#auth-utils.js";
 import {
   CredentialsStorageType,
   credentialsStorage,
 } from "#credentials-storage.js";
+import { getCurrentUserData } from "#utils/auth.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 

@@ -196,11 +196,22 @@ export const main = async () => {
       "learn",
       "exports the current `git diff` in a file to before/after panels in the Codemod Studio",
       (y) =>
-        y.option("target", {
-          alias: "t",
-          type: "string",
-          description: "path to the file to be learned",
-        }),
+        y
+          .option("target", {
+            alias: "t",
+            type: "string",
+            description: "path to the file to be learned",
+          })
+          .option("source", {
+            alias: "s",
+            type: "string",
+            description: "path to the codemod to improve on top of",
+          })
+          .option("engine", {
+            type: "string",
+            description: "the engine to use with the standalone codemod",
+            hidden: true,
+          }),
       async (args) => {
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
@@ -209,6 +220,8 @@ export const main = async () => {
           handleLearnCliCommand({
             printer,
             target: args.target ?? null,
+            source: args.target ?? null,
+            engine: args.engine ?? null,
           }),
         );
       },

@@ -3,7 +3,7 @@ import { existsSync, lstatSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import { join } from "node:path";
 
-import { doubleQuotify } from "@codemod-com/utilities";
+import { doubleQuotify, execPromise } from "@codemod-com/utilities";
 
 export const isGitDirectory = (directoryPath: string): boolean => {
   const gitPath = join(directoryPath, ".git");
@@ -37,6 +37,24 @@ export const getGitDiffForFile = (
   }
 };
 
+export const getFileFromCommit = async (
+  commitHash: string,
+  filePath: string,
+): Promise<string | null> => {
+  try {
+    const { stdout } = await execPromise(
+      `git show ${commitHash}:${doubleQuotify(filePath)}`,
+    );
+    return stdout.toString();
+  } catch (error) {
+    if (!(error instanceof Error)) {
+      return null;
+    }
+    console.error("Error while getting file from commit:", error.message);
+    return null;
+  }
+};
+
 export const getLatestCommitHash = (directoryPath: string): string | null => {
   try {
     const gitLog = execSync(
@@ -54,10 +72,11 @@ export const getLatestCommitHash = (directoryPath: string): string | null => {
 
 export const findModifiedFiles = (): string[] | null => {
   try {
-    const modifiedFiles = execSync("git ls-files --modified", {
-      encoding: "utf-8",
-    });
-    return modifiedFiles.trim().split("\n");
+    const modifiedFiles = execSync(
+      "git ls-files $(git rev-parse --show-toplevel) --modified",
+      { encoding: "utf-8" },
+    );
+    return modifiedFiles.trim().split("\n").filter(Boolean);
   } catch (error) {
     console.error("Error finding the modified files:", error);
     return null;

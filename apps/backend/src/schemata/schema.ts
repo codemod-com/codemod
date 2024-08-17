@@ -141,8 +141,7 @@ export const ivObjectSchema = object({
 export const parseIv = (input: unknown) => parse(ivObjectSchema, input);
 
 export const diffCreationBodySchema = object({
-  before: string(),
-  after: string(),
+  diffs: array(object({ before: string(), after: string() })),
   source: union([literal("cli"), literal("studio")]),
   name: optional(string(), "untitled"),
 });
@@ -153,6 +152,17 @@ export const parseDiffCreationBody = (input: unknown) =>
 export const getCodeDiffSchema = object({
   id: string(),
 });
+
+export const beforeAfterDiffSchema = object({
+  before: string(),
+  after: string(),
+});
+
+export const parseBeforeAfterDiff = (input: unknown) =>
+  parse(beforeAfterDiffSchema, input);
+
+export const parseBeforeAfterDiffArray = (input: unknown) =>
+  parse(array(beforeAfterDiffSchema), input);
 
 export const parseGetCodeDiffParams = (input: unknown) =>
   parse(getCodeDiffSchema, input);

@@ -26,7 +26,9 @@ export const env = createEnv({
     NEXT_PUBLIC_API_URL: z.string(),
     NEXT_PUBLIC_AUTH_API_URL: z.string(),
     NEXT_PUBLIC_AI_API_URL: z.string(),
-    NEXT_PUBLIC_WS_URL: z.string(),
+    NEXT_PUBLIC_MODGPT_API_URL: z.string(),
+    NEXT_PUBLIC_CODEMODAI_API_URL: z.string(),
+
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
     NEXT_PUBLIC_SANITY_PROJECT_ID: z.string(),
     NEXT_PUBLIC_SANITY_DATASET: z.string(),
@@ -41,13 +43,15 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    NODE_ENV: process.env.NODE_ENV,
-    DUBCO_WORKSPACE_ID: process.env.DUBCO_WORKSPACE_ID,
-    DUBCO_API_TOKEN: process.env.DUBCO_API_TOKEN,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_AUTH_API_URL: process.env.NEXT_PUBLIC_AUTH_API_URL,
     NEXT_PUBLIC_AI_API_URL: process.env.NEXT_PUBLIC_AI_API_URL,
-    NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
+    NEXT_PUBLIC_MODGPT_API_URL: process.env.NEXT_PUBLIC_MODGPT_API_URL,
+    NEXT_PUBLIC_CODEMODAI_API_URL: process.env.NEXT_PUBLIC_CODEMODAI_API_URL,
+
+    NODE_ENV: process.env.NODE_ENV,
+    DUBCO_WORKSPACE_ID: process.env.DUBCO_WORKSPACE_ID,
+    DUBCO_API_TOKEN: process.env.DUBCO_API_TOKEN,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     SANITY_API_TOKEN: process.env.SANITY_API_TOKEN,
