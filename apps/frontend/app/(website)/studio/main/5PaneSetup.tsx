@@ -12,8 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@studio/components/ui/select";
+import { TestTabsComponent } from "@studio/features/test-cases/TestTabsComponent";
 import { VisibilityIcon } from "@studio/icons";
-import { TestTabsComponent } from "@studio/main/PageBottomPane/TestTabsComponent";
 import { AssistantTab } from "@studio/main/PaneLayout";
 import { LoginWarningModal } from "@studio/main/PaneLayout/LoginWarningModal";
 import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";

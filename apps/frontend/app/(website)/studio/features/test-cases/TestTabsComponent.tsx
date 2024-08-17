@@ -4,8 +4,46 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Tabs from "@radix-ui/react-tabs";
 import Tooltip from "@studio/components/Tooltip/Tooltip";
 import { useSnippetsStore } from "@studio/store/snippets";
-import { useCodemodAi } from "../../features/modgpt/hooks/codemod-ai";
-import { useChatStore } from "../../features/modgpt/store/chat-state";
+import { useCodemodAi } from "../modgpt/hooks/codemod-ai";
+import { useChatStore } from "../modgpt/store/chat-state";
+
+const GenerateTestCasesButton = () => {
+  const { isGeneratingTestCases } = useChatStore();
+  const { addPair } = useSnippetsStore();
+
+  return (
+    <>
+      <button
+        type="button"
+        className="add-tab-button"
+        onClick={() => addPair()}
+      >
+        +
+      </button>
+      <Tooltip
+        trigger={
+          <button
+            type="submit"
+            onClick={() => {}}
+            className={cn(
+              "cursor-pointer border-hidden align-text-top  p-3 bg-green hover:bg-[#D6FF62]",
+              isGeneratingTestCases && "bg-[#D6FF62]",
+            )}
+          >
+            <MagicWand size={"30px"} />
+          </button>
+        }
+        content={
+          <p>
+            {" "}
+            Generate a new pair of before/after based on your existing code
+            examples OR based on the natural language description.
+          </p>
+        }
+      />
+    </>
+  );
+};
 
 export const TestTabsComponent = () => {
   const {
@@ -110,7 +148,7 @@ export const TestTabsComponent = () => {
                   style={{ padding: "0", margin: 0 }}
                   onChange={onChange}
                   onBlur={() => handleBlur(i)}
-                  onKeyPress={(e) => handleKeyPress(e, i)}
+                  onKeyDown={(e) => handleKeyPress(e, i)}
                 />
               ) : (
                 editor.name
@@ -133,38 +171,7 @@ export const TestTabsComponent = () => {
             </DropdownMenu.Root>
           </div>
         ))}
-        {!getHasReachedTabsLimit() && (
-          <>
-            <button
-              type="bu"
-              className="add-tab-button"
-              onClick={() => addPair()}
-            >
-              +
-            </button>
-            <Tooltip
-              trigger={
-                <button
-                  type="submit"
-                  onClick={() => {}}
-                  className={cn(
-                    "cursor-pointer border-hidden align-text-top  p-3 bg-green hover:bg-[#D6FF62]",
-                    isTestCaseGenerated && "bg-[#D6FF62]",
-                  )}
-                >
-                  <MagicWand size={"30px"} />
-                </button>
-              }
-              content={
-                <p>
-                  {" "}
-                  Generate a new pair of before/after based on your existing
-                  code examples OR based on the natural language description.
-                </p>
-              }
-            />
-          </>
-        )}
+        {!getHasReachedTabsLimit() && <GenerateTestCasesButton />}
       </Tabs.List>
     </Tabs.Root>
   );

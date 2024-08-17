@@ -6,45 +6,26 @@ import {
 import Tooltip from "@studio/components/Tooltip/Tooltip";
 import { Button, buttonVariants } from "@studio/components/ui/button";
 import { useEnterSubmit } from "@studio/hooks/useEnterSubmit";
-import type { UseChatHelpers } from "ai/react";
 import * as React from "react";
 import Textarea from "react-textarea-autosize";
-import { useCodemodAi } from "../../hooks/codemod-ai";
 import { useModGPT } from "../../hooks/modgpt";
 import { useChatStore } from "../../store/chat-state";
 
-export interface Props extends Pick<UseChatHelpers, "input" | "setInput"> {
-  onSubmit: (value: string) => Promise<void>;
-  onReset: () => void;
-  isLoading: boolean;
-}
-
-export const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
-  ({ input, setInput }, ref) => {
-    const { messages, reset, isGeneratingCodemod, isGeneratingTestCases } =
-      useChatStore();
-    const modGPT = useModGPT("gpt-4o");
-    const { send: callCodemodAI, abort } = useCodemodAi("gpt-4o");
+export const PromptForm = React.forwardRef<HTMLTextAreaElement>(
+  (_props, ref) => {
+    const { isLoading, reset } = useChatStore();
+    const { input, setInput, append } = useModGPT("gpt-4o");
 
     const { formRef, onKeyDown } = useEnterSubmit();
-    const inputRef = React.useRef<HTMLTextAreaElement>(null);
-
-    React.useEffect(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, []);
 
     return (
       <form
         className="!mt-1"
         onSubmit={async (e) => {
           e.preventDefault();
-          if (!input?.trim()) {
-            return;
-          }
+          if (!input?.trim()) return;
           setInput("");
-          await onSubmit(input);
+          await append({ content: input, role: "user" });
         }}
         ref={formRef}
       >
@@ -55,7 +36,7 @@ export const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
-                  onReset();
+                  reset();
                 }}
                 className={cn(
                   buttonVariants({
@@ -74,7 +55,7 @@ export const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
 
           <Textarea
             maxRows={5}
-            ref={ref ?? inputRef}
+            ref={ref}
             tabIndex={0}
             onKeyDown={onKeyDown}
             rows={1}
@@ -90,7 +71,7 @@ export const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
                 <Button
                   type="submit"
                   size="sm"
-                  disabled={isLoading || input === ""}
+                  disabled={isLoading || !input}
                   variant="outline"
                 >
                   <ArrowElbowDownLeftIcon />

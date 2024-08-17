@@ -24,7 +24,6 @@
     "preserveWatchOutput": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
       "@features/*": ["./app/(website)/studio/features/*"],
       "@studio/main/*": ["./app/(website)/studio/main/*"],
       "@studio/*": ["./app/(website)/studio/src/*"],
@@ -35,7 +34,8 @@
       "@utils/*": ["./utils/*"],
       "@context/*": ["./app/context/*"],
       "@auth/*": ["./app/auth/*"],
-      "@mocks/*": ["./mocks/*"]
+      "@mocks/*": ["./mocks/*"],
+      "@/*": ["./*"]
     },
     "plugins": [{ "name": "next" }]
   },
