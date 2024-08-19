@@ -332,6 +332,15 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "xmatthias",
+      "name": "Matthias",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5024695?v=4",
+      "profile": "https://blog.xmatthias.com",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
