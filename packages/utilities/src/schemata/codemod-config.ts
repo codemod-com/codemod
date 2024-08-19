@@ -115,12 +115,20 @@ export const knownEnginesSchema = v.union(
 );
 export type KnownEngines = InferOutput<typeof knownEnginesSchema>;
 
+export type AllEngines = InferOutput<typeof allEnginesSchema>;
+export const ALL_ENGINES: AllEngines[] = [
+  "jscodeshift",
+  "recipe",
+  "ts-morph",
+  "filemod",
+  "ast-grep",
+  "workflow",
+];
 const allEngines = [...knownEngines, v.literal("recipe")];
 export const allEnginesSchema = v.union(
   allEngines,
   "Specified engine is not supported.",
 );
-export type AllEngines = InferOutput<typeof allEnginesSchema>;
 
 export const isEngine = (engine: unknown) => v.is(allEnginesSchema, engine);
 
