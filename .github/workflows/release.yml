@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - chore/changesets-npm-releases
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
