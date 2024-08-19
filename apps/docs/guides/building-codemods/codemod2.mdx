@@ -63,7 +63,7 @@ export async function workflow({ files }: Api) {
 }
 ```
 
-ast-grep allows matching code with a … code. `$$$_` pattern means any number of elements, in our case any number of named imports.
+`ast-grep` enables us to match patterns in our code using [meta variables](https://ast-grep.github.io/guide/pattern-syntax.html#meta-variable). In the example, we use the [`$$$` multi meta variable](https://ast-grep.github.io/guide/pattern-syntax.html#multi-meta-variable) to match any number of named imports.
 
 ### Step 4: Use AI for code transformation.
 
