@@ -8,5 +8,8 @@ export interface RunnerServiceInterface {
   startCodemodRun(params: {
     source: string;
     engine: "workflow";
+    args: {
+      [key: string]: string | number | boolean | (string | number | boolean)[];
+    };
   }): Promise<CodemodCloudRunnerAbstract>;
 }
