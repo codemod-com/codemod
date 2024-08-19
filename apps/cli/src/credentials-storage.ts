@@ -1,22 +1,55 @@
-import os from "node:os";
-
+import { mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { chalk } from "@codemod-com/printer";
+import { codemodDirectoryPath } from "#utils/constants.js";
 
 export enum CredentialsStorageType {
   ACCOUNT = "user-account",
 }
 
+const keytarShim = {
+  default: {
+    setPassword: async (service: string, account: string, password: string) =>
+      writeFile(join(codemodDirectoryPath, `${service}:${account}`), password),
+    findCredentials: async (service: string) => {
+      const entries = await readdir(codemodDirectoryPath).then((dir) =>
+        dir.filter((file) => file.startsWith(`${service}:`)),
+      );
+
+      return Promise.all(
+        entries.map(async (file) => ({
+          account: file.split(":")[1],
+          password: await readFile(join(codemodDirectoryPath, file), {
+            encoding: "utf-8",
+          }),
+        })),
+      );
+    },
+    deletePassword: async (service: string, account: string) =>
+      unlink(join(codemodDirectoryPath, `${service}:${account}`))
+        .then(() => true)
+        .catch(() => false),
+  },
+};
+
 //Sometimes we running production CLI from local build, credentials should be stored in different places.
 const SERVICE = `codemod.com${process.env.NODE_ENV === "production" ? "" : `-${process.env.NODE_ENV}`}`;
+let alreadyWarned = false;
 
 const getKeytar = async () => {
   try {
     return await import("keytar");
   } catch (err) {
-    if (os.platform() === "linux") {
-      throw new Error(
-        chalk(
-          `Codemod CLI uses "keytar" to store your credentials securely.`,
+    const isShimLoggedIn = await keytarShim.default
+      .findCredentials(SERVICE)
+      .then((creds) => creds.length > 0);
+
+    if (!alreadyWarned && !isShimLoggedIn) {
+      alreadyWarned = true;
+      console.warn(
+        chalk.red(
+          String(err),
+          `\n\nCodemod CLI uses "keytar" to store your credentials securely.`,
           `\nPlease make sure you have "libsecret" installed on your system.`,
           "\nDepending on your distribution, you will need to run the following command",
           "\nDebian/Ubuntu:",
@@ -25,12 +58,19 @@ const getKeytar = async () => {
           chalk.bold("sudo dnf install libsecret"),
           "\nArch Linux:",
           chalk.bold("sudo pacman -S libsecret"),
-          `\n\n${String(err)}`,
+          chalk.cyan(
+            "\n\nIf you were not able to install the necessary package or CLI was not able to detect the installation" +
+              "please reach out to us at our Community Slack channel.",
+          ),
+          chalk.yellow(
+            "\nYou can still use the CLI with file-based replacement that will store your credentials at your home directory.",
+          ),
         ),
       );
     }
 
-    throw err;
+    await mkdir(codemodDirectoryPath, { recursive: true });
+    return keytarShim;
   }
 };
 
