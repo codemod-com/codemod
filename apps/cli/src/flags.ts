@@ -11,6 +11,7 @@ import {
   DEFAULT_THREAD_COUNT,
   DEFAULT_USE_JSON,
 } from "@codemod-com/runner";
+import { ALL_ENGINES } from "@codemod-com/utilities";
 
 export type GlobalArgvOptions = Awaited<
   ReturnType<ReturnType<typeof buildGlobalOptions>>["argv"]
@@ -81,6 +82,12 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       alias: "s",
       type: "string",
       description: "Source path of the local codemod to run",
+    })
+    .option("engine", {
+      type: "string",
+      choices: ALL_ENGINES,
+      description:
+        "Engine to be used with standalone codemod. Can be used to skip the prompt.",
     })
     .option("logs", {
       type: "boolean",

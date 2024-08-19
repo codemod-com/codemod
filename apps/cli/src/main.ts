@@ -306,12 +306,17 @@ export const main = async () => {
       "init",
       "initialize a codemod package",
       (y) =>
-        y.option("target", {
-          alias: "t",
-          type: "string",
-          description: "Path to init codemod in",
-          default: process.cwd(),
-        }),
+        y
+          .option("target", {
+            alias: "t",
+            type: "string",
+            description: "Path to init codemod in",
+            default: process.cwd(),
+          })
+          .option("engine", {
+            type: "string",
+            description: "Engine to initialize codemod with",
+          }),
       async (args) => {
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
@@ -320,6 +325,7 @@ export const main = async () => {
           handleInitCliCommand({
             printer,
             target: args.target ?? process.cwd(),
+            engine: args.engine,
           }),
         );
       },
