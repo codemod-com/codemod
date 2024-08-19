@@ -1,70 +1,50 @@
-import { useAuth } from "@clerk/nextjs";
 import { useChat } from "ai/react";
-import { useEffect } from "react";
 
 import { SEND_CHAT } from "@/app/(website)/studio/src/constants";
-import { applyAliases } from "@/app/(website)/studio/src/store/CFS/alias";
 import { env } from "@/env";
 import type { LLMEngine } from "@codemod-com/utilities";
-import { useGetAliases } from "@studio/store/CFS/alias";
-import { useChatStore } from "../store/chat-state";
 
-const useInitializeChat = (engine: LLMEngine) => {
-  const { chats, setChat, setIsModGptLoading } = useChatStore();
-  const { getToken } = useAuth();
-  const aliases = useGetAliases();
+// const useInitializeChat = (engine: LLMEngine) => {
+//   const { chat, setChat, setIsModGptLoading } = useChatStore();
+//   const { getToken } = useAuth();
+//   const aliases = useGetAliases();
 
-  useEffect(() => {
-    if (chats[engine]) return; // Skip initialization if chat already exists
+//   const newChat = useChat({
+//     api: `${env.NEXT_PUBLIC_MODGPT_API_URL}/${SEND_CHAT}`,
+//   });
 
-    const newChat = useChat({
-      api: `${env.NEXT_PUBLIC_MODGPT_API_URL}/${SEND_CHAT}`,
-      onResponse: (response) => {
-        // Handle response if necessary
-      },
-      body: { engine },
-    });
+//   useEffect(() => {
+//     if (chat) return
 
-    setChat(engine, {
-      ...newChat,
-      append: async (message) => {
-        const token = await getToken();
-        const aliasesAppliedValue = applyAliases(message.content, aliases);
+//     setChat({
+//       ...newChat,
+//       append: async (message) => {
+//         const token = await getToken();
+//         const aliasesAppliedValue = applyAliases(message.content, aliases);
 
-        return newChat.append(
-          { content: aliasesAppliedValue, role: "user" },
-          {
-            options: {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: token ? `Bearer ${token}` : "",
-              },
-            },
-          },
-        );
-      },
-    });
+//         return chat.append(
+//           { content: aliasesAppliedValue, role: "user" },
+//           {
+//             body: { engine },
+//             options: {
+//               headers: {
+//                 "Content-Type": "application/json",
+//                 Authorization: token ? `Bearer ${token}` : "",
+//               },
+//             },
+//           },
+//         );
+//       },
+//     });
 
-    setIsModGptLoading(newChat.isLoading);
-  }, [chats, engine, getToken, aliases, setChat, setIsModGptLoading, useChat]);
-};
+//     setIsModGptLoading(chat.isLoading);
+//   }, [chat, engine, getToken, aliases, setChat, setIsModGptLoading, useChat]);
+// };
 
 export const useModGPT = (engine: LLMEngine) => {
-  const { chats, initializeChat, isModGptLoading } = useChatStore();
-
-  // Get the chat instance for the current engine
-  const chat = chats[engine];
-
-  useEffect(() => {
-    if (!chat) {
-      initializeChat(engine);
-    }
-  }, [chat, engine, initializeChat]);
-
-  return {
-    ...chat,
-    isLoading: isModGptLoading,
-  };
+  return useChat({
+    api: `${env.NEXT_PUBLIC_MODGPT_API_URL}/${SEND_CHAT}`,
+  });
 };
 
 // export const useModGPT = (engine: LLMEngine): ReturnType<typeof useChat> => {

@@ -2,7 +2,6 @@ import { useAuth } from "@/app/auth/useAuth";
 import { useSnippetsStore } from "@studio/store/snippets";
 
 import { useCodemodAi } from "../hooks/codemod-ai";
-import { useModGPT } from "../hooks/modgpt";
 import { useChatStore } from "../store/chat-state";
 import { ChatMessages } from "./ChatWindow/ChatMessages";
 import { ChatScrollAnchor } from "./ChatWindow/ChatScrollAnchor";
@@ -13,6 +12,51 @@ import { PromptPanel } from "./PromptPanel";
 export const Chat = () => {
   const { getAllSnippets } = useSnippetsStore();
   const { before, after } = getAllSnippets();
+
+  // initializeChat: (engine: LLMEngine) => {
+  //   const existingChat = get().chats[engine];
+
+  //   const { getToken } = useAuth();
+  //   const aliases = useGetAliases();
+
+  //   const newChat = useChat({
+  //     api: `${env.NEXT_PUBLIC_MODGPT_API_URL}/${SEND_CHAT}`,
+  //     onResponse: (response) => {
+  //       // Handle response
+  //     },
+  //     body: { engine },
+  //   });
+
+  //   set((state) => ({
+  //     chats: {
+  //       ...state.chats,
+  //       [engine]: {
+  //         ...newChat,
+  //         append: async (message) => {
+  //           const token = await getToken();
+  //           const aliasesAppliedValue = applyAliases(
+  //             message.content,
+  //             aliases,
+  //           );
+
+  //           return newChat.append(
+  //             { content: aliasesAppliedValue, role: "user" },
+  //             {
+  //               options: {
+  //                 headers: {
+  //                   "Content-Type": "application/json",
+  //                   Authorization: token ? `Bearer ${token}` : "",
+  //                 },
+  //               },
+  //             },
+  //           );
+  //         },
+  //       },
+  //     },
+  //     isModGptLoading: newChat.isLoading,
+  //   }));
+  // },
+  const { isSignedIn } = useAuth();
   const { messages, appendMessage, isLoading, reset } = useChatStore();
 
   const { send: autogenerateTestCases } = useCodemodAi({
@@ -43,9 +87,6 @@ export const Chat = () => {
         content: "Codemod created and added to a new tab",
       }),
   });
-
-  const { input, setInput, append: modGptSubmit } = useModGPT("gpt-4o");
-  const { isSignedIn } = useAuth();
 
   return (
     <div>
