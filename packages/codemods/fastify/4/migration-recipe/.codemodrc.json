@@ -1,0 +1,24 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "fastify/4/migration-recipe",
+  "version": "1.0.2",
+  "private": false,
+  "engine": "recipe",
+  "names": [
+    "fastify/4/await-register-calls",
+    "fastify/4/expose-head-routes",
+    "fastify/4/remove-app-use",
+    "fastify/4/reply-raw-access",
+    "fastify/4/url-params-optional",
+    "fastify/4/wrap-routes-plugin"
+  ],
+  "applicability": {
+    "from": [["fastify", ">=", "3.0.0"], ["fastify", "<", "4.0.0"]],
+    "to": [["fastify", ">=", "4.0.0"]]
+  },
+  "meta": {
+    "tags": ["fastify", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/fastify/4/migration-recipe"
+  },
+  "include": ["/.js", "/.jsx", "/.ts", "/.tsx", "/*.vue"]
+}
