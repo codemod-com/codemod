@@ -116,12 +116,11 @@ export class Runner {
     printer: Printer;
   }) {
     const { codemod, flowSettings, onError, onSuccess, printer } = options;
-
     const cloudRunner = await this._options.runnerService?.startCodemodRun({
       source: await getCodemodExecutable(codemod.path),
       engine: codemod.config.engine as "workflow",
+      args: codemod.safeArgumentRecord,
     });
-    console.log({ cloudRunner });
   }
 
   private async buildPatterns(

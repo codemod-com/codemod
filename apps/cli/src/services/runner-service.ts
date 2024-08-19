@@ -23,6 +23,9 @@ class CodemodCloudRunner extends CodemodCloudRunnerAbstract {
     private token: string,
     private source: string,
     private engine: string,
+    private args: {
+      [key: string]: string | number | boolean | (string | number | boolean)[];
+    },
   ) {
     super();
   }
@@ -36,6 +39,7 @@ class CodemodCloudRunner extends CodemodCloudRunnerAbstract {
       {
         codemodSource: this.source,
         codemodEngine: this.engine,
+        codemodArguments: JSON.stringify(this.args),
       },
       { headers: { Authorization: `Bearer ${this.token}` } },
     );
@@ -87,7 +91,8 @@ class CodemodCloudRunner extends CodemodCloudRunnerAbstract {
         if (data.success && data.output) {
           process.stdout.write(data.output);
         }
-      } catch (e) {
+      } catch (e: any) {
+        console.error(e.toString());
         //
       }
     }
@@ -100,8 +105,11 @@ export class RunnerService implements RunnerServiceInterface {
   async startCodemodRun(params: {
     source: string;
     engine: "workflow";
+    args: {
+      [key: string]: string | number | boolean | (string | number | boolean)[];
+    };
   }): Promise<CodemodCloudRunner> {
-    const { source, engine } = params;
+    const { source, engine, args } = params;
     try {
       const { token } = await getCurrentUserOrLogin({
         message:
@@ -110,7 +118,7 @@ export class RunnerService implements RunnerServiceInterface {
         onEmptyAfterLoginText: "Failed login. Please try again. Aborting...",
       });
 
-      const cloudRunner = new CodemodCloudRunner(token, source, engine);
+      const cloudRunner = new CodemodCloudRunner(token, source, engine, args);
       await cloudRunner.start();
       cloudRunner.printOutput();
       await cloudRunner.waitForCompletion();
