@@ -1,10 +1,9 @@
 ---
-title: "astGrep"
+title: Reference
+sidebarTitle: Reference
 ---
 
-### ai
-
-<ResponseField name="ai(instructions)" />
+## `ai(instructions)`
 
 Replaces code found with `ast-grep` pattern using instructions provided to LLM.
 
@@ -59,17 +58,15 @@ v.pipe(v.string(), v.email(), v.endsWith('@gmail.com'))
 
 <Note>`ai(instructions)` requires `--OPENAI_API_KEY=somekey` to be passed to workflow.</Note>
 
-**Parameters:**
+### Parameters
 
 <ParamField path="instructions" type="string | readonly string[]" required>
 Instructions to LLM in natural language with before and after examples.
 </ParamField>
 
-### map
+## `map(callback)`
 
-<ResponseField name="map(callback)" />
-
-Works similar to `array.map` - maps found code with [astGrep](./ast-grep.mdx).
+Works similar to `array.map` - maps found code with [astGrep](/api-reference/transformation/astgrep/).
 
 <CodeGroup>
 ```ts console.log usages
@@ -110,7 +107,7 @@ console.log(allUsagesOfConsoleLog)
 ```
 </CodeGroup>
 
-**Parameters:**
+### Parameters
 
 <ParamField path="callback" type="CallbackFunction" required>
 ```ts
@@ -135,9 +132,7 @@ Helper functions:
 - `getMultipleMatches(m: string)` - return [multiple matches](https://ast-grep.github.io/guide/pattern-syntax.html#multi-meta-variable)
 </ParamField>
 
-### replace
-
-<ResponseField name="replace(replacement)" />
+## `replace(replacement)`
 
 Replaces code found with astGrep. Receives context with every found node.
 
@@ -180,7 +175,7 @@ console.log('debug')
 ```
 </CodeGroup>
 
-**Parameters:**
+### Parameters
 
 <ParamField path="replacement" type="string | ReplacementFunction" required>
 ```ts

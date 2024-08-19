@@ -22,6 +22,10 @@
   },
   "tabs": [
     {
+      "name": "API reference",
+      "url": "api-reference"
+    },
+    {
       "name": "Guides",
       "url": "guides"
     },
@@ -53,6 +57,10 @@
       "pages": ["codemod-registry/introduction"]
     },
     {
+      "group": "Workflow Engine",
+      "pages": ["deploying-codemods/workflow-engine"]
+    },
+    {
       "group": "CLI",
       "pages": ["deploying-codemods/cli"]
     },
@@ -71,6 +79,44 @@
     {
       "group": "Other Resources",
       "pages": ["more-resources/changelog"]
+    },
+    {
+      "group": "Git operations",
+      "pages": [
+        "api-reference/git/clone",
+        "api-reference/git/branch",
+        "api-reference/git/commit",
+        "api-reference/git/push"
+      ]
+    },
+    {
+      "group": "File operations",
+      "pages": [
+        "api-reference/file/files",
+        "api-reference/file/dirs",
+        "api-reference/file/move"
+      ]
+    },
+    {
+      "group": "Code transformation",
+      "pages": [
+        "api-reference/transformation/codemod",
+        "api-reference/transformation/jsfam",
+        {
+          "group": "ast-grep",
+          "pages": [
+            "api-reference/transformation/astgrep/overview",
+            "api-reference/transformation/astgrep/reference"
+          ]
+        },
+        "api-reference/transformation/jscodeshift",
+        "api-reference/transformation/addimport",
+        "api-reference/transformation/removeimport"
+      ]
+    },
+    {
+      "group": "Command-line operations",
+      "pages": ["api-reference/command/exec"]
     },
     {
       "group": "Guides & Examples",
@@ -92,19 +138,6 @@
     {
       "group": "Sharing codemods",
       "pages": ["guides/sharing/publishing-codemods"]
-    },
-    {
-      "group": "Engines",
-      "pages": [
-        {
-          "group": "Codemod Workflow Engine",
-          "pages": [
-            "guides/engines/workflow-engine",
-            "guides/engines/workflow-engine/core-concepts",
-            "guides/engines/workflow-engine/api-reference"
-          ]
-        }
-      ]
     },
     {
       "group": "Migrations",

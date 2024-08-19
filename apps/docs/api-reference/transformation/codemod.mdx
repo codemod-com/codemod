@@ -1,9 +1,9 @@
 ---
-title: "codemod"
-icon: "slash-forward"
+title: codemod
+sidebarTitle: codemod
 ---
 
-<ResponseField name="codemod(name, arguments)" />
+## `codemod(name, arguments)`
 
 Executes [codemod from registry](https://codemod.com/registry) in current working directory.
 
@@ -28,7 +28,7 @@ Executes [codemod from registry](https://codemod.com/registry) in current workin
     ```
 </CodeGroup>
 
-### Parameters
+## Parameters
 <ParamField path="name" type="string" required>
   Codemod name as published in [Codemod Registry](https://codemod.com/registry).
 </ParamField>
@@ -37,6 +37,6 @@ Executes [codemod from registry](https://codemod.com/registry) in current workin
   Codemod arguments. Arguments are passed as key-value pair objects.
 </ParamField>
 
-### Returns
-- [codemod](./codemod)
-- [exec](./exec)
+## Returns
+- [codemod](/api-reference/transformation/codemod)
+- [exec](/api-reference/command/exec)
