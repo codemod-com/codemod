@@ -1,6 +1,6 @@
 {
-  "name": "@codemod-com/sandbox",
-  "version": "1.0.0",
+  "name": "@codemod.com/sandbox",
+  "version": "1.0.1",
   "description": "A sandbox for testing release pipeline",
   "private": false
 }
