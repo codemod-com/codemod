@@ -86,8 +86,8 @@ model CodeDiff {
   id        String   @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   name      String?  @db.VarChar(255)
   source    String   @db.VarChar(255)
-  before    String   @db.Text
-  after     String   @db.Text
+  // Stringified encoded JSON
+  diffs     String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }

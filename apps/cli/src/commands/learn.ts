@@ -1,59 +1,35 @@
-import { execSync } from "node:child_process";
-import { dirname, extname } from "node:path";
-import open from "open";
-import { Project } from "ts-morph";
-
+import { readFile } from "node:fs/promises";
+import { dirname, extname, resolve, sep } from "node:path";
 import { type Printer, chalk } from "@codemod-com/printer";
+import { getCodemodExecutable } from "@codemod-com/runner";
 import {
   type KnownEngines,
   doubleQuotify,
-  isJavaScriptName,
-  isJsxName,
+  getCodemodRc,
 } from "@codemod-com/utilities";
-import { createCodeDiff } from "#api.js";
+import { AxiosError } from "axios";
+import inquirer from "inquirer";
+import open from "open";
+
+import { createCodeDiff, sendCodemodAIRequest } from "#api.js";
 import {
-  findLastlyModifiedFile,
   findModifiedFiles,
+  getFileFromCommit,
   getGitDiffForFile,
   getLatestCommitHash,
   isFileInGitDirectory,
 } from "#git.js";
+import { getCurrentUserOrLogin } from "#utils/auth.js";
 
 // remove all special characters and whitespaces
 const removeSpecialCharacters = (str: string) =>
   str.replace(/[{}()[\]:;,/?'"<>|=`!]/g, "").replace(/\s/g, "");
 
+const isJSorTS = (name: string) =>
+  name.startsWith(".ts") || name.startsWith(".js");
+
 const getFileExtension = (filePath: string) => {
   return extname(filePath).toLowerCase();
-};
-
-const getOldSourceFile = (commitHash: string, filePath: string) => {
-  try {
-    const commitWithFileName = doubleQuotify(`${commitHash}:${filePath}`);
-    const output = execSync(`git show ${commitWithFileName}`).toString();
-
-    const project = new Project({
-      useInMemoryFileSystem: true,
-      compilerOptions: {
-        allowJs: true,
-      },
-    });
-
-    return project.createSourceFile(filePath, output);
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
-
-const getSourceFile = (filePath: string) => {
-  const project = new Project({
-    compilerOptions: {
-      allowJs: true,
-    },
-  });
-
-  return project.addSourceFileAtPathIfExists(filePath) ?? null;
 };
 
 const UrlParamKeys = {
@@ -93,8 +69,10 @@ const createCodemodStudioURL = ({
 export const handleLearnCliCommand = async (options: {
   printer: Printer;
   target: string | null;
+  source: string | null;
+  engine: string | null;
 }) => {
-  const { printer, target } = options;
+  const { printer, target, source, engine } = options;
 
   if (target !== null && !isFileInGitDirectory(target)) {
     printer.printOperationMessage({
@@ -105,9 +83,9 @@ export const handleLearnCliCommand = async (options: {
     return;
   }
 
-  const dirtyPath = target ?? (await findLastlyModifiedFile());
+  const modifiedPaths = findModifiedFiles();
 
-  if (dirtyPath === null) {
+  if (modifiedPaths === null || modifiedPaths.length === 0) {
     printer.printOperationMessage({
       kind: "error",
       message: "We could not find any modified file to run the command on.",
@@ -115,39 +93,44 @@ export const handleLearnCliCommand = async (options: {
     return;
   }
 
-  const path = dirtyPath.replace(/\$/g, "\\$").replace(/\^/g, "\\^");
+  const skipped: string[] = [];
+  let paths = modifiedPaths.filter((path) => {
+    if (isJSorTS(getFileExtension(path))) {
+      return true;
+    }
 
-  const fileExtension = getFileExtension(path);
+    skipped.push(resolve(path));
+    return false;
+  });
 
-  const isValidFile =
-    isJavaScriptName(fileExtension) || isJsxName(fileExtension);
-
-  if (!isValidFile) {
+  if (skipped.length > 0) {
     printer.printOperationMessage({
       kind: "error",
-      message:
-        "At this moment, we are supporting only Jscodeshift engine, so the file must be either a JavaScript or TypeScript file (.js, .ts, .mjs, .cjs, .mts, .cts, .jsx, .tsx).\n" +
-        "Soon, we will support other engines and hence other extensions including .md, .mdx and more!",
+      message: chalk(
+        "This feature currently only supports codemod generation using jscodeshift engine, so the files must be either a JavaScript or TypeScript file (.js, .jsx, .ts, .tsx).",
+        `\nThe following files will not be processed:\n${skipped
+          .map((path) => `  - ${chalk.bold(path)}`)
+          .join("\n")}`,
+        "\nSoon, we will support other engines and hence other extensions including .md, .mdx and more!",
+      ),
     });
-    return;
   }
 
-  const latestCommitHash = getLatestCommitHash(dirname(path));
-  if (latestCommitHash === null) {
-    printer.printOperationMessage({
-      kind: "error",
-      message:
-        "Unexpected error occurred while getting the latest commit hash.",
+  if (paths.length > 1) {
+    const { paths: userSelectedPaths } = await inquirer.prompt<{
+      paths: string[];
+    }>({
+      type: "checkbox",
+      name: "paths",
+      message: "Select the files you want to learn the diffs from",
+      choices: paths.map((path) => ({
+        name: path.split(sep).slice(-2).join(sep),
+        value: path,
+        checked: true,
+      })),
     });
-    return;
-  }
 
-  const modifiedFiles = findModifiedFiles();
-  if (modifiedFiles !== null && modifiedFiles.length > 1) {
-    printer.printConsoleMessage(
-      "warn",
-      "Only the changes in the most recently edited file will be processed.",
-    );
+    paths = userSelectedPaths;
   }
 
   printer.printConsoleMessage(
@@ -155,103 +138,184 @@ export const handleLearnCliCommand = async (options: {
     chalk.cyan(
       "Learning",
       chalk.bold(doubleQuotify("git diff")),
-      "at",
-      chalk.bold(path),
       "has begun...",
       "\n",
     ),
   );
 
-  const gitDiff = getGitDiffForFile(latestCommitHash, path);
-  if (gitDiff === null) {
-    printer.printOperationMessage({
-      kind: "error",
-      message: "Unexpected error occurred while running `git diff` command.",
-    });
-    return;
-  }
+  const diffs: Record<string, { before: string; after: string }[]> = {};
 
-  if (gitDiff.length === 0) {
-    printer.printOperationMessage({
-      kind: "error",
-      message:
-        "There is no difference between the status of the file and that at the previous commit.",
-    });
-    return;
-  }
-
-  const oldSourceFile = getOldSourceFile(latestCommitHash, path);
-  const sourceFile = getSourceFile(dirtyPath);
-
-  if (oldSourceFile === null || sourceFile === null) {
-    printer.printOperationMessage({
-      kind: "error",
-      message: "Unexpected error occurred while getting AST of the file.",
-    });
-    return;
-  }
-
-  const beforeNodeTexts = new Set<string>();
-  const afterNodeTexts = new Set<string>();
-
-  const lines = gitDiff.split("\n");
-
-  for (const line of lines) {
-    if (!line.startsWith("-") && !line.startsWith("+")) {
+  for (const dirtyPath of paths) {
+    const latestCommitHash = getLatestCommitHash(dirname(dirtyPath));
+    if (latestCommitHash === null) {
+      printer.printOperationMessage({
+        kind: "error",
+        message: `Unexpected error occurred while getting the latest commit hash. - ${dirtyPath}`,
+      });
       continue;
     }
 
-    const codeString = line.substring(1).trim();
-    if (removeSpecialCharacters(codeString).length === 0) {
+    const path = dirtyPath.replace(/\$/g, "\\$").replace(/\^/g, "\\^");
+
+    const gitDiff = getGitDiffForFile(latestCommitHash, path);
+    if (gitDiff === null) {
+      printer.printOperationMessage({
+        kind: "error",
+        message: `Unexpected error occurred while running ${chalk.bold(
+          "git diff",
+        )} command. - ${path}`,
+      });
       continue;
     }
 
-    if (line.startsWith("-")) {
-      oldSourceFile.forEachChild((node) => {
-        const content = node.getFullText();
-
-        if (content.includes(codeString) && !beforeNodeTexts.has(content)) {
-          beforeNodeTexts.add(content);
-        }
-      });
+    if (gitDiff.length === 0) {
+      continue;
     }
 
-    if (line.startsWith("+")) {
-      sourceFile.forEachChild((node) => {
-        const content = node.getFullText();
-        if (content.includes(codeString) && !afterNodeTexts.has(content)) {
-          afterNodeTexts.add(content);
-        }
+    const hunkPattern = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/gm;
+    const hunks: {
+      header: string;
+      hunk: string;
+      details: {
+        removed: { at: number; count: number } | null;
+        added: { at: number; count: number } | null;
+      } | null;
+    }[] = [];
+    let match = hunkPattern.exec(gitDiff);
+
+    while (match !== null) {
+      const hunkStart = match.index;
+
+      // Find the next hunk or end of diff
+      const nextHunkIndex = gitDiff.indexOf("@@", hunkPattern.lastIndex);
+      const hunkEnd = nextHunkIndex !== -1 ? nextHunkIndex : gitDiff.length;
+      const hunkContent = gitDiff.substring(hunkStart, hunkEnd);
+
+      hunks.push({
+        header: match[0],
+        hunk: hunkContent,
+        details: {
+          removed: match[1]
+            ? {
+                at: Number.parseInt(match[1], 10),
+                count: match[2] ? Number.parseInt(match[2], 10) : 1,
+              }
+            : null,
+          added: match[3]
+            ? {
+                at: Number.parseInt(match[3], 10),
+                count: match[4] ? Number.parseInt(match[4], 10) : 1,
+              }
+            : null,
+        },
       });
+
+      hunkPattern.lastIndex = hunkEnd;
+      match = hunkPattern.exec(gitDiff);
     }
+
+    const oldFile = await getFileFromCommit(latestCommitHash, path);
+    const newFile = await readFile(path, "utf-8");
+
+    if (!oldFile || !newFile) {
+      printer.printOperationMessage({
+        kind: "error",
+        message: "Unexpected error occurred while reading the file.",
+      });
+
+      return;
+    }
+
+    diffs[path] = hunks.map(({ header, hunk, details }) => {
+      const { removed, added } = details ?? { removed: null, added: null };
+
+      return {
+        before: removed
+          ? oldFile
+              .split("\n")
+              .slice(removed.at - 1, removed.at + removed.count)
+              .join("\n")
+          : "",
+        after: added
+          ? newFile
+              .split("\n")
+              .slice(added.at - 1, added.at + added.count)
+              .join("\n")
+          : "",
+      };
+    });
   }
 
-  const irrelevantNodeTexts = new Set<string>();
+  if (Object.keys(diffs).length === 0) {
+    printer.printOperationMessage({
+      kind: "error",
+      message: chalk.yellow("No diffs found in selected files. Aborting..."),
+    });
+    return;
+  }
 
-  beforeNodeTexts.forEach((text) => {
-    if (afterNodeTexts.has(text)) {
-      irrelevantNodeTexts.add(text);
+  printer.printConsoleMessage(
+    "info",
+    chalk.cyan(`A total of ${diffs.length} diffs found in the files.`),
+  );
+
+  // Improve existing codemod
+  if (source !== null) {
+    const userData = await getCurrentUserOrLogin({
+      message: "Please login to continue.",
+      printer,
+    });
+
+    const { config } = await getCodemodRc({ source, throwOnNotFound: true });
+
+    if (config.engine !== "jscodeshift") {
+      return printer.printOperationMessage({
+        kind: "error",
+        message: "Recipe codemods are not supported for improving.",
+      });
     }
-  });
 
-  irrelevantNodeTexts.forEach((text) => {
-    beforeNodeTexts.delete(text);
-    afterNodeTexts.delete(text);
-  });
+    const sourceCode = await getCodemodExecutable(source);
 
-  const beforeSnippet = Array.from(beforeNodeTexts)
-    .join("")
-    // remove all occurrences of `\n` at the beginning
-    .replace(/^\n+/, "");
-  const afterSnippet = Array.from(afterNodeTexts)
-    .join("")
-    // remove all occurrences of `\n` at the beginning
-    .replace(/^\n+/, "");
+    // const prompt = getCodemodPrompt({
+    //   type: "improve",
+    //   testCases: Object.values(diffs).flat(),
+    //   existingCodemodSource: sourceCode,
+    // });
 
-  const { id: diffId, iv } = await createCodeDiff({
-    beforeSnippet,
-    afterSnippet,
-  });
+    const chatSpinner = printer.withLoaderMessage("Improving your codemod...");
+
+    try {
+      // 1. send request to AI service
+      for await (const chunk of sendCodemodAIRequest({
+        accessToken: userData.token,
+        prompt: "empty",
+      })) {
+      }
+
+      // 2. update the codemod in the source by adding the test fixture and updating the source code
+
+      chatSpinner.succeed();
+    } catch (err) {
+      chatSpinner.fail();
+      const error = err as AxiosError<{ message: string }> | Error;
+
+      return printer.printConsoleMessage(
+        "error",
+        `Failed to send an API request to the AI service:\n ${
+          error instanceof AxiosError
+            ? error.response?.data.errorText
+            : error.message
+        }`,
+      );
+    }
+
+    return;
+  }
+
+  // Regular studio flow as before (will require multiple diffs support implemented in studio)
+  const { id: diffId, iv } = await createCodeDiff(Object.values(diffs).flat());
+
   const url = createCodemodStudioURL({
     // TODO: Support other engines in the future
     engine: "jscodeshift",
@@ -273,7 +337,6 @@ export const handleLearnCliCommand = async (options: {
   );
 
   const success = open(url);
-
   if (!success) {
     printer.printOperationMessage({
       kind: "error",

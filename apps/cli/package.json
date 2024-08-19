@@ -4,7 +4,7 @@
   "imports": {
     "#*": "./src/*"
   },
-  "version": "0.13.7",
+  "version": "0.14.0",
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,
@@ -47,7 +47,7 @@
     "@types/inquirer": "catalog:",
     "@types/node": "18.11.9",
     "@types/prettyjson": "catalog:",
-    "@types/semver": "^7.5.8",
+    "@types/semver": "catalog:",
     "@types/yargs": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "axios": "catalog:",
@@ -61,7 +61,7 @@
     "open": "catalog:",
     "prettier": "^3.2.5",
     "prettyjson": "catalog:",
-    "semver": "^7.6.2",
+    "semver": "catalog:",
     "terminal-link": "catalog:",
     "ts-morph": "18.0.0",
     "valibot": "catalog:",

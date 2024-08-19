@@ -187,12 +187,11 @@
     "package": "vsce package --no-dependencies --no-yarn"
   },
   "devDependencies": {
-    "@total-typescript/ts-reset": "catalog:",
     "@types/chai": "catalog:",
     "@types/diff": "catalog:",
     "@types/glob": "catalog:",
     "@types/node": "18.11.18",
-    "@types/semver": "^7.3.13",
+    "@types/semver": "catalog:",
     "@types/vscode": "catalog:",
     "@vscode/test-electron": "catalog:",
     "chai": "catalog:",
@@ -224,7 +223,7 @@
     "newtype-ts": "catalog:",
     "nock": "catalog:",
     "redux-persist": "catalog:",
-    "semver": "^7.3.8",
+    "semver": "catalog:",
     "ts-morph": "^19.0.0",
     "universal-base64url": "catalog:",
     "valibot": "catalog:"

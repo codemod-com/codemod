@@ -35,3 +35,19 @@ export const downloadFile = async (options: {
 
   return { data: buffer, path, cached: false };
 };
+
+export async function* streamingFetch(fetchCall: () => Promise<Response>) {
+  const response = await fetchCall();
+  // Attach Reader
+  const reader = response.body?.getReader();
+  if (!reader) return;
+
+  while (true) {
+    // wait for next encoded chunk
+    const { done, value } = await reader.read();
+    // check if stream is done
+    if (done) break;
+    // Decodes data chunk and yields it
+    yield value;
+  }
+}

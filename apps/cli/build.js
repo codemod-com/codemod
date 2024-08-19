@@ -4,22 +4,31 @@ import { hideBin } from "yargs/helpers";
 // Build envs for local production build, can be used by running `pnpm build --prod`
 const localProdBuildEnvs = {
   "process.env.NODE_ENV": '"production"',
+  "process.env.IGNORE_TELEMETRY": "true",
+
   "process.env.BACKEND_URL": '"https://backend.codemod.com"',
   "process.env.AUTH_BACKEND_URL": '"https://backend.codemod.com/auth"',
+  "process.env.RUNNER_URL": '"http://backend.codemod.com/run"',
+  "process.env.MODGPT_URL": '"http://backend.codemod.com/modgpt"',
+  "process.env.CODEMODAI_URL": '"http://backend.codemod.com/ai"',
+
   "process.env.CODEMOD_HOME_PAGE_URL": '"https://codemod.com"',
   "process.env.CODEMOD_STUDIO_URL": '"https://codemod.com/studio"',
-  "process.env.IGNORE_TELEMETRY": "true",
-  "process.env.RUNNER_URL": '"https://backend.codemod.com/run"',
 };
 
 // Build envs for staging, it is the default when running `pnpm build`
 const stagingBuildEnvs = {
   "process.env.NODE_ENV": '"staging"',
+  "process.env.IGNORE_TELEMETRY": "true",
+
   "process.env.BACKEND_URL": '"https://staging-backend.codemod.com"',
   "process.env.AUTH_BACKEND_URL": '"https://staging-backend.codemod.com/auth"',
+  "process.env.RUNNER_URL": '"http://staging-backend.codemod.com/run"',
+  "process.env.MODGPT_URL": '"http://staging-backend.codemod.com/modgpt"',
+  "process.env.CODEMODAI_URL": '"http://staging-backend.codemod.com/ai"',
+
   "process.env.CODEMOD_HOME_PAGE_URL": '"https://staging.codemod.com"',
   "process.env.CODEMOD_STUDIO_URL": '"https://staging.codemod.com/studio"',
-  "process.env.IGNORE_TELEMETRY": "true",
 };
 
 // Build envs for publishing to npm, it would usually happen during prepublishOnly script
@@ -32,12 +41,16 @@ const publishEnvs = {
 // Can be used by running `pnpm build --local`
 const localEnvs = {
   "process.env.NODE_ENV": '"development"',
+  "process.env.IGNORE_TELEMETRY": "true",
+
   "process.env.BACKEND_URL": '"http://localhost:8081"',
   "process.env.AUTH_BACKEND_URL": '"http://localhost:8080"',
+  "process.env.RUNNER_URL": '"http://localhost:8083"',
+  "process.env.MODGPT_URL": '"http://localhost:8084"',
+  "process.env.CODEMODAI_URL": '"http://localhost:8091"',
+
   "process.env.CODEMOD_HOME_PAGE_URL": '"http://localhost:3000"',
   "process.env.CODEMOD_STUDIO_URL": '"http://localhost:3000/studio"',
-  "process.env.IGNORE_TELEMETRY": "true",
-  "process.env.RUNNER_URL": '"http://localhost:8083"',
 };
 
 const argv = hideBin(process.argv);

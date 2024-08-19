@@ -1,5 +1,10 @@
 import { randomBytes } from "node:crypto";
-import type { CodemodListResponse } from "@codemod-com/api-types";
+import {
+  type ApiResponse,
+  BAD_REQUEST,
+  type CodemodListResponse,
+  INTERNAL_SERVER_ERROR,
+} from "@codemod-com/api-types";
 import { getAuthPlugin } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
 import { decryptWithIv, encryptWithIv } from "@codemod-com/utilities";
@@ -10,6 +15,7 @@ import Fastify, {
   type FastifyPluginCallback,
   type FastifyRequest,
 } from "fastify";
+import type { InferOutput } from "valibot";
 import {
   type GetCodemodDownloadLinkResponse,
   getCodemodDownloadLink,
@@ -25,6 +31,8 @@ import {
   publishHandler,
 } from "./publishHandler.js";
 import {
+  type beforeAfterDiffSchema,
+  parseBeforeAfterDiffArray,
   parseCreateIssueBody,
   parseCreateIssueParams,
   parseDiffCreationBody,
@@ -189,48 +197,46 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     getCodemodsListHandler,
   );
 
-  instance.get<{ Reply: { before: string; after: string } }>(
-    "/diffs/:id",
-    async (request, reply) => {
-      const { id } = parseGetCodeDiffParams(request.params);
-      const { iv: ivStr } = parseIv(request.query);
+  instance.get<{
+    Reply: ApiResponse<{ diffs: InferOutput<typeof beforeAfterDiffSchema>[] }>;
+  }>("/diffs/:id", async (request, reply) => {
+    const { id } = parseGetCodeDiffParams(request.params);
+    const { iv: ivStr } = parseIv(request.query);
 
-      const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
-      const iv = Buffer.from(ivStr, "base64url");
+    const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+    const iv = Buffer.from(ivStr, "base64url");
 
-      const codeDiff = await prisma.codeDiff.findUnique({
-        where: { id },
+    const codeDiff = await prisma.codeDiff.findUnique({
+      where: { id },
+    });
+
+    if (!codeDiff) {
+      return reply
+        .code(400)
+        .send({ errorText: "Code diff not found", error: BAD_REQUEST });
+    }
+
+    try {
+      const diffs = parseBeforeAfterDiffArray(
+        JSON.parse(
+          decryptWithIv(
+            "aes-256-cbc",
+            { key, iv },
+            Buffer.from(codeDiff.diffs, "base64url"),
+          ).toString(),
+        ),
+      );
+
+      reply.type("application/json").code(200).send({ diffs });
+    } catch (err) {
+      return reply.code(400).send({
+        errorText: `Failed to decrypt the diffs array: ${(err as Error).message}`,
+        error: INTERNAL_SERVER_ERROR,
       });
+    }
+  });
 
-      if (!codeDiff) {
-        reply.code(400).send();
-        return;
-      }
-
-      let before: string;
-      let after: string;
-      try {
-        before = decryptWithIv(
-          "aes-256-cbc",
-          { key, iv },
-          Buffer.from(codeDiff.before, "base64url"),
-        ).toString();
-        after = decryptWithIv(
-          "aes-256-cbc",
-          { key, iv },
-          Buffer.from(codeDiff.after, "base64url"),
-        ).toString();
-      } catch (err) {
-        reply.code(400).send();
-        return;
-      }
-
-      reply.type("application/json").code(200);
-      return { before, after };
-    },
-  );
-
-  instance.post<{ Reply: { id: string; iv: string } }>(
+  instance.post<{ Reply: ApiResponse<{ id: string; iv: string }> }>(
     "/diffs",
     async (request, reply) => {
       const body = parseDiffCreationBody(request.body);
@@ -242,21 +248,18 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         data: {
           name: body.name,
           source: body.source,
-          before: encryptWithIv(
+          diffs: encryptWithIv(
             "aes-256-cbc",
             { key, iv },
-            Buffer.from(body.before),
-          ).toString("base64url"),
-          after: encryptWithIv(
-            "aes-256-cbc",
-            { key, iv },
-            Buffer.from(body.after),
+            Buffer.from(JSON.stringify(body.diffs)),
           ).toString("base64url"),
         },
       });
 
-      reply.type("application/json").code(200);
-      return { id: codeDiff.id, iv: iv.toString("base64url") };
+      return reply
+        .type("application/json")
+        .code(200)
+        .send({ id: codeDiff.id, iv: iv.toString("base64url") });
     },
   );
 

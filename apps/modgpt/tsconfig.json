@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "."
   },
-  "include": ["src/**/*"],
+  "include": ["reset.d.ts", "src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"],
   "extends": "@codemod-com/tsconfig/backend.json"
 }
