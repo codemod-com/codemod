@@ -8,8 +8,14 @@ import {
   getAuthPlugin,
 } from "@codemod-com/auth";
 
+import type {
+  CodemodRunResponse,
+  CodemodRunStatus,
+  CodemodRunStatusResponse,
+} from "@codemod-com/api-types";
 import {
   parseCodemodRunBody,
+  parseCodemodStatusData,
   parseCodemodStatusParams,
 } from "./schemata/schema.js";
 import { queue, redis } from "./services/Redis.js";
@@ -127,7 +133,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     return { version: packageJson.default.version };
   });
 
-  instance.post(
+  instance.post<{ Reply: CodemodRunResponse }>(
     "/codemodRun",
     { preHandler: [instance.authenticate, instance.getUserData] },
     async (request: UserDataPopulatedRequest, reply) => {
@@ -140,28 +146,33 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         return reply.code(401).send();
       }
 
-      const { codemodSource, codemodEngine, repoUrl, branch, persistent } =
-        parseCodemodRunBody(request.body);
+      const { codemods, repoUrl, branch, persistent } = parseCodemodRunBody(
+        request.body,
+      );
 
-      const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
-        codemodSource,
-        codemodEngine,
-        userId,
-        repoUrl,
-        branch,
-        persistent,
-      });
+      const createdIds = await Promise.all(
+        codemods.map(async (codemod) => {
+          // biome-ignore lint: TypeScript does not infer that queue is not null
+          const job = await queue!.add(TaskManagerJobs.CODEMOD_RUN, {
+            codemodEngine: codemod.engine,
+            codemodName: codemod.name,
+            codemodSource: codemod.source,
+            userId,
+            repoUrl,
+            branch,
+            persistent,
+          });
 
-      if (!job.id) {
-        return reply.code(500).send();
-      }
+          return job.id;
+        }),
+      );
 
       reply.type("application/json").code(200);
-      return { success: true, codemodRunId: job.id };
+      return { success: true, ids: createdIds.filter(Boolean) };
     },
   );
 
-  instance.get(
+  instance.get<{ Reply: CodemodRunStatusResponse }>(
     "/codemodRun/status/:jobId",
     { preHandler: instance.authenticate },
     async (request, reply) => {
@@ -169,25 +180,28 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         throw new Error("Redis service is not running.");
       }
 
-      const { jobId } = parseCodemodStatusParams(request.params);
+      const { ids } = parseCodemodStatusParams(request.params);
 
-      const data = await redis.get(`job-${jobId}::status`);
-      reply.type("application/json").code(200);
-      return {
-        success: true,
-        result: data
-          ? (JSON.parse(data) as {
-              status: string;
-              message?: string;
-              link?: string;
-              progress?: { processed: number; total: number };
-            })
-          : null,
-      };
+      const data: CodemodRunStatus[] = await Promise.all(
+        ids.map(async (id) => {
+          const redisData = await redis!.get(`job-${id}::status`);
+
+          if (!redisData) {
+            return { status: "error", message: "Job not found" };
+          }
+
+          return parseCodemodStatusData(JSON.parse(redisData));
+        }),
+      );
+
+      return reply
+        .type("application/json")
+        .code(200)
+        .send({ success: true, result: data });
     },
   );
 
-  instance.get(
+  instance.get<{ Reply: CodemodRunStatusResponse }>(
     "/codemodRun/output/:jobId",
     { preHandler: instance.authenticate },
     async (request, reply) => {
@@ -195,18 +209,27 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         throw new Error("Redis service is not running.");
       }
 
-      const { jobId } = parseCodemodStatusParams(request.params);
+      const { ids } = parseCodemodStatusParams(request.params);
 
-      const job = await queue?.getJob(jobId);
+      const data: CodemodRunStatus[] = await Promise.all(
+        ids.map(async (id) => {
+          const job = await queue?.getJob(id);
+          const redisData = await redis![
+            job?.data.persistent ? "get" : "getdel"
+          ](`job-${id}::status`);
 
-      const data = job?.data.persistent
-        ? await redis.get(`job-${jobId}::output`)
-        : await redis.getdel(`job-${jobId}::output`);
-      reply.type("application/json").code(200);
-      return {
-        success: true,
-        output: data,
-      };
+          if (!redisData) {
+            return { status: "error", message: "Job not found" };
+          }
+
+          return parseCodemodStatusData(JSON.parse(redisData));
+        }),
+      );
+
+      return reply
+        .type("application/json")
+        .code(200)
+        .send({ success: true, result: data });
     },
   );
 

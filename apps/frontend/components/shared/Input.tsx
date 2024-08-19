@@ -15,6 +15,7 @@ type InputProps = {
   onClear?: () => void;
   inputClassName?: string;
   iconClassName?: string;
+  commandClassName?: string;
 } & (
   | React.InputHTMLAttributes<HTMLInputElement>
   | React.InputHTMLAttributes<HTMLTextAreaElement>
@@ -108,7 +109,12 @@ export default function Input({
           />
         )}
         {command ? (
-          <span className="body-l absolute right-[5px] top-1/2 hidden shrink-0 -translate-y-1/2 rounded-[4px] bg-emphasis-light px-[6px] tracking-widest text-secondary-light lg:flex dark:bg-emphasis-dark dark:text-secondary-dark">
+          <span
+            className={cx(
+              "body-l absolute right-[5px] top-1/2 hidden shrink-0 -translate-y-1/2 rounded-[4px] bg-emphasis-light px-[6px] tracking-widest text-secondary-light lg:flex dark:bg-emphasis-dark dark:text-secondary-dark",
+              props.commandClassName,
+            )}
+          >
             {command}
           </span>
         ) : null}
