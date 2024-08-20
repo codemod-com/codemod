@@ -1,4 +1,6 @@
 This codemod updates the API response structure for search calls, replacing the previous body-only return with an object containing additional fields like `statusCode`, `headers`, and `warnings`
+
+
 ## What Changed
 
 Previously, the return value of search calls differed based on whether a callback or promise was used:

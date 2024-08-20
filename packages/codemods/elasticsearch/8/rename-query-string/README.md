@@ -1,4 +1,6 @@
 This codemod renames the query key to querystring and changes the body key to bulkBody in client.transport.request.
+
+
 ## What Changed
 
 Previously, the query key was used for query parameters and body was used for the request body in client.transport.request. Now, you need to use querystring for query parameters and bulkBody for the request body.
