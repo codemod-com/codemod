@@ -34,7 +34,7 @@ We need to get all the files that potentially can have Material UI Icons imports
 import type { Api } from '@codemod.com/workflow';
 
 export async function workflow({ files }: Api) {
-  **await files()**
+  await files()
 }
 ```
 
@@ -45,8 +45,8 @@ import type { Api } from '@codemod.com/workflow';
 
 export async function workflow({ files }: Api) {
   await files()
-	  **.jsFam()
-}**
+	  .jsFam()
+}
 ```
 
 ### Step 3: Use ast-grep for pattern detection.
@@ -59,7 +59,7 @@ import type { Api } from '@codemod.com/workflow';
 export async function workflow({ files }: Api) {
   await files()
 	  .jsFam()
-	  .**astGrep("import { $$$_ } from '@mui/icons-material'"**)
+	  .astGrep("import { $$$_ } from '@mui/icons-material'")
 }
 ```
 
@@ -75,8 +75,8 @@ import type { Api } from '@codemod.com/workflow';
 export async function workflow({ files }: Api) {
   await files()
     .jsFam()
-	  .**astGrep("import { $$$_ } from '@mui/icons-material'"**)
-    .**ai`
+	  .astGrep("import { $$$_ } from '@mui/icons-material'")
+    .ai`
       Migrate named imports from material ui icons to direct imports.
       Make sure preserve import names.
 
@@ -86,7 +86,7 @@ export async function workflow({ files }: Api) {
       Example after:
       import AccessAlarmIcon from '@mui/icons-material/AccessAlarm'
       import ThreeDRotation from '@mui/icons-material/ThreeDRotation'
-    `;**
+    `;
 	}
 ```
 
@@ -138,7 +138,7 @@ npx codemod@latest publish
 Now that the codemod is published, you can easily run it from Codemode Registry:
 
 ```bash
-**npx codemod@latest mui/named-import-to-direct-import --OPENAI_API_KEY=$OPENAI_API_KEY**
+npx codemod@latest mui/named-import-to-direct-import --OPENAI_API_KEY=$OPENAI_API_KEY
 ```
 
 ![Codemod Diff View](/images/guides/codemod2/diff-view.png)
