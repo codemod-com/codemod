@@ -1,5 +1,6 @@
 {
   "name": "@codemod-com/codemod-react-19-migration-recipe",
   "files": ["./README.md", "./.codemodrc.json"],
-  "type": "module"
+  "type": "module",
+  "private": true
 }

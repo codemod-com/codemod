@@ -9,6 +9,7 @@
   "keywords": [],
   "author": "Codemod inc.",
   "license": "ISC",
+  "private": true,
   "dependencies": {
     "@codemod-com/auth": "workspace:*",
     "@fastify/cors": "catalog:",

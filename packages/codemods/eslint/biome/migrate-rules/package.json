@@ -12,6 +12,7 @@
     "valibot": "catalog:",
     "vitest": "^1.0.1"
   },
+  "private": true,
   "main": "./dist/index.cjs",
   "scripts": {
     "generate": "tsx generate-latest-dts.ts",
