@@ -6,7 +6,7 @@
   "private": false,
   "arguments": [],
   "meta": {
-    "tags": ["preact", "X", "migration"],
+    "tags": ["preact", "migration"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/preact/X/default-import-to-namespace-import"
   },
   "applicability": {
