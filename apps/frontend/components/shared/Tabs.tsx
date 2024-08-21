@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/utils";
 import * as RadixTabs from "@radix-ui/react-tabs";
 import { cx } from "cva";
 import { motion } from "framer-motion";
@@ -12,9 +13,15 @@ export type TabsProps = {
   }[];
   children: React.ReactNode;
   listClassName?: string;
+  itemClassName?: string;
 };
 
-export default function Tabs({ items, children, listClassName }: TabsProps) {
+export default function Tabs({
+  items,
+  children,
+  listClassName,
+  itemClassName,
+}: TabsProps) {
   const [activeTab, setActiveTab] = useState(items[0].id);
 
   return (
@@ -39,7 +46,10 @@ export default function Tabs({ items, children, listClassName }: TabsProps) {
             {activeTab === item.id && (
               <motion.span
                 aria-hidden
-                className="body-s-medium absolute inset-0 flex h-full w-full items-center gap-xs rounded-[4px] bg-gradient-to-br from-accent to-[#EEFDC2] px-[12px] py-xxs group-data-[state=active]:bg-gradient-to-br group-data-[state=active]:from-accent group-data-[state=active]:to-[#EEFDC2]"
+                className={cn(
+                  "body-s-medium absolute inset-0 flex h-full w-full items-center gap-xs rounded-[4px] bg-gradient-to-br from-accent to-[#EEFDC2] px-[12px] py-xxs group-data-[state=active]:bg-gradient-to-br group-data-[state=active]:from-accent group-data-[state=active]:to-[#EEFDC2]",
+                  itemClassName,
+                )}
                 layoutId="activeTab"
                 transition={{ type: "ease-out", duration: 0.3 }}
               />

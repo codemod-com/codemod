@@ -1,6 +1,9 @@
 {
   "name": "@codemod-com/backend",
   "version": "0.0.158",
+  "imports": {
+    "#*": "./src/*"
+  },
   "scripts": {
     "build": "tsc && node esbuild.config.js",
     "start": "node build/index.js",

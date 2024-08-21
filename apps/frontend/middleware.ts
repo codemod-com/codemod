@@ -8,7 +8,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const isProtectedRoute = createRouteMatcher(["/campaigns(.*)"]);
+const isProtectedRoute = createRouteMatcher(["/insights(.*)"]);
 
 async function middleware(request: NextRequest) {
   if (request.nextUrl.hostname === OLD_STUDIO_HOSTNAME) {

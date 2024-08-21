@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 type ViewState = {
   isSidebarActive: boolean;
-  campaignsSearchTerm: string;
+  insightsSearchTerm: string;
   selectedRepos: string[];
   toggleSidebar: () => void;
   setInsightsSearchTerm: (searchTerm: string) => void;
@@ -11,11 +11,11 @@ type ViewState = {
 
 export const useViewStore = create<ViewState>((set) => ({
   isSidebarActive: true,
-  campaignsSearchTerm: "",
+  insightsSearchTerm: "",
   selectedRepos: [],
   toggleSidebar: () =>
     set(({ isSidebarActive }) => ({ isSidebarActive: !isSidebarActive })),
   setInsightsSearchTerm: (searchTerm: string) =>
-    set(() => ({ campaignsSearchTerm: searchTerm })),
+    set(() => ({ insightsSearchTerm: searchTerm })),
   setSelectedRepos: (repos: string[]) => set(() => ({ selectedRepos: repos })),
 }));

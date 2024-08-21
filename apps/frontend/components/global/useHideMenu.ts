@@ -2,6 +2,6 @@ import { usePathname } from "next/navigation";
 
 export const useHideMenu = () => {
   const pathname = usePathname();
-  const menuLessRoutes = ["/studio", "/sign-in", "/campaigns"];
+  const menuLessRoutes = ["/studio", "/sign-in", "/insights"];
   return menuLessRoutes.some((route) => pathname.includes(route));
 };

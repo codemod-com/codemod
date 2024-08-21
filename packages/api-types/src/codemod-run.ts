@@ -24,38 +24,49 @@ export const validateCodemodStatusParamsSchema = v.object({
   ids: v.array(v.string()),
 });
 
-const statusBaseSchema = v.object({
+export type ExecutionProgress = v.InferOutput<typeof executionProgressSchema>;
+const executionProgressSchema = v.object({
+  processed: v.number(),
+  total: v.number(),
+  percentage: v.number(),
+});
+
+export type CodemodRunStatusBase = v.InferOutput<typeof statusBaseSchema>;
+export const statusBaseSchema = v.object({
   // job id
   id: v.string(),
   // name
   codemod: v.string(),
-  // progress from CLI ?
-  progress: v.number(),
+  // progress from CLI
+  progress: executionProgressSchema,
 });
 
-export const codemodRunStatusSchema = v.union([
-  v.object({
-    ...statusBaseSchema.entries,
-    status: v.union([v.literal("progress"), v.literal("error")]),
-    message: v.string(),
-  }),
-  v.object({
-    ...statusBaseSchema.entries,
-    status: v.literal("executing codemod"),
-    progress: v.object({
-      processed: v.number(),
-      total: v.number(),
-    }),
-  }),
-  v.object({
-    ...statusBaseSchema.entries,
-    status: v.literal("done"),
-    link: v.string(),
-  }),
-]);
+export type CodemodProgress = v.InferOutput<typeof codemodProgressSchema>;
+export const codemodProgressSchema = v.object({
+  ...statusBaseSchema.entries,
+  status: v.union([v.literal("progress"), v.literal("error")]),
+  message: v.string(),
+});
+
+export type CodemodExecuting = v.InferOutput<typeof codemodExecutingSchema>;
+export const codemodExecutingSchema = v.object({
+  ...statusBaseSchema.entries,
+  status: v.literal("executing codemod"),
+});
+
+export type CodemodDone = v.InferOutput<typeof codemodDoneSchema>;
+export const codemodDoneSchema = v.object({
+  ...statusBaseSchema.entries,
+  status: v.literal("done"),
+});
 
 export type CodemodRunStatusInput = v.InferInput<typeof codemodRunStatusSchema>;
 export type CodemodRunStatus = v.InferOutput<typeof codemodRunStatusSchema>;
+export const codemodRunStatusSchema = v.union([
+  codemodProgressSchema,
+  codemodExecutingSchema,
+  codemodDoneSchema,
+]);
 
 export type CodemodRunJobData = {
   userId: string;
