@@ -1,4 +1,4 @@
-import ky from 'ky';
+import ky from "ky";
 export async function getTodos() {
   const resp = await ky.get(`/todos`);
   return resp.json();
@@ -6,14 +6,14 @@ export async function getTodos() {
 
 export async function addTodo(todo) {
   const resp = await ky.post(`/todo`, {
-    json: { todo },
+    json: { todo }
   });
   return resp.json();
 }
 
 export async function updateTodo(todo) {
   const resp = await ky.put(`/todo/${todo.id}`, {
-    json: { todo },
+    json: { todo }
   });
 }
 
