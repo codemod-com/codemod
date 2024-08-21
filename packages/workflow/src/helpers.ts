@@ -59,18 +59,18 @@ export const parseRepositories = (
 
 export const parseMultistring = (
   repos: string | readonly string[],
-  split = /[\n,; ]/,
+  splitWith = /[\n,; ]/,
 ) => {
   if (typeof repos === "string") {
     return repos
-      .split(split)
+      .split(splitWith)
       .map((repository) => repository.trim())
       .filter(identity);
   }
 
   return flattenDeep(
     repos.map((repository) =>
-      repository.split(/[\n, ;]/).map((repository) => repository.trim()),
+      repository.split(splitWith).map((repository) => repository.trim()),
     ),
   ).filter(identity);
 };

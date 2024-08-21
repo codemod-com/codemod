@@ -7,15 +7,15 @@ export async function workflow({ github }: Api) {
       await codemod("pnpm/catalog");
       await commit("migration to pnpm catalog");
       await push();
-      await pr(
-        "chore: pnpm catalog migration",
-        `# Migration to pnpm catalog
+      await pr({
+        title: "chore: pnpm catalog migration",
+        body: `# Migration to pnpm catalog
 ## Updated description
 This PR migrates to the [pnpm catalog](https://pnpm.io/catalogs), a new feature that is available starting pnpm@9.5.0
 Using [pnpm catalog codemod](https://codemod.com/registry/pnpm-catalog).
 PR is safe to merge.
 `,
-      );
+      });
     },
   );
 }
