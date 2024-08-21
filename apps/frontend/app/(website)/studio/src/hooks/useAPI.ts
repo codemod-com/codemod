@@ -8,7 +8,7 @@ const shouldUseMocks =
   process.env.NODE_ENV === "development" &&
   Boolean(localStorage?.getItem("useMocks"));
 
-export const useAPI = <T>(endpoint: string) => {
+export const useAPI = <T, U = any>(endpoint: string) => {
   useMirageServer(shouldUseMocks);
 
   const { getToken } = useAuth();
@@ -23,11 +23,10 @@ export const useAPI = <T>(endpoint: string) => {
   };
 
   return {
-    get: async <U = T>() =>
-      await apiClient.get<U>(endpoint, await getHeaders()),
-    put: async <U = T>(body: U) =>
-      await apiClient.put<U>(endpoint, body, await getHeaders()),
-    post: async <U, K = T>(body: U) =>
-      await apiClient.post<K>(endpoint, body, await getHeaders()),
+    get: async () => await apiClient.get<T>(endpoint, await getHeaders()),
+    put: async (body: U) =>
+      await apiClient.put<T>(endpoint, body, await getHeaders()),
+    post: async (body: U) =>
+      await apiClient.post<T>(endpoint, body, await getHeaders()),
   };
 };

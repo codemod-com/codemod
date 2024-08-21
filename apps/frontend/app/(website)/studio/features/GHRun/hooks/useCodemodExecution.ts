@@ -1,7 +1,4 @@
-import type {
-  CodemodRunRequest,
-  CodemodRunStatus,
-} from "@codemod-com/api-types";
+import type { CodemodRunRequestPayload } from "@codemod-com/api-types";
 import { RUN_CODEMOD as RUN_CODEMOD_URL } from "@mocks/endpoints/gh-run";
 import { useAPI } from "@studio/hooks/useAPI";
 import type { ToVoid } from "@studio/types/transformations";
@@ -13,13 +10,17 @@ export const useCodemodExecution = ({
   codemodExecutionId: string | null;
   setCodemodExecutionId: ToVoid<string | null>;
 }) => {
-  const { post: runCodemod } = useAPI<CodemodRunStatus>(RUN_CODEMOD_URL);
+  const { post: runCodemod } = useAPI<{ success: boolean; ids: string[] }>(
+    RUN_CODEMOD_URL,
+  );
 
-  const onCodemodRun = async (request: CodemodRunRequest): Promise<void> => {
+  const onCodemodRun = async (
+    request: CodemodRunRequestPayload,
+  ): Promise<void> => {
     try {
-      const { codemodRunId, success } = (await runCodemod(request)).data;
+      const { ids, success } = (await runCodemod(request)).data;
       if (!success) return;
-      setCodemodExecutionId(codemodRunId);
+      setCodemodExecutionId(ids[0] ?? null);
     } catch (e) {
       console.error(e);
     }
