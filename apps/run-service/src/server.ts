@@ -151,9 +151,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
           .send({ error: UNAUTHORIZED, errorText: "Unauthorized" });
       }
 
-      const { codemods, repoUrl, branch, persistent } = parseCodemodRunBody(
-        request.body,
-      );
+      const { codemods, repoUrl, branch } = parseCodemodRunBody(request.body);
 
       const created: (CodemodRunResponse["data"][number] | null)[] =
         await Promise.all(
@@ -161,31 +159,31 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
             if (!queue) return null;
 
             const data = {
-              codemodEngine: codemod.engine,
-              codemodName: codemod.name,
-              codemodSource: codemod.source,
               userId,
               repoUrl,
               branch,
-              persistent,
+              ...codemod,
             } satisfies CodemodRunJobData;
 
             const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, data);
 
             if (!job.id) return null;
-            await prisma.codemodRunResult.create({
+            await prisma.codemodRun.create({
               data: {
-                codemod: codemod.name,
-                data: null,
+                jobId: job.id,
+                ownerId: userId,
+                data: {
+                  status: "progress",
+                  codemod,
+                  id: job.id,
+                  progress: {
+                    processed: 0,
+                    total: 0,
+                    percentage: 0,
+                  },
+                },
                 repoUrl,
                 branch,
-                status: "executing codemod",
-                jobId: job.id,
-                progress: {
-                  processed: 0,
-                  total: 0,
-                  percentage: 0,
-                },
               },
             });
 
@@ -214,87 +212,21 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         ids.map(async (id) => {
           if (!redis) return null;
           const redisData = await redis.get(`job-${id}::status`);
+          if (!redisData) return null;
 
-          if (!redisData) {
-            return {
-              status: "error",
-              message: "Job not found",
-              id,
-              codemod: "empty",
-              progress: {
-                processed: 0,
-                total: 0,
-                percentage: 0,
-              },
-            };
+          let parsed: CodemodRunStatus;
+          try {
+            parsed = parseCodemodStatusData(JSON.parse(redisData));
+          } catch (err) {
+            return null;
           }
 
-          const parsed = parseCodemodStatusData(JSON.parse(redisData));
           if (parsed.status === "done" || parsed.status === "error") {
-            await prisma.codemodRunResult.update({
+            await prisma.codemodRun.update({
               where: { jobId: id },
               data: { data: parsed },
             });
           }
-
-          return parsed;
-        }),
-      );
-
-      return reply
-        .type("application/json")
-        .code(200)
-        .send({ success: true, data: data.filter(Boolean) });
-    },
-  );
-
-  instance.get<{ Reply: CodemodRunStatusResponse }>(
-    "/codemodRun/output/:ids",
-    { preHandler: instance.authenticate },
-    async (request, reply) => {
-      if (!redis) {
-        throw new Error("Redis service is not running.");
-      }
-
-      const { ids } = parseCodemodStatusParams(request.params);
-
-      const data: (CodemodRunStatus | null)[] = await Promise.all(
-        ids.map(async (id) => {
-          const result = await prisma.codemodRunResult.findFirst({
-            where: { jobId: id },
-          });
-          if (result !== null) return { id, ...result };
-
-          if (!redis) return null;
-          const redisData = await redis.get(`job-${id}::status`);
-
-          if (!redisData) {
-            return {
-              status: "error",
-              message: "Job not found or result is not ready",
-              id,
-              codemod: "empty",
-              progress: {
-                processed: 0,
-                total: 0,
-                percentage: 0,
-              },
-            };
-          }
-
-          let jsonData: Record | null = null;
-          try {
-            jsonData = JSON.parse(redisData);
-          } catch (e) {
-            console.log(e);
-          }
-
-          await prisma.codemodRunResult.update({
-            where: { jobId: id },
-            data: { data: parsed },
-          });
-          // we can delete redis record here
-          await redis.del(`job-${id}::status`);
 
           return parsed;
         }),

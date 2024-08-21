@@ -93,16 +93,14 @@ model CodeDiff {
 }
 
 model CodemodRun {
-  jobId    String  @id @db.VarChar(255)
-  codemod  String
-  /// [ExecutionProgress]
-  progress Json
-  status   String  @db.VarChar(255)
-  message  String? @db.Text
-  output   String? @db.Text
+  jobId String @id @db.VarChar(255)
+  /// [RunStatus]
+  data  Json
 
-  repoUrl   String?
-  branch    String?
+  repoUrl String?
+  branch  String?
+
+  ownerId   String   @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
