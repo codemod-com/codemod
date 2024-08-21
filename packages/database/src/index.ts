@@ -1,3 +1,4 @@
+import type { CodemodRunStatus } from "@codemod-com/api-types/src/codemod-run.js";
 import type { CodemodConfig } from "@codemod-com/utilities";
 import { PrismaClient } from "@prisma/client";
 
@@ -6,11 +7,7 @@ declare global {
   namespace PrismaJson {
     type Argument = CodemodConfig["arguments"];
     type Applicability = CodemodConfig["applicability"];
-    type ExecutionProgress = {
-      processed: number;
-      total: number;
-      percentage: number;
-    };
+    type RunStatus = CodemodRunStatus;
   }
 }
 

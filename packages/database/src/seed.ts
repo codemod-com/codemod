@@ -187,11 +187,29 @@ async function seedDatabaseWithCodemods(): Promise<void> {
   );
 }
 
+async function seedDatabaseWithInsightsAndWidgets(): Promise<void> {
+  await Promise.all(
+    Array.from({ length: getRandomNumber(4, 7) }, async () => {
+      const insight = await prisma.insight.create({
+        data: {
+          ownerId: faker.string.uuid(),
+          widgets: {
+            createMany: {
+              data: [{ data: {}, kind: "chart" }],
+            },
+          },
+        },
+      });
+    }),
+  );
+}
+
 async function main() {
   try {
     await seedDatabaseWithFrameworks();
     await seedDatabaseWithCategories();
     await seedDatabaseWithCodemods();
+    await seedDatabaseWithInsightsAndWidgets();
     console.log("Database seeded successfully!");
   } catch (error) {
     console.error(error);

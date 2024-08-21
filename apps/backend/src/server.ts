@@ -10,16 +10,24 @@ import Fastify, {
   type FastifyPluginCallback,
   type FastifyRequest,
 } from "fastify";
-import {
-  type GetCodemodDownloadLinkResponse,
-  getCodemodDownloadLink,
-} from "./handlers/codemods/getCodemodDownloadLink.js";
-import { getCodemodHandler } from "./handlers/codemods/getCodemodHandler.js";
+import { getCodemodsListHandler } from "./handlers/codemods/codemod-list.get.js";
+import { getCodemodHandler } from "./handlers/codemods/codemod.get.js";
 import {
   type GetCodemodsResponse,
   getCodemodsHandler,
-} from "./handlers/codemods/getCodemodsHandler.js";
-import { getCodemodsListHandler } from "./handlers/codemods/getCodemodsListHandler.js";
+} from "./handlers/codemods/codemods.get.js";
+import {
+  type GetCodemodDownloadLinkResponse,
+  getCodemodDownloadLink,
+} from "./handlers/codemods/download-link.get.js";
+import {
+  type GetInsightResponse,
+  getInsightHandler,
+} from "./handlers/insights/insight.get.js";
+import {
+  type GetInsightsResponse,
+  getInsightsHandler,
+} from "./handlers/insights/insights.get.js";
 import {
   type PublishHandlerResponse,
   publishHandler,
@@ -350,10 +358,16 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
-  instance.get<{ Reply: GetCampaignsResponse }>(
-    "/campaigns",
+  instance.get<{ Reply: GetInsightsResponse }>(
+    "/insights",
     { preHandler: [instance.getUserData] },
-    getCampaignsHandler,
+    getInsightsHandler,
+  );
+
+  instance.get<{ Reply: GetInsightResponse }>(
+    "/insight/:id",
+    { preHandler: [instance.getUserData] },
+    getInsightHandler,
   );
 
   instance.get<{ Reply: GetCodemodsResponse }>(
