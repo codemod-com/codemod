@@ -5,9 +5,9 @@ import type { RouteHandler } from "fastify";
 import {
   parseClientIdentifierSchema,
   parseListCodemodsQuery,
-} from "../schemata/schema.js";
-import { codemodService } from "../services/CodemodService.js";
-import { telemetryService } from "../services/TelemetryService.js";
+} from "#schemata/schema.js";
+import { codemodService } from "#services/CodemodService.js";
+import { telemetryService } from "#services/TelemetryService.js";
 
 export const getCodemodsListHandler: RouteHandler<{
   Reply: CodemodListResponse;

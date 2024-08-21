@@ -179,7 +179,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
                 data: null,
                 repoUrl,
                 branch,
-                status: "pending",
+                status: "executing codemod",
                 jobId: job.id,
                 progress: {
                   processed: 0,
@@ -236,6 +236,65 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
               data: { data: parsed },
             });
           }
+
+          return parsed;
+        }),
+      );
+
+      return reply
+        .type("application/json")
+        .code(200)
+        .send({ success: true, data: data.filter(Boolean) });
+    },
+  );
+
+  instance.get<{ Reply: CodemodRunStatusResponse }>(
+    "/codemodRun/output/:ids",
+    { preHandler: instance.authenticate },
+    async (request, reply) => {
+      if (!redis) {
+        throw new Error("Redis service is not running.");
+      }
+
+      const { ids } = parseCodemodStatusParams(request.params);
+
+      const data: (CodemodRunStatus | null)[] = await Promise.all(
+        ids.map(async (id) => {
+          const result = await prisma.codemodRunResult.findFirst({
+            where: { jobId: id },
+          });
+          if (result !== null) return { id, ...result };
+
+          if (!redis) return null;
+          const redisData = await redis.get(`job-${id}::status`);
+
+          if (!redisData) {
+            return {
+              status: "error",
+              message: "Job not found or result is not ready",
+              id,
+              codemod: "empty",
+              progress: {
+                processed: 0,
+                total: 0,
+                percentage: 0,
+              },
+            };
+          }
+
+          let jsonData: Record | null = null;
+          try {
+            jsonData = JSON.parse(redisData);
+          } catch (e) {
+            console.log(e);
+          }
+
+          await prisma.codemodRunResult.update({
+            where: { jobId: id },
+            data: { data: parsed },
+          });
+          // we can delete redis record here
+          await redis.del(`job-${id}::status`);
 
           return parsed;
         }),
