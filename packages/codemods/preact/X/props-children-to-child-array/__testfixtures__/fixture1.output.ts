@@ -1,4 +1,4 @@
-import { toChildArray } from 'preact';
+import { toChildArray } from "preact";
 
 function Foo(props) {
   const count = toChildArray(props.children).length;
