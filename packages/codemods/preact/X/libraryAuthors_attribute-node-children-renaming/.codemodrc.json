@@ -1,0 +1,15 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "preact/X/libraryAuthors-attribute-node-children-renaming",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": ["preact", "X", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/preact/X/libraryAuthors_attribute-node-children-renaming"
+  },
+  "applicability": {
+    "from": [["preact", "<", "8.x"]]
+  }
+}
