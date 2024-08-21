@@ -1,6 +1,7 @@
 {
   "name": "@codemod/elasticsearch-8-unify-return-value",
   "dependencies": {},
+  "private": true,
   "devDependencies": {
     "typescript": "^5.2.2",
     "ts-node": "^10.9.1",

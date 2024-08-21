@@ -1,5 +1,6 @@
 {
   "name": "@codemod/elasticsearch-8-migration-recipe",
   "files": ["./README.md", "./.codemodrc.json"],
-  "type": "module"
+  "type": "module",
+  "private": true
 }
