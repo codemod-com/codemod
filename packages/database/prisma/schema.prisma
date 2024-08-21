@@ -91,3 +91,40 @@ model CodeDiff {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+model CodemodRun {
+  jobId    String  @id @db.VarChar(255)
+  codemod  String
+  /// [ExecutionProgress]
+  progress Json
+  status   String  @db.VarChar(255)
+  message  String? @db.Text
+  output   String? @db.Text
+
+  repoUrl   String?
+  branch    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Insight {
+  id      Int     @id @default(autoincrement())
+  name    String? @db.VarChar(255)
+  ownerId String  @db.VarChar(255)
+
+  widgets   Widget[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Widget {
+  id   Int    @id @default(autoincrement())
+  kind String
+  data Json
+
+  insight   Insight @relation(fields: [insightId], references: [id])
+  insightId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}

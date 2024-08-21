@@ -13,13 +13,13 @@ import Fastify, {
 import {
   type GetCodemodDownloadLinkResponse,
   getCodemodDownloadLink,
-} from "./handlers/getCodemodDownloadLink.js";
-import { getCodemodHandler } from "./handlers/getCodemodHandler.js";
+} from "./handlers/codemods/getCodemodDownloadLink.js";
+import { getCodemodHandler } from "./handlers/codemods/getCodemodHandler.js";
 import {
   type GetCodemodsResponse,
   getCodemodsHandler,
-} from "./handlers/getCodemodsHandler.js";
-import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
+} from "./handlers/codemods/getCodemodsHandler.js";
+import { getCodemodsListHandler } from "./handlers/codemods/getCodemodsListHandler.js";
 import {
   type PublishHandlerResponse,
   publishHandler,
@@ -349,6 +349,31 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       return result;
     },
   );
+
+  instance.get<{ Reply: GetCampaignsResponse }>(
+    "/campaigns",
+    { preHandler: [instance.getUserData] },
+    getCampaignsHandler,
+  );
+
+  instance.get<{ Reply: GetCodemodsResponse }>(
+    "/codemods",
+    { preHandler: [instance.getUserData] },
+    getCodemodsHandler,
+  );
+
+  instance.get<{ Reply: GetCodemodDownloadLinkResponse }>(
+    "/codemods/downloadLink",
+    { preHandler: [instance.getUserData] },
+    getCodemodDownloadLink,
+  );
+
+  instance.get<{ Reply: CodemodListResponse }>(
+    "/codemods/list",
+    { preHandler: [instance.getUserData] },
+    getCodemodsListHandler,
+  );
+
   done();
 };
 

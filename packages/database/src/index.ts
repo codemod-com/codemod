@@ -6,6 +6,11 @@ declare global {
   namespace PrismaJson {
     type Argument = CodemodConfig["arguments"];
     type Applicability = CodemodConfig["applicability"];
+    type ExecutionProgress = {
+      processed: number;
+      total: number;
+      percentage: number;
+    };
   }
 }
 

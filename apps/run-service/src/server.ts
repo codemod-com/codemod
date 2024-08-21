@@ -4,12 +4,21 @@ import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyPluginCallback } from "fastify";
 
 import {
+  type ApiResponse,
+  type CodemodRunJobData,
+  type CodemodRunResponse,
+  type CodemodRunStatus,
+  type CodemodRunStatusResponse,
+  UNAUTHORIZED,
+} from "@codemod-com/api-types";
+import {
   type UserDataPopulatedRequest,
   getAuthPlugin,
 } from "@codemod-com/auth";
-
+import { prisma } from "@codemod-com/database";
 import {
   parseCodemodRunBody,
+  parseCodemodStatusData,
   parseCodemodStatusParams,
 } from "./schemata/schema.js";
 import { queue, redis } from "./services/Redis.js";
@@ -127,7 +136,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     return { version: packageJson.default.version };
   });
 
-  instance.post(
+  instance.post<{ Reply: ApiResponse<CodemodRunResponse> }>(
     "/codemodRun",
     { preHandler: [instance.authenticate, instance.getUserData] },
     async (request: UserDataPopulatedRequest, reply) => {
@@ -137,38 +146,61 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
       const userId = request.user?.id;
       if (!userId) {
-        return reply.code(401).send();
+        return reply
+          .code(401)
+          .send({ error: UNAUTHORIZED, errorText: "Unauthorized" });
       }
 
-      const {
-        codemodSource,
-        codemodEngine,
-        repoUrl,
-        branch,
-        persistent,
-        codemodArguments,
-      } = parseCodemodRunBody(request.body);
+      const { codemods, repoUrl, branch, persistent } = parseCodemodRunBody(
+        request.body,
+      );
 
-      const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
-        codemodSource,
-        codemodEngine,
-        userId,
-        repoUrl,
-        branch,
-        persistent,
-        codemodArguments,
-      });
+      const created: (CodemodRunResponse["data"][number] | null)[] =
+        await Promise.all(
+          codemods.map(async (codemod) => {
+            if (!queue) return null;
 
-      if (!job.id) {
-        return reply.code(500).send();
-      }
+            const data = {
+              codemodEngine: codemod.engine,
+              codemodName: codemod.name,
+              codemodSource: codemod.source,
+              userId,
+              repoUrl,
+              branch,
+              persistent,
+            } satisfies CodemodRunJobData;
+
+            const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, data);
+
+            if (!job.id) return null;
+            await prisma.codemodRunResult.create({
+              data: {
+                codemod: codemod.name,
+                data: null,
+                repoUrl,
+                branch,
+                status: "pending",
+                jobId: job.id,
+                progress: {
+                  processed: 0,
+                  total: 0,
+                  percentage: 0,
+                },
+              },
+            });
+
+            return { jobId: job.id, codemodName: codemod.name };
+          }),
+        );
 
       reply.type("application/json").code(200);
-      return { success: true, codemodRunId: job.id };
+      return reply
+        .code(401)
+        .send({ success: true, data: created.filter(Boolean) });
     },
   );
 
-  instance.get(
+  instance.get<{ Reply: CodemodRunStatusResponse }>(
     "/codemodRun/status/:jobId",
     { preHandler: instance.authenticate },
     async (request, reply) => {
@@ -176,44 +208,43 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         throw new Error("Redis service is not running.");
       }
 
-      const { jobId } = parseCodemodStatusParams(request.params);
+      const { ids } = parseCodemodStatusParams(request.params);
 
-      const data = await redis.get(`job-${jobId}::status`);
-      reply.type("application/json").code(200);
-      return {
-        success: true,
-        result: data
-          ? (JSON.parse(data) as {
-              status: string;
-              message?: string;
-              link?: string;
-              progress?: { processed: number; total: number };
-            })
-          : null,
-      };
-    },
-  );
+      const data: (CodemodRunStatus | null)[] = await Promise.all(
+        ids.map(async (id) => {
+          if (!redis) return null;
+          const redisData = await redis.get(`job-${id}::status`);
 
-  instance.get(
-    "/codemodRun/output/:jobId",
-    { preHandler: instance.authenticate },
-    async (request, reply) => {
-      if (!redis) {
-        throw new Error("Redis service is not running.");
-      }
+          if (!redisData) {
+            return {
+              status: "error",
+              message: "Job not found",
+              id,
+              codemod: "empty",
+              progress: {
+                processed: 0,
+                total: 0,
+                percentage: 0,
+              },
+            };
+          }
 
-      const { jobId } = parseCodemodStatusParams(request.params);
+          const parsed = parseCodemodStatusData(JSON.parse(redisData));
+          if (parsed.status === "done" || parsed.status === "error") {
+            await prisma.codemodRunResult.update({
+              where: { jobId: id },
+              data: { data: parsed },
+            });
+          }
 
-      const job = await queue?.getJob(jobId);
+          return parsed;
+        }),
+      );
 
-      const data = job?.data.persistent
-        ? await redis.get(`job-${jobId}::output`)
-        : await redis.getdel(`job-${jobId}::output`);
-      reply.type("application/json").code(200);
-      return {
-        success: true,
-        output: data,
-      };
+      return reply
+        .type("application/json")
+        .code(200)
+        .send({ success: true, data: data.filter(Boolean) });
     },
   );
 
