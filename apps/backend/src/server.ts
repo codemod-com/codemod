@@ -392,24 +392,6 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     putWidgetHandler,
   );
 
-  instance.get<{ Reply: GetCodemodsResponse }>(
-    "/codemods",
-    { preHandler: [instance.getUserData] },
-    getCodemodsHandler,
-  );
-
-  instance.get<{ Reply: GetCodemodDownloadLinkResponse }>(
-    "/codemods/downloadLink",
-    { preHandler: [instance.getUserData] },
-    getCodemodDownloadLink,
-  );
-
-  instance.get<{ Reply: CodemodListResponse }>(
-    "/codemods/list",
-    { preHandler: [instance.getUserData] },
-    getCodemodsListHandler,
-  );
-
   done();
 };
 
