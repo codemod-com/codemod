@@ -1,7 +1,4 @@
-This codemod helps to improve error reporting in route definitions, route registration is now synchronous. As a result, if you specify an onRoute hook in a plugin you should now either:
-
-
-🚦 **Impact Level**: Minimal
+This codemod helps to improve error reporting in route definitions, route registration is now synchronous, so if you specify an onRoute hook in a plugin, you should now use await.register() 
 
 ## What Changed
 
