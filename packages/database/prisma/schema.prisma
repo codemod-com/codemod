@@ -118,7 +118,7 @@ model Insight {
 model Widget {
   id   Int    @id @default(autoincrement())
   kind String
-  data Json
+  data String
 
   insight   Insight @relation(fields: [insightId], references: [id])
   insightId Int

@@ -29,6 +29,10 @@ import {
   getInsightsHandler,
 } from "./handlers/insights/insights.get.js";
 import {
+  type PutWidgetResponse,
+  putWidgetHandler,
+} from "./handlers/widgets/widget.put.js";
+import {
   type PublishHandlerResponse,
   publishHandler,
 } from "./publishHandler.js";
@@ -368,6 +372,24 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     "/insight/:id",
     { preHandler: [instance.getUserData] },
     getInsightHandler,
+  );
+
+  // instance.get<{ Reply: GetWidgetsResponse }>(
+  //   "/widgets",
+  //   { preHandler: [instance.getUserData] },
+  //   getWidgetsHandler,
+  // );
+
+  // instance.get<{ Reply: GetWidgetResponse }>(
+  //   "/widget/:id",
+  //   { preHandler: [instance.getUserData] },
+  //   getWidgetHandler,
+  // );
+
+  instance.put<{ Reply: PutWidgetResponse }>(
+    "/widget",
+    { preHandler: [instance.getUserData] },
+    putWidgetHandler,
   );
 
   instance.get<{ Reply: GetCodemodsResponse }>(

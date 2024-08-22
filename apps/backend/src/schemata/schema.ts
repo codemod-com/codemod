@@ -8,6 +8,7 @@ import {
   boolean,
   custom,
   literal,
+  number,
   object,
   optional,
   parse,
@@ -169,3 +170,13 @@ export const parseCodemodRunBody = (input: unknown) =>
 
 export const parseCodemodStatusParams = (input: unknown) =>
   parse(validateCodemodStatusParamsSchema, input);
+
+export const putWidgetBodySchema = object({
+  id: optional(number()),
+  insightId: optional(number()),
+  data: optional(string()),
+  kind: optional(string()),
+});
+
+export const parsePutWidgetBody = (input: unknown) =>
+  parse(putWidgetBodySchema, input);
