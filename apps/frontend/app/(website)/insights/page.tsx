@@ -27,7 +27,7 @@ const InsightsPage = () => {
       ] satisfies InsightsTabsConfig,
     [],
   );
-  const insights = useInsights();
+  const insightsQuery = useInsights();
 
   const { selectedRepos, setSelectedRepos } = useViewStore();
   const [repoSelectorOpen, setRepoSelectorOpen] = useState(false);
@@ -41,7 +41,6 @@ const InsightsPage = () => {
         <SecondaryHeader
           onOpenRepoSelector={() => setRepoSelectorOpen(true)}
           onAddNewInsight={() => setAddNewInsightModalOpen(true)}
-          insightCount={insights.data?.length ?? 0}
           selectedRepoName={selectedRepos.join(",") ?? "Select Repository"}
         />
         <div className="flex w-full justify-start">
@@ -52,7 +51,7 @@ const InsightsPage = () => {
           >
             {tabsConfig.map(({ id, label }) => (
               <TabContent forId={id} key={label}>
-                <InsightsTable insights={insights?.data ?? []} type={id} />
+                <InsightsTable />
               </TabContent>
             ))}
           </Tabs>

@@ -6,19 +6,18 @@ import { useViewStore } from "@/store/view";
 import { MoreVertical, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { memo, useMemo } from "react";
-import type { Insight } from "../hooks/useInsights";
-import type { InsightsTabsConfig } from "../page";
+import { useInsights } from "../hooks/useInsights";
 
-type InsightId = InsightsTabsConfig[number]["id"];
-type InsightsTableProps = { type: InsightId; insights: Insight[] };
-
-const InsightsTable = ({ insights }: InsightsTableProps) => {
+const InsightsTable = () => {
+  const { data: insightsData } = useInsights();
   const { insightsSearchTerm } = useViewStore();
 
   const filteredInsights = useMemo(
     () =>
-      insights.filter((insight) => insight.name.includes(insightsSearchTerm)),
-    [insightsSearchTerm, insights],
+      insightsData?.data.filter((insight) =>
+        insight.name?.includes(insightsSearchTerm),
+      ),
+    [insightsSearchTerm, insightsData],
   );
 
   const { push } = useRouter();
@@ -35,7 +34,7 @@ const InsightsTable = ({ insights }: InsightsTableProps) => {
       </Table.Header>
 
       <Table.Body>
-        {filteredInsights.map((insight) => (
+        {filteredInsights?.map((insight) => (
           <Table.Row
             key={insight.id}
             role="button"
@@ -43,7 +42,11 @@ const InsightsTable = ({ insights }: InsightsTableProps) => {
           >
             <Table.Cell>{insight.name}</Table.Cell>
             <Table.Cell>{insight.updatedAt}</Table.Cell>
-            <Table.Cell>{insight.owner}</Table.Cell>
+            <Table.Cell>{insight.ownerId}</Table.Cell>
+            {/* <Table.Cell>
+              <Avatar name={insight.owner.name} image={insight.owner.avatar} />
+              {insight.owner.name}
+            </Table.Cell> */}
             <Table.Cell className="flex">
               <Button intent="secondary-icon-only" className="!border-0">
                 <Star size={16} />

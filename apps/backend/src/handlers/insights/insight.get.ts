@@ -3,32 +3,23 @@ import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
 import type { Insight, Widget } from "@codemod-com/database";
 import type { FastifyReply, RouteHandler } from "fastify";
+import * as v from "valibot";
 
 export type GetInsightResponse = ApiResponse<Insight & { widgets: Widget[] }>;
 
 export const getInsightHandler: RouteHandler<{
   Reply: GetInsightResponse;
 }> = async (request: UserDataPopulatedRequest, reply: FastifyReply) => {
-  // const query = parseGetCodemodsQuery(request.query);
-
-  // const { search, verified, category, author, framework } = query;
-
-  // const size = query.size || 30;
-  // const page = query.page || 1;
+  const { id } = v.parse(
+    v.object({ id: v.pipe(v.string(), v.transform(Number), v.number()) }),
+    request.params,
+  );
 
   const insight = await prisma.insight.findFirst({
-    where: {
-      // search,
-      // category,
-      // author,
-      // framework,
-      // verified,
-      // page,
-      // size,
-      // whitelisted: request.allowedNamespaces ?? [],
-    },
+    where: { id },
     include: {
       widgets: true,
+      codemodRuns: { select: { data: true } },
     },
   });
 

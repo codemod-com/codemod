@@ -1,4 +1,5 @@
 import type { CodemodRunStatus } from "@codemod-com/api-types/src/codemod-run.js";
+import type { WidgetData as WidgetDataInput } from "@codemod-com/api-types/src/insights.js";
 import type { CodemodConfig } from "@codemod-com/utilities";
 import { PrismaClient } from "@prisma/client";
 
@@ -8,6 +9,7 @@ declare global {
     type Argument = CodemodConfig["arguments"];
     type Applicability = CodemodConfig["applicability"];
     type RunStatus = CodemodRunStatus;
+    type WidgetData = WidgetDataInput;
   }
 }
 

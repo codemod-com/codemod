@@ -8,7 +8,6 @@ import {
   boolean,
   custom,
   literal,
-  number,
   object,
   optional,
   parse,
@@ -92,6 +91,13 @@ export const parseGetRepoBranchesBody = (input: unknown) =>
 export const parseGetRepoBranchesParams = (input: unknown) =>
   parse(providerSchema, input);
 
+export const paginatedQuerySchema = object({
+  page: optional(pipe(string(), transform(Number))),
+  size: optional(pipe(string(), transform(Number))),
+});
+export const parsePaginatedGetQuery = (input: unknown) =>
+  parse(paginatedQuerySchema, input);
+
 export const getCodemodsQuerySchema = object({
   search: optional(string()),
   category: optional(union([string(), array(string())])),
@@ -170,13 +176,3 @@ export const parseCodemodRunBody = (input: unknown) =>
 
 export const parseCodemodStatusParams = (input: unknown) =>
   parse(validateCodemodStatusParamsSchema, input);
-
-export const putWidgetBodySchema = object({
-  id: optional(number()),
-  insightId: optional(number()),
-  data: optional(string()),
-  kind: optional(string()),
-});
-
-export const parsePutWidgetBody = (input: unknown) =>
-  parse(putWidgetBodySchema, input);

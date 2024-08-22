@@ -4,22 +4,22 @@ import Icon from "@/components/shared/Icon";
 import { useViewStore } from "@/store/view";
 import { Separator } from "@studio/components/ui/separator";
 import { AlignJustify, Folder, Plus, Settings } from "lucide-react";
+import { useInsights } from "../hooks/useInsights";
 import InsightsCounter from "./InsightsCounter";
 import SearchBox from "./SearchBox";
 
 type Props = {
   selectedRepoName: string;
-  insightCount: number;
   onOpenRepoSelector(): void;
   onAddNewInsight(): void;
 };
 
 const SecondaryHeader = ({
   selectedRepoName,
-  insightCount,
   onOpenRepoSelector,
   onAddNewInsight,
 }: Props) => {
+  const { data: insightsData } = useInsights();
   const { toggleSidebar, setInsightsSearchTerm } = useViewStore();
 
   return (
@@ -76,7 +76,7 @@ const SecondaryHeader = ({
         orientation="vertical"
         className="bg-border-light dark:bg-border-dark mx-[8px]"
       />
-      <InsightsCounter insightCount={insightCount} />
+      <InsightsCounter insightCount={insightsData?.total ?? 0} />
     </div>
   );
 };

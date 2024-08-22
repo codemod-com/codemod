@@ -1,117 +1,108 @@
 "use client";
-import { useMirageServer } from "@/hooks/useMirageServer";
 import { useViewStore } from "@/store/view";
+import type { Widget } from "@codemod-com/database";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
-import { ChartTile } from "./components/ChartTile";
+// import { useEffect } from "react";
+import { useInsight } from "../hooks/useInsight";
+// import { ChartTile } from "./components/ChartTile";
 import SecondaryHeader from "./components/SecondaryHeader";
-import { TableTile } from "./components/TableTile";
-import {
-  type GetExecutionStatusResponse,
-  useCodemodRunResult,
-} from "./hooks/useCodemodRunExecutionStatus";
-import { useRunCodemodMutation } from "./hooks/useRunCodemodMutation";
-import { type Widget, useWidgets } from "./hooks/useWidgets";
 
-const getWidgetComponentByType = (kind: Widget["kind"]) => {
-  switch (kind) {
-    case "Table":
-      return TableTile;
-    case "Chart":
-      return ChartTile;
-    default:
-      return null;
+// const getWidgetComponentByType = (kind: Widget["kind"]) => {
+//   switch (kind) {
+//     case "Table":
+//       return TableTile;
+//     case "Chart":
+//       return ChartTile;
+//     default:
+//       return null;
+//   }
+// };
+
+// const getWidgetPropsFromStatus = (
+//   widgetCodemodStatus: GetExecutionStatusResponse[number],
+// ) => {
+//   const { status } = widgetCodemodStatus;
+
+//   let data = [];
+
+//   if (status === "success") {
+//     try {
+//       data = JSON.parse(widgetCodemodStatus.result);
+//     } catch (e) {
+//       console.log("Unable to parse codemod run result");
+//     }
+//   }
+
+//   return {
+//     loading: status === "in_progress",
+//     data,
+//     error: status === "errored" ? widgetCodemodStatus.message : null,
+//     statusMessage:
+//       status === "in_progress"
+//         ? `Loading ${widgetCodemodStatus.progress} / 100`
+//         : "",
+//   };
+// };
+
+const TableWidget = ({ widget }: { widget: Widget & { kind: "table" } }) => {};
+const ChartWidget = () => {};
+const PrimitiveWidget = () => {};
+
+const Widget = ({ widget }: { widget: Widget }) => {
+  if (widget.kind === "table") {
   }
-};
 
-const getWidgetPropsFromStatus = (
-  widgetCodemodStatus: GetExecutionStatusResponse[number],
-) => {
-  const { status } = widgetCodemodStatus;
-
-  let data = [];
-
-  if (status === "success") {
-    try {
-      data = JSON.parse(widgetCodemodStatus.result);
-    } catch (e) {
-      console.log("Unable to parse codemod run result");
-    }
+  if (widget.kind === "chart") {
   }
 
-  return {
-    loading: status === "in_progress",
-    data,
-    error: status === "errored" ? widgetCodemodStatus.message : null,
-    statusMessage:
-      status === "in_progress"
-        ? `Loading ${widgetCodemodStatus.progress} / 100`
-        : "",
-  };
+  return <
 };
 
 const InsightPage = () => {
-  useMirageServer(true);
+  // useMirageServer(true);
 
   const { insightId } = useParams<{ insightId: string }>();
   const { selectedRepos } = useViewStore();
 
-  const widgets = useWidgets(insightId);
+  const insightQuery = useInsight(insightId);
 
-  const { executionIds, runCodemodMutation } = useRunCodemodMutation();
+  if (insightQuery.isLoading) {
+    return <div>Loading...</div>;
+  }
 
-  const runCodemod = async (workflow: string) =>
-    await runCodemodMutation.mutateAsync({
-      codemods: [
-        { name: workflow, engine: "workflow", args: { repos: selectedRepos } },
-      ],
-    });
+  // insightQuery.data?.widgets.map((widget) => {
+  //   console.log(widget);
+  // });
 
-  const codemodRunResults = useCodemodRunResult(executionIds);
+  // const { executionIds, runCodemodMutation } = useRunCodemodMutation();
+
+  // const runCodemod = async (workflow: string) =>
+  //   await runCodemodMutation.mutateAsync({
+  //     codemods: [
+  //       { name: workflow, engine: "workflow", args: { repos: selectedRepos } },
+  //     ],
+  //   });
+
+  // const codemodRunResults = useCodemodRunResult(executionIds);
 
   // refresh all
-  useEffect(() => {
-    runCodemodMutation.mutateAsync({
-      codemods: widgets.map((widget) => ({
-        name: widget.workflow,
-        engine: "workflow",
-        args: { repos: selectedRepos },
-      })),
-    });
-  }, [widgets]);
+  // useEffect(() => {
+  //   runCodemodMutation.mutateAsync({
+  //     codemods: widgets.map((widget) => ({
+  //       name: widget.workflow,
+  //       engine: "workflow",
+  //       args: { repos: selectedRepos },
+  //     })),
+  //   });
+  // }, [widgets]);
 
   return (
     <>
       <SecondaryHeader />
       <div className="w-full">
-        <div className="bg-gray-50 min-h-screen">
-          <div className="max-w-7xl mx-auto">
-            <div className="p-6">
-              {widgets.map((widget) => {
-                const Component = getWidgetComponentByType(widget.kind);
-
-                const widgetCodemodRunStatus = codemodRunResults.find(
-                  (result) => result.codemod === widget.workflow,
-                );
-
-                const widgetProps = widgetCodemodRunStatus
-                  ? getWidgetPropsFromStatus(widgetCodemodRunStatus)
-                  : { loading: false, data: [], error: "" };
-
-                const getData = () => runCodemod(widget.workflow);
-
-                return Component ? (
-                  <Component
-                    key={widget.id}
-                    title={widget.title}
-                    getData={getData}
-                    {...widgetProps}
-                  />
-                ) : null;
-              })}
-            </div>
-          </div>
-        </div>
+        {insightQuery.data?.widgets.map((widget) => (
+          <Widget />
+        ))}
       </div>
     </>
   );
