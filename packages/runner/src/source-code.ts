@@ -47,10 +47,7 @@ export const getTransformer = (source: string) => {
 
 export const BUILT_SOURCE_PATH = "cdmd_dist/index.cjs";
 
-export const bundleJS = async (options: {
-  entry: string;
-  output?: string;
-}) => {
+export const bundleJS = async (options: { entry: string; output?: string }) => {
   const { entry, output = join(dirname(entry), BUILT_SOURCE_PATH) } = options;
   const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
 
@@ -71,7 +68,9 @@ export const bundleJS = async (options: {
   const { outputFiles } = await esbuild.build(buildOptions);
 
   const sourceCode =
-    outputFiles?.find((file) => file.path.endsWith(output))?.text ?? null;
+    outputFiles?.find((file) =>
+      file.path.endsWith(output.replace(/\.\.\//g, "").replace(/\.\//g, "")),
+    )?.text ?? null;
 
   if (sourceCode === null) {
     throw new Error(`Could not find ${output} in output files`);
