@@ -106,9 +106,11 @@ model CodemodRun {
 }
 
 model Insight {
-  id      Int     @id @default(autoincrement())
-  name    String? @db.VarChar(255)
-  ownerId String  @db.VarChar(255)
+  id       Int      @id @default(autoincrement())
+  name     String?  @db.VarChar(255)
+  ownerId  String   @db.VarChar(255)
+  repoUrls String[]
+  tags     String[]
 
   widgets   Widget[]
   createdAt DateTime @default(now())
@@ -116,9 +118,12 @@ model Insight {
 }
 
 model Widget {
-  id   Int    @id @default(autoincrement())
-  kind String
-  data Json
+  id       Int     @id @default(autoincrement())
+  // chart | table | primitive
+  kind     String
+  // Input from frontend
+  data     String
+  template Boolean
 
   insight   Insight @relation(fields: [insightId], references: [id])
   insightId Int
