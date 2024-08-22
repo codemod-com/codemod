@@ -190,12 +190,145 @@ async function seedDatabaseWithCodemods(): Promise<void> {
 async function seedDatabaseWithInsightsAndWidgets(): Promise<void> {
   await Promise.all(
     Array.from({ length: getRandomNumber(4, 7) }, async () => {
-      const insight = await prisma.insight.create({
+      const ownerId = "1";
+      const framework = getRandomFramework();
+      const repoUrls = [getRandomUrl(), getRandomUrl(), getRandomUrl()];
+
+      await prisma.insight.create({
         data: {
-          ownerId: faker.string.uuid(),
+          name: `${framework} Migration`,
+          description: `Migrate to ${framework} 18.3.1`,
+          ownerId,
+          repoUrls,
+          tags: ["Migration", "Cleanup"],
+          codemodRuns: {
+            createMany: {
+              data: repoUrls.flatMap((repoUrl, i) => [
+                {
+                  repoUrl,
+                  ownerId,
+                  branch: "main",
+                  data: {
+                    status: "done",
+                    codemod: {
+                      engine: "workflow",
+                      name: "drift_analyzer",
+                      args: { repos: repoUrl },
+                    },
+                    id: faker.string.uuid(),
+                    data: JSON.stringify([
+                      { timestamp: new Date(), drift: 10, lib: "react" },
+                      { timestamp: new Date(), drift: 15, lib: "react" },
+                    ]),
+                    progress: { total: 100, processed: 50, percentage: 50 },
+                  },
+                  jobId: faker.string.uuid(),
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                },
+                {
+                  repoUrl,
+                  ownerId,
+                  branch: "main",
+                  data: {
+                    status: "done",
+                    codemod: {
+                      engine: "workflow",
+                      name: "chart_analyzer",
+                      args: { repos: repoUrl },
+                    },
+                    data: JSON.stringify([
+                      { timestamp: new Date(), use: 10, useContext: 20 },
+                      { timestamp: new Date(), use: 15, useContext: 10 },
+                    ]),
+                    id: faker.string.uuid(),
+                    progress: { total: 100, processed: 100, percentage: 100 },
+                  },
+                  jobId: faker.string.uuid(),
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                },
+                {
+                  repoUrl,
+                  ownerId,
+                  branch: "main",
+                  data: {
+                    status: "done",
+                    codemod: {
+                      engine: "workflow",
+                      name: "timesave_analyzer",
+                      args: {
+                        repos: repoUrl,
+                        packageNames: "@codemod-com/codemod",
+                      },
+                    },
+                    data: JSON.stringify([
+                      { timestamp: new Date(), savedTimeFormatted: "1h 30m" },
+                      { timestamp: new Date(), savedTimeFormatted: "1h 45m" },
+                    ]),
+                    id: faker.string.uuid(),
+                    progress: { total: 100, processed: 100, percentage: 100 },
+                  },
+                  jobId: faker.string.uuid(),
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                },
+              ]),
+            },
+          },
           widgets: {
             createMany: {
-              data: [{ data: {}, kind: "chart" }],
+              data: [
+                {
+                  kind: "primitive",
+                  data: {
+                    text: "Hello world, I am from timesave_analyzer. `timesave_analyzer.savedTimeFormatted`",
+                  },
+                  title: "Time saved with Codemod",
+                },
+                {
+                  kind: "chart",
+                  data: {
+                    y: [
+                      {
+                        title: "use (React 19)",
+                        value: "`chart_analyzer.use`",
+                        color: "#F59E0B",
+                      },
+                      {
+                        title: "useContext (React 18)",
+                        value: "`chart_analyzer.useContext`",
+                        color: "#FCD34D",
+                      },
+                    ],
+                    x: "`chart_analyzer.timestamp`",
+                  },
+                  title: "My chart",
+                },
+                {
+                  kind: "table",
+                  data: [
+                    {
+                      value: "`drift_analyzer.lib`",
+                      color: "black",
+                      icon: "`pr_analyzer.user.id`",
+                    },
+                    {
+                      value: "`drift_analyzer.drift`",
+                      color: "red",
+                    },
+                  ],
+                  title: "My table",
+                },
+                {
+                  kind: "primitive",
+                  data: {
+                    heading: "`timesave_analyzer.savedTimeFormatted`",
+                    description: "`timesave_analyzer.` better than last month",
+                  },
+                  title: "Time saved with Codemod",
+                },
+              ],
             },
           },
         },

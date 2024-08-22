@@ -369,22 +369,10 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
   );
 
   instance.get<{ Reply: GetInsightResponse }>(
-    "/insight/:id",
+    "/insights/:id",
     { preHandler: [instance.getUserData] },
     getInsightHandler,
   );
-
-  // instance.get<{ Reply: GetWidgetsResponse }>(
-  //   "/widgets",
-  //   { preHandler: [instance.getUserData] },
-  //   getWidgetsHandler,
-  // );
-
-  // instance.get<{ Reply: GetWidgetResponse }>(
-  //   "/widget/:id",
-  //   { preHandler: [instance.getUserData] },
-  //   getWidgetHandler,
-  // );
 
   instance.put<{ Reply: PutWidgetResponse }>(
     "/widget",

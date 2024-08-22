@@ -93,37 +93,44 @@ model CodeDiff {
 }
 
 model CodemodRun {
-  jobId String @id @db.VarChar(255)
+  jobId   String @id @db.VarChar(255)
   /// [RunStatus]
-  data  Json
+  data    Json
+  ownerId String @db.VarChar(255)
 
   repoUrl String?
   branch  String?
 
-  ownerId   String   @db.VarChar(255)
-  createdAt DateTime @default(now())
+  insight   Insight? @relation(fields: [insightId], references: [id])
+  insightId Int?
+
   updatedAt DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
 }
 
 model Insight {
-  id       Int      @id @default(autoincrement())
-  name     String?  @db.VarChar(255)
-  ownerId  String   @db.VarChar(255)
-  repoUrls String[]
-  tags     String[]
+  id          Int      @id @default(autoincrement())
+  name        String?  @db.VarChar(255)
+  description String?  @db.Text
+  ownerId     String   @db.VarChar(255)
+  repoUrls    String[]
+  tags        String[]
 
-  widgets   Widget[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  codemodRuns CodemodRun[]
+  widgets     Widget[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now()) @updatedAt
 }
 
 model Widget {
   id       Int     @id @default(autoincrement())
   // chart | table | primitive
   kind     String
-  // Input from frontend
-  data     String
-  template Boolean
+  // Frontend input
+  title    String
+  /// [WidgetData]
+  data     Json
+  template Boolean @default(false)
 
   insight   Insight @relation(fields: [insightId], references: [id])
   insightId Int
