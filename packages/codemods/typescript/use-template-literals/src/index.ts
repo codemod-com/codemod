@@ -8,11 +8,11 @@ const transformHelper = (node: BinaryExpression, api: API) => {
   const leftNode = node.left;
   const rightNode = node.right;
   const left =
-    leftNode && leftNode.type === "StringLiteral"
+    isStringLiteral(leftNode)
       ? j.literal(leftNode.value)
       : leftNode;
   const right =
-    rightNode && rightNode.type === "StringLiteral"
+    isStringLiteral(rightNode)
       ? j.literal(rightNode.value)
       : rightNode;
 
