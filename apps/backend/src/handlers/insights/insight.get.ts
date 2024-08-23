@@ -19,7 +19,7 @@ export const getInsightHandler: RouteHandler<{
     where: { id },
     include: {
       widgets: true,
-      codemodRuns: { select: { data: true } },
+      codemodRuns: { select: { data: true, repoUrl: true, branch: true } },
     },
   });
 

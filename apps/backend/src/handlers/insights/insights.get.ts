@@ -16,9 +16,7 @@ export const getInsightsHandler: RouteHandler<{
   const query = parsePaginatedGetQuery(request.query);
 
   const insights = await prisma.insight.findMany({
-    include: {
-      codemodRuns: { select: { data: true } },
-    },
+    include: { codemodRuns: { select: { data: true } } },
     take: query.size,
     skip: query.size && query.page ? query.size * (query.page - 1) : 0,
   });

@@ -16,7 +16,11 @@
     "prepare": "husky"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -39,8 +43,8 @@
     "@clerk/themes": "catalog:",
     "@codemod-com/api-types": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@faker-js/faker": "^8.4.1",
     "@codemod.com/codemod-utils": "workspace:*",
+    "@faker-js/faker": "^8.4.1",
     "@hookform/resolvers": "catalog:",
     "@monaco-editor/react": "^4.4.6",
     "@phosphor-icons/react": "catalog:",
@@ -69,6 +73,7 @@
     "@sanity/vision": "catalog:",
     "@swc/wasm-web": "^1.6.7",
     "@t3-oss/env-nextjs": "catalog:",
+    "@tanstack/react-table": "^8.20.1",
     "@tinloof/sanity-studio": "catalog:",
     "@tinloof/sanity-web": "catalog:",
     "@types/jscodeshift": "^0.11.6",

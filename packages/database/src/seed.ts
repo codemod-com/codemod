@@ -309,13 +309,11 @@ async function seedDatabaseWithInsightsAndWidgets(): Promise<void> {
                   kind: "table",
                   data: [
                     {
-                      title: "Library",
                       value: "`drift_analyzer.lib`",
                       color: "black",
                       icon: "`pr_analyzer.user.id`",
                     },
                     {
-                      title: "Drift",
                       value: "`drift_analyzer.drift`",
                       color: "red",
                     },

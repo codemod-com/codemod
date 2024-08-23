@@ -1,20 +1,24 @@
 import * as v from "valibot";
 
+export type PrimitiveWidgetData = v.InferInput<
+  typeof primitiveWidgetDataSchema
+>;
 export const primitiveWidgetDataSchema = v.object({
   heading: v.optional(v.string()),
   text: v.optional(v.string()),
   description: v.optional(v.string()),
 });
 
+export type TableWidgetData = v.InferInput<typeof tableWidgetDataSchema>;
 export const tableWidgetDataSchema = v.array(
   v.object({
-    title: v.string(),
     value: v.string(),
     icon: v.optional(v.string()),
     color: v.optional(v.string()),
   }),
 );
 
+export type ChartWidgetData = v.InferInput<typeof chartWidgetDataSchema>;
 export const chartWidgetDataSchema = v.object({
   y: v.array(
     v.object({
@@ -37,19 +41,19 @@ export const putWidgetBodySchema = v.union([
   v.object({
     title: v.string(),
     insightId: v.number(),
-    data: widgetDataSchema,
+    data: primitiveWidgetDataSchema,
     kind: v.literal("primitive"),
   }),
   v.object({
     title: v.string(),
     insightId: v.number(),
-    data: widgetDataSchema,
+    data: tableWidgetDataSchema,
     kind: v.literal("table"),
   }),
   v.object({
     title: v.string(),
     insightId: v.number(),
-    data: widgetDataSchema,
+    data: chartWidgetDataSchema,
     kind: v.literal("chart"),
   }),
   v.object({
