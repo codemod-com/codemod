@@ -1,0 +1,1 @@
+const someVariable = await MyCollection.removeAsync({ _id: '123' });

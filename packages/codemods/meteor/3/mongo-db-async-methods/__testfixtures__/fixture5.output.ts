@@ -1,0 +1,1 @@
+const someVariable = await MyCollection.updateAsync({ _id: '123' });

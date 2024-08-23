@@ -1,0 +1,1 @@
+const someVariable = MyCollection.update({ _id: '123' }).fetch();

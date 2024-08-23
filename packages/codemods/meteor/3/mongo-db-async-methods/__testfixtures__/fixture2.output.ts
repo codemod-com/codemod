@@ -1,0 +1,1 @@
+const someVariable = await MyCollection.findOneAsync({ _id: '123' });

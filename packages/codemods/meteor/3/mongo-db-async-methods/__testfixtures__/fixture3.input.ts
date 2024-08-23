@@ -1,0 +1,1 @@
+const someVariable = MyCollection.insert({ _id: '123' }).fetch();

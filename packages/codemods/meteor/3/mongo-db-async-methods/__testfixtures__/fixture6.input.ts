@@ -1,0 +1,1 @@
+const someVariable = MyCollection.remove({ _id: '123' }).fetch();

@@ -1,0 +1,1 @@
+const someVariable = MyCollection.find({ _id: '123' }).fetch();
