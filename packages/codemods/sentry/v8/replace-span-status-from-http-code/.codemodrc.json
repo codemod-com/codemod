@@ -1,0 +1,17 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "sentry/v8/replace-span-status-from-http-code",
+  "description": "Codemod to replace spanStatusfromHttpCode with getSpanStatusFromHttpCode in Sentry 8.x for improved status handling.",
+  "version": "1.0.1",
+  "engine": "jscodeshift",
+  "private": false,
+  "applicability": {
+    "from": [["sentry", "<=", "7"]],
+    "to": [["sentry", ">=", "8"]]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": ["sentry", "migration","codemod"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/sentry/v8/replace-span-status-from-http-code"
+  }
+}

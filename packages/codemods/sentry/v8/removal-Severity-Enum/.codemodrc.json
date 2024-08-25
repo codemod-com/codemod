@@ -1,0 +1,17 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "sentry/v8/removal-Severity-Enum",
+  "description": "Codemod to replace the deprecated Severity enum with the SeverityLevel type in Sentry from version 7.x to 8.x.",
+  "version": "1.0.4",
+  "engine": "jscodeshift",
+  "private": false,
+  "applicability": {
+    "from": [["sentry", "<=", "7"]],
+    "to": [["sentry", ">=", "8"]]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": ["sentry", "migration", "codemod"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/sentry/v8/removal-Severity-Enum"
+  }
+}

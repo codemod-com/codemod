@@ -1,0 +1,1 @@
+const level: SeverityLevel = "error";

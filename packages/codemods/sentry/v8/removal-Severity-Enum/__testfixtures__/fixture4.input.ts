@@ -1,0 +1,1 @@
+let currentLevel = Severity.fatal;

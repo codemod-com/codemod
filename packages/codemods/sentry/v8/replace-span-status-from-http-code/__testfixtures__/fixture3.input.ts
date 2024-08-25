@@ -1,0 +1,1 @@
+let currentStatus = spanStatusfromHttpCode(302);

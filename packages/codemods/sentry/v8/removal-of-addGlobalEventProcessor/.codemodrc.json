@@ -1,0 +1,33 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "sentry/v8/removal-of-addGlobalEventProcessor",
+  "description": "Codemod to replace deprecated Sentry.addGlobalEventProcessor with Sentry.getGlobalScope().addEventProcessor in migration from version 7.x to 8.x.",
+  "version": "1.0.1",
+  "engine": "jscodeshift",
+  "private": false,
+  "applicability": {
+    "from": [
+      [
+        "sentry",
+        "<=",
+        "7"
+      ]
+    ],
+    "to": [
+      [
+        "sentry",
+        ">=",
+        "8"
+      ]
+    ]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "sentry",
+      "migration",
+      "codemod"
+    ],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/sentry/v8/removal-of-addGlobalEventProcessor"
+  }
+}
