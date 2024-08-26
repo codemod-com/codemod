@@ -22,7 +22,11 @@ import {
 } from "@codemod-com/utilities";
 import type { AuthServiceInterface } from "@codemod.com/workflow";
 import type { RunnerServiceInterface } from "#runner-service.js";
-import { getCodemodExecutable, getTransformer } from "#source-code.js";
+import {
+  getCodemodExecutable,
+  getTransformer,
+  temporaryLoadedModules,
+} from "#source-code.js";
 import { astGrepLanguageToPatterns } from "./engines/ast-grep.js";
 import type { Dependencies } from "./engines/filemod.js";
 import { runFilemod } from "./engines/filemod.js";
@@ -105,6 +109,7 @@ export class Runner {
       await onFailure?.(error);
     }
 
+    temporaryLoadedModules.clear();
     return executionErrors;
   }
 

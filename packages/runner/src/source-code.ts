@@ -1,4 +1,5 @@
-import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import esbuild from "esbuild";
 
@@ -19,9 +20,15 @@ type NonDefaultExports = {
   filemod?: TransformFunction;
 };
 
-export const getTransformer = async (source: string) => {
+export const temporaryLoadedModules = new Map<
+  string,
+  TransformFunction | null
+>();
+
+export const getTransformer = async (source: string, name?: string) => {
   type Exports = NonDefaultExports | (() => void);
 
+  const hashDigest = createHash("sha256").update(source).digest("hex");
   // CJS
   try {
     const module = { exports: {} as Exports };
@@ -46,81 +53,78 @@ export const getTransformer = async (source: string) => {
     // ESM
     try {
       const tempDir = tmpdir();
-      const tempFilePath = join(tempDir, `temp-module-${Date.now()}.mjs`);
+      const tempFilePath = join(tempDir, `temp-module-${hashDigest}.mjs`);
 
-      console.log(source);
+      const alreadyLoaded = temporaryLoadedModules.get(tempFilePath);
+      if (alreadyLoaded) return alreadyLoaded;
+
       await writeFile(tempFilePath, source);
-
-      // Dynamically import the module from the temporary file and clean up
       const module = (await import(
         `file://${tempFilePath}`
       )) as NonDefaultExports;
-      await unlink(tempFilePath);
 
-      return typeof module.default === "function"
-        ? module.default
-        : module.__esModule
-          ? module.default ??
-            module.transform ??
-            module.handleSourceFile ??
-            module.repomod ??
-            module.filemod ??
-            module.workflow ??
-            null
-          : null;
+      const transformer =
+        typeof module.default === "function"
+          ? module.default
+          : module.__esModule
+            ? module.default ??
+              module.transform ??
+              module.handleSourceFile ??
+              module.repomod ??
+              module.filemod ??
+              module.workflow ??
+              null
+            : null;
+
+      temporaryLoadedModules.set(tempFilePath, transformer);
+      return transformer;
     } catch (err) {
-      // console.log(err);
+      console.log(err);
       return null;
     }
   }
 };
 
-export const BUILT_SOURCE_PATH = "cdmd_dist/index.cjs";
+export const BUILT_SOURCE_PATH = "cdmd_dist/index.js";
 
-const externalCjsToEsmPlugin = (external: string[]) => ({
-  name: "external",
-  // biome-ignore lint: its ok
-  setup(build: { onResolve: Function; onLoad: Function }) {
-    const escapeFun = (text: string) =>
-      `^${text.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")}$`;
-    const filter = new RegExp(external.map(escapeFun).join("|"));
-    build.onResolve(
-      { filter: /.*/, namespace: "external" },
-      (args: { path: string }) => ({
-        path: args.path,
-        external: true,
-      }),
-    );
-    build.onResolve({ filter }, (args: { path: string }) => ({
-      path: args.path,
-      namespace: "external",
-    }));
-    build.onLoad(
-      { filter: /.*/, namespace: "external" },
-      (args: { path: string }) => ({
-        contents: `export * from ${JSON.stringify(args.path)}`,
-      }),
-    );
-  },
-});
-
-export const bundleJS = async (options: { entry: string; output?: string }) => {
-  const { entry, output = join(dirname(entry), BUILT_SOURCE_PATH) } = options;
+export const bundleJS = async (options: {
+  entry: string;
+  output?: string;
+  esm?: boolean;
+}) => {
+  const {
+    entry,
+    output = join(dirname(entry), BUILT_SOURCE_PATH),
+    esm = true,
+  } = options;
   const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
 
   const buildOptions: Parameters<typeof esbuild.build>[0] = {
     entryPoints: [entry],
     bundle: true,
-    // external: EXTERNAL_DEPENDENCIES,
+    external: esm ? undefined : EXTERNAL_DEPENDENCIES,
     platform: "node",
     minify: true,
     minifyWhitespace: true,
-    format: "esm",
+    format: esm ? "esm" : "cjs",
     legalComments: "inline",
     outfile: output,
     write: false, // to the in-memory file system
     logLevel: "error",
-    plugins: [externalCjsToEsmPlugin(EXTERNAL_DEPENDENCIES)],
+    mainFields: esm ? ["module", "main"] : undefined,
+    banner: esm
+      ? {
+          js: `
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { createRequire } from 'module';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const require = createRequire(import.meta.url);
+`,
+        }
+      : undefined,
   };
 
   const { outputFiles } = await esbuild.build(buildOptions);
