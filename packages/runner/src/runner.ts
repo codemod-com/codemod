@@ -480,7 +480,7 @@ export class Runner {
     }
 
     const codemodSource = await getCodemodExecutable(codemod.path);
-    const transformer = getTransformer(codemodSource);
+    const transformer = await getTransformer(codemodSource);
 
     if (codemod.config.engine === "workflow") {
       if (transformer === null) {

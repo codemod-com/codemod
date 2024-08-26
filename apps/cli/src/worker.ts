@@ -53,7 +53,7 @@ const messageHandler = async (m: unknown) => {
       let commands: readonly FileCommand[] = [];
       switch (initializationMessage.engine) {
         case "jscodeshift": {
-          const transformer = getTransformer(
+          const transformer = await getTransformer(
             initializationMessage.codemodSource,
           );
 
@@ -71,7 +71,7 @@ const messageHandler = async (m: unknown) => {
           break;
         }
         case "ts-morph": {
-          const transformer = getTransformer(
+          const transformer = await getTransformer(
             initializationMessage.codemodSource,
           );
 
