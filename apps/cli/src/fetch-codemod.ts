@@ -132,7 +132,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
       if (isJavaScriptName(nameOrPath)) {
         codemodPath = join(
           tempFolderPath,
-          `${randomBytes(8).toString("hex")}.cjs`,
+          `${randomBytes(8).toString("hex")}.js`,
         );
 
         try {

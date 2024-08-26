@@ -118,6 +118,7 @@ const messageHandler = async (m: unknown) => {
       kind: "error",
       message: error instanceof Error ? error.message : String(error),
       path: error instanceof PathAwareError ? error.path : undefined,
+      stack: error instanceof Error ? error.stack : undefined,
     } satisfies WorkerThreadMessage);
   }
 };
