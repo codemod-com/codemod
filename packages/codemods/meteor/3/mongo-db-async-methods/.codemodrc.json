@@ -1,6 +1,6 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "name": "mongo-db-async-methods",
+  "name": "meteor/v3/mongo-db-async-methods",
   "version": "1.0.1",
   "engine": "jscodeshift",
   "private": false,
