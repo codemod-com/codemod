@@ -11,7 +11,7 @@ const SecondaryHeader = () => {
   const { toggleSidebar } = useViewStore();
 
   return (
-    <div className="flex w-full py-[6px] px-[16px] items-center flex-row gap-2 flex-grow h-[40px] bg-emphasis-light dark:bg-emphasis-dark">
+    <div className="flex w-full py-[6px] px-[16px] items-center flex-row gap-2 flex-grow h-[40px]">
       <AlignJustify role="button" onClick={toggleSidebar} />
       <Separator
         orientation="vertical"

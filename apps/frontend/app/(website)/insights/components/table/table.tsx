@@ -52,6 +52,7 @@ export const DataTable = <T,>({
   }
 
   const table = useReactTable(options);
+  if (!table) return null;
 
   return (
     <div className="w-full">

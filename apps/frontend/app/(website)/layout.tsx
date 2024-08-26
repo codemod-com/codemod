@@ -73,7 +73,7 @@ export default async function Layout({
           </GlobalLayoutPreview>
         ) : (
           <AuthProvider>
-            <GlobalLayout data={globalData.data}>{children}</GlobalLayout>/
+            <GlobalLayout data={globalData.data}>{children}</GlobalLayout>
           </AuthProvider>
         ))}
       {draftMode().isEnabled && <LiveVisualEditing />}

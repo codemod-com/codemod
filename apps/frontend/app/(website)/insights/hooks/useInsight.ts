@@ -11,7 +11,7 @@ export const useInsight = (insightId: string | number) => {
     }
   >(`/insights/${insightId}`);
 
-  return useQuery(["insights"], async () => {
+  return useQuery(["insight"], async () => {
     const res = await getInsight();
 
     return {
@@ -24,8 +24,8 @@ export const useInsight = (insightId: string | number) => {
         try {
           const parsedData = v.parse(
             v.union([
-              v.record(v.string(), v.unknown()),
               v.array(v.record(v.string(), v.unknown())),
+              v.record(v.string(), v.unknown()),
             ]),
             JSON.parse(run.data.data || "{}"),
           );
