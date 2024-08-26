@@ -237,12 +237,12 @@ export const handleRunCliCommand = async (options: {
       if (args.mode === "json" && typeof output === "object") {
         process.stdout.write = originalStdoutWrite;
         process.stdout.write(JSON.stringify(output, null, 2));
+        process.stdout.write = () => false;
       } else if (args.mode === "plain") {
         process.stdout.write = originalStdoutWrite;
         process.stdout.write(String(output));
+        process.stdout.write = () => false;
       }
-
-      process.stdout.write = () => false;
 
       let codemodName: string;
       if (codemod.type === "standalone") {
