@@ -263,6 +263,7 @@ export const main = async () => {
             printer,
             source: args.source ?? process.cwd(),
             telemetry: telemetryService,
+            esm: args.esm,
           });
         });
       },
@@ -326,6 +327,7 @@ export const main = async () => {
             printer,
             target: args.target ?? process.cwd(),
             engine: args.engine,
+            esm: args.esm,
           }),
         );
       },

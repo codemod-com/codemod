@@ -41,6 +41,12 @@ export const buildGlobalOptions = <T>(y: Argv<T>) =>
       alias: "v",
       description: "Show version number",
     })
+    .option("esm", {
+      type: "boolean",
+      description:
+        "Use to specify that you intend to use ESM-specific features in your codemods.",
+      default: false,
+    })
     .option("json", {
       alias: "j",
       type: "boolean",

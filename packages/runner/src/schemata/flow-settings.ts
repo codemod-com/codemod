@@ -46,6 +46,7 @@ export const flowSettingsSchema = v.object({
   json: v.optional(v.boolean(), DEFAULT_USE_JSON),
   threads: v.optional(v.pipe(v.number(), v.minValue(0)), DEFAULT_THREAD_COUNT),
   cloud: v.optional(v.boolean(), false),
+  esm: v.optional(v.boolean(), false),
 });
 
 export type FlowSettings = v.InferOutput<typeof flowSettingsSchema>;

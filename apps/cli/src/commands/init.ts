@@ -13,6 +13,11 @@ import terminalLink from "terminal-link";
 
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
+  BUILT_SOURCE_PATH,
+  bundleJS,
+  getCodemodExecutable,
+} from "@codemod-com/runner";
+import {
   ALL_ENGINES,
   type KnownEngines,
   type ProjectDownloadInput,
@@ -31,12 +36,16 @@ import { oraCheckmark } from "#utils/constants.js";
 import { detectCodemodEngine } from "#utils/detectCodemodEngine.js";
 import { isFile } from "#utils/general.js";
 
+// @TODO: decompose
 export const handleInitCliCommand = async (options: {
   printer: Printer;
   target: string;
   source?: string;
   engine?: string;
+  esm?: boolean;
+  build?: boolean;
   noLogs?: boolean;
+  noFixtures?: boolean;
   useDefaultName?: boolean;
 }) => {
   const {
@@ -44,8 +53,11 @@ export const handleInitCliCommand = async (options: {
     target,
     source,
     engine,
-    useDefaultName = false,
+    esm,
+    build = true,
     noLogs = false,
+    noFixtures = false,
+    useDefaultName = false,
   } = options;
 
   if (source) {
@@ -135,6 +147,9 @@ export const handleInitCliCommand = async (options: {
     downloadInput.codemodBody = await readFile(source, "utf-8");
   }
 
+  if (noFixtures) {
+    downloadInput.cases = [];
+  }
   const files = getCodemodProjectFiles(downloadInput);
 
   const codemodBaseDir = join(target ?? process.cwd(), downloadInput.name);
@@ -154,11 +169,7 @@ export const handleInitCliCommand = async (options: {
       });
     } catch (err) {
       for (const createdPath of created) {
-        try {
-          await unlink(join(codemodBaseDir, createdPath));
-        } catch (err) {
-          //
-        }
+        await unlink(join(codemodBaseDir, createdPath)).catch(() => null);
       }
 
       throw new Error(
@@ -172,9 +183,18 @@ export const handleInitCliCommand = async (options: {
     }
   }
 
-  if (noLogs) {
-    return codemodBaseDir;
+  if (build) {
+    const outputPath = join(codemodBaseDir, BUILT_SOURCE_PATH);
+    const bundledCode =
+      source && isSourceAFile
+        ? await bundleJS({ entry: source, output: outputPath, esm })
+        : await getCodemodExecutable(codemodBaseDir, esm);
+
+    await mkdir(dirname(outputPath), { recursive: true });
+    await writeFile(outputPath, bundledCode);
   }
+
+  if (noLogs) return codemodBaseDir;
 
   printer.printConsoleMessage(
     "info",

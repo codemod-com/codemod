@@ -32,7 +32,9 @@ const messageHandler = async (m: unknown) => {
     try {
       message = decodeMainThreadMessage(m);
     } catch (err) {
-      throw new Error(`Failed to decode message: ${String(err)}`);
+      throw new Error(
+        `Failed to decode message: ${String(err)} - ${JSON.stringify(m)}`,
+      );
     }
 
     if (message.kind === "initialization") {
@@ -118,7 +120,6 @@ const messageHandler = async (m: unknown) => {
       kind: "error",
       message: error instanceof Error ? error.message : String(error),
       path: error instanceof PathAwareError ? error.path : undefined,
-      stack: error instanceof Error ? error.stack : undefined,
     } satisfies WorkerThreadMessage);
   }
 };

@@ -261,6 +261,17 @@ codemod [codemod-name] --format
 
 </ResponseField>
 
+<ResponseField name="--esm" type="boolean">
+  If you want to use ESM-specific features like top-level `await` or `import.meta` in your codemods, you can use this flag.
+
+  <Tip>You can also rename your codemod entry-point file to use `.mjs` or `.mts` extension to omit using this compatibility flag.</Tip>
+
+```bash
+codemod [codemod-name] --json
+```
+
+</ResponseField>
+
 <ResponseField name="--no-cache" type="boolean">
   Can be used to disable caching downloaded codemod files.
 

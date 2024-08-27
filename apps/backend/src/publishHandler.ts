@@ -22,7 +22,7 @@ import {
 import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
 // Direct import because tree-shaking helps this to not throw.
-import { getCodemodExecutable } from "@codemod-com/runner/dist/source-code.js";
+import { BUILT_SOURCE_PATH } from "@codemod-com/runner/dist/source-code.js";
 import {
   buildCodemodSlug,
   codemodNameRegex,
@@ -34,6 +34,7 @@ import {
   unzip,
 } from "@codemod-com/utilities";
 
+import { readFile } from "node:fs/promises";
 import { buildRevalidateHelper } from "./revalidate.js";
 import { environment } from "./util.js";
 
@@ -147,7 +148,10 @@ export const publishHandler: RouteHandler<{
         throwOnNotFound: false,
       });
 
-      const built = await getCodemodExecutable(unpackPath).catch(() => null);
+      const built = await readFile(
+        join(unpackPath, BUILT_SOURCE_PATH),
+        "utf8",
+      ).catch(() => null);
 
       if (path === null || built === null) {
         return reply.code(400).send({

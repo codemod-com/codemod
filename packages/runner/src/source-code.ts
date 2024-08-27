@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import esbuild from "esbuild";
 
@@ -11,7 +11,7 @@ export type TransformFunction = (
 ) => unknown | Promise<unknown>;
 
 type NonDefaultExports = {
-  __esModule?: true;
+  __esModule?: boolean;
   default?: TransformFunction;
   handleSourceFile?: TransformFunction;
   transform?: TransformFunction;
@@ -19,6 +19,9 @@ type NonDefaultExports = {
   repomod?: TransformFunction;
   filemod?: TransformFunction;
 };
+
+export const isESMExtension = (path: string) =>
+  path.endsWith(".mjs") || path.endsWith(".mts");
 
 export const temporaryLoadedModules = new Map<
   string,
@@ -52,11 +55,10 @@ export const getTransformer = async (source: string, name?: string) => {
   } catch (err) {
     // ESM
     try {
-      const tempDir = tmpdir();
-      const tempFilePath = join(tempDir, `temp-module-${hashDigest}.mjs`);
-
-      const alreadyLoaded = temporaryLoadedModules.get(tempFilePath);
+      const alreadyLoaded = temporaryLoadedModules.get(hashDigest);
       if (alreadyLoaded) return alreadyLoaded;
+
+      const tempFilePath = join(tmpdir(), `temp-module-${hashDigest}.mjs`);
 
       await writeFile(tempFilePath, source);
       const module = (await import(
@@ -76,10 +78,9 @@ export const getTransformer = async (source: string, name?: string) => {
               null
             : null;
 
-      temporaryLoadedModules.set(tempFilePath, transformer);
+      temporaryLoadedModules.set(hashDigest, transformer);
       return transformer;
     } catch (err) {
-      console.log(err);
       return null;
     }
   }
@@ -95,24 +96,25 @@ export const bundleJS = async (options: {
   const {
     entry,
     output = join(dirname(entry), BUILT_SOURCE_PATH),
-    esm = true,
+    esm: argvEsm,
   } = options;
+  const isESM = isESMExtension(entry) || argvEsm;
   const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
 
   const buildOptions: Parameters<typeof esbuild.build>[0] = {
     entryPoints: [entry],
     bundle: true,
-    external: esm ? undefined : EXTERNAL_DEPENDENCIES,
+    external: isESM ? undefined : EXTERNAL_DEPENDENCIES,
     platform: "node",
     minify: true,
     minifyWhitespace: true,
-    format: esm ? "esm" : "cjs",
+    format: isESM ? "esm" : "cjs",
     legalComments: "inline",
     outfile: output,
     write: false, // to the in-memory file system
     logLevel: "error",
-    mainFields: esm ? ["module", "main"] : undefined,
-    banner: esm
+    mainFields: isESM ? ["module", "main"] : undefined,
+    banner: isESM
       ? {
           js: `
 import { fileURLToPath } from 'url';
@@ -141,7 +143,7 @@ const require = createRequire(import.meta.url);
   return sourceCode;
 };
 
-export const getCodemodExecutable = async (source: string, write?: boolean) => {
+export const getCodemodExecutable = async (source: string, esm?: boolean) => {
   const outputFilePath = join(resolve(source), BUILT_SOURCE_PATH);
   try {
     return await readFile(outputFilePath, { encoding: "utf8" });
@@ -158,15 +160,5 @@ export const getCodemodExecutable = async (source: string, write?: boolean) => {
     return readFile(entryPoint, { encoding: "utf8" });
   }
 
-  const bundledCode = await bundleJS({
-    entry: entryPoint,
-    output: outputFilePath,
-  });
-
-  if (write) {
-    await mkdir(dirname(outputFilePath), { recursive: true });
-    await writeFile(outputFilePath, bundledCode);
-  }
-
-  return bundledCode;
+  return bundleJS({ entry: entryPoint, output: outputFilePath, esm });
 };

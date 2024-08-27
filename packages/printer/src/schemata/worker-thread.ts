@@ -12,7 +12,6 @@ const workerThreadMessageSchema = v.union([
     kind: v.literal("error"),
     message: v.string(),
     path: v.optional(v.string()),
-    stack: v.optional(v.string()),
   }),
   v.object({
     kind: v.literal("console"),
