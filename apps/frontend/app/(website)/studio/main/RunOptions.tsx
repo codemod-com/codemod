@@ -41,6 +41,19 @@ export const RunOptions = () => {
   const modStore = useModStore();
   const { engine, getAllSnippets } = useSnippetsStore();
 
+  const allSnippets = getAllSnippets();
+  const cases = allSnippets.before.reduce(
+    (acc, before, i) => {
+      const after = allSnippets.after[i];
+      if (!after) {
+        return acc;
+      }
+
+      return acc.concat({ before, after });
+    },
+    [] as { before: string; after: string }[],
+  );
+
   const { session } = useSession();
   const { getToken } = useAuth();
 
@@ -77,17 +90,7 @@ export const RunOptions = () => {
       // TODO: temporary fix, most likely we need to upgrade monaco editor or babel or whatever is responsible
       // for taking the code from the web-editor and converting it to string
       codemodBody: modStore.content.replace(/\n *as\n *const/g, " as const"),
-      cases: allSnippets.before.reduce(
-        (acc, before, i) => {
-          const after = allSnippets.after[i];
-          if (!after) {
-            return acc;
-          }
-
-          return acc.concat({ before, after });
-        },
-        [] as { before: string; after: string }[],
-      ),
+      cases: cases.length ? cases : undefined,
       engine,
       username: session.user.username ?? session.user.fullName,
     });

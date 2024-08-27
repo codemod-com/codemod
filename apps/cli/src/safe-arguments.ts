@@ -12,7 +12,11 @@ export const buildSafeArgumentRecord = async (
   if (codemod.type === "standalone") {
     // no checks performed for local codemods
     // b/c no source of truth for the arguments
-    return argvRecord as ArgumentRecord;
+    const { ...safeRecord } = argvRecord;
+    delete safeRecord._;
+    delete safeRecord.include;
+    delete safeRecord.exclude;
+    return safeRecord as ArgumentRecord;
   }
 
   const validateStringArg = (options: {

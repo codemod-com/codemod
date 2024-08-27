@@ -1,5 +1,6 @@
-import { createHash, randomBytes } from "node:crypto";
-import { lstat, mkdir, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { lstat, mkdir } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join, parse as pathParse, resolve } from "node:path";
 import type { AxiosError } from "axios";
 import inquirer from "inquirer";
@@ -7,14 +8,12 @@ import semver from "semver";
 import { flatten } from "valibot";
 
 import { type Printer, chalk } from "@codemod-com/printer";
-import { bundleJS } from "@codemod-com/runner";
 import {
   type Codemod,
   type CodemodValidationInput,
   buildCodemodSlug,
   doubleQuotify,
   getCodemodRc,
-  isJavaScriptName,
   isRecipeCodemod,
   parseCodemod,
   parseEngineOptions,
@@ -123,34 +122,15 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
       }
 
       // Standalone codemod
-      // For standalone codemods, before creating a compatible package, we attempt to
-      // build the binary because it might have other dependencies in the folder
-      const tempFolderPath = join(codemodDirectoryPath, "temp");
-      await mkdir(tempFolderPath, { recursive: true });
-
-      let codemodPath = nameOrPath;
-      if (isJavaScriptName(nameOrPath)) {
-        codemodPath = join(
-          tempFolderPath,
-          `${randomBytes(8).toString("hex")}.cjs`,
-        );
-
-        try {
-          const executable = await bundleJS({ entry: nameOrPath });
-          await writeFile(codemodPath, executable);
-        } catch (err) {
-          throw new Error(
-            `Error bundling codemod: ${(err as Error).message ?? "Unknown error"}`,
-          );
-        }
-      }
-
       const codemodPackagePath = await handleInitCliCommand({
         printer,
-        source: codemodPath,
-        target: tempFolderPath,
+        source: nameOrPath,
+        target: tmpdir(),
         useDefaultName: true,
         noLogs: true,
+        noFixtures: true,
+        build: true,
+        esm: argv.esm,
       });
 
       const { config } = await getCodemodRc({

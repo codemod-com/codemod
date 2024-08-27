@@ -668,7 +668,7 @@ export function getCodemodProjectFiles(input: ProjectDownloadInput) {
       throw new Error(`Unknown engine: ${input.engine}`);
   }
 
-  if (!input.cases || input.cases.length === 0) {
+  if (input.cases === undefined) {
     input.cases = [
       {
         before: `const toReplace = "hello";`,

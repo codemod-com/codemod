@@ -10,7 +10,6 @@ import {
   NO_MAIN_FILE_FOUND,
   UNAUTHORIZED,
 } from "@codemod-com/api-types";
-import { BUILT_SOURCE_PATH } from "@codemod-com/runner/dist/source-code.js";
 import {
   type CodemodConfigInput,
   tarInMemory,
@@ -258,7 +257,7 @@ describe("/publish route", async () => {
 
     const archiveWithoutMainFile = await tarInMemory(
       fileArray.filter(
-        (f) => f.name !== "/src/index.ts" && f.name !== BUILT_SOURCE_PATH,
+        (f) => f.name !== "/src/index.ts" && f.name !== "/cdmd_dist/index.cjs",
       ),
     );
 

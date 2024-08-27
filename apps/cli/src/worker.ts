@@ -32,7 +32,9 @@ const messageHandler = async (m: unknown) => {
     try {
       message = decodeMainThreadMessage(m);
     } catch (err) {
-      throw new Error(`Failed to decode message: ${String(err)}`);
+      throw new Error(
+        `Failed to decode message: ${String(err)} - ${JSON.stringify(m)}`,
+      );
     }
 
     if (message.kind === "initialization") {
@@ -53,7 +55,7 @@ const messageHandler = async (m: unknown) => {
       let commands: readonly FileCommand[] = [];
       switch (initializationMessage.engine) {
         case "jscodeshift": {
-          const transformer = getTransformer(
+          const transformer = await getTransformer(
             initializationMessage.codemodSource,
           );
 
@@ -71,7 +73,7 @@ const messageHandler = async (m: unknown) => {
           break;
         }
         case "ts-morph": {
-          const transformer = getTransformer(
+          const transformer = await getTransformer(
             initializationMessage.codemodSource,
           );
 

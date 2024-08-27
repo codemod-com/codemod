@@ -6,8 +6,9 @@ import inquirer from "inquirer";
 import * as semver from "semver";
 import * as v from "valibot";
 
+import { tmpdir } from "node:os";
 import { type Printer, chalk } from "@codemod-com/printer";
-import { BUILT_SOURCE_PATH, getCodemodExecutable } from "@codemod-com/runner";
+import { DEFAULT_BUILD_PATH, getCodemodExecutable } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   type CodemodConfig,
@@ -23,15 +24,15 @@ import { extractPrintableApiError, getCodemod, publish } from "#api.js";
 import { getCurrentUserOrLogin } from "#auth-utils.js";
 import { handleInitCliCommand } from "#commands/init.js";
 import type { TelemetryEvent } from "#telemetry.js";
-import { codemodDirectoryPath } from "#utils/constants.js";
 import { isFile } from "#utils/general.js";
 
 export const handlePublishCliCommand = async (options: {
   printer: Printer;
   source: string;
   telemetry: TelemetrySender<TelemetryEvent>;
+  esm?: boolean;
 }) => {
-  let { source, printer, telemetry } = options;
+  let { source, printer, telemetry, esm } = options;
 
   const { token, allowedNamespaces, organizations } =
     await getCurrentUserOrLogin({
@@ -39,7 +40,6 @@ export const handlePublishCliCommand = async (options: {
       printer,
     });
 
-  const tempDirectory = join(codemodDirectoryPath, "temp");
   const formData = new FormData();
   const excludedPaths = [
     "node_modules/**",
@@ -53,8 +53,11 @@ export const handlePublishCliCommand = async (options: {
     source = await handleInitCliCommand({
       printer,
       source,
-      target: tempDirectory,
+      target: tmpdir(),
       noLogs: true,
+      noFixtures: true,
+      build: true,
+      esm,
     });
 
     const { choice } = await inquirer.prompt<{ choice: string }>({
@@ -260,7 +263,7 @@ export const handlePublishCliCommand = async (options: {
   );
 
   if (codemodRc.engine !== "recipe") {
-    const builtExecutable = await getCodemodExecutable(source).catch(
+    const builtExecutable = await getCodemodExecutable(source, esm).catch(
       () => null,
     );
 
@@ -274,7 +277,7 @@ export const handlePublishCliCommand = async (options: {
     }
 
     codemodFileBuffers.push({
-      name: BUILT_SOURCE_PATH,
+      name: DEFAULT_BUILD_PATH,
       data: Buffer.from(builtExecutable),
     });
   }
@@ -315,7 +318,7 @@ export const handlePublishCliCommand = async (options: {
       message: errorMessage,
     });
   } finally {
-    if (source.includes(tempDirectory)) {
+    if (source.includes(tmpdir())) {
       await fs.promises.rm(source, { recursive: true, force: true });
     }
   }

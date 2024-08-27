@@ -45,7 +45,7 @@ describe("runTsMorphCodemod", async () => {
   );
 
   const compiledSource = await getCodemodExecutable(directoryPath);
-  const transformer = getTransformer(compiledSource);
+  const transformer = await getTransformer(compiledSource);
 
   afterAll(async () => {
     await rmdir(directoryPath, { recursive: true });

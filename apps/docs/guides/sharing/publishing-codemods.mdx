@@ -54,6 +54,8 @@ Creating and publishing a [Codemod-compatible package](/guides/building-codemods
         To generate a [Codemod-compatible package](/guides/building-codemods/package-requirements), Codemod CLI will ask you a few questions about your codemod to generate the [`codemodrc.json` configuration file](/guides/building-codemods/package-requirements#codemodrc-json-reference) automatically for you.
         </Note>
 
+        <Tip>If you want to use ESM-specific features like top-level `await` or `import.meta`, you can rename it to use `.mjs` or `.mts` extension or specify `--esm` flag to treat the source file as ESM package explicitly.</Tip>
+
         ```bash
         codemod publish [path] --source
         ```
