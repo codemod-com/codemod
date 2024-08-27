@@ -131,11 +131,10 @@ Below, you can find the required codemod package structure for each codemod engi
     ├── src
     │   ├── index.ts # the default path for the codemod's entry point file.
     │   ├── ...
+    │   package.json
     ├── .codemodrc.json # contains the codemod configuration
     └── README.md # contains a short description and examples, such as in the example at the bottom of this page
     ```
-
-    **Example of a jscodeshift/ts-morph/filemod codemod package:**
 
     <CodeGroup>
 
@@ -182,16 +181,15 @@ Below, you can find the required codemod package structure for each codemod engi
     </Tab>
     <Tab title="ast-grep">
 
+      To learn how to build your first rule, check out [ast-grep's documentation](https://ast-grep.github.io/guide/rule-config.html).
+
       ```bash
       ├── src
       │   ├── rule.yaml # ast-grep rule file.
+      │   package.json
       ├── .codemodrc.json # should contain "engine" field set to "ast-grep"
       └── README.md
       ```
-
-      To learn how to build your first rule, check out [ast-grep's documentation](https://ast-grep.github.io/guide/rule-config.html).
-
-      **Example of an ast-grep codemod package:**
 
       <CodeGroup>
 
@@ -248,15 +246,15 @@ Below, you can find the required codemod package structure for each codemod engi
   <Tab title="Recipes">
 
     ```bash
+    │   package.json
     ├── .codemodrc.json # should contain "engine" field set to "recipe" and "names" field with an ordered array of codemod names that will be executed.
     └── README.md
+
     ```
 
     Codemod recipes are a collection of codemods that are run in consecutive order. Codemod recipes allow you to daisy-chain a set of codemods that help with a large-scope migration.
 
     Unlike JavaScript and ast-grep codemods, recipes do not inlcude input files in `.codemodrc.json`. To specify codemods that should be run by the recipe, simply add the codemod names under the `names` field.
-
-    **Example of a codemod recipe package:**
 
     <CodeGroup>
 
@@ -301,6 +299,21 @@ Below, you can find the required codemod package structure for each codemod engi
 
   </Tab>
 </Tabs>
+
+## Codemod package examples
+
+<CardGroup cols={2}>
+  <Card title="jscodeshift package" href="https://github.com/codemod-com/codemod/tree/main/packages/codemods/react/prop-types-typescript">
+    An example of a valid jscodeshift React codemod package.
+  </Card>
+  <Card title="ast-grep package" href="https://github.com/codemod-com/codemod/tree/main/packages/codemods/python/orjson/json.dumps">
+    An example of a valid ast-grep Python codemod package.
+  </Card>
+  <Card title="Recipe package" href="https://github.com/codemod-com/codemod/tree/main/packages/codemods/react/19/migration-recipe">
+    An example of a valid React migration recipe package.
+  </Card>
+
+</CardGroup>
 
 ## Next steps
 
