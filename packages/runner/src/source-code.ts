@@ -1,10 +1,11 @@
 import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { join } from "node:path";
 import esbuild from "esbuild";
 
 import { tmpdir } from "node:os";
 import { getEntryPath, isJavaScriptName } from "@codemod-com/utilities";
+import { glob } from "glob";
 
 export type TransformFunction = (
   ...args: unknown[]
@@ -86,20 +87,17 @@ export const getTransformer = async (source: string, name?: string) => {
   }
 };
 
-export const BUILT_SOURCE_PATH = "cdmd_dist/index.js";
+export const DEFAULT_BUILD_PATH = "cdmd_dist/index.js";
+export const BUILT_SOURCE_GLOB = "cdmd_dist/index.{js,mjs,cjs}";
 
 export const bundleJS = async (options: {
   entry: string;
-  output?: string;
   esm?: boolean;
 }) => {
-  const {
-    entry,
-    output = join(dirname(entry), BUILT_SOURCE_PATH),
-    esm: argvEsm,
-  } = options;
+  const { entry, esm: argvEsm } = options;
   const isESM = isESMExtension(entry) || argvEsm;
   const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
+  const outfile = `/cdmd_dist/index.${isESM ? "mjs" : "cjs"}`;
 
   const buildOptions: Parameters<typeof esbuild.build>[0] = {
     entryPoints: [entry],
@@ -110,7 +108,7 @@ export const bundleJS = async (options: {
     minifyWhitespace: true,
     format: isESM ? "esm" : "cjs",
     legalComments: "inline",
-    outfile: output,
+    outfile,
     write: false, // to the in-memory file system
     logLevel: "error",
     mainFields: isESM ? ["module", "main"] : undefined,
@@ -133,22 +131,27 @@ const require = createRequire(import.meta.url);
 
   const sourceCode =
     outputFiles?.find((file) =>
-      file.path.endsWith(output.replace(/\.\.\//g, "").replace(/\.\//g, "")),
+      file.path.endsWith(outfile.replace(/\.\.\//g, "").replace(/\.\//g, "")),
     )?.text ?? null;
 
   if (sourceCode === null) {
-    throw new Error(`Could not find ${output} in output files`);
+    throw new Error(`Could not find ${outfile} in output files`);
   }
 
   return sourceCode;
 };
 
 export const getCodemodExecutable = async (source: string, esm?: boolean) => {
-  const outputFilePath = join(resolve(source), BUILT_SOURCE_PATH);
-  try {
-    return await readFile(outputFilePath, { encoding: "utf8" });
-  } catch {
-    // continue
+  const existing = await glob(BUILT_SOURCE_GLOB, {
+    cwd: source,
+    absolute: true,
+  });
+
+  if (existing.length > 0) {
+    // biome-ignore lint: it exists
+    return await readFile(existing[0]!, { encoding: "utf8" }).catch(() => {
+      throw new Error(`Could not read ${existing[0]}`);
+    });
   }
 
   const { path: entryPoint } = await getEntryPath({
@@ -160,5 +163,5 @@ export const getCodemodExecutable = async (source: string, esm?: boolean) => {
     return readFile(entryPoint, { encoding: "utf8" });
   }
 
-  return bundleJS({ entry: entryPoint, output: outputFilePath, esm });
+  return bundleJS({ entry: entryPoint, esm });
 };

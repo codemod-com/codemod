@@ -13,7 +13,7 @@ import terminalLink from "terminal-link";
 
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
-  BUILT_SOURCE_PATH,
+  DEFAULT_BUILD_PATH,
   bundleJS,
   getCodemodExecutable,
 } from "@codemod-com/runner";
@@ -184,10 +184,10 @@ export const handleInitCliCommand = async (options: {
   }
 
   if (build) {
-    const outputPath = join(codemodBaseDir, BUILT_SOURCE_PATH);
+    const outputPath = join(codemodBaseDir, DEFAULT_BUILD_PATH);
     const bundledCode =
       source && isSourceAFile
-        ? await bundleJS({ entry: source, output: outputPath, esm })
+        ? await bundleJS({ entry: source, esm })
         : await getCodemodExecutable(codemodBaseDir, esm);
 
     await mkdir(dirname(outputPath), { recursive: true });

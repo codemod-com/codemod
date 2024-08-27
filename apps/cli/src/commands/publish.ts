@@ -8,7 +8,7 @@ import * as v from "valibot";
 
 import { tmpdir } from "node:os";
 import { type Printer, chalk } from "@codemod-com/printer";
-import { BUILT_SOURCE_PATH, getCodemodExecutable } from "@codemod-com/runner";
+import { DEFAULT_BUILD_PATH, getCodemodExecutable } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   type CodemodConfig,
@@ -277,7 +277,7 @@ export const handlePublishCliCommand = async (options: {
     }
 
     codemodFileBuffers.push({
-      name: BUILT_SOURCE_PATH,
+      name: DEFAULT_BUILD_PATH,
       data: Buffer.from(builtExecutable),
     });
   }
