@@ -6,18 +6,21 @@ sidebarTitle: "Run"
 ## Benefits and features
 
 Running codemods with Codemod platform brings many benefits such as:
-- advanced codemod [configuration](/codemod-registry/introduction#required-codemod-package-structure:codemodrc-json-reference) (pre/post-run commands, arguments, formatting, daisy-chaining, multi-threading, dry-running, and more)
+- advanced codemod [configuration](/guides/building-codemods/package-requirements#codemodrc-json-reference) (pre/post-run commands, arguments, formatting, daisy-chaining, multi-threading, dry-running, and more)
 - easily running codemods from different entry points, such as [CLI](/deploying-codemods/cli) and [IDE extension](/deploying-codemods/vsce), based on user preference.
 
 ## Getting started
 
 Codemod platform allows you to run codemods using different ways:
 
-### Option 1: Running via codemod's source
-1. with [Codemod's opinionated scaffolding](/deploying-codemods/cli#codemod-init)
-2. via [raw transform file](/deploying-codemods/cli#run) 
-
-### Option 2: Running via codemods in Codemod Registry
-1. via [CLI](/deploying-codemods/cli#run)
-2. via [IDE extension](/deploying-codemods/vsce)
-3. via web app ([Codemod Studio](/building-codemods/codemod-studio) or [Codemod registry](/codemod-registry))
+<CardGroup cols={2}>
+  <Card title="Codemod CLI" icon="square-1" href="/deploying-codemods/cli#run">
+  Use Codemod CLI to run codemod packages.
+  </Card>
+  <Card title="Codemod IDE extension" icon="square-2" href="deploying-codemods/vsce#getting-started">
+  Use Codemod VS Code extension to run codemod packages.
+  </Card>
+</CardGroup>
+  <Card title="Codemod Studio" icon="square-3" href="/building-codemods/codemod-studio#running-codemods">
+  Use Codemod Studio to run your own codemod packages.
+  </Card>
