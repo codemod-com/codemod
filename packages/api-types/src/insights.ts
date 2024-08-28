@@ -12,7 +12,9 @@ export const primitiveWidgetDataSchema = v.object({
 export type TableWidgetData = v.InferInput<typeof tableWidgetDataSchema>;
 export const tableWidgetDataSchema = v.array(
   v.object({
+    title: v.string(),
     value: v.string(),
+    description: v.optional(v.string()),
     icon: v.optional(v.string()),
     color: v.optional(v.string()),
   }),

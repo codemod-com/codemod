@@ -1,5 +1,4 @@
 "use client";
-
 import { useViewStore } from "@/store/view";
 import type {
   ChartWidgetData,
@@ -7,10 +6,12 @@ import type {
   TableWidgetData,
 } from "@codemod-com/api-types";
 import type { Widget } from "@codemod-com/database";
+import { ArrowDown, ArrowUp } from "@phosphor-icons/react";
+import type { SortingState } from "@tanstack/react-table";
 import { get } from "lodash-es";
 import { useParams } from "next/navigation";
 import type React from "react";
-import { Fragment, type ReactNode, useMemo } from "react";
+import { Fragment, type ReactNode, useMemo, useState } from "react";
 import {
   Area,
   CartesianGrid,
@@ -84,12 +85,27 @@ const TableWidget = ({ widget }: TableWidgetProps) => {
     [selectedRepos, insight.data?.codemodRuns],
   );
 
+  const [sortingState, setSortingState] = useState<SortingState>([]);
+
+  const usedCodemods = useMemo(
+    () =>
+      widget.data.map(({ value }) => {
+        const matchObj = value.match(/`(\w+)\.(.+)`/);
+        if (matchObj?.length === 3) {
+          return value.match(/`(\w+)\.(.+)`/)?.at(1)!;
+        }
+      }),
+    [widget.data],
+  );
+
+  console.log(sortingState);
+
   return (
     <DataTable
       columns={widget.data.map(({ title, value, color, icon }) => ({
         id: title,
         accessorFn: (cellData, i) => {
-          const regexp = /`(\w+)\.(\w+)`/;
+          const regexp = /`(\w+)\.(.+)`/;
           const matchObj = value.match(regexp);
 
           // biome-ignore lint: it's ok
@@ -101,21 +117,34 @@ const TableWidget = ({ widget }: TableWidgetProps) => {
             if (!codemodRun) return value;
             const { data, status } = codemodRun.data;
 
-            if (status === "done" && data) {
-              if (typeof data === "object") {
-                const replacementValue = get(
-                  Array.isArray(data) ? data[i] : data,
-                  matchObj[2],
-                );
+            if (status === "done" && data && typeof data === "object") {
+              const replacementValue = get(
+                Array.isArray(data) ? data[i] : data,
+                matchObj[2],
+              );
 
-                return value.replace(regexp, replacementValue);
-              }
+              return value.replace(regexp, replacementValue);
             }
-
-            return value;
           }
 
           return value;
+        },
+        header: ({ column }) => {
+          const isSorted = column.getIsSorted();
+          return (
+            <div
+              role="button"
+              className="whitespace-nowrap px-0 flex gap-xs flex-nowrap items-center"
+              onClick={() => column.toggleSorting(isSorted === "asc")}
+            >
+              {title}
+              {isSorted === "asc" ? (
+                <ArrowUp />
+              ) : isSorted === "desc" ? (
+                <ArrowDown />
+              ) : null}
+            </div>
+          );
         },
         // header: () => {
         //   return <div className="whitespace-nowrap">{title}</div>;
@@ -139,11 +168,21 @@ const TableWidget = ({ widget }: TableWidgetProps) => {
         //   );
         // },
       }))}
-      data={
-        insight.data?.codemodRuns.find(
-          (run) => run.data.codemod.name === "drift_analyzer",
-        )?.data.data
-      }
+      data={Array.from({
+        length: Math.max(
+          ...(insight.data?.codemodRuns
+            .filter((run) => usedCodemods.includes(run.data.codemod.name))
+            .map((run) => {
+              const resultData = run.data?.data;
+
+              if (Array.isArray(resultData)) {
+                return resultData.length;
+              }
+
+              return 1;
+            }) ?? []),
+        ),
+      })}
     />
   );
 };
@@ -351,9 +390,9 @@ const PrimitiveWidget = ({ widget }: PrimitiveWidgetProps) => {
 
   const formattedWidgetData: PrimitiveWidgetData = useMemo(() => {
     const { ...widgetData } = widget.data;
-    console.log(widgetData);
+
     Object.keys(widgetData).forEach((key) => {
-      const regexp = /`(\w+)\.(\w+)`/;
+      const regexp = /`(\w+)\.(.+)`/;
       const matchObj = widgetData[key].match(regexp);
 
       // biome-ignore lint: it's ok
@@ -362,7 +401,7 @@ const PrimitiveWidget = ({ widget }: PrimitiveWidgetProps) => {
           (run) => run.data.codemod.name === matchObj[1],
         );
 
-        if (!codemodRun) return widgetData[key];
+        if (!codemodRun) return;
         const { data, status } = codemodRun.data;
 
         if (status === "done" && data) {
@@ -386,7 +425,10 @@ const PrimitiveWidget = ({ widget }: PrimitiveWidgetProps) => {
   ];
   if (formattedWidgetData.heading) {
     Contents.push(
-      <h4 key={`widget-${title}-heading`} className="text-xl text-black">
+      <h4
+        key={`widget-${title}-heading`}
+        className="text-lgHeading text-black font-bold"
+      >
         {formattedWidgetData.heading}
       </h4>,
     );

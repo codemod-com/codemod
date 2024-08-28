@@ -69,15 +69,13 @@ export const getTransformer = async (source: string, name?: string) => {
       const transformer =
         typeof module.default === "function"
           ? module.default
-          : module.__esModule
-            ? module.default ??
-              module.transform ??
-              module.handleSourceFile ??
-              module.repomod ??
-              module.filemod ??
-              module.workflow ??
-              null
-            : null;
+          : module.default ??
+            module.transform ??
+            module.handleSourceFile ??
+            module.repomod ??
+            module.filemod ??
+            module.workflow ??
+            null;
 
       temporaryLoadedModules.set(hashDigest, transformer);
       return transformer;

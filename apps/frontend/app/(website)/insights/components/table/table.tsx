@@ -30,8 +30,8 @@ export interface DataTableProps<T> {
 export const DataTable = <T,>({
   data,
   columns,
-  sortingState,
-  setSortingState,
+  // sortingState,
+  // setSortingState,
 }: DataTableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -40,16 +40,18 @@ export const DataTable = <T,>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
     state: {
       sorting,
     },
   };
 
-  if (setSortingState) {
-    options.manualSorting = true;
-    options.onSortingChange = setSortingState;
-    options.state!.sorting = sortingState;
-  }
+  // possible back-end sorting
+  // if (setSortingState) {
+  //   options.manualSorting = true;
+  //   options.onSortingChange = setSortingState;
+  //   options.state!.sorting = sortingState;
+  // }
 
   const table = useReactTable(options);
   if (!table) return null;
