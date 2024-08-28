@@ -46,12 +46,8 @@
       ]
     },
     {
-      "group": "Codemod Studio",
-      "pages": ["building-codemods/codemod-studio"]
-    },
-    {
-      "group": "Codemod Registry",
-      "pages": ["codemod-registry/introduction"]
+      "group": "CLI",
+      "pages": ["deploying-codemods/cli"]
     },
     {
       "group": "Workflow Engine",
@@ -104,8 +100,12 @@
       ]
     },
     {
-      "group": "CLI",
-      "pages": ["deploying-codemods/cli"]
+      "group": "Codemod Studio",
+      "pages": ["building-codemods/codemod-studio"]
+    },
+    {
+      "group": "Codemod Registry",
+      "pages": ["codemod-registry/introduction"]
     },
     {
       "group": "VS Code Extension",
