@@ -1,0 +1,1 @@
+contract.foo.staticCall(addr);
