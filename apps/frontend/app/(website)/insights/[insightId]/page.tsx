@@ -118,10 +118,8 @@ const TableWidget = ({ widget }: TableWidgetProps) => {
             const { data, status } = codemodRun.data;
 
             if (status === "done" && data && typeof data === "object") {
-              const replacementValue = get(
-                Array.isArray(data) ? data[i] : data,
-                matchObj[2],
-              );
+              const replacementValue =
+                get(Array.isArray(data) ? data[i] : data, matchObj[2]) ?? "?";
 
               return value.replace(regexp, replacementValue);
             }
@@ -406,10 +404,8 @@ const PrimitiveWidget = ({ widget }: PrimitiveWidgetProps) => {
 
         if (status === "done" && data) {
           if (typeof data === "object") {
-            const replacementValue = get(
-              Array.isArray(data) ? data[0] : data,
-              matchObj[2],
-            );
+            const replacementValue =
+              get(Array.isArray(data) ? data[0] : data, matchObj[2]) ?? "?";
 
             widgetData[key] = widgetData[key].replace(regexp, replacementValue);
           }
