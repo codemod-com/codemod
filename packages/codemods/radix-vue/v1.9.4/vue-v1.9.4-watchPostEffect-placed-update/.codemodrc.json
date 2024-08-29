@@ -1,0 +1,19 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "vue-v1.9.4-watchPostEffect-placed-update",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "radix",
+      "vue",
+      "radix-vue",
+      "v1.9.4",
+      "bug fix",
+      "watchPostEffect placed update"
+    ],
+    "git": "https://github.com/codemod-com/codemod/packages/codemods/radix-vue/v1.9.4/vue-v1.9.4-watchPostEffect-placed-update.git"
+  }
+}

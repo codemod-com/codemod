@@ -1,0 +1,13 @@
+/*! @license
+The MIT License (MIT)
+
+Copyright (c) 2024 dfordp
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+"use strict";Object.defineProperty(exports,"__esModule",{value:true});Object.defineProperty(exports,"default",{enumerable:true,get:function(){return transform}});function transform(file,api){const j=api.jscodeshift;const root=j(file.source);let dirtyFlag=false;root.find(j.VariableDeclarator,{id:{type:"ObjectPattern",properties:props=>props.some(prop=>prop.key.name==="setup")}}).forEach(path=>{const properties=path.node.id.properties;if(!properties.some(prop=>prop.key.name==="root")){properties.unshift(j.property.from({kind:"init",key:j.identifier("root"),value:j.identifier("root"),shorthand:true}));dirtyFlag=true}});root.find(j.CallExpression,{callee:{type:"Identifier",name:"it"}}).forEach(path=>{const body=path.node.arguments[1].body.body;const setupIndex=body.findIndex(statement=>j.VariableDeclaration.check(statement)&&statement.declarations.some(decl=>j.ObjectPattern.check(decl.id)&&decl.id.properties.some(prop=>prop.key.name==="setup")));if(setupIndex!==-1){const newAssertions=[j.expressionStatement(j.callExpression(j.memberExpression(j.callExpression(j.identifier("expect"),[j.callExpression(j.memberExpression(j.identifier("root"),j.identifier("getAttribute")),[j.literal("data-disabled")])]),j.identifier("toBe")),[j.literal("")])),j.expressionStatement(j.callExpression(j.memberExpression(j.callExpression(j.identifier("expect"),[j.callExpression(j.memberExpression(j.identifier("input"),j.identifier("getAttribute")),[j.literal("data-disabled")])]),j.identifier("toBe")),[j.literal("")]))];body.splice(setupIndex+1,0,...newAssertions);dirtyFlag=true}});return dirtyFlag?root.toSource():undefined}

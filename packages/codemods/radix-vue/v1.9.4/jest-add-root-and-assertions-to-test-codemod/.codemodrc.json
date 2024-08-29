@@ -1,0 +1,19 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "jest-add-root-and-assertions-to-test",
+  "version": "1.0.1",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "radix",
+      "vue",
+      "jest",
+      "v1.9.4",
+      "bug fix",
+      "add root and assertions to test"
+    ],
+    "git" : "https://github.com/codemod-com/codemod/packages/codemods/radix-vue/v1.9.4/jest-add-root-and-assertions-to-test-codemod" 
+  }
+}
