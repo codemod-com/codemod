@@ -191,9 +191,9 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
           }),
         );
 
-      reply.type("application/json").code(200);
       return reply
-        .code(401)
+        .type("application/json")
+        .code(200)
         .send({ success: true, data: created.filter(Boolean) });
     },
   );
