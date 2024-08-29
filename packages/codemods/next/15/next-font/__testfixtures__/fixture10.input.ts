@@ -1,0 +1,1 @@
+import { Georgia } from '@next/font/google';

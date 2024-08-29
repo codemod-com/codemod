@@ -1,0 +1,1 @@
+import { CourierNew } from 'next/font/google';

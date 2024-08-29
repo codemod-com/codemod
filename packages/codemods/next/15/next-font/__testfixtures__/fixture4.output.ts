@@ -1,0 +1,1 @@
+import { Lato } from 'next/font/google';
