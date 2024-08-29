@@ -1,0 +1,86 @@
+[
+  {
+    "user": {
+      "imageUrl": "https://avatars.githubusercontent.com/u/78901234?s=16&v=4",
+      "name": "James"
+    },
+    "codemodsCreated": 13,
+    "prsReviewed": 19,
+    "averageReviewTime": "2m 45s",
+    "timeToFirstReview": "50m",
+    "linesOfCodeDeleted": 8342,
+    "linesOfCodeAdded": 7591
+  },
+  {
+    "user": {
+      "imageUrl": "https://avatars.githubusercontent.com/u/89012345?s=16&v=4",
+      "name": "Isabella"
+    },
+    "codemodsCreated": 7,
+    "prsReviewed": 25,
+    "averageReviewTime": "4m 10s",
+    "timeToFirstReview": "1h 10m",
+    "linesOfCodeDeleted": 6930,
+    "linesOfCodeAdded": 6405
+  },
+  {
+    "user": {
+      "imageUrl": "https://avatars.githubusercontent.com/u/90123456?s=16&v=4",
+      "name": "Benjamin"
+    },
+    "codemodsCreated": 18,
+    "prsReviewed": 20,
+    "averageReviewTime": "2m 5s",
+    "timeToFirstReview": "35m",
+    "linesOfCodeDeleted": 13420,
+    "linesOfCodeAdded": 11985
+  },
+  {
+    "user": {
+      "imageUrl": "https://avatars.githubusercontent.com/u/91234567?s=16&v=4",
+      "name": "Mia"
+    },
+    "codemodsCreated": 5,
+    "prsReviewed": 12,
+    "averageReviewTime": "3m 50s",
+    "timeToFirstReview": "1h 20m",
+    "linesOfCodeDeleted": 4820,
+    "linesOfCodeAdded": 4385
+  },
+  {
+    "user": {
+      "imageUrl": "https://avatars.githubusercontent.com/u/23456789?s=16&v=4",
+      "name": "Lucas"
+    },
+    "codemodsCreated": 9,
+    "prsReviewed": 15,
+    "averageReviewTime": "2m 40s",
+    "timeToFirstReview": "1h",
+    "linesOfCodeDeleted": 7823,
+    "linesOfCodeAdded": 7356
+  },
+  {
+    "user": {
+      "imageUrl": "https://avatars.githubusercontent.com/u/34567890?s=16&v=4",
+      "name": "Charlotte"
+    },
+    "codemodsCreated": 8,
+    "prsReviewed": 17,
+    "averageReviewTime": "3m 30s",
+    "timeToFirstReview": "1h 5m",
+    "linesOfCodeDeleted": 7030,
+    "linesOfCodeAdded": 6592
+  },
+  {
+    "user": {
+      "imageUrl": "https://avatars.githubusercontent.com/u/45678901?s=16&v=4",
+      "name": "Henry"
+    },
+    "codemodsCreated": 12,
+    "prsReviewed": 21,
+    "averageReviewTime": "2m 20s",
+    "timeToFirstReview": "45m",
+    "linesOfCodeDeleted": 9834,
+    "linesOfCodeAdded": 9021
+  }
+]

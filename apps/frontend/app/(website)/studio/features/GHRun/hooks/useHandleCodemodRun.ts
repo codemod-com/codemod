@@ -1,5 +1,5 @@
 import type {
-  CodemodRunRequest,
+  CodemodRunRequestPayload,
   GHBranch,
   GithubRepository,
 } from "@codemod-com/api-types";
@@ -8,7 +8,7 @@ import { useSnippetsStore } from "@studio/store/snippets";
 import { transpileTs } from "@studio/utils/transpileTs";
 
 type Props = {
-  onCodemodRun: (request: CodemodRunRequest) => Promise<void>;
+  onCodemodRun: (request: CodemodRunRequestPayload) => Promise<void>;
   selectedRepository: GithubRepository | undefined;
   selectedBranch: GHBranch | undefined;
 };
@@ -32,7 +32,8 @@ export const useHandleCodemodRun = ({
       return;
     }
 
-    const request = {
+    const request: CodemodRunRequestPayload & { codemodSource: string } = {
+      codemodName: "studio-generated",
       codemodEngine: engine,
       repoUrl: selectedRepository.html_url,
       codemodSource: (await transpileTs(content)).transpiled,

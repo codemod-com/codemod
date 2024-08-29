@@ -1,7 +1,7 @@
 import {
   codemodRunBodySchema,
   validateCodemodStatusParamsSchema,
-} from "@codemod-com/utilities";
+} from "@codemod-com/api-types";
 
 import {
   array,
@@ -90,6 +90,13 @@ export const parseGetRepoBranchesBody = (input: unknown) =>
   parse(getRepoBranchesBodySchema, input);
 export const parseGetRepoBranchesParams = (input: unknown) =>
   parse(providerSchema, input);
+
+export const paginatedQuerySchema = object({
+  page: optional(pipe(string(), transform(Number))),
+  size: optional(pipe(string(), transform(Number))),
+});
+export const parsePaginatedGetQuery = (input: unknown) =>
+  parse(paginatedQuerySchema, input);
 
 export const getCodemodsQuerySchema = object({
   search: optional(string()),

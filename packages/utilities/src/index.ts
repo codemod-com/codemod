@@ -17,4 +17,3 @@ export * from "./schemata/codemod-config.js";
 export * from "./schemata/codemod.js";
 export * from "./schemata/engine-options.js";
 export * from "./schemata/file-commands.js";
-export * from "./schemata/github-run.js";

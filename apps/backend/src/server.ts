@@ -11,15 +11,35 @@ import Fastify, {
   type FastifyRequest,
 } from "fastify";
 import {
-  type GetCodemodDownloadLinkResponse,
-  getCodemodDownloadLink,
-} from "./handlers/getCodemodDownloadLink.js";
-import { getCodemodHandler } from "./handlers/getCodemodHandler.js";
+  type PostNewInsightResponse,
+  postNewInsightHandler,
+} from "#handlers/insights/insight-new.post.js";
+import {
+  type PutInsightResponse,
+  putInsightHandler,
+} from "#handlers/insights/insight.put.js";
+import { getCodemodsListHandler } from "./handlers/codemods/codemod-list.get.js";
+import { getCodemodHandler } from "./handlers/codemods/codemod.get.js";
 import {
   type GetCodemodsResponse,
   getCodemodsHandler,
-} from "./handlers/getCodemodsHandler.js";
-import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
+} from "./handlers/codemods/codemods.get.js";
+import {
+  type GetCodemodDownloadLinkResponse,
+  getCodemodDownloadLink,
+} from "./handlers/codemods/download-link.get.js";
+import {
+  type GetInsightResponse,
+  getInsightHandler,
+} from "./handlers/insights/insight.get.js";
+import {
+  type GetInsightsResponse,
+  getInsightsHandler,
+} from "./handlers/insights/insights.get.js";
+import {
+  type PutWidgetResponse,
+  putWidgetHandler,
+} from "./handlers/widgets/widget.put.js";
 import {
   type PublishHandlerResponse,
   publishHandler,
@@ -349,6 +369,54 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       return result;
     },
   );
+
+  instance.get<{ Reply: GetInsightsResponse }>(
+    "/insights",
+    { preHandler: [instance.getUserData] },
+    getInsightsHandler,
+  );
+
+  instance.get<{ Reply: GetInsightResponse }>(
+    "/insights/:id",
+    { preHandler: [instance.getUserData] },
+    getInsightHandler,
+  );
+
+  instance.get<{ Reply: PostNewInsightResponse }>(
+    "/insight/new",
+    { preHandler: [instance.getUserData] },
+    postNewInsightHandler,
+  );
+
+  instance.get<{ Reply: PostNewInsightResponse }>(
+    "/insight/new",
+    { preHandler: [instance.getUserData] },
+    postNewInsightHandler,
+  );
+
+  instance.put<{ Reply: PutInsightResponse }>(
+    "/insight",
+    { preHandler: [instance.getUserData] },
+    putInsightHandler,
+  );
+  // instance.get<{ Reply: GetWidgetsResponse }>(
+  //   "/widgets",
+  //   { preHandler: [instance.getUserData] },
+  //   getWidgetsHandler,
+  // );
+
+  // instance.get<{ Reply: GetWidgetResponse }>(
+  //   "/widget/:id",
+  //   { preHandler: [instance.getUserData] },
+  //   getWidgetHandler,
+  // );
+
+  instance.put<{ Reply: PutWidgetResponse }>(
+    "/widget",
+    { preHandler: [instance.getUserData] },
+    putWidgetHandler,
+  );
+
   done();
 };
 

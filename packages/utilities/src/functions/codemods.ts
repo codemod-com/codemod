@@ -90,7 +90,7 @@ export async function getEntryPath(options: {
       globPattern = "**/rule.yaml";
       break;
     default:
-      globPattern = "src/index.{ts,js}";
+      globPattern = "src/index.{ts,js,mts,mjs}";
       break;
   }
 

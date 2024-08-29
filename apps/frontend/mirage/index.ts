@@ -4,33 +4,33 @@ import type Schema from "miragejs/orm/schema";
 
 import {
   branchEndpoints,
-  campaignEndpoints,
   codemodRunEndpoints,
   executionStatusEndpoints,
+  insightEndpoints,
   repositoryEndpoints,
 } from "./endpoints";
 import {
   branchFactory,
-  campaignFactory,
   dashboardFactory,
+  insightFactory,
   repositoryFactory,
 } from "./factories";
 import {
   branchModel,
-  campaignModel,
   dashboardModel,
+  insightModel,
   repositoryModel,
 } from "./models";
-import { createBranches, createCampaigns, createRepositories } from "./seeds";
+import { createBranches, createInsights, createRepositories } from "./seeds";
 
 const models = {
-  campaign: campaignModel,
+  insight: insightModel,
   dashboard: dashboardModel,
   repository: repositoryModel,
   branch: branchModel,
 };
 const factories = {
-  campaign: campaignFactory,
+  insight: insightFactory,
   dashboard: dashboardFactory,
   repository: repositoryFactory,
   branch: branchFactory,
@@ -49,7 +49,7 @@ export const runServer = (environment: string) =>
       this.urlPrefix = env.NEXT_PUBLIC_API_URL;
       this.timing = 250;
 
-      campaignEndpoints(this);
+      insightEndpoints(this);
       repositoryEndpoints(this);
       branchEndpoints(this);
       codemodRunEndpoints(this);
@@ -84,7 +84,7 @@ export const runServer = (environment: string) =>
       this.passthrough("http://localhost:3000/_next/**");
     },
     seeds(server) {
-      createCampaigns(server);
+      createInsights(server);
       createBranches(server);
       createRepositories(server);
     },

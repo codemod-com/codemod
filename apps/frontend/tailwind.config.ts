@@ -111,7 +111,7 @@ const colorPalette = {
     light: "#FEA80026",
     dark: "#FEA80033",
   },
-};
+} as const;
 
 const colorsT = {
   accent: "#D6FF62",
@@ -175,7 +175,7 @@ const colorsT = {
     light: "#FEA80026",
     dark: "#FEA80033",
   },
-};
+} as const;
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "selector",

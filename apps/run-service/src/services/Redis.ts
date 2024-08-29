@@ -1,8 +1,12 @@
+import type { CodemodRunJobData } from "@codemod-com/api-types";
 import { Queue } from "bullmq";
 import { Redis } from "ioredis";
-
-import type { parseCodemodRunBody } from "../schemata/schema.js";
 import { environment } from "../util.js";
+
+const TASK_MANAGER_QUEUE_NAME =
+  environment.NODE_ENV === "staging"
+    ? `${environment.TASK_MANAGER_QUEUE_NAME}_STAGING`
+    : environment.TASK_MANAGER_QUEUE_NAME;
 
 export const redis = environment.REDIS_HOST
   ? new Redis({
@@ -12,12 +16,8 @@ export const redis = environment.REDIS_HOST
     })
   : null;
 
-type CodemodRunJob = ReturnType<typeof parseCodemodRunBody> & {
-  userId: string;
-};
-
 export const queue = redis
-  ? new Queue<CodemodRunJob>(environment.TASK_MANAGER_QUEUE_NAME ?? "", {
+  ? new Queue<CodemodRunJobData>(TASK_MANAGER_QUEUE_NAME ?? "", {
       connection: redis,
     })
   : null;

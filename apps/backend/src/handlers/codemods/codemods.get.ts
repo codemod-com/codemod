@@ -2,8 +2,8 @@ import type { ApiResponse } from "@codemod-com/api-types";
 import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import type { Codemod } from "@codemod-com/database";
 import type { RouteHandler } from "fastify";
-import { parseGetCodemodsQuery } from "../schemata/schema.js";
-import { codemodService } from "../services/CodemodService.js";
+import { parseGetCodemodsQuery } from "#schemata/schema.js";
+import { codemodService } from "#services/CodemodService.js";
 
 export type GetCodemodsResponse = ApiResponse<{
   total: number;
