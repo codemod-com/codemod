@@ -8,13 +8,13 @@ import { environment } from "#util.js";
 
 const DEFAULT_CODEMODS = [
   {
-    engine: "jscodeshift",
+    engine: "workflow",
     name: "drift_analyzer",
   },
-  // {
-  //   engine: "jscodeshift",
-  //   name: "drift_analyzer_pkg",
-  // },
+  {
+    engine: "workflow",
+    name: "drift_analyzer_pkg",
+  },
 ];
 
 export type PostNewInsightResponse = ApiResponse<Insight>;
@@ -29,11 +29,6 @@ export const postNewInsightHandler: RouteHandler<{
       ownerId: request.user!.id,
       repoUrls,
     },
-  });
-
-  console.dir({
-    URL: `${environment.RUN_SERVICE_URL}/codemodRun`,
-    Authorization: request.headers?.authorization,
   });
 
   await Promise.all(

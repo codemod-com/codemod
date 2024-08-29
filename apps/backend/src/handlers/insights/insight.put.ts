@@ -10,7 +10,16 @@ import axios from "axios";
 import type { FastifyReply, RouteHandler } from "fastify";
 import { environment } from "#util.js";
 
-const DEFAULT_CODEMODS_NAME = ["drift_analyzer", "drift_analyzer_pkg"];
+const DEFAULT_CODEMODS = [
+  {
+    engine: "workflow",
+    name: "drift_analyzer",
+  },
+  {
+    engine: "workflow",
+    name: "drift_analyzer_pkg",
+  },
+];
 
 export type PutInsightResponse = ApiResponse<Insight>;
 
@@ -38,7 +47,7 @@ export const putInsightHandler: RouteHandler<{
               `${environment.RUN_SERVICE_URL}/codemodRun`,
               {
                 repoUrl,
-                codemods: DEFAULT_CODEMODS_NAME,
+                codemods: DEFAULT_CODEMODS,
               },
               {
                 headers: {
@@ -85,7 +94,7 @@ export const putInsightHandler: RouteHandler<{
           `${environment.RUN_SERVICE_URL}/codemodRun`,
           {
             repoUrl,
-            codemods: DEFAULT_CODEMODS_NAME,
+            codemods: DEFAULT_CODEMODS,
           },
           {
             headers: {
