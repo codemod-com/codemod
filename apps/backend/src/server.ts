@@ -10,6 +10,10 @@ import Fastify, {
   type FastifyPluginCallback,
   type FastifyRequest,
 } from "fastify";
+import {
+  type PostNewInsightResponse,
+  postNewInsightHandler,
+} from "#handlers/insights/insight-new.post.js";
 import { getCodemodsListHandler } from "./handlers/codemods/codemod-list.get.js";
 import { getCodemodHandler } from "./handlers/codemods/codemod.get.js";
 import {
@@ -372,6 +376,12 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     "/insights/:id",
     { preHandler: [instance.getUserData] },
     getInsightHandler,
+  );
+
+  instance.get<{ Reply: PostNewInsightResponse }>(
+    "/insight/new",
+    { preHandler: [instance.getUserData] },
+    postNewInsightHandler,
   );
 
   // instance.get<{ Reply: GetWidgetsResponse }>(

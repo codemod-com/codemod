@@ -71,3 +71,23 @@ export const putWidgetBodySchema = v.union([
 export type PutWidgetBody = v.InferInput<typeof putWidgetBodySchema>;
 export const parsePutWidgetBody = (input: unknown) =>
   v.parse(putWidgetBodySchema, input);
+
+export const postInsightBodySchema = v.object({
+  repoUrls: v.array(v.string()),
+});
+
+export type PostInsightBody = v.InferInput<typeof postInsightBodySchema>;
+export const parsePostInsightBody = (input: unknown) =>
+  v.parse(postInsightBodySchema, input);
+
+export const putInsightBodySchema = v.object({
+  id: v.optional(v.number()),
+  name: v.optional(v.string()),
+  description: v.optional(v.string()),
+  repoUrls: v.array(v.string()),
+  tags: v.array(v.string()),
+});
+
+export type PutInsightBody = v.InferInput<typeof putInsightBodySchema>;
+export const parsePutInsightBody = (input: unknown) =>
+  v.parse(putInsightBodySchema, input);
