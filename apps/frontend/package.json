@@ -38,6 +38,7 @@
     "@clerk/nextjs": "catalog:",
     "@clerk/themes": "catalog:",
     "@codemod-com/api-types": "workspace:*",
+    "@codemod-com/database": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@codemod.com/codemod-utils": "workspace:*",
     "@faker-js/faker": "^8.4.1",
