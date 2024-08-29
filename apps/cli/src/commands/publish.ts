@@ -263,9 +263,11 @@ export const handlePublishCliCommand = async (options: {
   );
 
   if (codemodRc.engine !== "recipe") {
-    const builtExecutable = await getCodemodExecutable(source, esm).catch(
-      () => null,
-    );
+    const builtExecutable = await getCodemodExecutable(
+      source,
+      esm,
+      codemodRc.engine,
+    ).catch(() => null);
 
     if (builtExecutable === null) {
       throw new Error(
