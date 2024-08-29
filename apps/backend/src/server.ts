@@ -388,7 +388,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     postNewInsightHandler,
   );
 
-  instance.get<{ Reply: PostNewInsightResponse }>(
+  instance.post<{ Reply: PostNewInsightResponse }>(
     "/insight/new",
     { preHandler: [instance.getUserData] },
     postNewInsightHandler,
@@ -399,6 +399,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     { preHandler: [instance.getUserData] },
     putInsightHandler,
   );
+
   // instance.get<{ Reply: GetWidgetsResponse }>(
   //   "/widgets",
   //   { preHandler: [instance.getUserData] },
