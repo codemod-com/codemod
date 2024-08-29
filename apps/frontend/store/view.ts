@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 type ViewState = {
   isSidebarActive: boolean;
+  setIsSidebarActive: (isSidebarActive: boolean) => void;
   insightsSearchTerm: string;
   selectedRepos: string[];
   toggleSidebar: () => void;
@@ -11,6 +12,8 @@ type ViewState = {
 
 export const useViewStore = create<ViewState>((set) => ({
   isSidebarActive: true,
+  setIsSidebarActive: (isSidebarActive: boolean) =>
+    set(() => ({ isSidebarActive })),
   insightsSearchTerm: "",
   selectedRepos: [],
   toggleSidebar: () =>

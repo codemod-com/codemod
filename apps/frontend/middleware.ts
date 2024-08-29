@@ -6,9 +6,9 @@ const OLD_STUDIO_HOSTNAME = "codemod.studio";
 
 import { type NextRequest, NextResponse } from "next/server";
 
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-const isProtectedRoute = createRouteMatcher(["/insights(.*)"]);
+const isProtectedRoute = () => false;
 
 async function middleware(request: NextRequest) {
   if (request.nextUrl.hostname === OLD_STUDIO_HOSTNAME) {

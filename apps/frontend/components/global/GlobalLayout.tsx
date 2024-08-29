@@ -20,7 +20,8 @@ export default function GlobalLayout({
   const hideMenu = useHideMenu();
   const pathname = usePathname();
 
-  const isPlatformPage = pathname.startsWith("/insights");
+  const isPlatformPage =
+    pathname.startsWith("/insights") || pathname.startsWith("/runs");
 
   return (
     <div
@@ -40,7 +41,10 @@ export default function GlobalLayout({
       <main
         className={cn(
           "w-full",
-          !hideMenu && pathname !== "/insights" && "max-w-[1312px]",
+          !hideMenu &&
+            pathname !== "/insights" &&
+            pathname !== "/runs" &&
+            "max-w-[1312px]",
         )}
       >
         {children}

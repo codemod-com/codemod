@@ -18,6 +18,10 @@ import {
   type PutInsightResponse,
   putInsightHandler,
 } from "#handlers/insights/insight.put.js";
+import {
+  type GetCodemodRunsResponse,
+  getCodemodRunsHandler,
+} from "./handlers/codemod-runs/codemod-runs.get.js";
 import { getCodemodsListHandler } from "./handlers/codemods/codemod-list.get.js";
 import { getCodemodHandler } from "./handlers/codemods/codemod.get.js";
 import {
@@ -394,17 +398,11 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     putInsightHandler,
   );
 
-  // instance.get<{ Reply: GetWidgetsResponse }>(
-  //   "/widgets",
-  //   { preHandler: [instance.getUserData] },
-  //   getWidgetsHandler,
-  // );
-
-  // instance.get<{ Reply: GetWidgetResponse }>(
-  //   "/widget/:id",
-  //   { preHandler: [instance.getUserData] },
-  //   getWidgetHandler,
-  // );
+  instance.get<{ Reply: GetCodemodRunsResponse }>(
+    "/codemod-runs",
+    { preHandler: [instance.getUserData] },
+    getCodemodRunsHandler,
+  );
 
   instance.put<{ Reply: PutWidgetResponse }>(
     "/widget",

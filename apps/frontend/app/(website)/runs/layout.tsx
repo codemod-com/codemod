@@ -1,11 +1,11 @@
 "use client";
 import ThemeSwitcher from "@/components/global/Footer/ThemeSwitcher";
 import Logo from "@/components/shared/Logo";
+import NavLink from "@/components/shared/NavLink";
 import { useTheme } from "@/hooks/useTheme";
 import { useViewStore } from "@/store/view";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import NavLink from "@/components/shared/NavLink";
 import {
   AreaChartIcon,
   BookOpen,

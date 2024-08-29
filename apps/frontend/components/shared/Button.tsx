@@ -18,6 +18,7 @@ export type Button = {
   icon?: IconName | React.ReactElement;
   iconPosition?: "left" | "right";
   loading?: boolean;
+  loadingOpacity?: boolean;
   glow?: boolean;
   flush?: boolean;
 };
@@ -29,6 +30,7 @@ export type ButtonWithArrow = {
   icon?: never;
   iconPosition?: never;
   loading?: boolean;
+  loadingOpacity?: boolean;
   glow?: boolean;
   flush?: boolean;
 };
@@ -40,6 +42,7 @@ export type ButtonWithIconOnly = {
   icon: IconName;
   iconPosition?: never;
   loading?: boolean;
+  loadingOpacity?: boolean;
   glow?: boolean;
   flush?: boolean;
 };
@@ -106,6 +109,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       icon,
       iconPosition,
       loading = false,
+      loadingOpacity = true,
       children,
       ...props
     },
@@ -136,9 +140,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {typeof icon === "string" && iconPosition && iconPosition === "left" ? (
           <Icon name={icon as IconName} className={disabledIconState} />
         ) : null}
-        <span className={cx(loading ? "invisible" : "transition-opacity")}>
-          {children}
-        </span>
+        {loadingOpacity ? (
+          <span className={cx(loading ? "invisible" : "transition-opacity")}>
+            {children}
+          </span>
+        ) : (
+          children
+        )}
         {loading ? (
           <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <Spinner />

@@ -1,4 +1,7 @@
 "use client";
+import RGL, { type Layout, WidthProvider } from "react-grid-layout";
+const ReactGridLayout = WidthProvider(RGL);
+
 import { useViewStore } from "@/store/view";
 import type {
   ChartWidgetData,
@@ -6,12 +9,11 @@ import type {
   TableWidgetData,
 } from "@codemod-com/api-types";
 import type { Widget } from "@codemod-com/database";
-import { ArrowDown, ArrowUp } from "@phosphor-icons/react";
 import type { SortingState } from "@tanstack/react-table";
 import { get } from "lodash-es";
+import { ArrowDown, ArrowUp, Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import type React from "react";
-import { Fragment, type ReactNode, useMemo, useState } from "react";
+import { Fragment, type ReactNode, useEffect, useMemo, useState } from "react";
 import {
   Area,
   CartesianGrid,
@@ -26,48 +28,9 @@ import {
 } from "recharts";
 import { v4 as uuidv4 } from "uuid";
 import { DataTable } from "../components/table/table";
-// import { useEffect } from "react";
 import { useInsight } from "../hooks/useInsight";
-// import { ChartTile } from "./components/ChartTile";
 import SecondaryHeader from "./components/SecondaryHeader";
 import type { DynamicLineChartProps } from "./types";
-
-// const getWidgetComponentByType = (kind: Widget["kind"]) => {
-//   switch (kind) {
-//     case "Table":
-//       return TableTile;
-//     case "Chart":
-//       return ChartTile;
-//     default:
-//       return null;
-//   }
-// };
-
-// const getWidgetPropsFromStatus = (
-//   widgetCodemodStatus: GetExecutionStatusResponse[number],
-// ) => {
-//   const { status } = widgetCodemodStatus;
-
-//   let data = [];
-
-//   if (status === "success") {
-//     try {
-//       data = JSON.parse(widgetCodemodStatus.result);
-//     } catch (e) {
-//       console.log("Unable to parse codemod run result");
-//     }
-//   }
-
-//   return {
-//     loading: status === "in_progress",
-//     data,
-//     error: status === "errored" ? widgetCodemodStatus.message : null,
-//     statusMessage:
-//       status === "in_progress"
-//         ? `Loading ${widgetCodemodStatus.progress} / 100`
-//         : "",
-//   };
-// };
 
 type TableWidgetProps = {
   widget: Widget & { kind: "table"; data: TableWidgetData };
@@ -98,90 +61,71 @@ const TableWidget = ({ widget }: TableWidgetProps) => {
     [widget.data],
   );
 
-  console.log(sortingState);
-
   return (
-    <DataTable
-      columns={widget.data.map(({ title, value, color, icon }) => ({
-        id: title,
-        accessorFn: (cellData, i) => {
-          const regexp = /`(\w+)\.(.+)`/;
-          const matchObj = value.match(regexp);
+    <>
+      <h2 className="font-semibold">{widget.title}</h2>
 
-          // biome-ignore lint: it's ok
-          if (matchObj && matchObj[1] && matchObj[2]) {
-            const codemodRun = insight.data?.codemodRuns.find(
-              (run) => run.data.codemod.name === matchObj[1],
-            );
+      <DataTable<any>
+        columns={widget.data.map(({ title, value, color, icon }) => ({
+          id: title,
+          accessorFn: (cellData, i) => {
+            const regexp = /`(\w+)\.(.+)`/;
+            const matchObj = value.match(regexp);
 
-            if (!codemodRun) return value;
-            const { data, status } = codemodRun.data;
+            // biome-ignore lint: it's ok
+            if (matchObj && matchObj[1] && matchObj[2]) {
+              const codemodRun = insight.data?.codemodRuns.find(
+                (run) => run.data.codemod.name === matchObj[1],
+              );
 
-            if (status === "done" && data && typeof data === "object") {
-              const replacementValue =
-                get(Array.isArray(data) ? data[i] : data, matchObj[2]) ?? "?";
+              if (!codemodRun) return value;
+              const { data, status } = codemodRun.data;
 
-              return value.replace(regexp, replacementValue);
-            }
-          }
+              if (status === "done" && data && typeof data === "object") {
+                const replacementValue =
+                  get(Array.isArray(data) ? data[i] : data, matchObj[2]) ?? "?";
 
-          return value;
-        },
-        header: ({ column }) => {
-          const isSorted = column.getIsSorted();
-          return (
-            <div
-              role="button"
-              className="whitespace-nowrap px-0 flex gap-xs flex-nowrap items-center"
-              onClick={() => column.toggleSorting(isSorted === "asc")}
-            >
-              {title}
-              {isSorted === "asc" ? (
-                <ArrowUp />
-              ) : isSorted === "desc" ? (
-                <ArrowDown />
-              ) : null}
-            </div>
-          );
-        },
-        // header: () => {
-        //   return <div className="whitespace-nowrap">{title}</div>;
-        // },
-        // cell: ({ row, column }) => {
-        //   // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        //   // const val = (row.original as any)[key];
-        //   // const numberVal = Number(val);
-        //   // // const val =
-        //   // //   key === "Equity exc. Credit"
-        //   // //     ? row.getValue("Profit")
-        //   // //     : row.getValue(key);
-        //   // if (val === undefined) {
-        //   //   return null;
-        //   // }
-
-        //   return (
-        //     <div className={cn("whitespace-nowrap")}>
-        //       {/* {getFormattedValue({ val, key, title, row, column })} */}
-        //     </div>
-        //   );
-        // },
-      }))}
-      data={Array.from({
-        length: Math.max(
-          ...(insight.data?.codemodRuns
-            .filter((run) => usedCodemods.includes(run.data.codemod.name))
-            .map((run) => {
-              const resultData = run.data?.data;
-
-              if (Array.isArray(resultData)) {
-                return resultData.length;
+                return value.replace(regexp, replacementValue);
               }
+            }
 
-              return 1;
-            }) ?? []),
-        ),
-      })}
-    />
+            return value;
+          },
+          header: ({ column }) => {
+            const isSorted = column.getIsSorted();
+            return (
+              <div
+                role="button"
+                className="whitespace-nowrap px-0 flex gap-xs flex-nowrap items-center"
+                onClick={() => column.toggleSorting(isSorted === "asc")}
+              >
+                {title}
+                {isSorted === "asc" ? (
+                  <ArrowUp />
+                ) : isSorted === "desc" ? (
+                  <ArrowDown />
+                ) : null}
+              </div>
+            );
+          },
+        }))}
+        data={Array.from({
+          length: Math.max(
+            ...(insight.data?.codemodRuns
+              .filter((run) => usedCodemods.includes(run.data.codemod.name))
+              .map((run) => {
+                const resultData = run.data?.data;
+
+                if (Array.isArray(resultData)) {
+                  return resultData.length;
+                }
+
+                return 1;
+              }) ?? []),
+          ),
+        })}
+      />
+    </>
   );
 };
 
@@ -249,7 +193,7 @@ const CustomLegend: React.FC<CustomLegendProps> = ({ payload = [] }) => {
   const uniquePayload = payload.reduce<LegendPayloadItem[]>((acc, current) => {
     return acc.some((item) => item.value === current.value)
       ? acc
-      : [...acc, current];
+      : acc.concat(current);
   }, []);
 
   return (
@@ -288,7 +232,6 @@ const colorConfig = [
 type ChartWidgetProps = {
   widget: Widget & { kind: "chart"; data: ChartWidgetData };
 };
-// @TODO: Currently supports only one data set
 const ChartWidget = ({ widget }: ChartWidgetProps) => {
   const insight = useInsight(widget.insightId);
 
@@ -314,68 +257,72 @@ const ChartWidget = ({ widget }: ChartWidgetProps) => {
   });
 
   return (
-    <ResponsiveContainer height={300}>
-      <ComposedChart
-        data={data}
-        margin={{ top: 5, right: 30, left: 20, bottom: 20 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-        <XAxis
-          dataKey={xDataKey}
-          // type="number"
-          // scale="time"
-          domain={["auto", "auto"]}
-          tickFormatter={(date) =>
-            new Date(date).toLocaleDateString("en-US", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })
-          }
-          padding={{ left: 30, right: 30 }}
-        />
-        <YAxis domain={["auto", "auto"]} padding={{ top: 20, bottom: 20 }} />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend content={<CustomLegend />} />
-        {widget.data.y.map((yData, index) => {
-          const gradientId = `gradient-${uuidv4()}`;
-          const color = colorConfig[index % colorConfig.length];
+    <>
+      <h2 className="font-semibold">{widget.title}</h2>
 
-          return (
-            <Fragment key={yData.title}>
-              <defs>
-                <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor={color.gradientStart}
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor={color.gradientEnd}
-                    stopOpacity={0}
-                  />
-                </linearGradient>
-              </defs>
-              <Line
-                type="monotone"
-                dataKey={yDataKeys[index]}
-                stroke={color.line}
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 8 }}
-              />
-              <Area
-                type="monotone"
-                dataKey={yDataKeys[index]}
-                stroke="none"
-                fill={`url(#${gradientId})`}
-              />
-            </Fragment>
-          );
-        })}
-      </ComposedChart>
-    </ResponsiveContainer>
+      <ResponsiveContainer height={300}>
+        <ComposedChart
+          data={data}
+          margin={{ top: 5, right: 30, left: 20, bottom: 20 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <XAxis
+            dataKey={xDataKey}
+            // type="number"
+            // scale="time"
+            domain={["auto", "auto"]}
+            tickFormatter={(date) =>
+              new Date(date).toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })
+            }
+            padding={{ left: 30, right: 30 }}
+          />
+          <YAxis domain={["auto", "auto"]} padding={{ top: 20, bottom: 20 }} />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend content={<CustomLegend />} />
+          {widget.data.y.map((yData, index) => {
+            const gradientId = `gradient-${uuidv4()}`;
+            const color = colorConfig[index % colorConfig.length];
+
+            return (
+              <Fragment key={yData.title}>
+                <defs>
+                  <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                      offset="5%"
+                      stopColor={color.gradientStart}
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor={color.gradientEnd}
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                </defs>
+                <Line
+                  type="monotone"
+                  dataKey={yDataKeys[index]}
+                  stroke={color.line}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 8 }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey={yDataKeys[index]}
+                  stroke="none"
+                  fill={`url(#${gradientId})`}
+                />
+              </Fragment>
+            );
+          })}
+        </ComposedChart>
+      </ResponsiveContainer>
+    </>
   );
 };
 
@@ -387,29 +334,38 @@ const PrimitiveWidget = ({ widget }: PrimitiveWidgetProps) => {
   const { title } = widget;
 
   const formattedWidgetData: PrimitiveWidgetData = useMemo(() => {
-    const { ...widgetData } = widget.data;
+    const { ...widgetData } = Array.isArray(widget.data)
+      ? widget.data[0]
+      : widget.data;
 
     Object.keys(widgetData).forEach((key) => {
-      const regexp = /`(\w+)\.(.+)`/;
-      const matchObj = widgetData[key].match(regexp);
+      try {
+        const regexp = /`(\w+)\.(.+)`/;
+        const matchObj = widgetData[key].match(regexp);
 
-      // biome-ignore lint: it's ok
-      if (matchObj && matchObj[1] && matchObj[2]) {
-        const codemodRun = insight.data?.codemodRuns.find(
-          (run) => run.data.codemod.name === matchObj[1],
-        );
+        // biome-ignore lint: it's ok
+        if (matchObj && matchObj[1] && matchObj[2]) {
+          const codemodRun = insight.data?.codemodRuns.find(
+            (run) => run.data.codemod.name === matchObj[1],
+          );
 
-        if (!codemodRun) return;
-        const { data, status } = codemodRun.data;
+          if (!codemodRun) return;
+          const { data, status } = codemodRun.data;
 
-        if (status === "done" && data) {
-          if (typeof data === "object") {
-            const replacementValue =
-              get(Array.isArray(data) ? data[0] : data, matchObj[2]) ?? "?";
+          if (status === "done" && data) {
+            if (typeof data === "object") {
+              const replacementValue =
+                get(Array.isArray(data) ? data[0] : data, matchObj[2]) ?? "?";
 
-            widgetData[key] = widgetData[key].replace(regexp, replacementValue);
+              widgetData[key] = widgetData[key].replace(
+                regexp,
+                replacementValue,
+              );
+            }
           }
         }
+      } catch {
+        // Do nothing
       }
     });
 
@@ -417,13 +373,15 @@ const PrimitiveWidget = ({ widget }: PrimitiveWidgetProps) => {
   }, [insight.data?.codemodRuns, widget.data]);
 
   const Contents: ReactNode[] = [
-    <h3 key={`widget-${title}-title`}>{widget.title}</h3>,
+    <h2 key={`widget-${title}-title`} className="font-semibold">
+      {title}
+    </h2>,
   ];
   if (formattedWidgetData.heading) {
     Contents.push(
       <h4
         key={`widget-${title}-heading`}
-        className="text-lgHeading text-black font-bold"
+        className="text-lgHeading text-primary-light dark:text-primary-dark font-bold"
       >
         {formattedWidgetData.heading}
       </h4>,
@@ -444,71 +402,145 @@ const PrimitiveWidget = ({ widget }: PrimitiveWidgetProps) => {
     );
   }
 
-  return <div className="flex flex-col gap-2">{Contents}</div>;
+  return <div className="justify-between flex flex-col h-full">{Contents}</div>;
 };
 
 const Widget = (props: { widget: Widget }) => {
+  const { insightId } = useParams<{ insightId: string }>();
+  const insight = useInsight(insightId);
+
+  let Content: ReactNode;
   if (props.widget.kind === "table") {
-    return <TableWidget {...(props as TableWidgetProps)} />;
+    Content = <TableWidget {...(props as TableWidgetProps)} />;
+  } else if (props.widget.kind === "chart") {
+    Content = <ChartWidget {...(props as ChartWidgetProps)} />;
+  } else {
+    Content = <PrimitiveWidget {...(props as PrimitiveWidgetProps)} />;
   }
 
-  if (props.widget.kind === "chart") {
-    return <ChartWidget {...(props as ChartWidgetProps)} />;
+  const usedCodemods = useMemo(() => {
+    const used: (string | undefined)[] = [];
+    try {
+      if (Array.isArray(props.widget.data)) {
+        used.push(
+          ...props.widget.data.map(({ value }) => {
+            const matchObj = value.match(/`(\w+)\.(.+)`/);
+            if (matchObj?.length === 3) {
+              return value.match(/`(\w+)\.(.+)`/)?.at(1)!;
+            }
+          }),
+        );
+      }
+
+      used.push(
+        ...Object.keys(props.widget.data).map((key) => {
+          const matchObj = props.widget.data[key].match(/`(\w+)\.(.+)`/);
+          if (matchObj?.length === 3) {
+            return props.widget.data[key].match(/`(\w+)\.(.+)`/)?.at(1)!;
+          }
+        }),
+      );
+    } catch (err) {}
+
+    return [...new Set(used.filter(Boolean))];
+  }, [props.widget.data]);
+
+  const isLoading = useMemo(
+    () =>
+      usedCodemods.some(
+        (c) =>
+          insight.data?.codemodRuns.findIndex(
+            (run) => run.data.codemod.name === c,
+          ) === -1 ||
+          insight.data?.codemodRuns.find((run) => run.data.codemod.name === c)
+            ?.data?.status !== "done",
+      ),
+    [usedCodemods, insight.data?.codemodRuns],
+  );
+
+  if (isLoading) {
+    Content = (
+      <div className="flex h-full w-full justify-center items-center">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
   }
 
-  return <PrimitiveWidget {...(props as PrimitiveWidgetProps)} />;
+  return (
+    <div className="rounded-xl px-4 py-3 bg-white dark:bg-gray-darker overflow-hidden w-full h-full">
+      {Content}
+    </div>
+  );
 };
+
+// const availableHandles = ["s", "w", "e", "n", "sw", "nw", "se", "ne"];
 
 const InsightPage = () => {
   // useMirageServer(true);
 
   const { insightId } = useParams<{ insightId: string }>();
   const { selectedRepos } = useViewStore();
+  const [layout, setLayout] = useState<Layout[]>([]);
 
   const insightQuery = useInsight(insightId);
 
-  if (insightQuery.isLoading) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    const generatedLayout: Layout[] = [];
+    let currentX = 0;
+    let currentY = 0;
 
-  // insightQuery.data?.widgets.map((widget) => {
-  //   console.log(widget);
-  // });
+    insightQuery.data?.widgets.forEach((widget, i) => {
+      let w: number;
+      let h: number;
 
-  // const { executionIds, runCodemodMutation } = useRunCodemodMutation();
+      if (widget.kind === "table" || widget.kind === "chart") {
+        w = 12;
+        h = 9;
+      } else {
+        w = 4;
+        h = 4;
+      }
 
-  // const runCodemod = async (workflow: string) =>
-  //   await runCodemodMutation.mutateAsync({
-  //     codemods: [
-  //       { name: workflow, engine: "workflow", args: { repos: selectedRepos } },
-  //     ],
-  //   });
+      if (currentX + w > 12) {
+        currentX = 0;
+        currentY += h;
+      }
 
-  // const codemodRunResults = useCodemodRunResult(executionIds);
+      generatedLayout.push({
+        x: currentX,
+        y: currentY,
+        w: w,
+        h: h,
+        i: i.toString(),
+        resizeHandles: ["se"],
+      });
 
-  // refresh all
-  // useEffect(() => {
-  //   runCodemodMutation.mutateAsync({
-  //     codemods: widgets.map((widget) => ({
-  //       name: widget.workflow,
-  //       engine: "workflow",
-  //       args: { repos: selectedRepos },
-  //     })),
-  //   });
-  // }, [widgets]);
+      currentX += w;
+    });
 
+    setLayout(generatedLayout);
+  }, [insightQuery.data?.widgets]);
+
+  console.log(layout);
   return (
-    <div className="bg-emphasis-light dark:bg-emphasis-dark h-full">
+    <div className="flex-1 bg-emphasis-light dark:bg-emphasis-dark w-full">
       <SecondaryHeader />
-      <div className="w-full flex gap-4 flex-wrap">
-        {insightQuery.data?.widgets.map((widget) => (
-          <div
-            key={widget.id}
-            className="rounded-lg px-4 py-3 bg-white overflow-hidden w-full h-full"
-          >
-            <Widget widget={widget} />
-          </div>
-        ))}
+
+      <div className="px-4 py-2">
+        <ReactGridLayout
+          layout={layout}
+          onLayoutChange={setLayout}
+          rowHeight={30}
+          // preventCollision={true}
+          // compactType="horizontal"
+          cols={12}
+        >
+          {insightQuery.data?.widgets.map((w, i) => (
+            <div key={i}>
+              <Widget widget={w} />
+            </div>
+          ))}
+        </ReactGridLayout>
       </div>
     </div>
   );
