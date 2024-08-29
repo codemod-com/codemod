@@ -7,6 +7,10 @@ export async function isWorkflowEngineFile(filename: string) {
     (await maybeWorkflowFiles.astGrep`rule:
   pattern:
     context: "{ workflow: () => $_ }"
+`.exists()) ||
+    (await maybeWorkflowFiles.astGrep`rule:
+  pattern:
+    context: "export async function workflow($$$_) { $$$_ }"
 `.exists())
   );
 }
