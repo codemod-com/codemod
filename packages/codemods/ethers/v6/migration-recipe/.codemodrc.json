@@ -1,7 +1,7 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
   "name": "Ethers/6/migration-recipe",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engine": "recipe",
   "private": false,
   "include": [
@@ -42,12 +42,12 @@
   },
   "names": [
     "Ethers/Big-Numbers",
-    "Ethers/V6/Signatures",
-    "Ethers/V6/Providers",
-    "Ethers/V6/Importing",
-    "Ethers/V6/Utilities",
-    "Ethers/V6/Transactions",
-    "Ethers/V6/Contracts/Ambigous-Methods",
-    "Ethers/V6/Contracts/Other-Method-Operations"
+    "Ethers/6/Signatures",
+    "Ethers/6/Providers",
+    "Ethers/6/Importing",
+    "Ethers/6/Utilities",
+    "Ethers/6/Transactions",
+    "Ethers/6/Contracts/Ambigous-Methods",
+    "Ethers/6/Contracts/Other-Method-Operations"
   ]
 }
