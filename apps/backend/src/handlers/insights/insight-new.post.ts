@@ -1,5 +1,5 @@
 import type { ApiResponse, CodemodRunResponse } from "@codemod-com/api-types";
-import { parsePostInsightBody } from "@codemod-com/api-types/src/insights.js";
+import { parsePostInsightBody } from "@codemod-com/api-types";
 import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { type Insight, prisma } from "@codemod-com/database";
 import axios from "axios";

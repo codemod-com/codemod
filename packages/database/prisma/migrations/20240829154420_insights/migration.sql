@@ -31,7 +31,7 @@ CREATE TABLE "Widget" (
     "id" SERIAL NOT NULL,
     "kind" TEXT NOT NULL,
     "title" TEXT NOT NULL,
-    "data" TEXT NOT NULL,
+    "data" JSONB NOT NULL,
     "template" BOOLEAN NOT NULL DEFAULT false,
     "insightId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
