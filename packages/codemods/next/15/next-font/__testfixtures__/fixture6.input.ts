@@ -1,1 +1,0 @@
-import { Arial } from '@next/font/google';

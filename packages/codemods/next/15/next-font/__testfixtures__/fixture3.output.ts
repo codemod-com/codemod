@@ -1,1 +1,0 @@
-import { OpenSans } from 'next/font/google';
