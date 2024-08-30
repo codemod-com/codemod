@@ -17,7 +17,10 @@
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/nuxt/4/migration-recipe"
   },
   "applicability": {
-    "from": [["nuxt", ">=", "3.0.0"], ["nuxt", "<", "4.0.0"]],
+    "from": [
+      ["nuxt", ">=", "3.0.0"],
+      ["nuxt", "<", "4.0.0"]
+    ],
     "to": [["nuxt", ">=", "4.0.0"]]
   },
   "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"]

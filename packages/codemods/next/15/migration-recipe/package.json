@@ -1,0 +1,9 @@
+{
+  "name": "@codemod/next-15-migration-recipe",
+  "files": [
+    "./README.md",
+    "./.codemodrc.json"
+  ],
+  "type": "module",
+  "private": true
+}
