@@ -1,1 +1,0 @@
-import { TimesNewRoman } from '@next/font/google';
