@@ -1,0 +1,1 @@
+import { ComicSans } from 'next/font/google';

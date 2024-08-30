@@ -1,0 +1,1 @@
+import { Montserrat } from 'next/font/google';
