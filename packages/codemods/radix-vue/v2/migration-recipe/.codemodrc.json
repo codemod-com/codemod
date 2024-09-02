@@ -1,0 +1,21 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "reka-ui-v2/migration-recipe",
+  "version": "1.0.0",
+  "engine": "recipe",
+  "private": false,
+  "names": [
+    "rekaUI-v2/searchTerm-props-of-Root-to-Input's-v-model",
+    "rekaUI-v2/combobox-root-to-combobox-input",
+    "rekaUI-v2/add-script-setup-and-update-calendar-components"
+  ],
+  "meta": {
+    "tags": [
+      "vue",
+      "radix",
+      "radix-vue v2"
+    ],
+    "git": "https://github.com/codemod-com/codemod/packages/codemods/radix-vue/v2/migration-receipe"
+  },
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"]
+}

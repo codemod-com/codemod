@@ -1,0 +1,6 @@
+{
+    "name": "@codemod/reka-ui-v2-migration-recipe",
+    "files": ["./README.md", "./.codemodrc.json"],
+    "type": "module",
+    "private": true
+  }
