@@ -18,11 +18,11 @@ Publishing codemods to the registry is especially useful for framework/library b
 
 ### Option 1: Publishing a Codemod-compatible package (recommended)
 
-Creating and publishing a [Codemod-compatible package](/guides/building-codemods/package-requirements) brings an enhanced codemod running experience.
+Creating and publishing a [Codemod-compatible package](/building-codemods/package-requirements) brings an enhanced codemod running experience.
 
 <Steps>
     <Step title="Build a codemod package">
-        To publish a codemod to Codemod Registry, the codemod package needs to be compatible with Codemod platform. To learn how to build Codemod-compatible codemods, please refer to the [building codemods guide](/guides/building-codemods/build-package).
+        To publish a codemod to Codemod Registry, the codemod package needs to be compatible with Codemod platform. To learn how to build Codemod-compatible codemods, please refer to the [building codemods guide](/building-codemods/build-package).
     </Step>
     <Step title="Login to Codemod platform">
         If you are not already logged in, login to Codemod platform using:
@@ -51,7 +51,7 @@ Creating and publishing a [Codemod-compatible package](/guides/building-codemods
         Publish the codemod from source path:
 
         <Note>
-        To generate a [Codemod-compatible package](/guides/building-codemods/package-requirements), Codemod CLI will ask you a few questions about your codemod to generate the [`codemodrc.json` configuration file](/guides/building-codemods/package-requirements#codemodrc-json-reference) automatically for you.
+        To generate a [Codemod-compatible package](/building-codemods/package-requirements), Codemod CLI will ask you a few questions about your codemod to generate the [`codemodrc.json` configuration file](/building-codemods/package-requirements#codemodrc-json-reference) automatically for you.
         </Note>
 
         <Tip>If you want to use ESM-specific features like top-level `await` or `import.meta`, you can rename it to use `.mjs` or `.mts` extension or specify `--esm` flag to treat the source file as ESM package explicitly.</Tip>
