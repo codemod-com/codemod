@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
+    "@codemod-com/api-types": "workspace:*",
     "@faker-js/faker": "catalog:",
     "prisma": "catalog:",
     "tsx": "^4.11.0"

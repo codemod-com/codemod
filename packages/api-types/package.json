@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "@clerk/backend": "catalog:",
-    "@codemod-com/database": "workspace:*",
     "@codemod-com/filemod": "workspace:*"
   }
 }
