@@ -1,4 +1,4 @@
-import type { CodemodRunJobData } from "@codemod-com/api-types";
+import type { CodemodRunJobData } from "@codemod-com/utilities";
 import { Queue } from "bullmq";
 import { Redis } from "ioredis";
 import { environment } from "../util.js";

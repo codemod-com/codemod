@@ -1,7 +1,8 @@
-import { type ApiResponse, parsePutWidgetBody } from "@codemod-com/api-types";
+import type { ApiResponse } from "@codemod-com/api-types";
 import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
 import type { Widget } from "@codemod-com/database";
+import { parsePutWidgetBody } from "@codemod-com/utilities";
 import type { FastifyReply, RouteHandler } from "fastify";
 
 export type PutWidgetResponse = ApiResponse<Widget>;

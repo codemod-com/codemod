@@ -3,19 +3,18 @@ import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyPluginCallback } from "fastify";
 
-import {
-  type ApiResponse,
-  type CodemodRunJobData,
-  type CodemodRunResponse,
-  type CodemodRunStatus,
-  type CodemodRunStatusResponse,
-  UNAUTHORIZED,
-} from "@codemod-com/api-types";
+import { type ApiResponse, UNAUTHORIZED } from "@codemod-com/api-types";
 import {
   type UserDataPopulatedRequest,
   getAuthPlugin,
 } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
+import type {
+  CodemodRunJobData,
+  CodemodRunResponse,
+  CodemodRunStatus,
+  CodemodRunStatusResponse,
+} from "@codemod-com/utilities";
 import {
   parseCodemodRunBody,
   parseCodemodStatusData,
