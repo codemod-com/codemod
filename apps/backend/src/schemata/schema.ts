@@ -1,8 +1,7 @@
 import {
   codemodRunBodySchema,
   validateCodemodStatusParamsSchema,
-} from "@codemod-com/api-types";
-
+} from "@codemod-com/utilities";
 import {
   array,
   boolean,
