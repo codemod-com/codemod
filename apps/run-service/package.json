@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/run-service",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "scripts": {
     "build": "tsc && node esbuild.config.js",
     "start": "node build/index.js",
@@ -9,6 +9,7 @@
   "author": "Codemod inc.",
   "private": true,
   "devDependencies": {
+    "@codemod-com/api-types": "workspace:*",
     "@codemod-com/tsconfig": "workspace:*",
     "@types/node": "20.10.5",
     "@types/parse-github-url": "catalog:",
@@ -20,7 +21,6 @@
     "tsx": "^4.7.1"
   },
   "dependencies": {
-    "@codemod-com/api-types": "workspace:*",
     "@codemod-com/auth": "workspace:*",
     "@codemod-com/database": "workspace:*",
     "@codemod-com/utilities": "workspace:*",

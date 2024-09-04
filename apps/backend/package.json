@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/backend",
-  "version": "0.0.160",
+  "version": "0.0.161",
   "imports": {
     "#*": "./src/*"
   },
@@ -34,12 +34,12 @@
     "vitest": "1.1.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "catalog:",
-    "@aws-sdk/s3-request-presigner": "catalog:",
     "@codemod-com/auth": "workspace:*",
     "@codemod-com/database": "workspace:*",
     "@codemod-com/runner": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
+    "@aws-sdk/client-s3": "catalog:",
+    "@aws-sdk/s3-request-presigner": "catalog:",
     "@fastify/busboy": "catalog:",
     "@fastify/cors": "catalog:",
     "@fastify/multipart": "catalog:",

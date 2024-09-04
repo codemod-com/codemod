@@ -1,11 +1,11 @@
-import {
-  type ApiResponse,
-  type CodemodRunResponse,
-  parsePutInsightBody,
-} from "@codemod-com/api-types";
+import type { ApiResponse } from "@codemod-com/api-types";
 import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
 import type { Insight } from "@codemod-com/database";
+import {
+  type CodemodRunResponse,
+  parsePutInsightBody,
+} from "@codemod-com/utilities";
 import axios from "axios";
 import type { FastifyReply, RouteHandler } from "fastify";
 import { environment } from "#util.js";
