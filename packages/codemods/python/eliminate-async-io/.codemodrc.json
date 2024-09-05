@@ -1,0 +1,11 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.0",
+  "private": false,
+  "name": "python/eliminate-async-io",
+  "engine": "ast-grep",
+  "meta": {
+    "tags": ["python", "asyncio"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/python/eliminate-async-io"
+  }
+}
