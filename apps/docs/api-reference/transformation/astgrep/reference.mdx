@@ -136,6 +136,8 @@ Helper functions:
 
 Replaces code found with astGrep. Receives context with every found node.
 
+For simple transformations, you can use string replacement:
+
 <CodeGroup>
 ```ts string replacement
 import { astGrep } from '@codemod.com/workflow'
@@ -152,6 +154,8 @@ console.log('debugging flow')
 console.error('debugging flow')
 ```
 </CodeGroup>
+
+For more granular changes and/or detailed logic, you can use callback:
 
 <CodeGroup>
 ```ts callback replacement
