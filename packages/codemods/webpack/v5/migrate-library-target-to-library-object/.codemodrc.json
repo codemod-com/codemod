@@ -1,0 +1,17 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "webpack/v5/migrate-library-target-to-library-object",
+  "description": "This codemod transforms Webpack 4 configuration by changing the `output.library` and `output.libraryTarget` properties to the new format required in Webpack 5.",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "applicability": {
+    "from": [["webpack", "<=", "4"]],
+    "to": [["webpack", ">=", "5"]]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": ["webpack", "migration","codemod"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/webpack/v5/migrate-library-target-to-library-object"
+  }
+}
