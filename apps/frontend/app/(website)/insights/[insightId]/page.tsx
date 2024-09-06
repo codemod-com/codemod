@@ -2,16 +2,27 @@
 import RGL, { type Layout, WidthProvider } from "react-grid-layout";
 const ReactGridLayout = WidthProvider(RGL);
 
+import Button from "@/components/shared/Button";
+import Icon from "@/components/shared/Icon";
 import { useViewStore } from "@/store/view";
+import { cn } from "@/utils";
+import type { Widget } from "@codemod-com/database";
 import type {
   ChartWidgetData,
   PrimitiveWidgetData,
   TableWidgetData,
-} from "@codemod-com/api-types";
-import type { Widget } from "@codemod-com/database";
-import type { SortingState } from "@tanstack/react-table";
+} from "@codemod-com/utilities";
+import { Separator } from "@studio/components/ui/separator";
 import { get } from "lodash-es";
-import { ArrowDown, ArrowUp, Loader2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowDownRightIcon,
+  ArrowUp,
+  GripIcon,
+  Loader2,
+} from "lucide-react";
+import { AlignJustify, Link as LinkIcon } from "lucide-react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Fragment, type ReactNode, useEffect, useMemo, useState } from "react";
 import {
@@ -29,8 +40,37 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { DataTable } from "../components/table/table";
 import { useInsight } from "../hooks/useInsight";
-import SecondaryHeader from "./components/SecondaryHeader";
-import type { DynamicLineChartProps } from "./types";
+
+const SecondaryHeader = () => {
+  const { toggleSidebar } = useViewStore();
+
+  return (
+    <div className="flex w-full py-[6px] px-[16px] items-center flex-row gap-2 flex-grow h-[40px]">
+      <AlignJustify role="button" onClick={toggleSidebar} />
+      <Separator
+        orientation="vertical"
+        className="bg-border-light dark:bg-border-dark mx-[8px]"
+      />
+      <Link
+        className="flex items-center gap-2 text-secondary-light whitespace-nowrap"
+        href={"/insights"}
+        prefetch
+      >
+        <Icon name="arrow-left" className="w-4" />
+        All insights
+      </Link>
+      <Separator
+        orientation="vertical"
+        className="bg-border-light dark:bg-border-dark mx-[8px]"
+      />
+      <Button intent="inline">
+        <div className="flex items-center gap-2">
+          React 18.3.1 migration Insight <LinkIcon size={16} />
+        </div>
+      </Button>
+    </div>
+  );
+};
 
 type TableWidgetProps = {
   widget: Widget & { kind: "table"; data: TableWidgetData };
@@ -47,8 +87,6 @@ const TableWidget = ({ widget }: TableWidgetProps) => {
       ),
     [selectedRepos, insight.data?.codemodRuns],
   );
-
-  const [sortingState, setSortingState] = useState<SortingState>([]);
 
   const usedCodemods = useMemo(
     () =>
@@ -101,9 +139,9 @@ const TableWidget = ({ widget }: TableWidgetProps) => {
               >
                 {title}
                 {isSorted === "asc" ? (
-                  <ArrowUp />
+                  <ArrowUp className="w-4 h-4" />
                 ) : isSorted === "desc" ? (
-                  <ArrowDown />
+                  <ArrowDown className="w-4 h-4" />
                 ) : null}
               </div>
             );
@@ -128,10 +166,6 @@ const TableWidget = ({ widget }: TableWidgetProps) => {
     </>
   );
 };
-
-interface ExtendedDynamicLineChartProps extends DynamicLineChartProps {
-  title: string;
-}
 
 interface TooltipPayloadItem {
   name: string;
@@ -163,10 +197,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
       <div className="custom-tooltip bg-white p-4 shadow-md rounded">
         <p className="label">{`${new Date(label || "").toLocaleDateString(
           "en-US",
-          {
-            month: "long",
-            year: "numeric",
-          },
+          { month: "long", year: "numeric" },
         )}`}</p>
         {uniquePayload.map((pld, index) => (
           <p
@@ -260,7 +291,7 @@ const ChartWidget = ({ widget }: ChartWidgetProps) => {
     <>
       <h2 className="font-semibold">{widget.title}</h2>
 
-      <ResponsiveContainer height={300}>
+      <ResponsiveContainer>
         <ComposedChart
           data={data}
           margin={{ top: 5, right: 30, left: 20, bottom: 20 }}
@@ -466,8 +497,16 @@ const Widget = (props: { widget: Widget }) => {
     );
   }
 
+  const { isResizing, isDragging } = useViewStore();
+
   return (
-    <div className="rounded-xl px-4 py-3 bg-white dark:bg-gray-darker overflow-hidden w-full h-full">
+    <div
+      className={cn(
+        "peer group rounded-xl px-4 py-3 bg-white dark:bg-gray-darker overflow-hidden w-full h-full",
+        (isResizing || isDragging) && "select-none pointer-events-none",
+      )}
+    >
+      <GripIcon className="draggable-handle opacity-0 group-hover:opacity-100 absolute right-[0.5rem] top-[0.5rem] w-4 h-4 text-gray-300 dark:text-gray-400 cursor-move" />
       {Content}
     </div>
   );
@@ -479,7 +518,7 @@ const InsightPage = () => {
   // useMirageServer(true);
 
   const { insightId } = useParams<{ insightId: string }>();
-  const { selectedRepos } = useViewStore();
+  const { selectedRepos, setIsDragging, setIsResizing } = useViewStore();
   const [layout, setLayout] = useState<Layout[]>([]);
 
   const insightQuery = useInsight(insightId);
@@ -521,18 +560,26 @@ const InsightPage = () => {
     setLayout(generatedLayout);
   }, [insightQuery.data?.widgets]);
 
-  console.log(layout);
   return (
     <div className="flex-1 bg-emphasis-light dark:bg-emphasis-dark w-full">
       <SecondaryHeader />
 
       <div className="px-4 py-2">
         <ReactGridLayout
+          className="[&_*]:transition-opacity duration-500"
           layout={layout}
           onLayoutChange={setLayout}
           rowHeight={30}
-          // preventCollision={true}
-          // compactType="horizontal"
+          draggableHandle=".draggable-handle"
+          onResizeStart={() => setIsResizing(true)}
+          onResizeStop={() => setIsResizing(false)}
+          onDragStart={() => setIsDragging(true)}
+          onDragStop={() => setIsDragging(false)}
+          useCSSTransforms={true}
+          resizeHandles={["se"]}
+          resizeHandle={
+            <ArrowDownRightIcon className="opacity-0 hover:opacity-100 peer-hover:opacity-100 w-4 h-4 absolute right-[0.5rem] bottom-[0.5rem] text-gray-300 dark:text-gray-700 cursor-se-resize" />
+          }
           cols={12}
         >
           {insightQuery.data?.widgets.map((w, i) => (

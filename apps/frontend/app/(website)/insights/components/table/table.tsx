@@ -1,5 +1,4 @@
 "use client";
-
 import {
   type ColumnDef,
   type SortingState,
@@ -9,8 +8,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import { useState } from "react";
+import { ScrollArea } from "./scroll";
 import {
   Table,
   TableBody,
@@ -57,9 +56,9 @@ export const DataTable = <T,>({
   if (!table) return null;
 
   return (
-    <div className="w-full">
+    <ScrollArea withHorizontal forceMount className="relative h-full w-full">
       <Table>
-        <TableHeader className="sticky top-0 z-20">
+        <TableHeader className="sticky top-0 z-20 bg-gray-200 dark:bg-gray-dark rounded-md">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow
               key={headerGroup.id}
@@ -108,6 +107,6 @@ export const DataTable = <T,>({
           )}
         </TableBody>
       </Table>
-    </div>
+    </ScrollArea>
   );
 };

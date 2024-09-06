@@ -1,7 +1,7 @@
 import type {
   CodemodRunBody,
   CodemodRunResponse,
-} from "@codemod-com/api-types";
+} from "@codemod-com/utilities";
 import { RUN_CODEMOD as RUN_CODEMOD_URL } from "@mocks/endpoints/gh-run";
 import { useAPI } from "@studio/hooks/useAPI";
 import { useState } from "react";

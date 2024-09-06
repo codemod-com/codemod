@@ -11,13 +11,13 @@ import Fastify, {
   type FastifyRequest,
 } from "fastify";
 import {
-  type PostNewInsightResponse,
-  postNewInsightHandler,
-} from "#handlers/insights/insight-new.post.js";
-import {
   type PutInsightResponse,
   putInsightHandler,
 } from "#handlers/insights/insight.put.js";
+import {
+  type PostNewInsightResponse,
+  postNewInsightHandler,
+} from "#handlers/insights/insights-new.post.js";
 import {
   type GetCodemodRunsResponse,
   getCodemodRunsHandler,
@@ -387,13 +387,13 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
   );
 
   instance.post<{ Reply: PostNewInsightResponse }>(
-    "/insight/new",
+    "/insights/new",
     { preHandler: [instance.getUserData] },
     postNewInsightHandler,
   );
 
   instance.put<{ Reply: PutInsightResponse }>(
-    "/insight",
+    "/insights",
     { preHandler: [instance.getUserData] },
     putInsightHandler,
   );

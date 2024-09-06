@@ -10,14 +10,8 @@ import type { FastifyReply, RouteHandler } from "fastify";
 import { environment } from "#util.js";
 
 const DEFAULT_CODEMODS = [
-  {
-    engine: "workflow",
-    name: "drift_analyzer",
-  },
-  {
-    engine: "workflow",
-    name: "drift_analyzer_pkg",
-  },
+  { engine: "workflow", name: "drift_analyzer" },
+  { engine: "workflow", name: "drift_analyzer_pkg" },
 ];
 
 export type PostNewInsightResponse = ApiResponse<Insight>;
@@ -28,25 +22,15 @@ export const postNewInsightHandler: RouteHandler<{
   const { repoUrls } = parsePostInsightBody(request.body);
 
   const insight = await prisma.insight.create({
-    data: {
-      ownerId: request.user!.id,
-      repoUrls,
-    },
+    data: { ownerId: request.user!.id, repoUrls },
   });
 
   await Promise.all(
     repoUrls.map(async (repoUrl) => {
       const { data: response } = await axios.post<CodemodRunResponse>(
         `${environment.RUN_SERVICE_URL}/codemodRun`,
-        {
-          repoUrl,
-          codemods: DEFAULT_CODEMODS,
-        },
-        {
-          headers: {
-            Authorization: request.headers?.authorization,
-          },
-        },
+        { repoUrl, codemods: DEFAULT_CODEMODS },
+        { headers: { Authorization: request.headers?.authorization } },
       );
 
       console.dir({ response }, { depth: 8 });
@@ -56,9 +40,7 @@ export const postNewInsightHandler: RouteHandler<{
       for (const codemodRunResult of data) {
         await prisma.codemodRun.update({
           where: { jobId: codemodRunResult.jobId },
-          data: {
-            insight: { connect: { id: insight.id } },
-          },
+          data: { insight: { connect: { id: insight.id } } },
         });
       }
     }),

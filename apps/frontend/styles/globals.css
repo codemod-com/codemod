@@ -364,3 +364,41 @@ h6[class*="heading"] a {
 .tab-item.input-error {
   border-color: red;
 }
+
+/* React Grid Layout (react-grid-layout) */
+.react-grid-layout {
+  position: relative;
+  transition: height 200ms ease;
+}
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top;
+}
+.react-grid-item.cssTransforms {
+  transition-property: transform;
+}
+.react-grid-item.resizing {
+  z-index: 1;
+}
+
+.react-grid-item.react-draggable-dragging {
+  transition: none;
+  z-index: 3;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: #000;
+  opacity: 0.1;
+  transition-duration: 100ms;
+  z-index: 2;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.dark .react-grid-item.react-grid-placeholder {
+  background: #FFF;
+}

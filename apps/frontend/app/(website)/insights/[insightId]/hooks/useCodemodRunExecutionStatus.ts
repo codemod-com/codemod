@@ -45,8 +45,7 @@ export const useCodemodRunResult = (
         let response: GetExecutionStatusResponse | null = null;
 
         try {
-          response = (await getExecutionStatus<GetExecutionStatusResponse>())
-            .data;
+          response = (await getExecutionStatus()).data;
         } catch (e) {
           clearInterval(intervalId);
           return;

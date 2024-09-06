@@ -3,7 +3,7 @@ import type { Insight } from "@codemod-com/database";
 import { useMutation, useQueryClient } from "react-query";
 import { useAPI } from "../../studio/src/hooks/useAPI";
 
-export const useCreateInsightMutation = () => {
+export const useInitiateInsightsMutation = () => {
   const queryClient = useQueryClient();
 
   const { post: createInsight } = useAPI<Insight>(CREATE_INSIGHT);
