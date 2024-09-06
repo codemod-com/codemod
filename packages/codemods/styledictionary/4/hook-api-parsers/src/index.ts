@@ -13,7 +13,8 @@ export default function transform(
     const j = api.jscodeshift;
     const root = j(file.source);
 
-    root.find(j.ObjectExpression).forEach((path) => {
+    // Function to transform parsers array to hooks.parsers object
+    function transformParsersArray(path) {
         // Check if `parsers` is an array property
         const parsersProperty = path.value.properties.find(
             (prop) =>
@@ -70,7 +71,51 @@ export default function transform(
             // Add the `hooks` property to the root object
             path.value.properties.push(hooksProperty);
         }
-    });
+    }
+
+    // Function to transform StyleDictionary.registerParser calls
+    function transformRegisterParserCalls(path) {
+        const args = path.node.arguments;
+
+        // Ensure the first argument is an object expression
+        if (args.length > 0 && args[0].type === 'ObjectExpression') {
+            const properties = args[0].properties;
+
+            // Check if 'name' property already exists
+            const hasNameProperty = properties.some(
+                (prop) => prop.key.name === 'name',
+            );
+
+            // If 'name' property does not exist, add it
+            if (!hasNameProperty) {
+                properties.unshift(
+                    j.property(
+                        'init',
+                        j.identifier('name'),
+                        j.literal('parser-foo'),
+                    ),
+                );
+            }
+
+            // Find and rename 'parse' property to 'parser'
+            properties.forEach((prop) => {
+                if (prop.key.name === 'parse') {
+                    prop.key.name = 'parser'; // Rename parse to parser
+                }
+            });
+        }
+    }
+
+    // Apply the transformation for parsers array to hooks.parsers object
+    root.find(j.ObjectExpression).forEach(transformParsersArray);
+
+    // Apply the transformation for StyleDictionary.registerParser calls
+    root.find(j.CallExpression, {
+        callee: {
+            object: { name: 'StyleDictionary' },
+            property: { name: 'registerParser' },
+        },
+    }).forEach(transformRegisterParserCalls);
 
     return root.toSource();
 }

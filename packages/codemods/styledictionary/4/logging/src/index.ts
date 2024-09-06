@@ -10,32 +10,35 @@ export default function transform(
     api: API,
     options?: Options,
   ): string | undefined {
-    let jsonData;
-    try {
-        jsonData = JSON.parse(file.source);
-    } catch (e) {
-        throw new Error('Invalid JSON input.');
-    }
+    const j = api.jscodeshift;
+    const root = j(file.source);
 
-    // Traverse through the object to find the "log" property
-    const traverseAndUpdateLogProperty = (obj) => {
-        if (obj.log && typeof obj.log === 'string') {
-            obj.log = {
-                warnings: obj.log,
-                verbosity: 'default',
-            };
-        }
+    // Traverse the JSON object
+    root.find(j.ObjectExpression).forEach((path) => {
+        path.node.properties.forEach((property) => {
+            if (
+                property.key.name === 'log' &&
+                j.Literal.check(property.value)
+            ) {
+                // Convert the old `log` format to the new object format
+                const logValue = property.value.value;
+                const newLogObject = j.objectExpression([
+                    j.property(
+                        'init',
+                        j.identifier('warnings'),
+                        j.literal(logValue),
+                    ),
+                    j.property(
+                        'init',
+                        j.identifier('verbosity'),
+                        j.literal('default'),
+                    ),
+                ]);
 
-        // Recursively check nested objects
-        for (const key in obj) {
-            if (typeof obj[key] === 'object' && obj[key] !== null) {
-                traverseAndUpdateLogProperty(obj[key]);
+                property.value = newLogObject; // Replace the value
             }
-        }
-    };
+        });
+    });
 
-    traverseAndUpdateLogProperty(jsonData);
-
-    // Return the modified JSON as a string with proper formatting
-    return JSON.stringify(jsonData, null, 2);
+    return root.toSource();
 }

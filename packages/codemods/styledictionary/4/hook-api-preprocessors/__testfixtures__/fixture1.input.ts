@@ -5,10 +5,4 @@ export default {
             return dictionary;
         },
     },
-    preprocessors: ['foo'],
-    platforms: {
-        css: {
-            preprocessors: ['foo'],
-        },
-    },
 };

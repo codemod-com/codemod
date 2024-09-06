@@ -13,42 +13,60 @@ export default function transform(
     const j = api.jscodeshift;
     const root = j(file.source);
 
-    // Find the export default object
-    root.find(j.ExportDefaultDeclaration)
-        .find(j.ObjectExpression)
-        .forEach((path) => {
-            const properties = path.node.properties;
+    root.find(j.ObjectExpression).forEach((path) => {
+        const properties = path.node.properties;
 
-            // Find the preprocessors property
-            const preprocessorPropIndex = properties.findIndex(
-                (prop) =>
-                    prop.key.name === 'preprocessors' &&
-                    prop.value.type === 'ObjectExpression',
+        const preprocessorPropIndex = properties.findIndex(
+            (prop) =>
+                prop.key.name === 'preprocessors' &&
+                prop.value.type === 'ObjectExpression',
+        );
+
+        if (preprocessorPropIndex !== -1) {
+            const preprocessorProp = properties[preprocessorPropIndex];
+            const preprocessorValue = preprocessorProp.value;
+
+            // Create the hooks.preprocessors property
+            const hooksProp = j.property(
+                'init',
+                j.identifier('hooks'),
+                j.objectExpression([
+                    j.property(
+                        'init',
+                        j.identifier('preprocessors'),
+                        preprocessorValue,
+                    ),
+                ]),
             );
 
-            if (preprocessorPropIndex !== -1) {
-                const preprocessorProp = properties[preprocessorPropIndex];
+            // Remove the old preprocessors property
+            properties.splice(preprocessorPropIndex, 1);
 
-                // Create the hooks.preprocessors property
-                const hooksProp = j.property(
-                    'init',
-                    j.identifier('hooks'),
-                    j.objectExpression([
-                        j.property(
-                            'init',
-                            j.identifier('preprocessors'),
-                            preprocessorProp.value,
-                        ),
-                    ]),
-                );
+            // Add the new hooks property
+            properties.push(hooksProp);
 
-                // Remove the old preprocessors property
-                properties.splice(preprocessorPropIndex, 1);
+            // Create the global preprocessors property with string literals
+            const globalPreprocessorsProp = j.property(
+                'init',
+                j.identifier('preprocessors'),
+                j.arrayExpression(
+                    preprocessorValue.properties.map((prop) =>
+                        j.literal(prop.key.name),
+                    ),
+                ),
+            );
 
-                // Add the new hooks property
-                properties.push(hooksProp);
+            // Add the global preprocessors property if not already present
+            if (
+                !properties.some(
+                    (prop) =>
+                        prop.key.name === 'preprocessors' && prop !== hooksProp,
+                )
+            ) {
+                properties.push(globalPreprocessorsProp);
             }
-        });
+        }
+    });
 
     return root.toSource();
 }

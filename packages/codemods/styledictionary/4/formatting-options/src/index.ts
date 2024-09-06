@@ -11,17 +11,10 @@ export default function transform(
     options?: Options,
   ): string | undefined {
     const j = api.jscodeshift;
+    const root = j(file.source);
 
-    // Parse the file content as JSON
-    let jsonData;
-    try {
-        jsonData = JSON.parse(file.source);
-    } catch (e) {
-        throw new Error('Invalid JSON input.');
-    }
-
-    // List of properties to move into the "options" object
-    const propertiesToMove = [
+    // List of properties to be moved into the `options` object
+    const optionsProps = new Set([
         'className',
         'packageName',
         'type',
@@ -29,32 +22,63 @@ export default function transform(
         'name',
         'resourceType',
         'resourceMap',
-    ];
+    ]);
 
-    // Traverse platforms -> files
-    for (const platformKey in jsonData.platforms) {
-        const platform = jsonData.platforms[platformKey];
-        if (platform.files) {
-            platform.files = platform.files.map((file) => {
-                // Collect properties to move
-                const options = {};
-                propertiesToMove.forEach((prop) => {
-                    if (file.hasOwnProperty(prop)) {
-                        options[prop] = file[prop];
-                        delete file[prop];
-                    }
-                });
+    // Function to transform an object expression by moving specific properties into an `options` object
+    function moveToOptions(objectExpression) {
+        const fileProps = objectExpression.properties;
+        const optionsObject = j.objectExpression([]);
 
-                // Add options property if there are any properties to move
-                if (Object.keys(options).length > 0) {
-                    file.options = options;
-                }
+        objectExpression.properties = fileProps.filter((prop) => {
+            if (optionsProps.has(prop.key.name)) {
+                optionsObject.properties.push(prop);
+                return false; // remove from the original properties
+            }
+            return true;
+        });
 
-                return file;
-            });
+        // Add `options` property if any options are found
+        if (optionsObject.properties.length > 0) {
+            objectExpression.properties.push(
+                j.property('init', j.identifier('options'), optionsObject),
+            );
         }
     }
 
-    // Return the modified JSON as a string
-    return JSON.stringify(jsonData, null, 2); // Pretty-print with 2-space indentation
+    // Recursively search for object expressions and process them
+    root.find(j.ObjectExpression).forEach((path) => {
+        const obj = path.value;
+
+        // Check if this object expression has the properties we care about
+        const hasDestinationAndFormat = obj.properties.some((prop) => {
+            if (prop.key.name === 'files') {
+                const filesArray = prop.value.elements;
+                return filesArray.some((file) => {
+                    return (
+                        file.type === 'ObjectExpression' &&
+                        file.properties.some(
+                            (p) => p.key.name === 'destination',
+                        ) &&
+                        file.properties.some((p) => p.key.name === 'format')
+                    );
+                });
+            }
+            return false;
+        });
+
+        // Only transform if destination and format are present
+        if (hasDestinationAndFormat) {
+            obj.properties.forEach((prop) => {
+                if (prop.value.type === 'ArrayExpression') {
+                    prop.value.elements.forEach((item) => {
+                        if (item.type === 'ObjectExpression') {
+                            moveToOptions(item);
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    return root.toSource();
 }

@@ -13,7 +13,7 @@ export default function transform(
     const j = api.jscodeshift;
     const root = j(file.source);
 
-    // Helper function to recursively find and transform transform properties
+    // Helper function to recursively find and transform object properties
     function transformObjectProperties(objectExpression) {
         const properties = objectExpression.properties;
 
@@ -62,9 +62,35 @@ export default function transform(
         });
     }
 
-    // Find all object expressions in the file and transform them
+    // Transform object properties in all object expressions
     root.find(j.ObjectExpression).forEach((path) => {
         transformObjectProperties(path.node);
+    });
+
+    // Handle StyleDictionary.registerTransform calls
+    root.find(j.CallExpression).forEach((path) => {
+        const callee = path.node.callee;
+        if (
+            callee.object &&
+            callee.object.name === 'StyleDictionary' &&
+            callee.property.name === 'registerTransform'
+        ) {
+            path.node.arguments.forEach((arg) => {
+                if (arg.type === 'ObjectExpression') {
+                    arg.properties.forEach((prop) => {
+                        // Rename 'matcher' to 'filter'
+                        if (prop.key.name === 'matcher') {
+                            prop.key.name = 'filter';
+                        }
+
+                        // Rename 'transformer' to 'transform'
+                        if (prop.key.name === 'transformer') {
+                            prop.key.name = 'transform';
+                        }
+                    });
+                }
+            });
+        }
     });
 
     return root.toSource();

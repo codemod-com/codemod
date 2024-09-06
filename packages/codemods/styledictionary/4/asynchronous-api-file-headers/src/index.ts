@@ -13,6 +13,11 @@ export default function transform(
     const j = api.jscodeshift;
     const root = j(file.source);
 
+    // Rename "formatter" to "format"
+    root.find(j.Identifier, { name: 'formatter' }).forEach((path) => {
+        path.node.name = 'format';
+    });
+
     // Find all fileHeader usages
     root.find(j.CallExpression, {
         callee: {
