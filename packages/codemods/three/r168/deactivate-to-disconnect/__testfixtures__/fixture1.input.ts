@@ -1,0 +1,1 @@
+taScene.dragControls.deactivate();
