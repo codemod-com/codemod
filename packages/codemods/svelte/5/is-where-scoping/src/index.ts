@@ -13,8 +13,8 @@ export default function transform(
     const j = api.jscodeshift;
     const source = file.source;
 
-    // Regular expression to find content inside <style> tags
-    const styleTagRegex = /<style[^>]*>([\s\S]*?)<\/style>/gm;
+    // Regular expression to find content inside <style> tags and capture the entire opening tag
+    const styleTagRegex = /(<style[^>]*>)([\s\S]*?)(<\/style>)/gm;
 
     // Function to perform the transformation logic
     function transformCss(css) {
@@ -67,11 +67,11 @@ export default function transform(
         // Process CSS inside <style> tags
         const transformedSource = source.replace(
             styleTagRegex,
-            (match, styleContent) => {
+            (match, openingTag, styleContent, closingTag) => {
                 // Transform the extracted CSS content from <style> tags
                 const transformedStyleContent = transformCss(styleContent);
-                // Replace the original <style> content with the transformed content
-                return `<style>\n${transformedStyleContent}\n</style>`;
+                // Replace the original <style> content with the transformed content, preserving the original opening tag
+                return `${openingTag}\n${transformedStyleContent}\n${closingTag}`;
             },
         );
 

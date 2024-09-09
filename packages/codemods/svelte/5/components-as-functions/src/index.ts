@@ -1,20 +1,20 @@
 import type {
-  API,
-  ArrowFunctionExpression,
-  FileInfo,
-  Options,
-} from "jscodeshift";
+    API,
+    ArrowFunctionExpression,
+    FileInfo,
+    Options,
+} from 'jscodeshift';
 
 export default function transform(
     file: FileInfo,
     api: API,
     options?: Options,
-  ): string | undefined {
+): string | undefined {
     const j = api.jscodeshift;
     const source = file.source;
 
-    // Regular expression to find the content inside <script> tags
-    const scriptTagRegex = /<script[^>]*>([\s\S]*?)<\/script>/gm;
+    // Regular expression to find the content inside <script> tags and capture the entire opening tag
+    const scriptTagRegex = /(<script[^>]*>)([\s\S]*?)(<\/script>)/gm;
 
     // Variable to hold the transformed source
     let transformedSource = source;
@@ -88,12 +88,12 @@ export default function transform(
     // First, handle the case with <script> tags
     transformedSource = transformedSource.replace(
         scriptTagRegex,
-        (match, scriptContent) => {
+        (match, openingTag, scriptContent, closingTag) => {
             scriptFound = true;
             // Transform the extracted JavaScript content from <script> tags
             const transformedScriptContent = transformCode(scriptContent);
-            // Replace the original <script> content with the transformed content
-            return `<script>\n${transformedScriptContent}\n</script>`;
+            // Replace the original <script> content with the transformed content, preserving the original opening tag
+            return `${openingTag}\n${transformedScriptContent}\n${closingTag}`;
         },
     );
 
