@@ -355,6 +355,15 @@
         "blog",
         "data"
       ]
+    },
+    {
+      "login": "Aslemammad",
+      "name": "Mohammad Bagher Abiyat",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37929992?v=4",
+      "profile": "http://minimalistweb.dev",
+      "contributions": [
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,

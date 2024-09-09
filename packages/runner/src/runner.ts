@@ -122,7 +122,11 @@ export class Runner {
   }) {
     const { codemod, flowSettings, onError, onSuccess, printer } = options;
     const cloudRunner = await this._options.runnerService?.startCodemodRun({
-      source: await getCodemodExecutable(codemod.path, flowSettings.esm),
+      source: await getCodemodExecutable(
+        codemod.path,
+        flowSettings.esm,
+        codemod.config.engine,
+      ),
       engine: codemod.config.engine as "workflow",
       args: codemod.safeArgumentRecord,
     });
@@ -487,6 +491,7 @@ export class Runner {
     const codemodSource = await getCodemodExecutable(
       codemod.path,
       flowSettings.esm,
+      codemod.config.engine,
     );
     const transformer = await getTransformer(codemodSource);
 

@@ -1,10 +1,8 @@
 import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import esbuild from "esbuild";
-
-import { tmpdir } from "node:os";
 import { getEntryPath, isJavaScriptName } from "@codemod-com/utilities";
+import esbuild from "esbuild";
 import { glob } from "glob";
 
 export type TransformFunction = (
@@ -59,7 +57,7 @@ export const getTransformer = async (source: string, name?: string) => {
       const alreadyLoaded = temporaryLoadedModules.get(hashDigest);
       if (alreadyLoaded) return alreadyLoaded;
 
-      const tempFilePath = join(tmpdir(), `temp-module-${hashDigest}.mjs`);
+      const tempFilePath = join(__dirname, `temp-module-${hashDigest}.mjs`);
 
       await writeFile(tempFilePath, source);
       const module = (await import(
@@ -69,15 +67,13 @@ export const getTransformer = async (source: string, name?: string) => {
       const transformer =
         typeof module.default === "function"
           ? module.default
-          : module.__esModule
-            ? module.default ??
-              module.transform ??
-              module.handleSourceFile ??
-              module.repomod ??
-              module.filemod ??
-              module.workflow ??
-              null
-            : null;
+          : module.default ??
+            module.transform ??
+            module.handleSourceFile ??
+            module.repomod ??
+            module.filemod ??
+            module.workflow ??
+            null;
 
       temporaryLoadedModules.set(hashDigest, transformer);
       return transformer;
@@ -93,16 +89,22 @@ export const BUILT_SOURCE_GLOB = "cdmd_dist/index.{js,mjs,cjs}";
 export const bundleJS = async (options: {
   entry: string;
   esm?: boolean;
+  engine?: string;
 }) => {
-  const { entry, esm: argvEsm } = options;
-  const isESM = isESMExtension(entry) || argvEsm;
-  const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
+  const { entry, esm: argvEsm, engine } = options;
+  const isESM = isESMExtension(entry) || argvEsm || engine === "workflow";
+  const EXTERNAL_DEPENDENCIES = [
+    "jscodeshift",
+    "ts-morph",
+    "@ast-grep/napi",
+    "@codemod.com/workflow",
+  ];
   const outfile = `/cdmd_dist/index.${isESM ? "mjs" : "cjs"}`;
 
   const buildOptions: Parameters<typeof esbuild.build>[0] = {
     entryPoints: [entry],
     bundle: true,
-    external: isESM ? undefined : EXTERNAL_DEPENDENCIES,
+    external: EXTERNAL_DEPENDENCIES,
     platform: "node",
     minify: true,
     minifyWhitespace: true,
@@ -141,7 +143,11 @@ const require = createRequire(import.meta.url);
   return sourceCode;
 };
 
-export const getCodemodExecutable = async (source: string, esm?: boolean) => {
+export const getCodemodExecutable = async (
+  source: string,
+  esm?: boolean,
+  engine?: string,
+) => {
   const existing = await glob(BUILT_SOURCE_GLOB, {
     cwd: source,
     absolute: true,
@@ -163,5 +169,5 @@ export const getCodemodExecutable = async (source: string, esm?: boolean) => {
     return readFile(entryPoint, { encoding: "utf8" });
   }
 
-  return bundleJS({ entry: entryPoint, esm });
+  return bundleJS({ entry: entryPoint, esm, engine });
 };

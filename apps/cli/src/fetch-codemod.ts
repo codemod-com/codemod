@@ -130,6 +130,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
         noLogs: true,
         noFixtures: true,
         build: true,
+        engine: argv.engine,
         esm: argv.esm,
       });
 

@@ -12,15 +12,28 @@ The Codemod CLI accepts a variety of subcommands and options to explore, publish
 
 ## Installation
 
-```bash
+<CodeGroup>
+
+```bash npm
 npm i -g codemod
 ```
+
+```bash pnpm
+pnpm add -g codemod
+```
+
+```bash yarn
+yarn global add codemod
+```
+
+</CodeGroup>
+
 
 ## Build
 
 ### `codemod learn`
 
-The `learn` command uses the diff of the latest edited file to automatically build a codemod using [Codemod Studio](/building-codemods/codemod-studio/).
+The `learn` command uses the diff of the latest edited file to automatically build a codemod using [Codemod Studio](/codemod-studio/).
 
 After running this command, if any git diff exists, the Codemod Engine will use the diff as before/after snippets in Codemod Studio.
 
@@ -32,7 +45,7 @@ codemod learn
 
 ### `codemod search`
 
-Can be used to list the codemods available in Codemod Registry and optionally search for a specific codemod using its name or tags.
+Can be used to list the codemods available in [Codemod Registry](/codemod-registry/introduction) and optionally search for a specific codemod using its name or tags.
 
 Aliases: `list` and `ls`
 
@@ -72,7 +85,7 @@ codemod init
 
 Can be used to publish a codemod to Codemod Registry.
 
-Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/guides/building-codemods/package-requirements).
+Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/building-codemods/package-requirements).
 
 To do so, use the `publish` command inside the codemod package directory:
 
@@ -112,7 +125,7 @@ Codemod CLI allows you to run codemods:
 1. from [Codemod Registry](/codemod-registry)
 2. from source
     - using a <Tooltip tip="A codemod package is a codemod with a valid `.codemodrc.json` configuration file.">codemod package</Tooltip>
-    - using a <Tooltip tip="This file can be a simple transfofrm file using any of the supported codemod engines.">transform file</Tooltip>
+    - using a <Tooltip tip="This file can be a simple transform file using any of the supported codemod engines.">transform file</Tooltip>
 
 <Tabs>
   <Tab title="Run from Codemod Registry">
@@ -145,15 +158,14 @@ Codemod CLI allows you to run codemods:
 
   </Tab>
   <Tab title="Run from source">
-    To run a local codemod package, you can:
+    To run a local codemod, you can run:
     ```bash
     codemod -s [path]
     ```
 
-    or you can run a transform file ([using a supported codemod engine](/guides/building-codemods/package-requirements#supported-codemod-engines)) by using:
-    ```bash
-    codemod -s [path] --engine [codemod-engine]
-    ```
+    If the target source includes a [codemod package](/building-codemods/package-requirements), the codemod will run automatically.
+    
+    If the codemod is an <Tooltip tip="E.g. a single transform.js file of a jscodeshift codemod">atomic transform file</Tooltip>, Codemod CLI will ask you to specify a [codemod engine](/building-codemods/package-requirements#supported-codemod-engines) to run the codemod.
   </Tab>
 </Tabs>
 

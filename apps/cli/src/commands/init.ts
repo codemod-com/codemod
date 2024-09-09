@@ -187,8 +187,8 @@ export const handleInitCliCommand = async (options: {
     const outputPath = join(codemodBaseDir, DEFAULT_BUILD_PATH);
     const bundledCode =
       source && isSourceAFile
-        ? await bundleJS({ entry: source, esm })
-        : await getCodemodExecutable(codemodBaseDir, esm);
+        ? await bundleJS({ entry: source, esm, engine: downloadInput.engine })
+        : await getCodemodExecutable(codemodBaseDir, esm, downloadInput.engine);
 
     await mkdir(dirname(outputPath), { recursive: true });
     await writeFile(outputPath, bundledCode);

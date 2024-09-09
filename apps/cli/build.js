@@ -102,5 +102,6 @@ build({
     "coffee-script",
     "squirrelly",
     "twing",
+    "@codemod.com/workflow",
   ],
 });

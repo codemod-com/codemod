@@ -7,14 +7,10 @@ const transformHelper = (node: BinaryExpression, api: API) => {
   const j = api.jscodeshift;
   const leftNode = node.left;
   const rightNode = node.right;
-  const left =
-    isStringLiteral(leftNode)
-      ? j.literal(leftNode.value)
-      : leftNode;
-  const right =
-    isStringLiteral(rightNode)
-      ? j.literal(rightNode.value)
-      : rightNode;
+  const left = isStringLiteral(leftNode) ? j.literal(leftNode.value) : leftNode;
+  const right = isStringLiteral(rightNode)
+    ? j.literal(rightNode.value)
+    : rightNode;
 
   return j.templateLiteral(
     [

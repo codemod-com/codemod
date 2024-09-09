@@ -1,6 +1,7 @@
 {
   "$schema": "https://mintlify.com/schema.json",
   "name": "Codemod.com",
+  "theme": "venus",
   "logo": {
     "dark": "/logo/codemod-logo-dark.svg",
     "light": "/logo/codemod-logo-light.svg",
@@ -21,10 +22,6 @@
     "url": "https://github.com/codemod-com/codemod"
   },
   "tabs": [
-    {
-      "name": "API reference",
-      "url": "api-reference"
-    },
     {
       "name": "Guides",
       "url": "guides"
@@ -49,24 +46,93 @@
       ]
     },
     {
+      "group": "CLI",
+      "pages": ["deploying-codemods/cli"]
+    },
+    {
+      "group": "Workflow Engine",
+      "pages": [
+        "deploying-codemods/workflow-engine",
+        {
+          "group": "Reference",
+          "icon": "code",
+          "pages": [
+            "api-reference/intro",
+            {
+              "group": "Git operations",
+              "pages": [
+                "api-reference/git/clone",
+                "api-reference/git/branch",
+                "api-reference/git/commit",
+                "api-reference/git/push"
+              ]
+            },
+            {
+              "group": "File operations",
+              "pages": [
+                "api-reference/file/files",
+                "api-reference/file/dirs",
+                "api-reference/file/move"
+              ]
+            },
+            {
+              "group": "Code transformation",
+              "pages": [
+                "api-reference/transformation/codemod",
+                "api-reference/transformation/jsfam",
+                {
+                  "group": "ast-grep",
+                  "pages": [
+                    "api-reference/transformation/astgrep/overview",
+                    "api-reference/transformation/astgrep/reference"
+                  ]
+                },
+                "api-reference/transformation/jscodeshift",
+                "api-reference/transformation/addimport",
+                "api-reference/transformation/removeimport"
+              ]
+            },
+            {
+              "group": "Command-line operations",
+              "pages": ["api-reference/command/exec"]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "group": "Codemod Studio",
-      "pages": ["building-codemods/codemod-studio"]
+      "pages": ["codemod-studio"]
     },
     {
       "group": "Codemod Registry",
       "pages": ["codemod-registry/introduction"]
     },
     {
-      "group": "Workflow Engine",
-      "pages": ["deploying-codemods/workflow-engine"]
-    },
-    {
-      "group": "CLI",
-      "pages": ["deploying-codemods/cli"]
-    },
-    {
       "group": "VS Code Extension",
       "pages": ["deploying-codemods/vsce"]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        {
+          "group": "Building codemods",
+          "pages": [
+            {
+              "group": "Codemod packages",
+              "pages": [
+                "building-codemods/package-requirements",
+                "building-codemods/build-package"
+              ]
+            },
+            "building-codemods/codemod2"
+          ]
+        },
+        {
+          "group": "Sharing codemods",
+          "pages": ["sharing/publishing-codemods"]
+        }
+      ]
     },
     {
       "group": "Quick Links",
@@ -81,63 +147,8 @@
       "pages": ["more-resources/changelog"]
     },
     {
-      "group": "Git operations",
-      "pages": [
-        "api-reference/git/clone",
-        "api-reference/git/branch",
-        "api-reference/git/commit",
-        "api-reference/git/push"
-      ]
-    },
-    {
-      "group": "File operations",
-      "pages": [
-        "api-reference/file/files",
-        "api-reference/file/dirs",
-        "api-reference/file/move"
-      ]
-    },
-    {
-      "group": "Code transformation",
-      "pages": [
-        "api-reference/transformation/codemod",
-        "api-reference/transformation/jsfam",
-        {
-          "group": "ast-grep",
-          "pages": [
-            "api-reference/transformation/astgrep/overview",
-            "api-reference/transformation/astgrep/reference"
-          ]
-        },
-        "api-reference/transformation/jscodeshift",
-        "api-reference/transformation/addimport",
-        "api-reference/transformation/removeimport"
-      ]
-    },
-    {
-      "group": "Command-line operations",
-      "pages": ["api-reference/command/exec"]
-    },
-    {
       "group": "Guides & Examples",
       "pages": ["guides/introduction"]
-    },
-    {
-      "group": "Building codemods",
-      "pages": [
-        {
-          "group": "Codemod packages",
-          "pages": [
-            "guides/building-codemods/package-requirements",
-            "guides/building-codemods/build-package"
-          ]
-        },
-        "guides/building-codemods/codemod2"
-      ]
-    },
-    {
-      "group": "Sharing codemods",
-      "pages": ["guides/sharing/publishing-codemods"]
     },
     {
       "group": "Migrations",
