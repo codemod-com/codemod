@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require("path");
 
 const filePath = 'src/app.js';
 const pattern = '**/*.js';
