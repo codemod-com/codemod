@@ -4649,7 +4649,7 @@ importers:
         specifier: ^1.0.1
         version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
 
-  packages/codemods/node/20/replace minimatch-micromatch-picomatch with native glob matching:
+  packages/codemods/node/20/replace_minimatch-micromatch-picomatch_with-nativeglobmatch:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
