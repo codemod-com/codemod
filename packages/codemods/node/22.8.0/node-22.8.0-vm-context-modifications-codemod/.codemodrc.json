@@ -1,0 +1,16 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "node/22.8.0/vm-context-modifications-codemod",
+  "version": "1.0.1",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "node",
+      "22.8.0",
+      "vm context modifications"
+    ],
+    "git": "https://github.com/dfordp/node-22.8.0-node-script-update-to-experimental-test-coverage"
+  }
+}

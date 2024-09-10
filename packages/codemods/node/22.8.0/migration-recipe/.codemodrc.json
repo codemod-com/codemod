@@ -1,0 +1,22 @@
+{
+    "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+    "name": "node/22.8.0/migration-recipe",
+    "version": "1.0.0",
+    "engine": "recipe",
+    "private": false,
+    "names": [
+      "node/22.8.0/node-script-update-to-experimental-test-coverage",
+      "node/22.8.0/node-script-start-watch-upgrade",
+      "node/22.8.0/vm-context-modifications-codemod",
+      "node/22.8.0/dotenv-to-env-file-migration",
+      "node/22.8.0/enable-compile-cache-in-start-server"
+    ],
+    "meta": {
+      "tags": [
+        "node",
+        "22.8.0"
+      ],
+      "git": "https://github.com/codemod-com/codemod/packages/codemods/node/22.8.0/migration-receipe"
+    },
+    "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"]
+  }
