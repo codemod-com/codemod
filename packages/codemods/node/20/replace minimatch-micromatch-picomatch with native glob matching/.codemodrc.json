@@ -1,0 +1,15 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "node/globmatch-native",
+  "version": "1.0.2",
+  "engine": "jscodeshift",
+  "private": false,
+  "applicability": {
+    "from": [["NodeJs", "<=", "20.17.0"]],
+    "to": [["NodeJs", "=", "20.17.0"]]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": ["globmatch", "native"]
+  }
+}
