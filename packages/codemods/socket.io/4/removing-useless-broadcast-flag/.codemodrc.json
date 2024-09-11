@@ -1,0 +1,27 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "socket.io/4/removing-useless-broadcast-flag",
+  "version": "1.0.1",
+  "engine": "jscodeshift",
+  "private": false,
+  "include": [
+    "**/*.js",
+    "**/*.ts"
+  ],
+  "applicability": {
+    "from": [
+      [
+        "socket.io",
+        "<=",
+        "4.0.0"
+      ]
+    ]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "migration"
+    ],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/socket.io/4/removing-useless-broadcast-flag"
+  }
+}
