@@ -157,6 +157,9 @@
         "guides/migrations/nuxt-3-4",
         "guides/migrations/msw-v1-v2",
         "guides/migrations/pnpm-catalog",
+        "guides/external-links/radix-reka",
+        "guides/external-links/fastify-v3-v4",
+        "guides/external-links/meteor-v2-v3",
         "guides/external-links/valibot"
       ]
     }
