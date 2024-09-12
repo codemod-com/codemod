@@ -1,0 +1,21 @@
+{
+  "name": "act",
+  "license": "MIT",
+  "devDependencies": {
+    "@codemod.com/codemod-utils": "*",
+    "@codemod.com/workflow": "workspace:*",
+    "@types/node": "20.9.0",
+    "typescript": "^5.2.2",
+    "vitest": "^1.0.1"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest watch"
+  },
+  "files": ["README.md", ".codemodrc.json", "/dist/index.cjs"],
+  "type": "module",
+  "author": "arybitskiy",
+  "dependencies": {
+    "lines-and-columns": "^2.0.4"
+  }
+}

@@ -1,6 +1,6 @@
 import type { PLazy } from "./PLazy.js";
 import { codemod } from "./codemod.js";
-import { getCwdContext } from "./contexts.js";
+import { execContext, getCwdContext, getExecContext } from "./contexts.js";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
 import { clc } from "./helpers.js";
 import { spawn } from "./spawn.js";
@@ -33,6 +33,7 @@ import { spawn } from "./spawn.js";
 export function execLogic(
   command: string,
   args?: string[],
+  { skipLog }: { skipLog?: boolean } = {},
 ): PLazy<ExecHelpers> & ExecHelpers {
   return new FunctionExecutor("exec")
     .arguments(() => ({
@@ -43,14 +44,16 @@ export function execLogic(
     .executor(async (next, self) => {
       const { cwd } = getCwdContext();
       const { command, args } = self.getArguments();
-      console.log(
-        `${clc.blueBright(`${command} ${args?.join(" ") ?? ""}`)} ${cwd}`,
-      );
-      await spawn(command, args ?? [], {
+      if (!skipLog) {
+        console.log(
+          `${clc.blueBright(`${command} ${args?.join(" ") ?? ""}`)} ${cwd}`,
+        );
+      }
+      const response = await spawn(command, args ?? [], {
         cwd,
         doNotThrowError: true,
       });
-      await next?.();
+      await execContext.run(response, () => next?.());
     })
     .return((self) => self.wrappedHelpers())
     .run();
@@ -58,6 +61,22 @@ export function execLogic(
 
 export const exec = fnWrapper("exec", execLogic);
 
-const execHelpers = { exec, codemod };
+export function stderrLogic(): PLazy<string[]> & string[] {
+  let stderr: string[];
+  return new FunctionExecutor("stderr")
+    .executor(async (next, self) => {
+      stderr = getExecContext().stderr;
+    })
+    .return(() => stderr)
+    .run();
+}
+
+export const stderr = fnWrapper("stderr", stderrLogic);
+
+const execHelpers = {
+  exec,
+  codemod,
+  stderr,
+};
 
 type ExecHelpers = typeof execHelpers;

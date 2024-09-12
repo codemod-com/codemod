@@ -582,6 +582,9 @@ catalogs:
     null-loader:
       specifier: ^4.0.1
       version: 4.0.1
+    nypm:
+      specifier: ^0.3.11
+      version: 0.3.11
     open:
       specifier: ^8.4.2
       version: 8.4.2
@@ -2172,7 +2175,7 @@ importers:
         version: 0.11.11
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.16.1(@babel/preset-env@7.24.7)
     devDependencies:
       '@types/node':
         specifier: 20.10.3
@@ -3424,6 +3427,28 @@ importers:
       vitest:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/jest/act:
+    dependencies:
+      lines-and-columns:
+        specifier: ^2.0.4
+        version: 2.0.4
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7)
+      '@codemod.com/workflow':
+        specifier: workspace:*
+        version: link:../../../workflow
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
 
   packages/codemods/jest/vitest:
     devDependencies:
@@ -6391,7 +6416,7 @@ importers:
         version: 4.1.0
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.16.1(@babel/preset-env@7.24.7)
       mdast-util-from-markdown:
         specifier: 'catalog:'
         version: 2.0.1
@@ -6619,6 +6644,9 @@ importers:
       magic-string:
         specifier: 'catalog:'
         version: 0.30.10
+      nypm:
+        specifier: 'catalog:'
+        version: 0.3.11
       openai:
         specifier: 'catalog:'
         version: 4.23.0
@@ -8066,6 +8094,9 @@ packages:
 
   '@codemirror/view@6.28.2':
     resolution: {integrity: sha512-A3DmyVfjgPsGIjiJqM/zvODUAPQdQl3ci0ghehYNnbt5x+o76xq+dL5+mMBuysDXnI3kapgOkoeJ0sbtL/3qPw==}
+
+  '@codemod.com/codemod-utils@1.0.0':
+    resolution: {integrity: sha512-Uo7oA2kgpfRJS5LFL9ARdsaeenRyEsRHINoTcIsHeBFBce+imLhrkYlEhXcrNYuTLVXmlGx2Mdn6NeUio4wpfw==}
 
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -13180,6 +13211,9 @@ packages:
     resolution: {integrity: sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==}
     engines: {node: '>=8'}
 
+  citty@0.1.6:
+    resolution: {integrity: sha512-tskPPKEs8D2KPafUypv2gxwJP8h/OaJmC82QQGGDQcHvXX43xF2VDACcJVmZ0EuSxkpO9Kc4MlrA3q0+FG58AQ==}
+
   cjs-module-lexer@1.3.1:
     resolution: {integrity: sha512-a3KdPAANPbNE4ZUv9h6LckSl9zLsYOP4MBmhIPkRaeyybt+r4UghLvq+xw/YwUcC1gqylCkL4rdVs3Lwupjm4Q==}
 
@@ -13417,6 +13451,10 @@ packages:
   connect-history-api-fallback@1.6.0:
     resolution: {integrity: sha512-e54B99q/OUoH64zYYRf3HBP5z24G38h5D3qXu23JGRoigpX5Ss4r9ZnDk3g0Z8uQC2x2lPaJ+UlWBc1ZWBWdLg==}
     engines: {node: '>=0.8'}
+
+  consola@3.2.3:
+    resolution: {integrity: sha512-I5qxpzLv+sJhTVEoLYNcTW+bThDCPsit0vLNKShZx6rLtpilNpmmeTPaeqJb9ZE9dV3DGaeby6Vuhrw38WjeyQ==}
+    engines: {node: ^14.18.0 || >=16.10.0}
 
   console-table-printer@2.12.1:
     resolution: {integrity: sha512-wKGOQRRvdnd89pCeH96e2Fn4wkbenSP6LMHfjfyNLMbGuHEFbMqQNuxXqd0oXG9caIOQ1FTvc5Uijp9/4jujnQ==}
@@ -16114,6 +16152,10 @@ packages:
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
+  lines-and-columns@2.0.4:
+    resolution: {integrity: sha512-wM1+Z03eypVAVUCE7QdSqpVIvelbOakn1M0bPDoA4SGWPx3sNDVUiMo3L6To6WWGClB7VyXnhQ4Sn7gxiJbE6A==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   linkify-it@3.0.3:
     resolution: {integrity: sha512-ynTsyrFSdE5oZ/O9GEf00kPngmOfVwazR5GKDq6EYfhlpFug3J2zybX56a2PRRpc9P+FuSoGNAwjlbDs9jJBPQ==}
 
@@ -17205,6 +17247,11 @@ packages:
     resolution: {integrity: sha512-1MQz1Ed8z2yckoBeSfkQHHO9K1yDRxxtotKSJ9yvcTUUxSvfvzEq5GwBrjjHEpMlq/k5gvXdmJ1SbYxWtpNoVg==}
     engines: {node: '>=8'}
 
+  nypm@0.3.11:
+    resolution: {integrity: sha512-E5GqaAYSnbb6n1qZyik2wjPDZON43FqOJO59+3OkWrnmQtjggrMOVnsyzfjxp/tS6nlYJBA4zRA5jSM2YaadMg==}
+    engines: {node: ^14.16.0 || >=16.10.0}
+    hasBin: true
+
   object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
@@ -17710,6 +17757,9 @@ packages:
 
   pkg-types@1.1.1:
     resolution: {integrity: sha512-ko14TjmDuQJ14zsotODv7dBlwxKhUKQEhuhmbqo1uCi9BB0Z2alo/wAXg6q1dTR5TyuqYyWhjtfe/Tsh+X28jQ==}
+
+  pkg-types@1.2.0:
+    resolution: {integrity: sha512-+ifYuSSqOQ8CqP4MbZA5hDpb97n3E8SVWdJe+Wms9kj745lmd3b7EZJiqvmLwAlmRfjrI7Hi5z3kdBJ93lFNPA==}
 
   pluralize-esm@9.0.5:
     resolution: {integrity: sha512-Kb2dcpMsIutFw2hYrN0EhsAXOUJTd6FVMIxvNAkZCMQLVt9NGZqQczvGpYDxNWCZeCWLHUPxQIBudWzt1h7VVA==}
@@ -20031,8 +20081,8 @@ packages:
   uc.micro@2.1.0:
     resolution: {integrity: sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A==}
 
-  ufo@1.5.3:
-    resolution: {integrity: sha512-Y7HYmWaFwPUmkoQCUIAYpKqkOf+SbVj/2fJJZ4RJMCfZp0rTGwRbzQD+HghfnhKOjL9E01okqz+ncJskGYfBNw==}
+  ufo@1.5.4:
+    resolution: {integrity: sha512-UsUk3byDzKd04EyoZ7U4DOlxQaD14JUKQl6/P7wiX4FNvUfm3XL246n9W5AmqwW5RSFJ27NAuM0iLscAOYUiGQ==}
 
   uglify-js@3.19.0:
     resolution: {integrity: sha512-wNKHUY2hYYkf6oSFfhwwiHo4WCHzHmzcXsqXYTN9ja3iApYIFbb2U6ics9hBcYLHcYGQoAlwnZlTrf3oF+BL/Q==}
@@ -23013,6 +23063,15 @@ snapshots:
       '@codemirror/state': 6.4.1
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
+
+  '@codemod.com/codemod-utils@1.0.0(@babel/preset-env@7.24.7)':
+    dependencies:
+      '@babel/parser': 7.24.7
+      '@types/jscodeshift': 0.11.11
+      jscodeshift: 0.16.1(@babel/preset-env@7.24.7)
+    transitivePeerDependencies:
+      - '@babel/preset-env'
+      - supports-color
 
   '@colors/colors@1.5.0':
     optional: true
@@ -28511,6 +28570,10 @@ snapshots:
 
   ci-info@3.9.0: {}
 
+  citty@0.1.6:
+    dependencies:
+      consola: 3.2.3
+
   cjs-module-lexer@1.3.1: {}
 
   class-variance-authority@0.7.0:
@@ -28781,6 +28844,8 @@ snapshots:
       xdg-basedir: 4.0.0
 
   connect-history-api-fallback@1.6.0: {}
+
+  consola@3.2.3: {}
 
   console-table-printer@2.12.1:
     dependencies:
@@ -31577,7 +31642,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jscodeshift@0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7)):
+  jscodeshift@0.16.1(@babel/preset-env@7.24.7):
     dependencies:
       '@babel/core': 7.24.7
       '@babel/parser': 7.24.7
@@ -31950,6 +32015,8 @@ snapshots:
   lilconfig@3.1.2: {}
 
   lines-and-columns@1.2.4: {}
+
+  lines-and-columns@2.0.4: {}
 
   linkify-it@3.0.3:
     dependencies:
@@ -33074,8 +33141,8 @@ snapshots:
     dependencies:
       acorn: 8.12.1
       pathe: 1.1.2
-      pkg-types: 1.1.1
-      ufo: 1.5.3
+      pkg-types: 1.2.0
+      ufo: 1.5.4
 
   mnemonist@0.39.6:
     dependencies:
@@ -33385,6 +33452,15 @@ snapshots:
       webpack: 5.91.0(esbuild@0.21.5)
 
   num-sort@2.1.0: {}
+
+  nypm@0.3.11:
+    dependencies:
+      citty: 0.1.6
+      consola: 3.2.3
+      execa: 8.0.1
+      pathe: 1.1.2
+      pkg-types: 1.2.0
+      ufo: 1.5.4
 
   object-assign@4.1.1: {}
 
@@ -33901,6 +33977,12 @@ snapshots:
       find-up: 5.0.0
 
   pkg-types@1.1.1:
+    dependencies:
+      confbox: 0.1.7
+      mlly: 1.7.1
+      pathe: 1.1.2
+
+  pkg-types@1.2.0:
     dependencies:
       confbox: 0.1.7
       mlly: 1.7.1
@@ -36725,7 +36807,7 @@ snapshots:
 
   uc.micro@2.1.0: {}
 
-  ufo@1.5.3: {}
+  ufo@1.5.4: {}
 
   uglify-js@3.19.0:
     optional: true

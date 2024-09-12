@@ -51,7 +51,8 @@
     "ts-invariant": "catalog:",
     "yaml": "catalog:",
     "inquirer": "catalog:",
-    "diff": "catalog:"
+    "diff": "catalog:",
+    "nypm": "catalog:"
   },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",

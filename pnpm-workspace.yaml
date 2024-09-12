@@ -196,6 +196,7 @@ catalog:
     nock: ^13.5.1
     node-fetch: ^3.3.2
     null-loader: ^4.0.1
+    nypm: "^0.3.11"
     open: ^8.4.2
     openai: 4.23.0
     openai-edge: 1.2.2

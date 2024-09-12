@@ -5,6 +5,7 @@ import { invariant } from "ts-invariant";
 import type { FileContext } from "./contexts/FileContext.js";
 import { GitContext } from "./contexts/GitContext.js";
 import { noContextFn } from "./helpers.js";
+import type { spawn } from "./spawn.js";
 
 const registeredContexts = new Map<string, AsyncLocalStorage<any>>();
 
@@ -74,6 +75,17 @@ export const repositoriesContext = registerContext(
     repositories: string[];
   }>(),
 );
+
+export const execContext = registerContext(
+  "exec",
+  new AsyncLocalStorage<Awaited<ReturnType<typeof spawn>>>(),
+);
+
+export const getExecContext = () => {
+  const exec = execContext.getStore();
+  invariant(exec, "No exec context found");
+  return exec;
+};
 
 export const getContextsSnapshot = () => {
   return [...registeredContexts.entries()]
