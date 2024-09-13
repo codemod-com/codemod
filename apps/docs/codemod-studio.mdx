@@ -31,23 +31,29 @@ To use natural language descriptions, you can:
 
 **Example:**
 
-Before:
+<video
+  autoPlay
+  loop
+  className="w-full aspect-video"
+  src="/images/codemod-studio/nld-usage.mp4"
+></video>
 
-```tsx
-const mapStateToProps = (state) => ({
-    a: selectA(state),
-});
+<CodeGroup>
+
+```tsx Before snippet
+// In react 19, string refs are deprecated and replaced with callback refs.
+<div ref='refName' />;
 ```
 
-After:
-
-```tsx
-// the codemod should work on any function argument which is named "state"
-function mapStateToProps(state: State) {
-    const { data } = state;
-    return { data };
-}
+```tsx After snippet
+<div ref={(ref) => (this.refs.refName = ref)} />;
 ```
+
+```tsx Output
+<div ref={(ref) => (this.refs.refName = ref)} />;
+```
+
+</CodeGroup>
 
 ### Automated Test Case Generation
 
