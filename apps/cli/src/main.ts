@@ -216,12 +216,20 @@ export const main = async () => {
     .command(
       "login",
       "logs in through authentication in the Codemod Studio",
-      (y) => y,
+      (y) =>
+        y.option("token", {
+          alias: "t",
+          type: "string",
+          description: "clerk token for headless login",
+          hidden: true,
+        }),
       async (args) => {
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
 
-        return executeCliCommand(() => handleLoginCliCommand({ printer }));
+        return executeCliCommand(() =>
+          handleLoginCliCommand({ printer, token: args.token }),
+        );
       },
     )
     .command(

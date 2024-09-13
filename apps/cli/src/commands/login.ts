@@ -34,14 +34,26 @@ const routeUserToStudioForLogin = (
 };
 export const handleLoginCliCommand = async (options: {
   printer: Printer;
+  token?: string;
 }) => {
-  const { printer } = options;
+  const { printer, token } = options;
 
   const userData = await getCurrentUserData();
   if (userData !== null) {
     printer.printConsoleMessage(
       "info",
       chalk.bold.cyan("You're already logged in."),
+    );
+    return;
+  }
+
+  if (token) {
+    const { token: cliToken } = await getCLIAccessToken(token);
+    await credentialsStorage.set(CredentialsStorageType.ACCOUNT, cliToken);
+
+    printer.printConsoleMessage(
+      "info",
+      chalk.bold.cyan("You are successfully logged in."),
     );
     return;
   }
