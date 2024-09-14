@@ -1,0 +1,22 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "elasticsearch/8/migration-recipe",
+  "version": "1.0.4",
+  "private": false,
+  "engine": "recipe",
+  "names": [
+    "elasticsearch/8/migrate-plugins-extended",
+    "elasticsearch/8/move-client-configurations",
+    "elasticsearch/8/rename-query-string",
+    "elasticsearch/8/unify-return-value"
+  ],
+  "meta": {
+    "tags": ["migration", "elasticsearch"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/elasticsearch/8/migration-recipe"
+  },
+  "applicability": {
+    "from": [["elasticsearch", ">=", "7.0.0"], ["elasticsearch", "<", "8.0.0"]],
+    "to": [["elasticsearch", ">=", "8.0.0"]]
+  },
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]
+}

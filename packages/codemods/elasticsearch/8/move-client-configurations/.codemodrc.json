@@ -1,0 +1,16 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.1",
+  "private": false,
+  "name": "elasticsearch/8/move-client-configurations",
+  "engine": "jscodeshift",
+  "applicability": {
+    "from": [["elasticsearch", ">=", "7.0.0"], ["elasticsearch", "<", "8.0.0"]],
+    "to": [["elasticsearch", ">=", "8.0.0"]]
+  },
+  "meta": {
+    "tags": ["elasticsearch", "8", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/elasticsearch/8/move-client-configurations"
+  },
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]
+}
