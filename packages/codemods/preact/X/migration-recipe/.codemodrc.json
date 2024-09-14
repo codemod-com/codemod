@@ -1,0 +1,22 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "preact/X/migration-recipe",
+  "version": "1.0.3",
+  "engine": "recipe",
+  "private": false,
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
+  "arguments": [],
+  "meta": {
+    "tags": ["migration", "preact"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/preact/X/migration-recipe"
+  },
+  "applicability": {
+    "from": [["preact", "<", "8.x"]]
+  },
+  "names": [
+    "preact/X/replace-this-state-with-prevstate",
+    "preact/X/props-children-to-child-array",
+    "preact/X/preact-import-source-update",
+    "preact/X/default-import-to-namespace-import"
+  ]
+}

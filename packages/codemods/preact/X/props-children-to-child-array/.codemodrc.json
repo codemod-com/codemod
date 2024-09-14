@@ -1,0 +1,15 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "preact/X/props-children-to-child-array",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": ["preact", "X", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/preact/X/props-children-to-child-array"
+  },
+  "applicability": {
+    "from": [["preact", "<", "8.x"]]
+  }
+}

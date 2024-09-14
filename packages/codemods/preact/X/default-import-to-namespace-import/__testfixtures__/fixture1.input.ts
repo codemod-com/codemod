@@ -1,0 +1,1 @@
+import Preact from 'preact';
