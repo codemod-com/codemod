@@ -1,0 +1,16 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.2",
+  "private": false,
+  "name": "fastify/4/await-register-calls",
+  "engine": "jscodeshift",
+  "applicability": {
+    "from": [["fastify", ">=", "3.0.0"], ["fastify", "<", "4.0.0"]],
+    "to": [["fastify", ">=", "4.0.0"]]
+  },
+  "meta": {
+    "tags": ["fastify", "4", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/fastify/4/await-register-calls"
+  },
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"]
+}
