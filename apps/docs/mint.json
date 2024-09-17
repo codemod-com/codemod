@@ -57,6 +57,7 @@
           "group": "Reference",
           "icon": "code",
           "pages": [
+            "api-reference/intro",
             {
               "group": "Git operations",
               "pages": [
@@ -101,7 +102,7 @@
     },
     {
       "group": "Codemod Studio",
-      "pages": ["building-codemods/codemod-studio"]
+      "pages": ["codemod-studio"]
     },
     {
       "group": "Codemod Registry",
@@ -110,6 +111,28 @@
     {
       "group": "VS Code Extension",
       "pages": ["deploying-codemods/vsce"]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        {
+          "group": "Building codemods",
+          "pages": [
+            {
+              "group": "Codemod packages",
+              "pages": [
+                "building-codemods/package-requirements",
+                "building-codemods/build-package"
+              ]
+            },
+            "building-codemods/codemod2"
+          ]
+        },
+        {
+          "group": "Sharing codemods",
+          "pages": ["sharing/publishing-codemods"]
+        }
+      ]
     },
     {
       "group": "Quick Links",
@@ -126,23 +149,6 @@
     {
       "group": "Guides & Examples",
       "pages": ["guides/introduction"]
-    },
-    {
-      "group": "Building codemods",
-      "pages": [
-        {
-          "group": "Codemod packages",
-          "pages": [
-            "guides/building-codemods/package-requirements",
-            "guides/building-codemods/build-package"
-          ]
-        },
-        "guides/building-codemods/codemod2"
-      ]
-    },
-    {
-      "group": "Sharing codemods",
-      "pages": ["guides/sharing/publishing-codemods"]
     },
     {
       "group": "Migrations",

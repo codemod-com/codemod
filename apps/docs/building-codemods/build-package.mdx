@@ -7,13 +7,13 @@ You can build a codemod package using three different ways:
 - Build with `codemod learn`
 - Scaffold a codemod package
 
-By building a codemod with Codemod Studio or with `codemod learn`, your codemod package will automatically have the recommended [package structure](/guides/building-codemods/package-requirements).
+By building a codemod with Codemod Studio or with `codemod learn`, your codemod package will automatically have the recommended [package structure](/building-codemods/package-requirements).
 
 If you build a codemod from scratch or a previously built codemod, you will have to scaffold a valid codemod package using Codemod CLI.
 
 ## Building with Codemod Studio
 
-To learn how to build codemods with Codemod Studio, please refer to the [detailed Codemod Studio usage guide](/building-codemods/codemod-studio#building-codemods-with-codemod-studio).
+To learn how to build codemods with Codemod Studio, please refer to the [detailed Codemod Studio usage guide](/codemod-studio#building-codemods-with-codemod-studio).
 
 ## Building with `codemod learn`
 
@@ -30,7 +30,7 @@ You can use `codemod learn` to build a codemod from the latest diff made in your
         Codemod Studio will automatically open, with pre-populated data, and begin building your codemod. Allow Codemod Studio to finish generating your codemod.
     </Step>
     <Step title="Export/publish the generated codemod">
-        After Codemod Studio builds your codemod, you can easily [export and run your codemod](/building-codemods/codemod-studio#running-codemods) over your local project.
+        After Codemod Studio builds your codemod, you can easily [export and run your codemod](/codemod-studio#running-codemods) over your local project.
     </Step>
 </Steps>
 
@@ -44,7 +44,7 @@ To scaffold a new codemod package, you should:
 
 <Steps>
     <Step title="Verify codemod engine compatibility">
-        Verify that the existing codemod is built by one of the [supported codemod engines](/guides/building-codemods/package-requirements#supported-codemod-engines).
+        Verify that the existing codemod is built by one of the [supported codemod engines](/building-codemods/package-requirements#supported-codemod-engines).
     </Step>
     <Step title="Initialize codemod package">
         Initialize a Codemod-compatible package by running:
@@ -61,12 +61,12 @@ To scaffold a new codemod package, you should:
         </Card>
     </Step>
     <Step title="Update package configuration file">
-        Add information about your codemod to the `.codemodrc.json` configuration file. Refer to [`.codemodrc.json` reference here](/guides/building-codemods/package-requirements#codemodrc-json-reference).
+        Add information about your codemod to the `.codemodrc.json` configuration file. Refer to [`.codemodrc.json` reference here](/building-codemods/package-requirements#codemodrc-json-reference).
     </Step>
 </Steps>
 
 ## Next steps
 
-<Card title="Publishing your codemod ->" icon="share-nodes" href="/guides/sharing/publishing-codemods">
+<Card title="Publishing your codemod ->" icon="share-nodes" href="/sharing/publishing-codemods">
 Get started with publishing your codemod to Codemod Registry.
 </Card>
