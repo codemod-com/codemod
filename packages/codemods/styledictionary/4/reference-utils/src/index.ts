@@ -1,22 +1,24 @@
 import type {
-  API,
-  ArrowFunctionExpression,
-  FileInfo,
-  Options,
-} from "jscodeshift";
+    API,
+    ArrowFunctionExpression,
+    FileInfo,
+    Options,
+} from 'jscodeshift';
 
 export default function transform(
     file: FileInfo,
     api: API,
     options?: Options,
-  ): string | undefined {
+): string | undefined {
     const j = api.jscodeshift;
     const root = j(file.source);
 
     // Map of reference utilities to their corresponding method names
     const referenceUtils = {
         usesReferences: 'usesReferences',
+        usesReference: 'usesReferences',
         getReferences: 'getReferences',
+        getReference: 'getReferences',
         // Add more references here as needed from the documentation
         isReference: 'isReference',
         resolveReferences: 'resolveReferences',

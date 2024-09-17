@@ -5,51 +5,60 @@ import type {
   Options,
 } from "jscodeshift";
 
+
+const transformations = {
+    'name/cti/': 'name/',
+    'font/objC/literal': null,
+    'font/swift/literal': null,
+    'font/flutter/literal': null,
+    'content/icon': 'html/icon',
+};
+
+function transformTransforms(transforms) {
+    return transforms
+        .map((transform) => {
+            // Replace 'name/cti/<thing>' with 'name/<thing>'
+            for (const [oldPrefix, newPrefix] of Object.entries(
+                transformations,
+            )) {
+                if (transform.startsWith(oldPrefix)) {
+                    return newPrefix
+                        ? transform.replace(oldPrefix, newPrefix)
+                        : null;
+                }
+            }
+            return transform;
+        })
+        .filter((transform) => transform !== null); // Remove null values
+}
+
 export default function transform(
     file: FileInfo,
     api: API,
     options?: Options,
   ): string | undefined {
-    let jsonData;
-    try {
-        jsonData = JSON.parse(file.source);
-    } catch (e) {
-        throw new Error('Invalid JSON input.');
-    }
+    const j = api.jscodeshift;
+    const root = j(file.source);
 
-    // Mapping of old transform names to new transform names
-    const transformMapping = {
-        'name/cti/camel': 'name/camel',
-        'name/cti/constant': 'name/constant',
-        'name/cti/kebab': 'name/kebab',
-        'name/cti/snake': 'name/snake',
-        'name/cti/human': 'name/human',
-        'font/objC/literal': null,
-        'font/swift/literal': null,
-        'font/flutter/literal': null,
-        'content/icon': 'html/icon',
-    };
+    root.find(j.ObjectExpression).forEach((path) => {
+        const obj = path.node;
 
-    // Helper function to update the transforms array
-    const updateTransforms = (transforms) => {
-        if (!Array.isArray(transforms)) {
-            return []; // Return an empty array if transforms is not an array
+        // Find the transforms array within the config
+        const transformsNode = obj.properties.find(
+            (prop) => prop.key.name === 'transforms',
+        );
+
+        if (transformsNode && transformsNode.value.type === 'ArrayExpression') {
+            const transformsArray = transformsNode.value.elements;
+            const transforms = transformsArray.map((elem) => elem.value);
+            const transformed = transformTransforms(transforms);
+
+            // Update the array with transformed values
+            transformsNode.value.elements = transformed.map((value) =>
+                j.literal(value),
+            );
         }
-        return transforms
-            .map((transform) => transformMapping[transform] || null) // Map old transforms to new ones, or null for removals
-            .filter((transform) => transform !== null); // Remove null values
-    };
+    });
 
-    // Update the transforms if they exist
-    if (jsonData.platforms && typeof jsonData.platforms === 'object') {
-        for (const platformKey in jsonData.platforms) {
-            const platform = jsonData.platforms[platformKey];
-            if (platform.transforms && Array.isArray(platform.transforms)) {
-                platform.transforms = updateTransforms(platform.transforms);
-            }
-        }
-    }
-
-    // Return the modified JSON as a string with proper formatting
-    return JSON.stringify(jsonData, null, 2);
+    return root.toSource({ quote: 'single' });
 }

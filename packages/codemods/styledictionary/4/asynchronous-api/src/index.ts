@@ -1,15 +1,15 @@
 import type {
-  API,
-  ArrowFunctionExpression,
-  FileInfo,
-  Options,
-} from "jscodeshift";
+    API,
+    ArrowFunctionExpression,
+    FileInfo,
+    Options,
+} from 'jscodeshift';
 
 export default function transform(
     file: FileInfo,
     api: API,
     options?: Options,
-  ): string | undefined {
+): string | undefined {
     const j = api.jscodeshift;
 
     // Methods that should be awaited
@@ -38,14 +38,23 @@ export default function transform(
         addAsyncIfNeeded(path, j),
     );
 
-    // Add 'await' before the relevant method calls
+    // Add 'await' before the relevant method calls, except for StyleDictionary.extend()
     asyncMethods.forEach((method) => {
         root.find(j.CallExpression, {
             callee: { property: { name: method } },
         }).forEach((path) => {
             // Check if the method is already awaited
             if (!j.AwaitExpression.check(path.parent.node)) {
-                j(path).replaceWith(j.awaitExpression(path.node));
+                // Skip if it's StyleDictionary.extend()
+                if (
+                    !(
+                        path.node.callee.object &&
+                        path.node.callee.object.name === 'StyleDictionary' &&
+                        path.node.callee.property.name === 'extend'
+                    )
+                ) {
+                    j(path).replaceWith(j.awaitExpression(path.node));
+                }
             }
         });
     });

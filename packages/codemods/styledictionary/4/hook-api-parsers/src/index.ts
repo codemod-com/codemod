@@ -1,15 +1,15 @@
 import type {
-  API,
-  ArrowFunctionExpression,
-  FileInfo,
-  Options,
-} from "jscodeshift";
+    API,
+    ArrowFunctionExpression,
+    FileInfo,
+    Options,
+} from 'jscodeshift';
 
 export default function transform(
     file: FileInfo,
     api: API,
     options?: Options,
-  ): string | undefined {
+): string | undefined {
     const j = api.jscodeshift;
     const root = j(file.source);
 
@@ -23,24 +23,35 @@ export default function transform(
         );
 
         if (parsersProperty) {
-            const parserConfig = parsersProperty.value.elements[0]; // Assuming there's one parser object
+            const parserConfigs = parsersProperty.value.elements; // Get all parser objects
+            const parserPropertiesMap = new Map();
 
-            // Extract pattern and parse method from the existing config
-            const patternProperty = parserConfig.properties.find(
-                (p) => p.key.name === 'pattern',
-            );
-            const parseProperty = parserConfig.properties.find(
-                (p) => p.key.name === 'parse',
-            );
+            // Iterate over all parser configs
+            parserConfigs.forEach((parserConfig) => {
+                const parserProperties = parserConfig.properties;
 
-            // Generate the parser name based on the file extension in the pattern regex
-            const patternRegex = patternProperty.value.regex.pattern; // e.g., /\.yaml$/ -> "yaml"
-            const extensionMatch = patternRegex.match(/\\\.([a-z0-9]+)\$/);
-            const parserName = extensionMatch
-                ? `${extensionMatch[1]}-parser`
-                : 'custom-parser';
+                // Rename 'parse' property to 'parser'
+                parserProperties.forEach((prop) => {
+                    if (prop.key.name === 'parse') {
+                        prop.key.name = 'parser'; // Rename parse to parser
+                    }
+                });
 
-            // Create the new `hooks.parsers` object
+                // Generate the parser name based on the file extension in the pattern regex
+                const patternProperty = parserProperties.find(
+                    (p) => p.key.name === 'pattern',
+                );
+                const patternRegex = patternProperty.value.regex.pattern; // e.g., /\.yaml$/ -> "yaml"
+                const extensionMatch = patternRegex.match(/\\\.([a-z0-9]+)\$/);
+                const parserName = extensionMatch
+                    ? `${extensionMatch[1]}-parser`
+                    : 'custom-parser';
+
+                // Store the parser configuration in a map with parserName as the key
+                parserPropertiesMap.set(parserName, parserProperties);
+            });
+
+            // Create the new `hooks.parsers` object with all parser configurations
             const hooksProperty = j.property(
                 'init',
                 j.identifier('hooks'),
@@ -48,25 +59,26 @@ export default function transform(
                     j.property(
                         'init',
                         j.identifier('parsers'),
-                        j.objectExpression([
-                            j.property(
-                                'init',
-                                j.identifier('name'),
-                                j.literal(parserName),
+                        j.objectExpression(
+                            Array.from(parserPropertiesMap.entries()).map(
+                                ([parserName, properties]) =>
+                                    j.property(
+                                        'init',
+                                        j.literal(parserName),
+                                        j.objectExpression([...properties]), // Move all properties inside
+                                    ),
                             ),
-                            patternProperty,
-                            j.property(
-                                'init',
-                                j.identifier('parser'),
-                                parseProperty.value,
-                            ),
-                        ]),
+                        ),
                     ),
                 ]),
             );
 
-            // Replace `parsers` property with `parsers: [parserName]`
-            parsersProperty.value = j.arrayExpression([j.literal(parserName)]);
+            // Replace `parsers` property with `parsers: [parserNames]`
+            parsersProperty.value = j.arrayExpression(
+                Array.from(parserPropertiesMap.keys()).map((parserName) =>
+                    j.literal(parserName),
+                ),
+            );
 
             // Add the `hooks` property to the root object
             path.value.properties.push(hooksProperty);
