@@ -1,0 +1,16 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "three/r168/logluvloader-to-ultraHDRLoader",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "three",
+      "migration",
+      "r168"
+    ],
+    "git": "https://github.com/Yugal41735/Codemod-Test.git"
+  }
+}
