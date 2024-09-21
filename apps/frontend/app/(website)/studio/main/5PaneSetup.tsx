@@ -1,5 +1,4 @@
 import { cn } from "@/utils";
-import { useAiService } from "@chatbot/useAiService";
 import type { KnownEngines } from "@codemod-com/utilities";
 import { useTheme } from "@context/useTheme";
 import Panel from "@studio/components/Panel";
@@ -13,16 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@studio/components/ui/select";
+import { TestTabsComponent } from "@studio/features/test-cases/TestTabsComponent";
 import { VisibilityIcon } from "@studio/icons";
-import { TestTabsComponent } from "@studio/main/PageBottomPane/TestTabsComponent";
 import { AssistantTab } from "@studio/main/PaneLayout";
 import { LoginWarningModal } from "@studio/main/PaneLayout/LoginWarningModal";
 import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";
-import { useCFSStore } from "@studio/store/CFS";
-import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { useRef } from "react";
 import { PanelGroup } from "react-resizable-panels";
+import { useCFSStore } from "../src/store/CFS";
+import { useModStore } from "../src/store/mod";
 import Codemod from "./Codemod";
 import { Header } from "./Header/Header";
 import Layout from "./Layout";
@@ -45,10 +44,6 @@ const Main = () => {
     AIAssistant: { engine: llmEngine },
   } = useCFSStore();
 
-  const aiAssistantData = useAiService({
-    setCodemod: setContent,
-    engine: llmEngine,
-  });
   const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
     setEngine(value as KnownEngines);
   };
@@ -140,7 +135,7 @@ const Main = () => {
       className="bg-gray-bg assistant"
     >
       <AssistantTab
-        aiAssistantData={aiAssistantData}
+        // aiAssistantData={aiAssistantData}
         panelRefs={panelRefs}
         beforePanel={beforePanel}
         afterPanel={afterPanel}
@@ -206,10 +201,7 @@ const Main = () => {
               panelRefs={panelRefs}
               className="bg-gray-bg"
             >
-              <TestTabsComponent
-                isTestCaseGenerated={aiAssistantData.isTestCaseGenerated}
-                autogenerateTestCases={aiAssistantData.autogenerateTestCases}
-              />
+              <TestTabsComponent />
               <PanelGroup direction="horizontal">
                 {beforeAndAfterPanel}
                 <ResizeHandle direction="horizontal" />

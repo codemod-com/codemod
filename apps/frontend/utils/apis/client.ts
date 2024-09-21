@@ -20,7 +20,7 @@ const authApiClient = axios.create({
 });
 
 const aiApiClient = axios.create({
-  baseURL: env.NEXT_PUBLIC_AI_API_URL,
+  baseURL: env.NEXT_PUBLIC_MODGPT_API_URL,
   timeout: 60000,
 });
 

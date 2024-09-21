@@ -75,7 +75,7 @@ export type Editors = {
 };
 
 export type EditorsSnippets = {
-  [x in Omit<keyof Editors, "output">]: string;
+  [x in keyof Omit<Editors, "output">]: string;
 };
 
 const toEditorSnippets = (editors: Editors): EditorsSnippets => ({
@@ -200,6 +200,8 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
         get().editors,
       ),
     ),
+  // beforeSnippets: () => get().editors.map(({ before }) => before),
+  // afterSnippets: () => get().editors.map(({ after }) => after),
   setSelectedPairIndex: (i: number) => {
     set({ selectedPairIndex: i });
   },

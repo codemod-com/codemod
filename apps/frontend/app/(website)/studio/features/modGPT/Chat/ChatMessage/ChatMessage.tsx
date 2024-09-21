@@ -1,6 +1,6 @@
+import type { LLMMessage } from "@/app/(website)/studio/features/modgpt/types";
 import CompanyLogoSVG from "@/assets/icons/company_logo.svg";
 import { cn } from "@/utils";
-import type { LLMMessage } from "@chatbot/types";
 import { useTheme } from "@context/useTheme";
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
