@@ -1,0 +1,17 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "webpack/v5/set-target-to-false-and-update-plugins",
+  "description": "This codemod migrates the `target` property in Webpack configurations from a function to `false` and moves the function to the `plugins` array.",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "applicability": {
+    "from": [["webpack", "<=", "4"]],
+    "to": [["webpack", ">=", "5"]]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": ["webpack", "migration","codemod"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/webpack/v5/set-target-to-false-and-update-plugins"
+  }
+}

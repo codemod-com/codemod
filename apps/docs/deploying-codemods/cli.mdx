@@ -33,7 +33,7 @@ yarn global add codemod
 
 ### `codemod learn`
 
-The `learn` command uses the diff of the latest edited file to automatically build a codemod using [Codemod Studio](/building-codemods/codemod-studio/).
+The `learn` command uses the diff of the latest edited file to automatically build a codemod using [Codemod Studio](/codemod-studio/).
 
 After running this command, if any git diff exists, the Codemod Engine will use the diff as before/after snippets in Codemod Studio.
 
@@ -85,7 +85,7 @@ codemod init
 
 Can be used to publish a codemod to Codemod Registry.
 
-Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/guides/building-codemods/package-requirements).
+Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/building-codemods/package-requirements).
 
 To do so, use the `publish` command inside the codemod package directory:
 
@@ -133,8 +133,12 @@ Codemod CLI allows you to run codemods:
     codemod [codemod-name]
     ```
 
+    <Tip>
+    To run a specific codemod version, you can use `codemod [codemod-name]@[version]`.
+    </Tip>
+
     <AccordionGroup>
-    <Accordion title="Example">
+    <Accordion title="Example: Running a codemod from registry">
       <Steps>
       <Step title="Go to project directory">
         Make sure you are in the project directory to avoid running the codemod over the wrong directory on your machine.
@@ -163,9 +167,9 @@ Codemod CLI allows you to run codemods:
     codemod -s [path]
     ```
 
-    If the target source includes a [codemod package](/guides/building-codemods/package-requirements), the codemod will run automatically.
+    If the target source includes a [codemod package](/building-codemods/package-requirements), the codemod will run automatically.
     
-    If the codemod is an <Tooltip tip="E.g. a single transform.js file of a jscodeshift codemod">atomic transform file</Tooltip>, Codemod CLI will ask you to specify a [codemod engine](/guides/building-codemods/package-requirements#supported-codemod-engines) to run the codemod.
+    If the codemod is an <Tooltip tip="E.g. a single transform.js file of a jscodeshift codemod">atomic transform file</Tooltip>, Codemod CLI will ask you to specify a [codemod engine](/building-codemods/package-requirements#supported-codemod-engines) to run the codemod.
   </Tab>
 </Tabs>
 

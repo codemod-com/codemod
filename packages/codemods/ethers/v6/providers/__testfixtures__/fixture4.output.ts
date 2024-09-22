@@ -1,0 +1,1 @@
+(await provider.getFeeData()).gasPrice

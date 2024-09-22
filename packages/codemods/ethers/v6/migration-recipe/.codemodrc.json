@@ -1,0 +1,53 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "Ethers/6/migration-recipe",
+  "version": "1.0.1",
+  "engine": "recipe",
+  "private": false,
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.vue"
+  ],
+  "applicability": {
+    "from": [
+      [
+        "ethers",
+        ">=",
+        "5.0.0"
+      ],
+      [
+        "ethers",
+        "<",
+        "6.0.0"
+      ]
+    ],
+    "to": [
+      [
+        "ethers",
+        ">=",
+        "6.0.0"
+      ]
+    ]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "migration",
+      "ethers"
+    ],
+    "git": "https://github.com/Yugal41735/codemod.git"
+  },
+  "names": [
+    "Ethers/Big-Numbers",
+    "Ethers/6/Signatures",
+    "Ethers/6/Providers",
+    "Ethers/6/Importing",
+    "Ethers/6/Utilities",
+    "Ethers/6/Transactions",
+    "Ethers/6/Contracts/Ambigous-Methods",
+    "Ethers/6/Contracts/Other-Method-Operations"
+  ]
+}
