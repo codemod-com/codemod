@@ -1,9 +1,4 @@
-import type {
-    API,
-    ArrowFunctionExpression,
-    FileInfo,
-    Options,
-} from 'jscodeshift';
+import type { API, FileInfo, Options } from 'jscodeshift';
 
 export default function transform(
     file: FileInfo,
@@ -25,6 +20,32 @@ export default function transform(
 
     const root = j(file.source);
 
+    // Keep track of variables declared using StyleDictionary
+    const styleDictionaryVars: Set<string> = new Set();
+
+    // Identify variables assigned using StyleDictionary.extend or new StyleDictionary
+    root.find(j.VariableDeclarator).forEach((path) => {
+        const init = path.node.init;
+
+        // Handle StyleDictionary.extend() pattern
+        if (
+            j.CallExpression.check(init) &&
+            init.callee.type === 'MemberExpression' &&
+            init.callee.object.name === 'StyleDictionary' &&
+            init.callee.property.name === 'extend'
+        ) {
+            styleDictionaryVars.add(path.node.id.name);
+        }
+
+        // Handle new StyleDictionary() pattern
+        if (
+            j.NewExpression.check(init) &&
+            init.callee.name === 'StyleDictionary'
+        ) {
+            styleDictionaryVars.add(path.node.id.name);
+        }
+    });
+
     // Find all function declarations, function expressions, and arrow functions
     root.find(j.FunctionDeclaration).forEach((path) =>
         addAsyncIfNeeded(path, j),
@@ -38,21 +59,17 @@ export default function transform(
         addAsyncIfNeeded(path, j),
     );
 
-    // Add 'await' before the relevant method calls, except for StyleDictionary.extend()
+    // Add 'await' before the relevant method calls, only for variables declared using StyleDictionary
     asyncMethods.forEach((method) => {
         root.find(j.CallExpression, {
             callee: { property: { name: method } },
         }).forEach((path) => {
-            // Check if the method is already awaited
-            if (!j.AwaitExpression.check(path.parent.node)) {
-                // Skip if it's StyleDictionary.extend()
-                if (
-                    !(
-                        path.node.callee.object &&
-                        path.node.callee.object.name === 'StyleDictionary' &&
-                        path.node.callee.property.name === 'extend'
-                    )
-                ) {
+            const objectName = path.node.callee.object.name;
+
+            // Ensure the method is called on a variable initialized with StyleDictionary
+            if (styleDictionaryVars.has(objectName)) {
+                // Check if the method is already awaited
+                if (!j.AwaitExpression.check(path.parent.node)) {
                     j(path).replaceWith(j.awaitExpression(path.node));
                 }
             }
