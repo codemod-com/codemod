@@ -1,0 +1,15 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.2",
+  "private": false,
+  "name": "react-native/75/touchables-as-functional-components",
+  "engine": "jscodeshift",
+  "applicability": {
+    "from": [["react-native", "<", "0.75.0"]]
+  },
+  "meta": {
+    "tags": ["migration", "react-native"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react-native/75/touchables-as-functional-components"
+  },
+  "include": ["**/*.js", "**/*.ts", "**/*.jsx", "**/*.tsx"]
+}
