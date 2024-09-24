@@ -1,0 +1,6 @@
+{
+  "name": "@codemod/meteor-v3-migration-recipe",
+  "files": ["./README.md", "./.codemodrc.json"],
+  "type": "module",
+  "private": true
+}

@@ -1,0 +1,9 @@
+await WebAppInternals.reloadClientPrograms();
+await WebAppInternals.pauseClient();
+await WebAppInternals.generateClientProgram();
+await WebAppInternals.generateBoilerplate();
+await WebAppInternals.setInlineScriptsAllowed();
+await WebAppInternals.enableSubresourceIntegrity();
+await WebAppInternals.setBundledJsCssUrlRewriteHook();
+await WebAppInternals.setBundledJsCssPrefix();
+await WebAppInternals.getBoilerplate;

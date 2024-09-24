@@ -1,0 +1,16 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "meteor/v3/update-react",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "meteor",
+      "migration",
+      "v3"
+    ],
+    "git": "https://github.com/Yugal41735/codemod.git"
+  }
+}

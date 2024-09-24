@@ -1,0 +1,55 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "meteor/v3/migration-recipe",
+  "version": "1.0.2",
+  "engine": "recipe",
+  "private": false,
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.vue"
+  ],
+  "applicability": {
+    "from": [
+      [
+        "meteor",
+        ">=",
+        "2.0.0"
+      ],
+      [
+        "meteor",
+        "<",
+        "3.0.0"
+      ]
+    ],
+    "to": [
+      [
+        "meteor",
+        ">=",
+        "3.0.0"
+      ]
+    ]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "migration",
+      "meteor",
+      "v3"
+    ],
+    "git": "https://github.com/Yugal41735/codemod.git"
+  },
+  "names": [
+    "meteor/v3/add-await-to-async-webapp-methods",
+    "meteor/v3/update-react",
+    "meteor/v3/api-rename-express-migration",
+    "meteor/v3/call-async",
+    "meteor/v3/user-async",
+    "meteor/v3/fibers-to-async-promises",
+    "meteor/v3/removed-functions",
+    "meteor/v3/renamed-functions",
+    "meteor/v3/mongo-db-async-methods"
+  ]
+}
