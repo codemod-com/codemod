@@ -8,7 +8,7 @@ import { afterAll, describe, it } from "vitest";
 
 import type { CodemodConfigInput } from "@codemod-com/utilities";
 import { runJscodeshiftCodemod } from "../src/engines/jscodeshift.js";
-import { getCodemodExecutable, getTransformer } from "../src/source-code.js";
+import { getCodemodExecutable, getRunConfig } from "../src/source-code.js";
 
 const codemodSource = `
 import type { FileInfo, API, Options } from 'jscodeshift';
@@ -81,7 +81,7 @@ describe("runJscodeshiftCodemod", async () => {
   );
 
   const compiledSource = await getCodemodExecutable(directoryPath);
-  const transformer = await getTransformer(compiledSource);
+  const { transformer } = await getRunConfig(compiledSource);
 
   afterAll(async () => {
     await rmdir(directoryPath, { recursive: true });
