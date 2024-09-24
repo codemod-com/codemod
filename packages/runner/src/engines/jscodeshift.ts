@@ -25,7 +25,6 @@ export const runJscodeshiftCodemod = (
   safeArgumentRecord: ArgumentRecord,
   engineOptions: (EngineOptions & { engine: "jscodeshift" }) | null,
 ): readonly FileCommand[] => {
-  console.log(engineOptions);
   const commands: FileCommand[] = [];
 
   const createFile = (newPath: string, newData: string): void => {
