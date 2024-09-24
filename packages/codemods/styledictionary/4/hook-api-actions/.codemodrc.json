@@ -5,7 +5,10 @@
   "name": "styledictionary/4/hook-api-actions",
   "engine": "jscodeshift",
   "applicability": {
-    "from": [["styledictionary", ">=", "3.0.0"], ["styledictionary", "<", "4.0.0"]],
+    "from": [
+      ["styledictionary", ">=", "3.0.0"],
+      ["styledictionary", "<", "4.0.0"]
+    ],
     "to": [["styledictionary", ">=", "4.0.0"]]
   },
   "meta": {

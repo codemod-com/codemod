@@ -6,11 +6,7 @@
   "private": false,
   "arguments": [],
   "meta": {
-    "tags": [
-      "three",
-      "migration",
-      "r168"
-    ],
+    "tags": ["three", "migration", "r168"],
     "git": "https://github.com/Yugal41735/deno-webgpu-window-demos.git"
   }
 }

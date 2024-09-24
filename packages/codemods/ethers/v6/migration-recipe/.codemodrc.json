@@ -4,40 +4,14 @@
   "version": "1.0.1",
   "engine": "recipe",
   "private": false,
-  "include": [
-    "**/*.js",
-    "**/*.jsx",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.vue"
-  ],
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"],
   "applicability": {
-    "from": [
-      [
-        "ethers",
-        ">=",
-        "5.0.0"
-      ],
-      [
-        "ethers",
-        "<",
-        "6.0.0"
-      ]
-    ],
-    "to": [
-      [
-        "ethers",
-        ">=",
-        "6.0.0"
-      ]
-    ]
+    "from": [["ethers", ">=", "5.0.0"], ["ethers", "<", "6.0.0"]],
+    "to": [["ethers", ">=", "6.0.0"]]
   },
   "arguments": [],
   "meta": {
-    "tags": [
-      "migration",
-      "ethers"
-    ],
+    "tags": ["migration", "ethers"],
     "git": "https://github.com/Yugal41735/codemod.git"
   },
   "names": [

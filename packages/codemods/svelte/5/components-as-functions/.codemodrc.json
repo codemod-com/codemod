@@ -12,5 +12,12 @@
     "tags": ["svelte", "5", "migration"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/svelte/5/components-as-functions"
   },
-  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue", "**/*.svelte"]
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.vue",
+    "**/*.svelte"
+  ]
 }

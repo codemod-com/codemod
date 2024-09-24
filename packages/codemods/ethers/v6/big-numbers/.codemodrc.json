@@ -6,8 +6,6 @@
   "private": false,
   "arguments": [],
   "meta": {
-    "tags": [
-      "ethers.js"
-    ]
+    "tags": ["ethers.js"]
   }
 }

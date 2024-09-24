@@ -6,10 +6,6 @@
   "private": false,
   "arguments": [],
   "meta": {
-    "tags": [
-      "three",
-      "migration",
-      "r168"
-    ]
+    "tags": ["three", "migration", "r168"]
   }
 }

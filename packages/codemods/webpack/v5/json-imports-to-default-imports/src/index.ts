@@ -8,16 +8,12 @@ export default function transform(file, api, options) {
     const importPath = path.node.source.value;
 
     // Check if the import is from a JSON file
-    if (importPath.endsWith('.json')) {
+    if (importPath.endsWith(".json")) {
       const specifiers = path.node.specifiers;
 
       // Check if there are named imports
-      if (
-        specifiers.some((specifier) =>
-          j.ImportSpecifier.check(specifier),
-        )
-      ) {
-        const defaultImportIdentifier = j.identifier('pkg');
+      if (specifiers.some((specifier) => j.ImportSpecifier.check(specifier))) {
+        const defaultImportIdentifier = j.identifier("pkg");
 
         // Create a new default import declaration with single quotes
         const newImportDeclaration = j.importDeclaration(
@@ -34,16 +30,16 @@ export default function transform(file, api, options) {
             const localName = specifier.local.name;
             const importedName = specifier.imported.name;
 
-            root.find(j.Identifier, { name: localName }).forEach(
-              (identifierPath) => {
+            root
+              .find(j.Identifier, { name: localName })
+              .forEach((identifierPath) => {
                 j(identifierPath).replaceWith(
                   j.memberExpression(
                     defaultImportIdentifier,
                     j.identifier(importedName),
                   ),
                 );
-              },
-            );
+              });
           }
         });
 
@@ -53,5 +49,5 @@ export default function transform(file, api, options) {
   });
 
   // Use 'single' quotes in the final output
-  return dirtyFlag ? root.toSource({ quote: 'single' }) : undefined;
+  return dirtyFlag ? root.toSource({ quote: "single" }) : undefined;
 }
