@@ -6,9 +6,6 @@
   "private": false,
   "arguments": [],
   "meta": {
-    "tags": [
-      "ethers.js",
-      "migration"
-    ]
+    "tags": ["ethers.js", "migration"]
   }
 }

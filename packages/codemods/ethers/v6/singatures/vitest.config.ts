@@ -1,7 +1,7 @@
-import { configDefaults, defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    include: [...configDefaults.include, '**/test/*.ts'],
+    include: [...configDefaults.include, "**/test/*.ts"],
   },
 });

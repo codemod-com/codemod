@@ -11,7 +11,7 @@
   },
   "arguments": [],
   "meta": {
-    "tags": ["webpack", "migration","codemod"],
+    "tags": ["webpack", "migration", "codemod"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/webpack/v5/set-target-to-false-and-update-plugins"
   }
 }

@@ -4,19 +4,22 @@ export default function transform(file, api, options) {
   let dirtyFlag = false;
 
   // Replace all instances of `viewportTopLeft` with `viewportUV`
-  root.find(j.Identifier, { name: 'viewportTopLeft' }).replaceWith(path => {
+  root.find(j.Identifier, { name: "viewportTopLeft" }).replaceWith((path) => {
     dirtyFlag = true;
-    return j.identifier('viewportUV');
+    return j.identifier("viewportUV");
   });
 
   // Update the import statement if necessary
-  root.find(j.ImportDeclaration).forEach(path => {
+  root.find(j.ImportDeclaration).forEach((path) => {
     const specifiers = path.node.specifiers;
     let importChanged = false;
 
-    specifiers.forEach(specifier => {
-      if (j.ImportSpecifier.check(specifier) && specifier.imported.name === 'viewportTopLeft') {
-        specifier.imported = j.identifier('viewportUV');
+    specifiers.forEach((specifier) => {
+      if (
+        j.ImportSpecifier.check(specifier) &&
+        specifier.imported.name === "viewportTopLeft"
+      ) {
+        specifier.imported = j.identifier("viewportUV");
         importChanged = true;
       }
     });

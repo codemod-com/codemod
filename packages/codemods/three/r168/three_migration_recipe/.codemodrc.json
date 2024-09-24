@@ -4,41 +4,14 @@
   "version": "1.0.2",
   "engine": "recipe",
   "private": false,
-  "include": [
-    "**/*.js",
-    "**/*.jsx",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.vue"
-  ],
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"],
   "applicability": {
-    "from": [
-      [
-        "three",
-        ">=",
-        "0.167.0"
-      ],
-      [
-        "meteor",
-        "<",
-        "0.168.0"
-      ]
-    ],
-    "to": [
-      [
-        "meteor",
-        ">=",
-        "0.168.0"
-      ]
-    ]
+    "from": [["three", ">=", "0.167.0"], ["meteor", "<", "0.168.0"]],
+    "to": [["meteor", ">=", "0.168.0"]]
   },
   "arguments": [],
   "meta": {
-    "tags": [
-      "migration",
-      "three",
-      "r168"
-    ],
+    "tags": ["migration", "three", "r168"],
     "git": "https://github.com/Yugal41735/deno-webgpu-window-demos.git"
   },
   "names": [

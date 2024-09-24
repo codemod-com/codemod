@@ -4,7 +4,7 @@ export default function transform(file, api, options) {
   let dirtyFlag = false;
 
   // Find all CallExpressions
-  root.find(j.CallExpression).forEach(path => {
+  root.find(j.CallExpression).forEach((path) => {
     const { callee } = path.node;
 
     // Check if the callee is a MemberExpression
@@ -20,13 +20,22 @@ export default function transform(file, api, options) {
           const { object: innerObject, property: innerProperty } = innerCallee;
 
           // Check if the inner object is an Identifier named 'pointerLockControls'
-          if (j.Identifier.check(innerObject) && innerObject.name === 'pointerLockControls') {
+          if (
+            j.Identifier.check(innerObject) &&
+            innerObject.name === "pointerLockControls"
+          ) {
             // Check if the inner property is an Identifier named 'getObject'
-            if (j.Identifier.check(innerProperty) && innerProperty.name === 'getObject') {
+            if (
+              j.Identifier.check(innerProperty) &&
+              innerProperty.name === "getObject"
+            ) {
               // Replace 'pointerLockControls.getObject()' with 'controls.object'
               path.node.callee = j.memberExpression(
-                j.memberExpression(j.identifier('controls'), j.identifier('object')),
-                property
+                j.memberExpression(
+                  j.identifier("controls"),
+                  j.identifier("object"),
+                ),
+                property,
               );
               dirtyFlag = true;
             }

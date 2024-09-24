@@ -6,11 +6,7 @@
   "private": false,
   "arguments": [],
   "meta": {
-    "tags": [
-      "python",
-      "asyncio",
-      "ast-grep"
-    ],
+    "tags": ["python", "asyncio", "ast-grep"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/python/eliminate-async-io"
   }
 }

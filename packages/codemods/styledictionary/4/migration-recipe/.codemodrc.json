@@ -29,7 +29,10 @@
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/styledictionary/4/migration-recipe"
   },
   "applicability": {
-    "from": [["styledictionary", ">=", "3.0.0"], ["styledictionary", "<", "4.0.0"]],
+    "from": [
+      ["styledictionary", ">=", "3.0.0"],
+      ["styledictionary", "<", "4.0.0"]
+    ],
     "to": [["styledictionary", ">=", "4.0.0"]]
   },
   "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"]
