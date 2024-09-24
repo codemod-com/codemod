@@ -1,1 +1,1 @@
-import { InfuraProvider } from 'ethers';
+import { InfuraProvider } from "ethers";

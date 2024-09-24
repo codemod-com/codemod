@@ -5,37 +5,24 @@ export default function transform(file, api, options) {
 
   // Find all CallExpressions
   root
-    .find(j.CallExpression, {
-      callee: {
-        object: { name: "dragcontrols" },
-        property: { name: "getRaycaster" },
-      },
-    })
+    .find(j.CallExpression, { callee: { property: { name: "getRaycaster" } } })
     .forEach((path) => {
-      // Replace with MemberExpression
-      j(path).replaceWith(
-        j.memberExpression(j.identifier("controls"), j.identifier("raycaster")),
-      );
-      dirtyFlag = true;
-    });
+      if (
+        j.MemberExpression.check(path.node.callee.object) &&
+        path.node.callee.object.property.name === "dragcontrols"
+      ) {
+        path.node.callee.object.property.name = "controls";
+      }
 
-  // Find all MemberExpressions with dragcontrols.getRaycaster()
-  root
-    .find(j.MemberExpression, {
-      object: {
-        type: "MemberExpression",
-        property: { name: "dragcontrols" },
-      },
-      property: { name: "getRaycaster" },
-    })
-    .forEach((path) => {
-      // Replace with MemberExpression
-      j(path).replaceWith(
-        j.memberExpression(
-          j.memberExpression(path.node.object.object, j.identifier("controls")),
-          j.identifier("raycaster"),
-        ),
-      );
+      if (
+        j.Identifier.check(path.node.callee.object) &&
+        path.node.callee.object.name === "dragcontrols"
+      ) {
+        path.node.callee.object.name = "controls";
+      }
+
+      path.node.callee.property.name = "raycaster";
+      j(path).replaceWith(path.node.callee);
       dirtyFlag = true;
     });
 
