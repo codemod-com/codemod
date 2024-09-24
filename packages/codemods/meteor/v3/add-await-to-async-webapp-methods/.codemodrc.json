@@ -10,6 +10,7 @@
       "meteor",
       "migration",
       "v3"
-    ]
+    ],
+    "git": "https://github.com/codemod-com/codemod/pull/1330"
   }
 }
