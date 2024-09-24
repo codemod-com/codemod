@@ -6,6 +6,7 @@ import {
   decodeMainThreadMessage,
 } from "@codemod-com/printer";
 import {
+  getJSCodeshiftParser,
   getTransformer,
   runAstGrepCodemod,
   runJscodeshiftCodemod,
@@ -63,12 +64,21 @@ const messageHandler = async (m: unknown) => {
             throw new Error("Invalid transformer");
           }
 
+          const parser = await getJSCodeshiftParser(
+            initializationMessage.codemodSource,
+          );
+
           commands = runJscodeshiftCodemod(
             transformer,
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
-            initializationMessage.engineOptions,
+            parser
+              ? {
+                  engine: "jscodeshift",
+                  parser: initializationMessage.engineOptions?.parser ?? parser,
+                }
+              : initializationMessage.engineOptions,
           );
           break;
         }

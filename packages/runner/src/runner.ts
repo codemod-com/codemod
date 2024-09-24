@@ -278,6 +278,10 @@ export class Runner {
               "**/*.jsx",
               "**/*.ts",
               "**/*.tsx",
+              "**/*.mjs",
+              "**/*.cjs",
+              "**/*.mts",
+              "**/*.cts",
               "**/*.vue",
               "**/*.svelte",
             ]

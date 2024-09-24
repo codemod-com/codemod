@@ -75,7 +75,7 @@ export const useAiService = ({
         role: "user",
         content: `This is a codemod generated: ${codemodAIMessage.codemod}. Remember it. Reply with just a single sentence - asking if a user wants to know more about generated codemod"`,
       });
-      setCodemod(codemodAIMessage.codemod);
+      setCodemod(`${codemodAIMessage.codemod}\n\nexport const parser = "tsx";`);
     }
   }, [codemodAIMessage]);
 

@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { getEntryPath, isJavaScriptName } from "@codemod-com/utilities";
 import esbuild from "esbuild";
 import { glob } from "glob";
+import * as v from "valibot";
 
 export type TransformFunction = (
   ...args: unknown[]
@@ -14,6 +15,7 @@ type NonDefaultExports = {
   default?: TransformFunction;
   handleSourceFile?: TransformFunction;
   transform?: TransformFunction;
+  parser?: string;
   workflow?: TransformFunction;
   repomod?: TransformFunction;
   filemod?: TransformFunction;
@@ -24,8 +26,68 @@ export const isESMExtension = (path: string) =>
 
 export const temporaryLoadedModules = new Map<
   string,
-  TransformFunction | null
+  { transformer: TransformFunction | null; parser?: string | null }
 >();
+
+export const getJSCodeshiftParser = async (source: string) => {
+  const getParser = async () => {
+    type Exports = NonDefaultExports | (() => void);
+
+    const hashDigest = createHash("sha256").update(source).digest("hex");
+
+    try {
+      // CJS
+      const module = { exports: {} as Exports };
+
+      const keys = ["module", "exports", "require"];
+      const values = [module, module.exports, require];
+
+      new Function(...keys, source).apply(null, values);
+
+      return typeof module.exports === "object"
+        ? module.exports.parser ?? null
+        : null;
+    } catch (err) {
+      // ESM
+      try {
+        const alreadyLoaded = temporaryLoadedModules.get(hashDigest);
+        if (alreadyLoaded?.parser) return alreadyLoaded.parser;
+
+        const tempFilePath = join(__dirname, `temp-module-${hashDigest}.mjs`);
+
+        await writeFile(tempFilePath, source);
+        const module = (await import(
+          `file://${tempFilePath}`
+        )) as NonDefaultExports;
+
+        const parser = module.parser ?? null;
+
+        temporaryLoadedModules.set(hashDigest, {
+          transformer: alreadyLoaded?.transformer ?? null,
+          parser,
+        });
+        return parser;
+      } catch (err) {
+        return null;
+      }
+    }
+  };
+
+  const parser = await getParser();
+
+  const validated = v.safeParse(
+    v.union([
+      v.literal("babel"),
+      v.literal("babylon"),
+      v.literal("flow"),
+      v.literal("ts"),
+      v.literal("tsx"),
+    ]),
+    parser,
+  );
+
+  return validated.success ? validated.output : null;
+};
 
 export const getTransformer = async (source: string, name?: string) => {
   type Exports = NonDefaultExports | (() => void);
@@ -55,7 +117,7 @@ export const getTransformer = async (source: string, name?: string) => {
     // ESM
     try {
       const alreadyLoaded = temporaryLoadedModules.get(hashDigest);
-      if (alreadyLoaded) return alreadyLoaded;
+      if (alreadyLoaded?.transformer) return alreadyLoaded.transformer;
 
       const tempFilePath = join(__dirname, `temp-module-${hashDigest}.mjs`);
 
@@ -75,7 +137,10 @@ export const getTransformer = async (source: string, name?: string) => {
             module.workflow ??
             null;
 
-      temporaryLoadedModules.set(hashDigest, transformer);
+      temporaryLoadedModules.set(hashDigest, {
+        transformer,
+        parser: alreadyLoaded?.parser ?? null,
+      });
       return transformer;
     } catch (err) {
       return null;
