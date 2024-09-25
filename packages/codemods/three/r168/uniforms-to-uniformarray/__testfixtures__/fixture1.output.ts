@@ -1,1 +1,1 @@
-const replacement = "hello";
+const toReplace = "hello";

@@ -1,1 +1,1 @@
-import { InfuraProvider } from '@ethersproject/providers';
+import { InfuraProvider } from "@ethersproject/providers";

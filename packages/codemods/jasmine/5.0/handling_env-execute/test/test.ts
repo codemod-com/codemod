@@ -20,7 +20,7 @@ const buildApi = (parser: string | undefined): API => ({
   },
 });
 
-describe("handling_env-execute", () => {
+describe("three_transform_logluvloader", () => {
   it("test #1", async () => {
     const INPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/fixture1.input.ts"),

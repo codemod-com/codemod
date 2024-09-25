@@ -1,1 +1,1 @@
-const boot = require('jasmine-core').boot;
+const boot = require("jasmine-core").boot;
