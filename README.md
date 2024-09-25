@@ -129,6 +129,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://pardisp.github.io"><img src="https://avatars.githubusercontent.com/u/8430554?v=4?s=100" width="100px;" alt="Pardis Pashakhanloo"/><br /><sub><b>Pardis Pashakhanloo</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=ppashakhanloo" title="Code">💻</a> <a href="#blog-ppashakhanloo" title="Blogposts">📝</a> <a href="#data-ppashakhanloo" title="Data">🔣</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://minimalistweb.dev"><img src="https://avatars.githubusercontent.com/u/37929992?v=4?s=100" width="100px;" alt="Mohammad Bagher Abiyat"/><br /><sub><b>Mohammad Bagher Abiyat</b></sub></a><br /><a href="#infra-Aslemammad" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Yugal41735"><img src="https://avatars.githubusercontent.com/u/74638775?v=4?s=100" width="100px;" alt="Yugal Agarwal"/><br /><sub><b>Yugal Agarwal</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=Yugal41735" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
