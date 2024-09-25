@@ -6,7 +6,7 @@ import {
   decodeMainThreadMessage,
 } from "@codemod-com/printer";
 import {
-  getTransformer,
+  getRunConfig,
   runAstGrepCodemod,
   runJscodeshiftCodemod,
   runTsMorphCodemod,
@@ -55,7 +55,7 @@ const messageHandler = async (m: unknown) => {
       let commands: readonly FileCommand[] = [];
       switch (initializationMessage.engine) {
         case "jscodeshift": {
-          const transformer = await getTransformer(
+          const { transformer, parser } = await getRunConfig(
             initializationMessage.codemodSource,
           );
 
@@ -68,12 +68,17 @@ const messageHandler = async (m: unknown) => {
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
-            initializationMessage.engineOptions,
+            parser
+              ? {
+                  engine: "jscodeshift",
+                  parser: initializationMessage.engineOptions?.parser ?? parser,
+                }
+              : initializationMessage.engineOptions,
           );
           break;
         }
         case "ts-morph": {
-          const transformer = await getTransformer(
+          const { transformer } = await getRunConfig(
             initializationMessage.codemodSource,
           );
 

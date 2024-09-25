@@ -24,7 +24,7 @@ import type { AuthServiceInterface } from "@codemod.com/workflow";
 import type { RunnerServiceInterface } from "#runner-service.js";
 import {
   getCodemodExecutable,
-  getTransformer,
+  getRunConfig,
   temporaryLoadedModules,
 } from "#source-code.js";
 import { astGrepLanguageToPatterns } from "./engines/ast-grep.js";
@@ -278,6 +278,10 @@ export class Runner {
               "**/*.jsx",
               "**/*.ts",
               "**/*.tsx",
+              "**/*.mjs",
+              "**/*.cjs",
+              "**/*.mts",
+              "**/*.cts",
               "**/*.vue",
               "**/*.svelte",
             ]
@@ -493,7 +497,7 @@ export class Runner {
       flowSettings.esm,
       codemod.config.engine,
     );
-    const transformer = await getTransformer(codemodSource);
+    const { transformer } = await getRunConfig(codemodSource);
 
     if (codemod.config.engine === "workflow") {
       if (transformer === null) {
