@@ -17,7 +17,7 @@ const OpenAIConfiguration = openAiEdge.Configuration;
 const COMPLETION_PARAMS = {
   top_p: 0.1,
   temperature: 0.2,
-  model: "gpt-4",
+  model: "gpt-4o",
 };
 
 const chatGptApi = new ChatGPTAPI({

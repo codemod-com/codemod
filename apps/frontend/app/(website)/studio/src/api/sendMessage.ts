@@ -19,7 +19,7 @@ const sendChat = async ({
       SEND_CHAT,
       {
         messages: [{ content: message, role: "user" }],
-        engine: "gpt-4",
+        engine: "gpt-4o-mini",
       },
       { headers: { Authorization: `Bearer ${token}` } },
     );
