@@ -172,6 +172,7 @@ catalog:
     ioredis: ^5.4.1
     js-beautify: ^1.14.11
     js-yaml: 4.1.0
+    jscodeshift: ^17.1.0
     json-schema-to-typescript: ^13.1.2
     jszip: ^3.10.1
     katex: ^0.16.10

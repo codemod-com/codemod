@@ -41,7 +41,7 @@
     "filenamify": "catalog:",
     "glob": "catalog:",
     "git-url-parse": "catalog:",
-    "jscodeshift": "^0.15.0",
+    "jscodeshift": "catalog:",
     "lodash-es": "catalog:",
     "magic-string": "catalog:",
     "openai": "catalog:",

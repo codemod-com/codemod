@@ -93,7 +93,7 @@
     "intro.js": "catalog:",
     "intro.js-react": "catalog:",
     "js-beautify": "catalog:",
-    "jscodeshift": "^0.15.0",
+    "jscodeshift": "catalog:",
     "jszip": "catalog:",
     "katex": "catalog:",
     "lottie-react": "catalog:",

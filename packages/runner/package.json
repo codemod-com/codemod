@@ -55,7 +55,7 @@
     "esbuild": "^0.23.0",
     "glob": "catalog:",
     "js-yaml": "catalog:",
-    "jscodeshift": "^0.16.1",
+    "jscodeshift": "catalog:",
     "mdast-util-from-markdown": "catalog:",
     "mdast-util-mdx": "catalog:",
     "mdast-util-to-markdown": "catalog:",
