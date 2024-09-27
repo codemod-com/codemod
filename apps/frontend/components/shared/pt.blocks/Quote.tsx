@@ -8,7 +8,7 @@ export const Quote = (props: QuoteProps) => {
         <SanityImage
           maxWidth={450}
           image={props.image}
-          elProps={{ className: "mb-10 block" }}
+          elProps={{ className: "mb-6 block h-10 w-auto" }}
           alt={props.authorImage?.alt}
         />
       )}

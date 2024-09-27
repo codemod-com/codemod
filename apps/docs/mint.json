@@ -113,7 +113,7 @@
       "pages": ["deploying-codemods/vsce"]
     },
     {
-      "group": "Guides",
+      "group": "Core Concepts",
       "pages": [
         {
           "group": "Building codemods",
@@ -149,6 +149,10 @@
     {
       "group": "Guides & Examples",
       "pages": ["guides/introduction"]
+    },
+    {
+      "group": "Building Codemods",
+      "pages": ["guides/first-codemod"]
     },
     {
       "group": "Migrations",
