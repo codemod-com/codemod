@@ -50,6 +50,10 @@ export default function transform(file, api, options) {
       }
     });
 
+  if (dirtyFlag) {
+    return root.toSource();
+  }
+
   // Transform MyCollection.* calls to their async counterparts and add `await`
   const collectionMethods = ["insert", "update", "remove", "upsert"];
   collectionMethods.forEach((method) => {

@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { getEntryPath, isJavaScriptName } from "@codemod-com/utilities";
 import esbuild from "esbuild";
 import { glob } from "glob";
+import * as v from "valibot";
 
 export type TransformFunction = (
   ...args: unknown[]
@@ -14,6 +15,7 @@ type NonDefaultExports = {
   default?: TransformFunction;
   handleSourceFile?: TransformFunction;
   transform?: TransformFunction;
+  parser?: string;
   workflow?: TransformFunction;
   repomod?: TransformFunction;
   filemod?: TransformFunction;
@@ -22,13 +24,24 @@ type NonDefaultExports = {
 export const isESMExtension = (path: string) =>
   path.endsWith(".mjs") || path.endsWith(".mts");
 
-export const temporaryLoadedModules = new Map<
-  string,
-  TransformFunction | null
->();
+export const temporaryLoadedModules = new Map<string, RunConfig>();
 
-export const getTransformer = async (source: string, name?: string) => {
+export type RunConfig = {
+  transformer: TransformFunction | null;
+  parser: string | null;
+};
+
+export type RunConfigValidated = {
+  transformer: TransformFunction | null;
+  parser: "babel" | "babylon" | "flow" | "ts" | "tsx" | null;
+};
+
+export const getRunConfig = async (
+  source: string,
+): Promise<RunConfigValidated> => {
   type Exports = NonDefaultExports | (() => void);
+
+  let runConfig: RunConfig = { parser: null, transformer: null };
 
   const hashDigest = createHash("sha256").update(source).digest("hex");
   // CJS
@@ -40,47 +53,71 @@ export const getTransformer = async (source: string, name?: string) => {
 
     new Function(...keys, source).apply(null, values);
 
-    return typeof module.exports === "function"
-      ? module.exports
-      : module.exports.__esModule
-        ? module.exports.default ??
-          module.exports.transform ??
-          module.exports.handleSourceFile ??
-          module.exports.repomod ??
-          module.exports.filemod ??
-          module.exports.workflow ??
-          null
-        : null;
+    runConfig.transformer =
+      typeof module.exports === "function"
+        ? module.exports
+        : module.exports.__esModule
+          ? module.exports.default ??
+            module.exports.transform ??
+            module.exports.handleSourceFile ??
+            module.exports.repomod ??
+            module.exports.filemod ??
+            module.exports.workflow ??
+            null
+          : null;
+
+    runConfig.parser =
+      typeof module.exports === "object" ? module.exports.parser ?? null : null;
   } catch (err) {
     // ESM
     try {
       const alreadyLoaded = temporaryLoadedModules.get(hashDigest);
-      if (alreadyLoaded) return alreadyLoaded;
 
-      const tempFilePath = join(__dirname, `temp-module-${hashDigest}.mjs`);
+      if (alreadyLoaded) {
+        runConfig = alreadyLoaded;
+      } else {
+        const tempFilePath = join(__dirname, `temp-module-${hashDigest}.mjs`);
 
-      await writeFile(tempFilePath, source);
-      const module = (await import(
-        `file://${tempFilePath}`
-      )) as NonDefaultExports;
+        await writeFile(tempFilePath, source);
+        const module = (await import(
+          `file://${tempFilePath}`
+        )) as NonDefaultExports;
 
-      const transformer =
-        typeof module.default === "function"
-          ? module.default
-          : module.default ??
-            module.transform ??
-            module.handleSourceFile ??
-            module.repomod ??
-            module.filemod ??
-            module.workflow ??
-            null;
+        runConfig.transformer =
+          typeof module.default === "function"
+            ? module.default
+            : module.default ??
+              module.transform ??
+              module.handleSourceFile ??
+              module.repomod ??
+              module.filemod ??
+              module.workflow ??
+              null;
 
-      temporaryLoadedModules.set(hashDigest, transformer);
-      return transformer;
+        runConfig.parser = module.parser ?? null;
+
+        temporaryLoadedModules.set(hashDigest, runConfig);
+      }
     } catch (err) {
-      return null;
+      return { transformer: null, parser: null };
     }
   }
+
+  const validated = v.safeParse(
+    v.union([
+      v.literal("babel"),
+      v.literal("babylon"),
+      v.literal("flow"),
+      v.literal("ts"),
+      v.literal("tsx"),
+    ]),
+    runConfig.parser,
+  );
+
+  return {
+    transformer: runConfig.transformer,
+    parser: validated.success ? validated.output : null,
+  };
 };
 
 export const DEFAULT_BUILD_PATH = "cdmd_dist/index.js";

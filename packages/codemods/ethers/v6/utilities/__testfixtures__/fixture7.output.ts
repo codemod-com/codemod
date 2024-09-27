@@ -1,1 +1,3 @@
-ethers.defineProperties(obj, { name: value });
+ethers.defineProperties(obj, {
+  name: value
+});

@@ -1,3 +1,3 @@
 provider = new JsonRpcProvider(url, network, {
-  staticNetwork: network,
+  staticNetwork: network
 });
