@@ -1,5 +1,11 @@
 # @codemod-com/runner
 
+## 1.3.0
+
+### Minor Changes
+
+- b677d74: Support exported parser variable from the codemod file, include esm/cjs -specific file extensions to included patterns
+
 ## 1.2.0
 
 ### Minor Changes
