@@ -1,1 +1,0 @@
-import { Verdana } from '@next/font/google';

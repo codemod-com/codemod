@@ -1,0 +1,24 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "next/15/migration-recipe",
+  "version": "1.0.4",
+  "private": false,
+  "engine": "recipe",
+  "names": [
+    "next/15/update-route-handlers",
+    "next/15/update-fetch-requests-to-handle-caching",
+    "next/15/add-experimental-stale-times",
+    "next/15/refactor-imports-from-@next/font-to-next/font"
+  ],
+  "meta": {
+    "tags": ["migration", "next"]
+  },
+  "applicability": {
+    "from": [
+      ["next", ">=", "14.0.0"],
+      ["next", "<", "15.0.0"]
+    ],
+    "to": [["next", ">=", "15.0.0"]]
+  },
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"]
+}

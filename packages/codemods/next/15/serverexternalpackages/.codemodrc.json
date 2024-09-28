@@ -1,0 +1,11 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "Next/15/Refactor-experimental.serverComponentsExternalPackages-to-serverExternalPackages",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": ["Next"]
+  }
+}
