@@ -1,5 +1,5 @@
 {
-  "name": "meteor/v3/api-rename-express-migration",
+  "name": "meteor-3-api-rename-express-migration",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "20.9.0",
