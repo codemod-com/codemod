@@ -355,10 +355,28 @@
         "blog",
         "data"
       ]
+    },
+    {
+      "login": "Aslemammad",
+      "name": "Mohammad Bagher Abiyat",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37929992?v=4",
+      "profile": "http://minimalistweb.dev",
+      "contributions": [
+        "infra"
+      ]
+    },
+    {
+      "login": "Yugal41735",
+      "name": "Yugal Agarwal",
+      "avatar_url": "https://avatars.githubusercontent.com/u/74638775?v=4",
+      "profile": "https://github.com/Yugal41735",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
-  "skipCi": true,
+  "skipCi": false,
   "repoType": "github",
   "repoHost": "https://github.com",
   "projectName": "codemod",

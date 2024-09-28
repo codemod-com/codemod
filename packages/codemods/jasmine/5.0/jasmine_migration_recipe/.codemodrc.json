@@ -1,0 +1,21 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "jasmine/v5/migration-recipe",
+  "version": "1.0.1",
+  "engine": "recipe",
+  "private": false,
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"],
+  "applicability": {
+    "from": [["jasmine", ">=", "4.0.0"], ["jasmine", "<", "5.0.0"]],
+    "to": [["jasmine", ">=", "5.0.0"]]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": ["migration", "jasmine", "v5"],
+    "git": "https://github.com/codemod-com/codemod/pull/1319/files"
+  },
+  "names": [
+    "jasmine/v5/handling-env-execute-callbacks",
+    "jasmine/v5/node-boot-removal"
+  ]
+}

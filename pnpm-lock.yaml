@@ -963,7 +963,7 @@ importers:
         version: 2.1.1(esbuild@0.19.12)
       ts-node:
         specifier: 10.9.2
-        version: 10.9.2(@types/node@20.10.5)(typescript@5.5.3)
+        version: 10.9.2(@types/node@20.10.5)(typescript@5.5.4)
       tsx:
         specifier: ^4.7.1
         version: 4.15.7
@@ -1008,7 +1008,7 @@ importers:
         version: 6.1.13
       ai:
         specifier: 2.2.29
-        version: 2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.3))
+        version: 2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.4))
       axios:
         specifier: 'catalog:'
         version: 1.7.2
@@ -1038,7 +1038,7 @@ importers:
         version: 5.4.1
       langchain:
         specifier: 'catalog:'
-        version: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0)
+        version: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0)
       openai:
         specifier: 'catalog:'
         version: 4.23.0
@@ -1123,7 +1123,7 @@ importers:
         version: 6.3.4
       ts-node:
         specifier: 10.9.2
-        version: 10.9.2(@types/node@20.10.5)(typescript@5.5.3)
+        version: 10.9.2(@types/node@20.10.5)(typescript@5.5.4)
       tsx:
         specifier: ^4.7.1
         version: 4.15.7
@@ -1388,10 +1388,10 @@ importers:
         version: 1.6.7
       '@t3-oss/env-nextjs':
         specifier: 'catalog:'
-        version: 0.7.3(typescript@5.5.3)(zod@3.22.3)
+        version: 0.7.3(typescript@5.5.4)(zod@3.22.3)
       '@tailwindcss/typography':
         specifier: 'catalog:'
-        version: 0.5.10(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3)))
+        version: 0.5.10(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4)))
       '@tinloof/sanity-studio':
         specifier: 'catalog:'
         version: 1.3.1(@sanity/client@6.21.0)(@sanity/mutator@3.47.1)(@types/node@20.14.8)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react-is@18.3.1)(react@18.2.0)(rxjs@7.8.1)(sanity@3.47.1(@types/node@20.14.8)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.31.1))(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.31.1)
@@ -1412,7 +1412,7 @@ importers:
         version: 0.1.2
       ai:
         specifier: ^2.1.32
-        version: 2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.3))
+        version: 2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.4))
       ast-node-builder:
         specifier: 'catalog:'
         version: 4.2.1
@@ -1502,7 +1502,7 @@ importers:
         version: 2.1.0
       postcss-multiple-tailwind:
         specifier: 'catalog:'
-        version: 1.0.1(postcss@8.4.35)(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3)))
+        version: 1.0.1(postcss@8.4.35)(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4)))
       prettier:
         specifier: ^2.8.8
         version: 2.8.8
@@ -1707,7 +1707,7 @@ importers:
         version: 8.56.0
       eslint-config-next:
         specifier: 'catalog:'
-        version: 14.1.0(eslint@8.56.0)(typescript@5.5.3)
+        version: 14.1.0(eslint@8.56.0)(typescript@5.5.4)
       eslint-config-prettier:
         specifier: 'catalog:'
         version: 9.1.0(eslint@8.56.0)
@@ -1743,10 +1743,10 @@ importers:
         version: 4.0.2(webpack@5.91.0(esbuild@0.21.5))
       tailwindcss:
         specifier: 'catalog:'
-        version: 3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3))
+        version: 3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4))
       tailwindcss-animate:
         specifier: 'catalog:'
-        version: 1.0.7(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3)))
+        version: 1.0.7(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4)))
 
   apps/modgpt:
     dependencies:
@@ -1764,7 +1764,7 @@ importers:
         version: 9.0.1
       ai:
         specifier: 2.2.29
-        version: 2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.3))
+        version: 2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.4))
       axios:
         specifier: 'catalog:'
         version: 1.7.2
@@ -1785,10 +1785,10 @@ importers:
         version: 0.25.2
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@types/node@20.10.5)(typescript@5.5.3)
+        version: 10.9.2(@types/node@20.10.5)(typescript@5.5.4)
       ts-node-dev:
         specifier: 'catalog:'
-        version: 2.0.0(@types/node@20.10.5)(typescript@5.5.3)
+        version: 2.0.0(@types/node@20.10.5)(typescript@5.5.4)
       valibot:
         specifier: 'catalog:'
         version: 0.34.0
@@ -1871,7 +1871,7 @@ importers:
         version: 3.0.2
       ts-node:
         specifier: 10.9.2
-        version: 10.9.2(@types/node@20.10.5)(typescript@5.5.3)
+        version: 10.9.2(@types/node@20.10.5)(typescript@5.5.4)
       tsx:
         specifier: ^4.7.1
         version: 4.15.7
@@ -2129,7 +2129,7 @@ importers:
         version: 3.3.2
       ts-node:
         specifier: 10.9.1
-        version: 10.9.1(@types/node@20.14.8)(typescript@5.5.3)
+        version: 10.9.1(@types/node@20.14.8)(typescript@5.5.4)
       vitest:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
@@ -2157,7 +2157,7 @@ importers:
         version: 3.3.2
       ts-node:
         specifier: 10.9.1
-        version: 10.9.1(@types/node@20.14.8)(typescript@5.5.3)
+        version: 10.9.1(@types/node@20.14.8)(typescript@5.5.4)
       vitest:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
@@ -2182,7 +2182,7 @@ importers:
         version: 1.6.0(vitest@1.1.0(@types/node@20.10.3)(jsdom@23.2.0)(terser@5.31.1))
       ts-node:
         specifier: 10.9.1
-        version: 10.9.1(@types/node@20.10.3)(typescript@5.5.3)
+        version: 10.9.1(@types/node@20.10.3)(typescript@5.5.4)
       vitest:
         specifier: ^1.0.1
         version: 1.1.0(@types/node@20.10.3)(jsdom@23.2.0)(terser@5.31.1)
@@ -2984,6 +2984,176 @@ importers:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
 
+  packages/codemods/ethers/v6/big-numbers:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/ethers/v6/contracts-ambiguous-methods:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/ethers/v6/contracts-other-methods:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/ethers/v6/importing:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/ethers/v6/migration-recipe: {}
+
+  packages/codemods/ethers/v6/providers:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/ethers/v6/singatures:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/ethers/v6/transactions:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/ethers/v6/utilities:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
   packages/codemods/history/4/replace-state-object:
     devDependencies:
       '@codemod-com/utilities':
@@ -3425,6 +3595,50 @@ importers:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
 
+  packages/codemods/jasmine/5.0/handling_env-execute:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/jasmine/5.0/jasmine_migration_recipe: {}
+
+  packages/codemods/jasmine/5.0/node-boot-removal:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
   packages/codemods/jest/vitest:
     devDependencies:
       '@codemod-com/utilities':
@@ -3448,6 +3662,111 @@ importers:
       vitest:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/meteor/v3/fibers-to-async-promises:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/meteor/v3/meteor-renamed functions:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/meteor/v3/mongoDb-async-methods:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/meteor/v3/removedFunctions:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/meteor/v3/webapp-handler-renaming:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
 
   packages/codemods/mocha/vitest/migrate-configuration:
     dependencies:
@@ -6168,6 +6487,703 @@ importers:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
 
+  packages/codemods/styledictionary/4/asynchronous-api:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/asynchronous-api-file-headers:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/format-helpers:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/formatting-options:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/hook-api-actions:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/hook-api-file-header:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/hook-api-filters:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/hook-api-formats:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/hook-api-parsers:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/hook-api-preprocessors:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/hook-api-transform:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/hook-api-transform-groups:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/instantiating-style-dictionary:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/logging:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/migration-recipe: {}
+
+  packages/codemods/styledictionary/4/module-common-js:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/reference-utils:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/type:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/styledictionary/4/updated-and-removed-transforms:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/svelte/5/components-as-functions:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/svelte/5/components-as-functions-destroyfunction:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/svelte/5/components-as-functions-onfunction:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/svelte/5/is-where-scoping:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/svelte/5/migration-recipe: {}
+
+  packages/codemods/svelte/5/server-api-changes:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/svelte/5/svelte-element-expression:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/tanStack/codeSplitting:
+    dependencies:
+      '@codemod.com/workflow':
+        specifier: ^0.0.31
+        version: 0.0.31(@babel/preset-env@7.24.7)
+      fast-glob:
+        specifier: ^3.3.2
+        version: 3.3.2
+    devDependencies:
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/three/r168/deactivate-to-disconnect:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/three/r168/drag-controls-to-connect:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/three/r168/pointer-lock-controls-to-controls-object:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/three/r168/replace-dragcontrols-getraycaster:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/three/r168/replace-viewport-bottom-left-with-viewportuv-flipy:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/three/r168/replace-viewport-top-left-with-viewport-uv:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/three/r168/three_migration_recipe: {}
+
+  packages/codemods/three/r168/transform_logluvloader:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/three/r168/uniforms-to-uniformarray:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
   packages/codemods/typescript/remove-public-modifier:
     devDependencies:
       '@codemod-com/tsconfig':
@@ -6240,6 +7256,71 @@ importers:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
 
+  packages/codemods/webpack/v5/json-imports-to-default-imports:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/webpack/v5/migrate-library-target-to-library-object:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/webpack/v5/migration-recipe: {}
+
+  packages/codemods/webpack/v5/set-target-to-false-and-update-plugins:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.4
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
   packages/database:
     dependencies:
       '@prisma/client':
@@ -6247,7 +7328,7 @@ importers:
         version: 5.15.1(prisma@5.15.1)
       prisma-json-types-generator:
         specifier: ^3.0.4
-        version: 3.0.4(prisma@5.15.1)(typescript@5.5.3)
+        version: 3.0.4(prisma@5.15.1)(typescript@5.5.4)
     devDependencies:
       '@codemod-com/utilities':
         specifier: workspace:*
@@ -6261,8 +7342,6 @@ importers:
       tsx:
         specifier: ^4.11.0
         version: 4.15.7
-
-  packages/database/generated/client: {}
 
   packages/deprecated: {}
 
@@ -6282,7 +7361,7 @@ importers:
         version: 4.9.3
       ts-node:
         specifier: 10.9.1
-        version: 10.9.1(@types/node@20.8.5)(typescript@5.5.3)
+        version: 10.9.1(@types/node@20.8.5)(typescript@5.5.4)
       vitest:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.8.5)(jsdom@23.2.0)(terser@5.31.1)
@@ -6474,7 +7553,7 @@ importers:
         version: 3.0.0
       ts-node:
         specifier: 10.9.1
-        version: 10.9.1(@types/node@20.10.3)(typescript@5.5.3)
+        version: 10.9.1(@types/node@20.10.3)(typescript@5.5.4)
       vitest:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.10.3)(jsdom@23.2.0)(terser@5.31.1)
@@ -6564,7 +7643,7 @@ importers:
         version: 4.9.3
       ts-node:
         specifier: 10.9.1
-        version: 10.9.1(@types/node@20.10.3)(typescript@5.5.3)
+        version: 10.9.1(@types/node@20.10.3)(typescript@5.5.4)
       vitest:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.10.3)(jsdom@23.2.0)(terser@5.31.1)
@@ -8066,6 +9145,12 @@ packages:
 
   '@codemirror/view@6.28.2':
     resolution: {integrity: sha512-A3DmyVfjgPsGIjiJqM/zvODUAPQdQl3ci0ghehYNnbt5x+o76xq+dL5+mMBuysDXnI3kapgOkoeJ0sbtL/3qPw==}
+
+  '@codemod.com/codemod-utils@1.0.0':
+    resolution: {integrity: sha512-Uo7oA2kgpfRJS5LFL9ARdsaeenRyEsRHINoTcIsHeBFBce+imLhrkYlEhXcrNYuTLVXmlGx2Mdn6NeUio4wpfw==}
+
+  '@codemod.com/workflow@0.0.31':
+    resolution: {integrity: sha512-8xmbxwjxr6d0ZUm3RS/eQqud2mUGXwQgf2v+YEjwQQVwOse6yShgoFljrg7ujvJlhzymivYloL0T0VSS9YubNw==}
 
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -20025,6 +21110,11 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  typescript@5.5.4:
+    resolution: {integrity: sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   uc.micro@1.0.6:
     resolution: {integrity: sha512-8Y75pvTYkLJW2hWQHXxoqRgV7qb9B+9vFEtidML+7koHUFapnVJAZ6cKs+Qjz5Aw3aZWHMC6u0wJE3At+nSGwA==}
 
@@ -23014,6 +24104,44 @@ snapshots:
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
 
+  '@codemod.com/codemod-utils@1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))':
+    dependencies:
+      '@babel/parser': 7.24.7
+      '@types/jscodeshift': 0.11.11
+      jscodeshift: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+    transitivePeerDependencies:
+      - '@babel/preset-env'
+      - supports-color
+
+  '@codemod.com/workflow@0.0.31(@babel/preset-env@7.24.7)':
+    dependencies:
+      '@ast-grep/cli': 0.25.4
+      '@ast-grep/napi': 0.25.4
+      '@octokit/rest': 20.1.1
+      '@sindresorhus/slugify': 2.2.1
+      '@types/jscodeshift': 0.11.11
+      colors-cli: 1.0.33
+      detect-indent: 7.0.1
+      detect-newline: 4.0.1
+      diff: 5.2.0
+      filenamify: 6.0.0
+      git-url-parse: 14.0.0
+      glob: 10.4.2
+      inquirer: 9.2.23
+      jscodeshift: 0.15.2(@babel/preset-env@7.24.7)
+      lodash-es: 4.17.21
+      magic-string: 0.30.10
+      openai: 4.23.0
+      prettier: 3.3.2
+      simple-git: 3.25.0
+      tree-kill: 1.2.2
+      ts-invariant: 0.10.3
+      yaml: 2.4.5
+    transitivePeerDependencies:
+      - '@babel/preset-env'
+      - encoding
+      - supports-color
+
   '@colors/colors@1.5.0':
     optional: true
 
@@ -23980,13 +25108,13 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@langchain/community@0.0.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0)':
+  '@langchain/community@0.0.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0)':
     dependencies:
-      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)
-      '@langchain/openai': 0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))
+      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)
+      '@langchain/openai': 0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))
       expr-eval: 2.0.2
       flat: 5.0.2
-      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)
+      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)
       uuid: 9.0.1
       zod: 3.23.8
       zod-to-json-schema: 3.23.1(zod@3.23.8)
@@ -24007,13 +25135,13 @@ snapshots:
       - langchain
       - openai
 
-  '@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)':
+  '@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)':
     dependencies:
       ansi-styles: 5.2.0
       camelcase: 6.3.0
       decamelize: 1.2.0
       js-tiktoken: 1.0.12
-      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)
+      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)
       ml-distance: 4.0.1
       mustache: 4.2.0
       p-queue: 6.6.2
@@ -24025,13 +25153,13 @@ snapshots:
       - langchain
       - openai
 
-  '@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0)':
+  '@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0)':
     dependencies:
       ansi-styles: 5.2.0
       camelcase: 6.3.0
       decamelize: 1.2.0
       js-tiktoken: 1.0.12
-      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0)
+      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0)
       ml-distance: 4.0.1
       mustache: 4.2.0
       p-queue: 6.6.2
@@ -24043,9 +25171,9 @@ snapshots:
       - langchain
       - openai
 
-  '@langchain/openai@0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))':
+  '@langchain/openai@0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))':
     dependencies:
-      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0)
+      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0)
       js-tiktoken: 1.0.12
       openai: 4.52.0
       zod: 3.23.8
@@ -26459,26 +27587,26 @@ snapshots:
 
   '@swc/wasm-web@1.6.7': {}
 
-  '@t3-oss/env-core@0.7.3(typescript@5.5.3)(zod@3.22.3)':
+  '@t3-oss/env-core@0.7.3(typescript@5.5.4)(zod@3.22.3)':
     dependencies:
       zod: 3.22.3
     optionalDependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
 
-  '@t3-oss/env-nextjs@0.7.3(typescript@5.5.3)(zod@3.22.3)':
+  '@t3-oss/env-nextjs@0.7.3(typescript@5.5.4)(zod@3.22.3)':
     dependencies:
-      '@t3-oss/env-core': 0.7.3(typescript@5.5.3)(zod@3.22.3)
+      '@t3-oss/env-core': 0.7.3(typescript@5.5.4)(zod@3.22.3)
       zod: 3.22.3
     optionalDependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
 
-  '@tailwindcss/typography@0.5.10(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3)))':
+  '@tailwindcss/typography@0.5.10(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4)))':
     dependencies:
       lodash.castarray: 4.4.0
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3))
+      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4))
 
   '@tanem/react-nprogress@5.0.51(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -27176,16 +28304,16 @@ snapshots:
     dependencies:
       '@types/yargs-parser': 21.0.3
 
-  '@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3)':
+  '@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4)':
     dependencies:
       '@typescript-eslint/scope-manager': 6.21.0
       '@typescript-eslint/types': 6.21.0
-      '@typescript-eslint/typescript-estree': 6.21.0(typescript@5.5.3)
+      '@typescript-eslint/typescript-estree': 6.21.0(typescript@5.5.4)
       '@typescript-eslint/visitor-keys': 6.21.0
       debug: 4.3.5(supports-color@5.5.0)
       eslint: 8.56.0
     optionalDependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
 
@@ -27196,7 +28324,7 @@ snapshots:
 
   '@typescript-eslint/types@6.21.0': {}
 
-  '@typescript-eslint/typescript-estree@6.21.0(typescript@5.5.3)':
+  '@typescript-eslint/typescript-estree@6.21.0(typescript@5.5.4)':
     dependencies:
       '@typescript-eslint/types': 6.21.0
       '@typescript-eslint/visitor-keys': 6.21.0
@@ -27205,9 +28333,9 @@ snapshots:
       is-glob: 4.0.3
       minimatch: 9.0.3
       semver: 7.6.2
-      ts-api-utils: 1.3.0(typescript@5.5.3)
+      ts-api-utils: 1.3.0(typescript@5.5.4)
     optionalDependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
 
@@ -27641,11 +28769,11 @@ snapshots:
       '@vue/shared': 3.4.30
       csstype: 3.1.3
 
-  '@vue/server-renderer@3.4.30(vue@3.4.30(typescript@5.5.3))':
+  '@vue/server-renderer@3.4.30(vue@3.4.30(typescript@5.5.4))':
     dependencies:
       '@vue/compiler-ssr': 3.4.30
       '@vue/shared': 3.4.30
-      vue: 3.4.30(typescript@5.5.3)
+      vue: 3.4.30(typescript@5.5.4)
 
   '@vue/shared@3.4.30': {}
 
@@ -27798,7 +28926,7 @@ snapshots:
       clean-stack: 5.2.0
       indent-string: 5.0.0
 
-  ai@2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.3)):
+  ai@2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.4)):
     dependencies:
       eventsource-parser: 1.0.0
       nanoid: 3.3.6
@@ -27806,12 +28934,12 @@ snapshots:
       sswr: 2.0.0(svelte@4.2.18)
       swr: 2.2.0(react@18.2.0)
       swr-store: 0.10.6
-      swrv: 1.0.4(vue@3.4.30(typescript@5.5.3))
+      swrv: 1.0.4(vue@3.4.30(typescript@5.5.4))
     optionalDependencies:
       react: 18.2.0
       solid-js: 1.8.17
       svelte: 4.2.18
-      vue: 3.4.30(typescript@5.5.3)
+      vue: 3.4.30(typescript@5.5.4)
 
   ajv-formats@2.1.1(ajv@8.16.0):
     optionalDependencies:
@@ -29875,20 +31003,20 @@ snapshots:
 
   escape-string-regexp@5.0.0: {}
 
-  eslint-config-next@14.1.0(eslint@8.56.0)(typescript@5.5.3):
+  eslint-config-next@14.1.0(eslint@8.56.0)(typescript@5.5.4):
     dependencies:
       '@next/eslint-plugin-next': 14.1.0
       '@rushstack/eslint-patch': 1.10.3
-      '@typescript-eslint/parser': 6.21.0(eslint@8.56.0)(typescript@5.5.3)
+      '@typescript-eslint/parser': 6.21.0(eslint@8.56.0)(typescript@5.5.4)
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       eslint-plugin-jsx-a11y: 6.9.0(eslint@8.56.0)
       eslint-plugin-react: 7.34.3(eslint@8.56.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.56.0)
     optionalDependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
     transitivePeerDependencies:
       - eslint-import-resolver-webpack
       - supports-color
@@ -29905,13 +31033,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0):
     dependencies:
       debug: 4.3.5(supports-color@5.5.0)
       enhanced-resolve: 5.17.0
       eslint: 8.56.0
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.14.0
@@ -29922,18 +31050,18 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0):
     dependencies:
       debug: 3.2.7(supports-color@5.5.0)
     optionalDependencies:
-      '@typescript-eslint/parser': 6.21.0(eslint@8.56.0)(typescript@5.5.3)
+      '@typescript-eslint/parser': 6.21.0(eslint@8.56.0)(typescript@5.5.4)
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -29943,7 +31071,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
       hasown: 2.0.2
       is-core-module: 2.14.0
       is-glob: 4.0.3
@@ -29954,7 +31082,7 @@ snapshots:
       semver: 6.3.1
       tsconfig-paths: 3.15.0
     optionalDependencies:
-      '@typescript-eslint/parser': 6.21.0(eslint@8.56.0)(typescript@5.5.3)
+      '@typescript-eslint/parser': 6.21.0(eslint@8.56.0)(typescript@5.5.4)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
@@ -31781,12 +32909,12 @@ snapshots:
 
   kolorist@1.8.0: {}
 
-  langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0):
+  langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0):
     dependencies:
       '@anthropic-ai/sdk': 0.9.1
-      '@langchain/community': 0.0.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0)
-      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)
-      '@langchain/openai': 0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))
+      '@langchain/community': 0.0.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0)
+      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)
+      '@langchain/openai': 0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))
       binary-extensions: 2.3.0
       expr-eval: 2.0.2
       js-tiktoken: 1.0.12
@@ -31892,7 +33020,7 @@ snapshots:
       p-retry: 4.6.2
       uuid: 9.0.1
 
-  langsmith@0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0):
+  langsmith@0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0):
     dependencies:
       '@types/uuid': 9.0.8
       commander: 10.0.1
@@ -31900,11 +33028,11 @@ snapshots:
       p-retry: 4.6.2
       uuid: 9.0.1
     optionalDependencies:
-      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)
-      langchain: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0)
+      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.23.0)
+      langchain: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0)
       openai: 4.23.0
 
-  langsmith@0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0):
+  langsmith@0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0):
     dependencies:
       '@types/uuid': 9.0.8
       commander: 10.0.1
@@ -31912,8 +33040,8 @@ snapshots:
       p-retry: 4.6.2
       uuid: 9.0.1
     optionalDependencies:
-      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0)
-      langchain: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0)
+      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0))(openai@4.52.0)
+      langchain: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0)
       openai: 4.52.0
 
   language-subtag-registry@0.3.23: {}
@@ -33928,18 +35056,18 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.4.35
 
-  postcss-load-config@4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3)):
+  postcss-load-config@4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4)):
     dependencies:
       lilconfig: 3.1.2
       yaml: 2.4.5
     optionalDependencies:
       postcss: 8.4.35
-      ts-node: 10.9.2(@types/node@20.14.8)(typescript@5.5.3)
+      ts-node: 10.9.2(@types/node@20.14.8)(typescript@5.5.4)
 
-  postcss-multiple-tailwind@1.0.1(postcss@8.4.35)(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3))):
+  postcss-multiple-tailwind@1.0.1(postcss@8.4.35)(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4))):
     dependencies:
       postcss: 8.4.35
-      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3))
+      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4))
 
   postcss-nested@6.0.1(postcss@8.4.35):
     dependencies:
@@ -34099,12 +35227,12 @@ snapshots:
       clsx: 2.1.1
       react: 18.2.0
 
-  prisma-json-types-generator@3.0.4(prisma@5.15.1)(typescript@5.5.3):
+  prisma-json-types-generator@3.0.4(prisma@5.15.1)(typescript@5.5.4):
     dependencies:
       '@prisma/generator-helper': 5.9.1
       prisma: 5.15.1
       tslib: 2.6.2
-      typescript: 5.5.3
+      typescript: 5.5.4
 
   prisma@5.15.1:
     dependencies:
@@ -36098,9 +37226,9 @@ snapshots:
 
   swrev@4.0.0: {}
 
-  swrv@1.0.4(vue@3.4.30(typescript@5.5.3)):
+  swrv@1.0.4(vue@3.4.30(typescript@5.5.4)):
     dependencies:
-      vue: 3.4.30(typescript@5.5.3)
+      vue: 3.4.30(typescript@5.5.4)
 
   symbol-tree@3.2.4: {}
 
@@ -36118,11 +37246,11 @@ snapshots:
 
   tailwind-merge@1.14.0: {}
 
-  tailwindcss-animate@1.0.7(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3))):
+  tailwindcss-animate@1.0.7(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4))):
     dependencies:
-      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3))
+      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4))
 
-  tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3)):
+  tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -36141,7 +37269,7 @@ snapshots:
       postcss: 8.4.35
       postcss-import: 15.1.0(postcss@8.4.35)
       postcss-js: 4.0.1(postcss@8.4.35)
-      postcss-load-config: 4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.3))
+      postcss-load-config: 4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4))
       postcss-nested: 6.0.1(postcss@8.4.35)
       postcss-selector-parser: 6.1.0
       resolve: 1.22.8
@@ -36372,9 +37500,9 @@ snapshots:
 
   trough@2.2.0: {}
 
-  ts-api-utils@1.3.0(typescript@5.5.3):
+  ts-api-utils@1.3.0(typescript@5.5.4):
     dependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
 
   ts-easing@0.2.0: {}
 
@@ -36409,7 +37537,7 @@ snapshots:
       '@ts-morph/common': 0.23.0
       code-block-writer: 13.0.1
 
-  ts-node-dev@2.0.0(@types/node@20.10.5)(typescript@5.5.3):
+  ts-node-dev@2.0.0(@types/node@20.10.5)(typescript@5.5.4):
     dependencies:
       chokidar: 3.6.0
       dynamic-dedupe: 0.3.0
@@ -36419,15 +37547,15 @@ snapshots:
       rimraf: 2.7.1
       source-map-support: 0.5.21
       tree-kill: 1.2.2
-      ts-node: 10.9.2(@types/node@20.10.5)(typescript@5.5.3)
+      ts-node: 10.9.2(@types/node@20.10.5)(typescript@5.5.4)
       tsconfig: 7.0.0
-      typescript: 5.5.3
+      typescript: 5.5.4
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
       - '@types/node'
 
-  ts-node@10.9.1(@types/node@20.10.3)(typescript@5.5.3):
+  ts-node@10.9.1(@types/node@20.10.3)(typescript@5.5.4):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -36441,11 +37569,11 @@ snapshots:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 5.5.3
+      typescript: 5.5.4
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  ts-node@10.9.1(@types/node@20.14.8)(typescript@5.5.3):
+  ts-node@10.9.1(@types/node@20.14.8)(typescript@5.5.4):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -36459,11 +37587,11 @@ snapshots:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 5.5.3
+      typescript: 5.5.4
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  ts-node@10.9.1(@types/node@20.8.5)(typescript@5.5.3):
+  ts-node@10.9.1(@types/node@20.8.5)(typescript@5.5.4):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -36477,7 +37605,7 @@ snapshots:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 5.5.3
+      typescript: 5.5.4
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
@@ -36499,7 +37627,7 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  ts-node@10.9.2(@types/node@20.10.5)(typescript@5.5.3):
+  ts-node@10.9.2(@types/node@20.10.5)(typescript@5.5.4):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -36513,7 +37641,7 @@ snapshots:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 5.5.3
+      typescript: 5.5.4
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
@@ -36550,6 +37678,24 @@ snapshots:
       diff: 4.0.2
       make-error: 1.3.6
       typescript: 5.5.3
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+
+  ts-node@10.9.2(@types/node@20.14.8)(typescript@5.5.4):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.11
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 20.14.8
+      acorn: 8.12.1
+      acorn-walk: 8.3.3
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 5.5.4
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
@@ -36720,6 +37866,8 @@ snapshots:
   typescript@5.5.2: {}
 
   typescript@5.5.3: {}
+
+  typescript@5.5.4: {}
 
   uc.micro@1.0.6: {}
 
@@ -37678,15 +38826,15 @@ snapshots:
     dependencies:
       indent-string: 5.0.0
 
-  vue@3.4.30(typescript@5.5.3):
+  vue@3.4.30(typescript@5.5.4):
     dependencies:
       '@vue/compiler-dom': 3.4.30
       '@vue/compiler-sfc': 3.4.30
       '@vue/runtime-dom': 3.4.30
-      '@vue/server-renderer': 3.4.30(vue@3.4.30(typescript@5.5.3))
+      '@vue/server-renderer': 3.4.30(vue@3.4.30(typescript@5.5.4))
       '@vue/shared': 3.4.30
     optionalDependencies:
-      typescript: 5.5.3
+      typescript: 5.5.4
 
   w3c-keyname@2.2.8: {}
 

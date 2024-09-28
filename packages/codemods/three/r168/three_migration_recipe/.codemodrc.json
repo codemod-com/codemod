@@ -1,0 +1,27 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "three/r168/migration-recipe",
+  "version": "1.0.2",
+  "engine": "recipe",
+  "private": false,
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"],
+  "applicability": {
+    "from": [["three", ">=", "0.167.0"], ["meteor", "<", "0.168.0"]],
+    "to": [["meteor", ">=", "0.168.0"]]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": ["migration", "three", "r168"],
+    "git": "https://github.com/Yugal41735/deno-webgpu-window-demos.git"
+  },
+  "names": [
+    "three/r168/uniforms-to-uniformarray",
+    "three/r168/logluvloader-to-ultraHDRLoader",
+    "three/r168/pointerlockcontrols-object-to-controls-object",
+    "three/r168/dragcontrols-getraycaster-to-controls-raycaster",
+    "three/r168/dragcontrols.deactivate-to-disconnect",
+    "three/r168/dragcontrols.activate-to-connect",
+    "three/r168/viewportBottomLeft-to-viewportUV.flipY()",
+    "three/r168/viewportTopLeft-to-viewportUV"
+  ]
+}

@@ -1,0 +1,1 @@
+contract.callStatic.foo(addr);
