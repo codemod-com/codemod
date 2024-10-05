@@ -1,0 +1,24 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "sentry/v8/migration-recipe",
+  "version": "1.0.0",
+  "private": false,
+  "engine": "recipe",
+  "names": [
+    "sentry/v8/removal-Severity-Enum",
+    "sentry/v8/remove-replay-package-and-update-integration",
+    "sentry/v8/removal-of-addGlobalEventProcessor",
+    "sentry/v8/Removal-Sentry.configureScope-method",
+    "sentry/v8/replace-span-status-from-http-code",
+    "sentry/v8/removal-of-void-from-transport-return-types"
+  ],
+  "meta": {
+    "tags": ["sentry", "migration", "codemod"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/sentry/v8/migration-recipe"
+  },
+  "applicability": {
+    "from": [["sentry", "<=", "7"]],
+    "to": [["sentry", ">=", "8"]]
+  },
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]
+}
