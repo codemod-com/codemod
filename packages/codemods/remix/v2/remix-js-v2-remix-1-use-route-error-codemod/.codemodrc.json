@@ -1,0 +1,16 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "remix-js/v2/remix-1-use-route-error-codemod",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "remix.js",
+      "v2",
+      "use-route-error"
+    ],
+    "git": "https://github.com/dfordp/remix-js-v2-remix-1-use-route-error-codemod"
+  }
+}
