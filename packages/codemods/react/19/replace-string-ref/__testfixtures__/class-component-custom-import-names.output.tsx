@@ -5,7 +5,11 @@ class C extends React1.Component {
     return (
       <div
         ref={(ref) => {
-          this.refs.refName = ref;
+          if(ref === null) {
+            delete this.refs.refName;
+          } else {
+            this.refs.refName = ref;
+          }
         }}
       />
     );
@@ -17,7 +21,11 @@ class C1 extends PureComponent1 {
     return (
       <div
         ref={(ref) => {
-          this.refs.refName = ref;
+          if(ref === null) {
+            delete this.refs.refName;
+          } else {
+            this.refs.refName = ref;
+          }
         }}
       />
     );
