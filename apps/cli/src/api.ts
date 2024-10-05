@@ -23,12 +23,17 @@ export const getCLIAccessToken = async (
 ): Promise<GetScopedTokenResponse> => {
   const url = new URL(`${process.env.AUTH_BACKEND_URL}/appToken`);
 
-  const res = await Axios.get<GetScopedTokenResponse>(url.toString(), {
-    headers: { Authorization: `Bearer ${accessToken}` },
-    timeout: 10000,
-  });
+  try {
+    const res = await Axios.get<GetScopedTokenResponse>(url.toString(), {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      timeout: 10000,
+    });
 
-  return res.data;
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    return { token: "" };
+  }
 };
 
 export const validateCLIToken = async (
