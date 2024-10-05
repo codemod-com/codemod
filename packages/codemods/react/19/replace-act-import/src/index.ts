@@ -94,10 +94,12 @@ export default function transform(
       specifiers: [{ type: "ImportSpecifier", imported: { name: "act" } }],
     })
     .forEach((path) => {
-      const newImportSpecifier = j.importSpecifier(
-        j.identifier("act"),
-        j.identifier("act"),
-      );
+      const actSpecifiers =
+        path.node.specifiers?.filter(
+          (specifier) =>
+            j.ImportSpecifier.check(specifier) &&
+            specifier.imported.name === "act",
+        ) ?? [];
 
       const existingReactImportCollection = root.find(j.ImportDeclaration, {
         source: { value: "react" },
@@ -111,13 +113,13 @@ export default function transform(
         existingReactImportCollection
           .paths()
           .at(0)
-          ?.node.specifiers?.push(newImportSpecifier);
+          ?.node.specifiers?.push(...actSpecifiers);
 
         path.prune();
         isDirty = true;
       } else {
         const newImportDeclaration = j.importDeclaration(
-          [newImportSpecifier],
+          actSpecifiers,
           j.literal("react"),
         );
 
