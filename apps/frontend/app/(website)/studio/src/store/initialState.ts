@@ -6,7 +6,8 @@ const x = b && c;
 const y = <A b={b} />;
  `;
 
-export const AFTER_SNIPPET_DEFAULT_CODE = `const a = await Promise.resolve('a');
+export const AFTER_SNIPPET_DEFAULT_CODE = `// Simplify the logic by removing the feature flag check and make the code less dependent on asynchronous results.
+const a = await Promise.resolve('a');
 const x = c;
 const y = <A b={true} />;
 `;
