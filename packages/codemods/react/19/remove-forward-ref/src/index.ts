@@ -247,3 +247,5 @@ export default function transform(file: FileInfo, api: API) {
 
   return isDirty ? root.toSource() : undefined;
 }
+
+export const parser = "tsx";
