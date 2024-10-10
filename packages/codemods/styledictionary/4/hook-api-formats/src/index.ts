@@ -1,9 +1,4 @@
-import type {
-  API,
-  ArrowFunctionExpression,
-  FileInfo,
-  Options,
-} from "jscodeshift";
+import type { API, FileInfo, Options } from "jscodeshift";
 
 export default function transform(
   file: FileInfo,
@@ -12,7 +7,30 @@ export default function transform(
 ): string | undefined {
   const j = api.jscodeshift;
   const root = j(file.source);
+  // Check if the file imports from or references 'style-dictionary'
+  const hasStyleDictionaryReference =
+    root
+      .find(j.ImportDeclaration)
+      .some((path) => path.node.source.value.includes("style-dictionary")) ||
+    root
+      .find(j.VariableDeclaration)
+      .filter((path) => {
+        return path.node.declarations.some((declaration) => {
+          return (
+            declaration.init &&
+            declaration.init.type === "CallExpression" &&
+            declaration.init.callee.name === "require" &&
+            declaration.init.arguments[0].value.includes("style-dictionary")
+          );
+        });
+      })
+      .size() > 0;
 
+  if (!hasStyleDictionaryReference) {
+    // If there's no reference to 'style-dictionary', do not process the file
+    return;
+  }
+  let dirtyFlag = false;
   // Helper function to recursively find and transform format properties
   function transformObjectProperties(objectExpression) {
     const properties = objectExpression.properties;
@@ -56,20 +74,24 @@ export default function transform(
     transformObjectProperties(path.node);
   });
 
-  // Update import statements
+  // Update import types
   root.find(j.ImportDeclaration).forEach((path) => {
-    const importSpecifiers = path.node.specifiers;
-
-    importSpecifiers.forEach((specifier) => {
-      if (specifier.imported && specifier.imported.name === "Formatter") {
-        specifier.imported.name = "FormatFn";
-      } else if (
-        specifier.imported &&
-        specifier.imported.name === "FormatterArguments"
-      ) {
-        specifier.imported.name = "FormatFnArguments";
-      }
-    });
+    if (
+      j.Literal.check(path.node.source) &&
+      path.node.source.value === "style-dictionary/types"
+    ) {
+      path.node.specifiers.forEach((specifier) => {
+        if (j.ImportSpecifier.check(specifier)) {
+          if (specifier.imported.name === "Formatter") {
+            specifier.imported.name = "FormatFn";
+            dirtyFlag = true;
+          } else if (specifier.imported.name === "FormatterArguments") {
+            specifier.imported.name = "FormatFnArguments";
+            dirtyFlag = true;
+          }
+        }
+      });
+    }
   });
 
   // Update StyleDictionary.registerFormat calls

@@ -1,6 +1,6 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "private": false,
   "name": "styledictionary/4/hook-api-actions",
   "engine": "jscodeshift",
@@ -14,6 +14,5 @@
   "meta": {
     "tags": ["styledictionary", "4", "migration"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/styledictionary/4/hook-api-actions"
-  },
-  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"]
+  }
 }

@@ -1,4 +1,4 @@
-## What Changed
+
 
 This codemod updates registered formats to be placed inside the `hooks.formats` property, instead of `format`, with a shift from the singular to the plural form. Additionally, the formatter handler function has been renamed to `format` for consistency. Some importable type interfaces have also been renamed.
 

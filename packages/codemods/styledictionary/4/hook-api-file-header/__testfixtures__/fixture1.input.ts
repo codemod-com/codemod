@@ -1,3 +1,5 @@
+import StyleDictionary from 'style-dictionary';
+
 export default {
     fileHeader: {
         foo: (defaultMessages = []) => [
