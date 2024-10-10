@@ -1,4 +1,4 @@
-## What Changed
+
 
 This codemod updates the following StyleDictionary class methods to be asynchronous: `extend()`, `exportPlatform()`, `getPlatform()`, `buildAllPlatforms()`, `buildPlatform()`, `cleanAllPlatforms()`, and `cleanPlatform()`. This ensures compatibility with the latest asynchronous workflows in Style Dictionary.
 

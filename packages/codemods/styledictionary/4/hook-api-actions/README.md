@@ -1,4 +1,4 @@
-## What Changed
+
 
 This codemod updates registered actions to be placed inside the `hooks.actions` property, instead of `action`. Note the shift from the singular to the plural form in this update.
 

@@ -1,4 +1,4 @@
-## What Changed
+
 
 This codemod updates registered parsers to be placed inside the `hooks.parsers` property, instead of `parser`, with a shift from the singular to the plural form. Registered parsers now apply globally without needing explicit application in the config. Additionally, the `parse` function has been renamed to `parser` for consistency.
 

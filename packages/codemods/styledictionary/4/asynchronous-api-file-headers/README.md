@@ -1,4 +1,4 @@
-## What Changed
+
 
 This codemod updates the `fileHeader` format helper utility to be asynchronous, allowing support for async fileHeaders while maintaining consistency with the latest updates.
 
@@ -35,7 +35,7 @@ import { fileHeader } from 'style-dictionary/utils';
 
 StyleDictionary.registerFormat({
     name: 'custom/css',
-    formatter: async function ({ dictionary, file, options }) {
+    format: async function ({ dictionary, file, options }) {
         const { outputReferences } = options;
         return (
             (await fileHeader({ file }))

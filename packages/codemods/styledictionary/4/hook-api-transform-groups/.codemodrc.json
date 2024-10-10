@@ -14,6 +14,5 @@
   "meta": {
     "tags": ["styledictionary", "4", "migration"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/styledictionary/4/hook-api-transform-groups"
-  },
-  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"]
+  }
 }
