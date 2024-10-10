@@ -6,32 +6,14 @@
   "private": false,
   "applicability": {
     "from": [
-      [
-        "styledictionary",
-        ">=",
-        "3.0.0"
-      ],
-      [
-        "styledictionary",
-        "<",
-        "4.0.0"
-      ]
+      ["styledictionary", ">=", "3.0.0"],
+      ["styledictionary", "<", "4.0.0"]
     ],
-    "to": [
-      [
-        "styledictionary",
-        ">=",
-        "4.0.0"
-      ]
-    ]
+    "to": [["styledictionary", ">=", "4.0.0"]]
   },
   "arguments": [],
   "meta": {
-    "tags": [
-      "styledictionary",
-      "4",
-      "migration"
-    ],
+    "tags": ["styledictionary", "4", "migration"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/styledictionary/4/asynchronous-api-file-headers"
   }
 }
