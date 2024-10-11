@@ -1,6 +1,5 @@
+import StyleDictionary from 'style-dictionary';
 export default {
-    preprocessors: ['foo'],
-    
     hooks: {
         preprocessors: {
             foo: (dictionary) => {
@@ -9,4 +8,6 @@ export default {
             },
         },
     },
+
+    preprocessors: ['foo'],
 };

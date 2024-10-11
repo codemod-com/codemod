@@ -1,4 +1,4 @@
-## What Changed
+
 
 This codemod updates registered filters to be placed inside the `hooks.filters` property, instead of `filter`. Note the shift from the singular to the plural form in this update.
 

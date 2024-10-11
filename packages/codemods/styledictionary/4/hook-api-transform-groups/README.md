@@ -1,4 +1,4 @@
-## What Changed
+
 
 This codemod updates registered transform groups to be placed inside the `hooks.transformGroups` property, instead of `transformGroup`, with a shift from the singular to the plural form.
 
