@@ -1,0 +1,18 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "socket.io/4/migration-recipe",
+  "version": "1.0.8",
+  "private": false,
+  "engine": "recipe",
+  "names": [
+    "socket.io/4/ws-engine-format-update",
+    "socket.io/4/removing-useless-broadcast-flag"
+  ],
+  "meta": {
+    "tags": ["migration", "socket.io"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/socket.io/4/migration-recipe"
+  },
+  "applicability": {
+    "from": [["socket.io", "<=", "4"]]
+  }
+}
