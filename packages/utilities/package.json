@@ -49,7 +49,7 @@
     "change-case": "catalog:",
     "glob": "catalog:",
     "js-beautify": "catalog:",
-    "jscodeshift": "^0.15.1",
+    "jscodeshift": "catalog:",
     "ms": "catalog:",
     "pako": "catalog:",
     "prettier": "^3.2.5",
