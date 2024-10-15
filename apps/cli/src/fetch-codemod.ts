@@ -269,7 +269,7 @@ export const fetchCodemod = async (options: FetchOptions): Promise<Codemod> => {
         name: "names",
         type: "checkbox",
         message:
-          "Select the codemods you would like to run. Codemods will be executed in order.",
+          "Press Enter to run the selected codemods in order. You can deselect anything you don’t want.",
         choices: config.names,
         default: config.names,
       });
