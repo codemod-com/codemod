@@ -1,4 +1,5 @@
-import { createPortal, useActionState } from "react-dom";
+import { useActionState } from "react";
+import { createPortal } from "react-dom";
 
 function StatefulForm({}) {
   const [state, formAction] = useActionState(increment, 0);
