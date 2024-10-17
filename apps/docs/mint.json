@@ -109,10 +109,6 @@
       "pages": ["codemod-registry/introduction"]
     },
     {
-      "group": "VS Code Extension",
-      "pages": ["deploying-codemods/vsce"]
-    },
-    {
       "group": "Core Concepts",
       "pages": [
         {
@@ -138,8 +134,7 @@
       "group": "Quick Links",
       "pages": [
         "external-links/codemod-registry",
-        "external-links/codemod-studio",
-        "external-links/vsce"
+        "external-links/codemod-studio"
       ]
     },
     {
