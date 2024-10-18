@@ -1,4 +1,4 @@
-import { useActionState } from "react-dom";
+import { useActionState } from "react";
 
 async function increment(previousState, formData) {
   return previousState + 1;
