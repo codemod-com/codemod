@@ -9,6 +9,34 @@ export default function transform(
   const root = j(file.source);
 
   let isDirty = false;
+
+  function addImportDeclaration(name?: string) {
+    let importFromReact = root.find(j.ImportDeclaration, {
+      source: { value: "react" },
+    });
+    if (importFromReact.length === 0) {
+      isDirty = true;
+      root
+        .get()
+        .node.program.body.unshift(
+          j.importDeclaration(
+            [
+              name
+                ? j.importSpecifier(
+                    j.identifier("useActionState"),
+                    name ? j.identifier(name) : undefined,
+                  )
+                : j.importSpecifier(j.identifier("useActionState")),
+            ],
+            j.literal("react"),
+          ),
+        );
+      importFromReact = root.find(j.ImportDeclaration, {
+        source: { value: "react" },
+      });
+    }
+  }
+
   // Get default import from react-dom
   const defaultImportName = root
     .find(j.ImportDeclaration, {
@@ -42,15 +70,23 @@ export default function transform(
 
   if (actAccessExpressions.length > 0) {
     // React import
+    addImportDeclaration();
+    root
+      .find(j.ImportDeclaration, {
+        source: { value: "react-dom" },
+        specifiers: [{ type: "ImportDefaultSpecifier" }],
+      })
+      .remove();
+    root
+      .find(j.ImportDeclaration, {
+        source: { value: "react-dom" },
+        specifiers: [{ type: "ImportNamespaceSpecifier" }],
+      })
+      .remove();
 
-    actAccessExpressions.forEach((path) => {
-      j(path)
-        .find(j.Identifier, { name: "useFormState" })
-        .at(0)
-        ?.replaceWith(() => {
-          isDirty = true;
-          return j.identifier("useActionState");
-        });
+    actAccessExpressions.replaceWith(() => {
+      isDirty = true;
+      return j.identifier("useActionState");
     });
   }
 
@@ -78,13 +114,11 @@ export default function transform(
   // Replace import name
   reactDOMImportCollection
     .find(j.ImportSpecifier, { imported: { name: "useFormState" } })
-    .replaceWith(() => {
-      isDirty = true;
-      return j.importSpecifier(
-        j.identifier("useActionState"),
-        j.identifier(usedName),
-      );
-    });
+    .remove();
+  if (reactDOMImportCollection.find(j.ImportSpecifier).length === 0) {
+    reactDOMImportCollection.remove();
+  }
+  addImportDeclaration(usedName);
 
   // Means it's not aliased, so we also change identifier names, not only import
   if (specifier?.local?.name === "useFormState") {
