@@ -1,0 +1,18 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "add-namespace-type-annotation",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "react-i18n",
+      "breaking changes",
+      "v22.x.x to v23.0.0",
+      "InterpolationOptions type",
+      "Namespace"
+    ],
+    "git": "https://github.com/codemod-com/codemod/packages/codemods/i18n/v23.0.0/add-namespace-type-annotation-codemod"
+  }
+}
