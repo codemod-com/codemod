@@ -110,7 +110,7 @@ const services: Array<{
     type: "websocket",
     available: true,
     webhook:
-      " https://api.instatus.com/v3/integrations/webhook/clzbu558m93630kcn6fnvj8yk8",
+      "https://api.instatus.com/v3/integrations/webhook/clzbu558m93630kcn6fnvj8yk8",
   },
   {
     name: "Run Service",
@@ -141,9 +141,11 @@ const systemHealthCheckCron = new CronJob(
             const response = await axios.get(service.url);
 
             if (response.status === 200 && service.available === false) {
-              await axios.post(service.webhook, {
-                trigger: "up",
-              });
+              if (env === "production") {
+                await axios.post(service.webhook, {
+                  trigger: "up",
+                });
+              }
 
               await web.chat.postMessage({
                 channel: channel,
@@ -157,9 +159,11 @@ const systemHealthCheckCron = new CronJob(
 
               ws.on("open", async () => {
                 if (service.available === false) {
-                  await axios.post(service.webhook, {
-                    trigger: "up",
-                  });
+                  if (env === "production") {
+                    await axios.post(service.webhook, {
+                      trigger: "up",
+                    });
+                  }
 
                   await web.chat.postMessage({
                     channel: channel,
@@ -181,9 +185,11 @@ const systemHealthCheckCron = new CronJob(
           }
         } catch (error) {
           if (service.available === true) {
-            await axios.post(service.webhook, {
-              trigger: "down",
-            });
+            if (env === "production") {
+              await axios.post(service.webhook, {
+                trigger: "down",
+              });
+            }
 
             await web.chat.postMessage({
               channel: channel,
