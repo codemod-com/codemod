@@ -1,0 +1,12 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "vue-v1.9.4-tab-tabs-indicator-position-bug-fix",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": ["radix","vue","radix-vue", "v1.9.4","bug fix","tabs indicator position" ],
+    "git": "https://github.com/codemod-com/codemod/packages/codemods/radix-vue/v1.9.4/radix-vue-tab-v1.9.4-update.git"
+  }
+}
