@@ -13,7 +13,7 @@ The structure of the codemod package can vary based on the codemod engine used. 
 
 ## Supported codemod engines
 
-Codemod platform currently supports the following codemod engines: [`ast-grep`](https://github.com/ast-grep/ast-grep), [`filemod`](https://github.com/codemod-com/codemod/tree/main/packages/filemod), [`jscodeshift`](https://github.com/facebook/jscodeshift), [`ts-morph`](https://github.com/dsherret/ts-morph), and [`piranha`](https://github.com/uber/piranha).
+Codemod platform currently supports the following codemod engines: [`ast-grep`](https://github.com/ast-grep/ast-grep), [`jscodeshift`](https://github.com/facebook/jscodeshift), [`ts-morph`](https://github.com/dsherret/ts-morph), [`Workflow Engine`](/deploying-codemods/workflow-engine), and [`piranha`](https://github.com/uber/piranha).
 
 ## `.codemodrc.json` reference
 
@@ -38,10 +38,10 @@ The `.codemodrc.json` configuration file includes several metafields that can be
 <ResponseField name="engine" type="string" required>
   Specifies the engine used to run the codemod.
   Can be any of:
-  - `filemod`
+  - `ast-grep`
   - `jscodeshift`
   - `ts-morph`
-  - `ast-grep`
+  - `Workflow Engine`
   - `piranha` (requires additional `language` field that specifies one of the supported piranha languages:
   `java`, `kt`, `go`, `py`, `swift`, `ts`, `tsx`, or `scala`)
   - `recipe` (requires additional `names` field, which is an ordered array of codemod names that will be executed)
@@ -124,7 +124,7 @@ The `.codemodrc.json` configuration file includes several metafields that can be
 Below, you can find the required codemod package structure for each codemod engine supported by Codemod platform.
 
 <Tabs>
-  <Tab title="jscodeshift, ts-morph, and filemod">
+  <Tab title="jscodeshift and ts-morph">
     ```bash
     ├── dist
     │   ├── index.cjs # built codemod file. when someone runs your codemod, this file will be executed.
@@ -145,7 +145,7 @@ Below, you can find the required codemod package structure for each codemod engi
     "private": false,
     "name": "framework/version/codemod-name",
     "description": "example codemod description",
-    "engine": "jscodeshift/ts-morph/filemod",
+    "engine": "jscodeshift/ts-morph/workflow",
     "meta": {
       "tags": ["framework", "migration", "etc"],
         "git": "https://github.com/user/repo"
