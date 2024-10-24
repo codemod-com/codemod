@@ -9,16 +9,13 @@ const buildCallbackRef = (j: JSCodeshift, refName: string) =>
       j.arrowFunctionExpression(
         [j.jsxIdentifier("ref")],
         j.blockStatement([
-          j.expressionStatement(
-            j.assignmentExpression(
-              "=",
-              j.memberExpression(
-                j.memberExpression(j.thisExpression(), j.identifier("refs")),
-                j.identifier(refName),
-              ),
-              j.identifier("ref"),
-            ),
-          ),
+          j.template.statement`
+            if (ref === null) {
+              delete this.refs.${j.identifier(refName)};
+            } else {
+              this.refs.${j.identifier(refName)} = ref;
+            }
+        `,
         ]),
       ),
     ),
