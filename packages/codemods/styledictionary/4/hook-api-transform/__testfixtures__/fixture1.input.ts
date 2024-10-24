@@ -1,3 +1,4 @@
+import StyleDictionary from 'style-dictionary';
 export default {
     // register it inline or by SD.registerTransform
     transform: {
