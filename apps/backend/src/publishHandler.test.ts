@@ -204,6 +204,8 @@ describe("/publish route", async () => {
           ),
           engine: codemodRcContents.engine,
           publishedAt: MOCK_TIMESTAMP,
+          bucket: "codemod-test",
+          uploadKey: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
         },
         author: {
           username: GET_USER_RETURN.user.username,
