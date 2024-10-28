@@ -382,6 +382,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "stramel",
+      "name": "Michael Stramel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/855184?v=4",
+      "profile": "https://github.com/stramel",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

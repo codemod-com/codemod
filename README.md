@@ -131,6 +131,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://minimalistweb.dev"><img src="https://avatars.githubusercontent.com/u/37929992?v=4?s=100" width="100px;" alt="Mohammad Bagher Abiyat"/><br /><sub><b>Mohammad Bagher Abiyat</b></sub></a><br /><a href="#infra-Aslemammad" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Yugal41735"><img src="https://avatars.githubusercontent.com/u/74638775?v=4?s=100" width="100px;" alt="Yugal Agarwal"/><br /><sub><b>Yugal Agarwal</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=Yugal41735" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/poswalsameer"><img src="https://avatars.githubusercontent.com/u/106386145?v=4?s=100" width="100px;" alt="Sameer Poswal"/><br /><sub><b>Sameer Poswal</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=poswalsameer" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/stramel"><img src="https://avatars.githubusercontent.com/u/855184?v=4?s=100" width="100px;" alt="Michael Stramel"/><br /><sub><b>Michael Stramel</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=stramel" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
