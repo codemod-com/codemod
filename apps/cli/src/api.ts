@@ -45,19 +45,17 @@ export const validateCLIToken = async (
   return res.data;
 };
 
-export const getUserData = async (
-  accessToken: string,
-): Promise<GetUserDataResponse | null> => {
+export const getUserData = async (accessToken: string): Promise<any | null> => {
   try {
     const { data } = await Axios.get<GetUserDataResponse | object>(
-      `${process.env.AUTH_BACKEND_URL}/userData`,
+      ``, //  ZITADEL INFO
       {
         headers: { Authorization: `Bearer ${accessToken}` },
         timeout: 5000,
       },
     );
 
-    if (!("user" in data)) {
+    if (!("name" in data)) {
       return null;
     }
 

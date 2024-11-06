@@ -1,5 +1,5 @@
 import { type Printer, chalk } from "@codemod-com/printer";
-import { getCurrentUserData, getOrgsNames } from "#auth-utils.js";
+import { getCurrentUserData } from "#auth-utils.js";
 
 export const handleWhoAmICommand = async (options: {
   printer: Printer;
@@ -16,22 +16,18 @@ export const handleWhoAmICommand = async (options: {
     return;
   }
 
-  const {
-    user: { username },
-    organizations,
-  } = userData;
   printer.printConsoleMessage(
     "info",
-    chalk.cyan("You are logged in as", `${chalk.bold(username)}.`),
+    chalk.cyan("You are logged in as", `${chalk.bold(userData.name)}.`),
   );
 
-  if (organizations.length > 0) {
-    printer.printConsoleMessage(
-      "info",
-      chalk.cyan(
-        "You have access to the following organizations:\n",
-        chalk.bold(`- ${getOrgsNames(userData).join("\n- ")}`),
-      ),
-    );
-  }
+  // if (organizations.length > 0) {
+  //   printer.printConsoleMessage(
+  //     "info",
+  //     chalk.cyan(
+  //       "You have access to the following organizations:\n",
+  //       chalk.bold(`- ${getOrgsNames(userData).join("\n- ")}`),
+  //     ),
+  //   );
+  // }
 };

@@ -15,7 +15,7 @@ export type UserData = GetUserDataResponse & {
   token: string;
 };
 
-export const getCurrentUserData = async (): Promise<UserData | null> => {
+export const getCurrentUserData = async (): Promise<any | null> => {
   const token = await credentialsStorage.get(CredentialsStorageType.ACCOUNT);
 
   if (!isNeitherNullNorUndefined(token)) {

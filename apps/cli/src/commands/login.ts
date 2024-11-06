@@ -1,43 +1,25 @@
-import { backOff } from "exponential-backoff";
+import express from "express";
 import open from "open";
 
 import { type Printer, chalk } from "@codemod-com/printer";
-import {
-  confirmUserLoggedIn,
-  generateUserLoginIntent,
-  getCLIAccessToken,
-} from "#api.js";
+import { Issuer, type TokenSet, generators } from "openid-client";
 import { getCurrentUserData } from "#auth-utils.js";
 import {
   CredentialsStorageType,
   credentialsStorage,
 } from "#credentials-storage.js";
 
-const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
+const AUTH_OPENID_ISSUER = "";
+const CLIENT_ID = "";
+const authSuccessUrl = "";
 
-const routeUserToStudioForLogin = (
-  printer: Printer,
-  sessionId: string,
-  iv: string,
-) => {
-  const success = open(
-    `${process.env.CODEMOD_HOME_PAGE_URL}?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}&sessionId=${sessionId}&iv=${iv}`,
-  );
-
-  if (!success) {
-    printer.printOperationMessage({
-      kind: "error",
-      message:
-        "An unexpected error occurred while redirecting to the sign-in page. Please submit a GitHub issue (github.com/codemod-com/codemod/issues/new) or report it to us (codemod.com/community).",
-    });
-  }
-};
 export const handleLoginCliCommand = async (options: {
   printer: Printer;
 }) => {
   const { printer } = options;
 
   const userData = await getCurrentUserData();
+
   if (userData !== null) {
     printer.printConsoleMessage(
       "info",
@@ -46,33 +28,91 @@ export const handleLoginCliCommand = async (options: {
     return;
   }
 
-  const { id: sessionId, iv: initVector } = await generateUserLoginIntent();
+  const issuer = await Issuer.discover(AUTH_OPENID_ISSUER);
 
   const spinner = printer.withLoaderMessage(
     chalk.cyan("Redirecting to Codemod sign-in page"),
   );
-  routeUserToStudioForLogin(printer, sessionId, initVector);
-  try {
-    const token = await backOff(
-      () => confirmUserLoggedIn(sessionId, initVector),
-      {
-        numOfAttempts: 60, // 1 minute to login
-        startingDelay: 1000, // ms
-        timeMultiple: 1, // * 1
-      },
-    );
 
-    const { token: cliToken } = await getCLIAccessToken(token);
+  const promise = new Promise<TokenSet>((resolve, reject) => {
+    let promiseAlreadyResolved = false;
+    const client = new issuer.Client({
+      client_id: CLIENT_ID,
+      redirect_uris: ["http://localhost:3301/callback"],
+      response_types: ["code"],
+      token_endpoint_auth_method: "none",
+    });
 
-    await credentialsStorage.set(CredentialsStorageType.ACCOUNT, cliToken);
+    const app = express();
 
-    spinner.succeed();
-    printer.printConsoleMessage(
-      "info",
-      chalk.bold.cyan("You are successfully logged in."),
-    );
-  } catch (e) {
-    spinner.fail();
-    throw new Error("Could not validate access token. Please try again.");
+    let timeout: NodeJS.Timeout;
+
+    app.get("/callback", async (req, res) => {
+      if (promiseAlreadyResolved) {
+        res.redirect(authSuccessUrl);
+        return;
+      }
+
+      const params = client.callbackParams(req);
+
+      try {
+        const tokenSet = await client.callback(
+          "http://localhost:3301/callback",
+          params,
+          {
+            code_verifier,
+          },
+        );
+
+        resolve(tokenSet);
+        clearTimeout(timeout);
+        promiseAlreadyResolved = true;
+
+        res.redirect(authSuccessUrl);
+
+        process.nextTick(() => {
+          server.close();
+        });
+      } catch (error) {
+        if (!promiseAlreadyResolved) {
+          timeout = setTimeout(() => {
+            res.send(
+              `Error: ${(error as Error).message}\n\nPlease close this window and try again. `,
+            );
+            promiseAlreadyResolved = true;
+            reject(error);
+          }, 10000);
+        } else {
+          res.redirect(authSuccessUrl);
+        }
+      }
+    });
+
+    const server = app.listen(3301);
+
+    const code_verifier = generators.codeVerifier();
+    const code_challenge = generators.codeChallenge(code_verifier);
+
+    const authorizationUrl = client.authorizationUrl({
+      scope: "openid email profile",
+      code_challenge,
+      code_challenge_method: "S256",
+    });
+
+    void open(authorizationUrl);
+    spinner.start();
+  });
+
+  const { access_token } = await promise;
+
+  if (access_token) {
+    await credentialsStorage.set(CredentialsStorageType.ACCOUNT, access_token);
   }
+
+  spinner.succeed();
+
+  printer.printConsoleMessage(
+    "info",
+    chalk.bold.cyan("You are successfully logged in."),
+  );
 };
