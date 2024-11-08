@@ -102,8 +102,5 @@
     "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
     }
-  },
-  "dependencies": {
-    "next": "13.5.7"
   }
 }
