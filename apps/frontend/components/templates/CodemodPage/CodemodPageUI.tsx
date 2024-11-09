@@ -91,7 +91,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
           <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
             <div className="flex items-center gap-xs">
               {data?.verified && (
-                <VerifiedBadge content="Regularly tested and maintained by our engineers and codemod expert community." />
+                <VerifiedBadge content="Approved by the official project." />
               )}
               {frameworkCards}
               {data?.useCaseCategory && (
