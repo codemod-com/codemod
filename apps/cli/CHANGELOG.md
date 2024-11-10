@@ -1,5 +1,11 @@
 # codemod
 
+## 0.14.2
+
+### Patch Changes
+
+- bf840a4: Clearer instructions for running a recipe with some codemods using the CLI.
+
 ## 0.14.1
 
 ### Patch Changes
