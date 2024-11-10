@@ -1,14 +1,19 @@
 ---
-title: 'Getting started'
+title: 'Overview'
 icon: 'book-open-cover'
 ---
 
-Codemod Registry is the single-stop registry for codemods and code automation recipes that are built on top of tried-and-true engines such as Meta's jscodeshift, ts-morph, and Uber's piranha.
+[Codemod Registry](https://codemod.com/registry) is a centralized hub for discovering and sharing both traditional and next-gen LLM-powered codemods ([codemod2.0](/building-codemods/codemod2#step-6-publish-the-codemod)), making them easily accessible to developers regardless of the engine used.
 
-After [publishing codemods](/sharing/publishing-codemods) to the registry, they will automatically integrate into Codemod platform and all developers who have Codemod [CLI](/deploying-codemods/cli) can then discover, share, and run those codemods with a single click. This also eliminates the need for installing additional packages for each framework they want to upgrade.
+Developers can create codemods using engines like [ast-grep](https://ast-grep.github.io/), [jscodeshift](https://jscodeshift.com/overview/introduction/), [workflow engine](/deploying-codemods/workflow-engine), [recipe](https://github.com/codemod-com/codemod/blob/main/packages/codemods/react/19/migration-recipe/.codemodrc.json), and [ts-morph](https://ts-morph.com/), and publish them directly to the registry for global distribution.
 
-## Learn more
+Published codemods are accessible via [web](https://codemod.com/registry) and [CLI](/deploying-codemods/cli#share-discover), with public codemods available to everyone and private ones restricted to an organization’s team. 
 
-<Card title="Publishing codemods ->" icon="share-nodes" href="/sharing/publishing-codemods">
-  Learn how to publish your codemods to Codemod Registry.
+Codemods with a green badge are officially approved by project owners (e.g., Node.js, React), to offer developers a trustworthy resource with analytics like run counts to identify the best codemods they for their needs.
+
+
+## Get started:
+
+<Card title="Publishing codemods" icon="share-nodes" href="/sharing/publishing-codemods">
+  Learn how to publish your codemods to the Codemod Registry.
 </Card>
