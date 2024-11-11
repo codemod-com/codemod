@@ -14,26 +14,24 @@ export default function transform(
     let importFromReact = root.find(j.ImportDeclaration, {
       source: { value: "react" },
     });
+    const specifier = name
+      ? j.importSpecifier(
+          j.identifier("useActionState"),
+          name ? j.identifier(name) : undefined,
+        )
+      : j.importSpecifier(j.identifier("useActionState"));
     if (importFromReact.length === 0) {
       isDirty = true;
       root
         .get()
         .node.program.body.unshift(
-          j.importDeclaration(
-            [
-              name
-                ? j.importSpecifier(
-                    j.identifier("useActionState"),
-                    name ? j.identifier(name) : undefined,
-                  )
-                : j.importSpecifier(j.identifier("useActionState")),
-            ],
-            j.literal("react"),
-          ),
+          j.importDeclaration([specifier], j.literal("react")),
         );
       importFromReact = root.find(j.ImportDeclaration, {
         source: { value: "react" },
       });
+    } else {
+      importFromReact.get("specifiers").push(specifier);
     }
   }
 
