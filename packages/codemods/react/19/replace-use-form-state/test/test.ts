@@ -163,4 +163,54 @@ describe("react/19/replace-use-form-state: useFormState() -> useActionState()", 
       OUTPUT.replace(/\W/gm, ""),
     );
   });
+
+  it("should correctly transform useFormState import to useActionState", async () => {
+    const INPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/fixture7.input.js"),
+      "utf-8",
+    );
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/fixture7.output.js"),
+      "utf-8",
+    );
+
+    const fileInfo: FileInfo = {
+      path: "index.ts",
+      source: INPUT,
+    };
+
+    const actualOutput = transform(fileInfo, buildApi("js"), {
+      quote: "single",
+    });
+
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
+
+  it("should correctly transform import all from ReactDOM", async () => {
+    const INPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/fixture8.input.js"),
+      "utf-8",
+    );
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/fixture8.output.js"),
+      "utf-8",
+    );
+
+    const fileInfo: FileInfo = {
+      path: "index.ts",
+      source: INPUT,
+    };
+
+    const actualOutput = transform(fileInfo, buildApi("js"), {
+      quote: "single",
+    });
+
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
 });
