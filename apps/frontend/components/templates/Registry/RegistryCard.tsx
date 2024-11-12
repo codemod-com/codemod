@@ -66,14 +66,14 @@ export default function RegistryCard(props: RegistryCardData) {
             </h3>
           </SanityLink>
           {formattedDescription ? (
-            <div className=" mt-10 flex-col gap-4">
+            <div className="mt-4 flex-col gap-4">
               <Markdown>{formattedDescription}</Markdown>
             </div>
           ) : null}
         </div>
       </div>
 
-      <div className="flex w-full flex-col gap-m lg:flex-row lg:justify-between">
+      <div className="flex w-full flex-col gap-m lg:flex-row lg:justify-between lg:items-center">
         {/* tags */}
         <div className="flex items-center gap-xs">
           {props.verified && <VerifiedBadge content={props.verifiedTooltip} />}
@@ -153,16 +153,22 @@ export default function RegistryCard(props: RegistryCardData) {
 
         {/* Attribution */}
         {props.author && (
-          <button
-            onClick={() =>
-              handleFilterChange(REGISTRY_FILTER_TYPES.owner, props.author)
-            }
-            onLoad={() =>
-              prefetchFilterChange(REGISTRY_FILTER_TYPES.owner, props.author)
-            }
+          <div
+            // onClick={() =>
+            //   handleFilterChange(REGISTRY_FILTER_TYPES.owner, props.author)
+            // }
+            // onLoad={() =>
+            //   prefetchFilterChange(REGISTRY_FILTER_TYPES.owner, props.author)
+            // }
             className="rounded-sm focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark"
           >
-            <div className="flex items-center gap-xxs">
+            <SanityLink
+              className="flex items-center gap-xxs group"
+              link={{
+                _type: "link",
+                href: `https://github.com/${props.author}`,
+              }}
+            >
               <span className="body-s-medium font-medium">by</span>
 
               <>
@@ -192,11 +198,11 @@ export default function RegistryCard(props: RegistryCardData) {
                   />
                 )}
               </>
-              <span className="body-s-medium font-medium">
-                {capitalize(props.author)}
+              <span className="body-s-medium font-mono group-hover:opacity-50 transition-opacity">
+                @{props.author}
               </span>
-            </div>
-          </button>
+            </SanityLink>
+          </div>
         )}
       </div>
     </li>

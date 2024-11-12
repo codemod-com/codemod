@@ -12,9 +12,8 @@ export const AuthorSection = ({
     className="rounded-sm focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark"
     prefetch
   >
-    <div className="flex items-center gap-xs">
+    <div className="flex items-center gap-xxs group">
       <span className="body-s-medium font-medium">by</span>
-
       <>
         {authorImage?.image.light && (
           <SanityImage
@@ -42,7 +41,9 @@ export const AuthorSection = ({
           />
         )}
       </>
-      <span className="body-s-medium font-medium">{author}</span>
+      <span className="body-s-medium font-mono group-hover:opacity-50 transition-opacity">
+        @{author}
+      </span>
     </div>
   </Link>
 );

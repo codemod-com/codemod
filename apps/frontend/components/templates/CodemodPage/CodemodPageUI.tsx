@@ -3,7 +3,6 @@ import Icon from "@/components/shared/Icon";
 import Section from "@/components/shared/Section";
 import Snippet from "@/components/shared/Snippet";
 import Tag from "@/components/shared/Tag";
-import { AuthorSection } from "@/components/templates/CodemodPage/AuthorSection";
 import { VCCodeShift } from "@/components/templates/CodemodPage/VCCodeShift";
 import { getCodemodCard } from "@/components/templates/CodemodPage/buildYourCodemodCard";
 import { getFrameworkCard } from "@/components/templates/CodemodPage/getFrameworkCard";
@@ -17,10 +16,12 @@ import { prop, uniqBy } from "ramda";
 import type { ReactNode } from "react";
 import VerifiedBadge from "../Registry/VerifiedBadge";
 import {
+  extractRepoPath,
   getAutomationFrameworkTitles,
   getFilterIcon,
   getFilterSection,
 } from "../Registry/helpers";
+import { AuthorSection } from "./AuthorSection";
 import InfoTooltip from "./parts/InfoTooltip";
 
 export interface CodemodPageProps {
@@ -72,6 +73,12 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
   );
 
   const currentVersion = data?.versions[0];
+  const totalRunsValue = data?.totalRuns ?? 0;
+
+  const totalRuns =
+    totalRunsValue < 100 ? "< 100 runs" : totalRunsValue.toLocaleString();
+
+  const sourceRepo = extractRepoPath(currentVersion?.sourceRepo || "");
 
   return (
     <Section className="pt-[calc(var(--header-height)+24px)]">
@@ -88,7 +95,47 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
 
       <div className="relative flex w-full flex-col gap-l pb-xl lg:flex lg:flex-row lg:gap-2xl lg:pb-[80px]">
         <div className="flex w-full flex-col lg:w-2/3">
-          <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+          <div className="flex mb-2 flex-col gap-[12px]">
+            {data?.automationName && (
+              <h1 className="m-heading">{unslugify(data?.automationName)}</h1>
+            )}
+          </div>
+
+          <div className="flex mb-3 flex-row gap-xxs">
+            <span className="font-mono">{currentVersion?.version}</span>
+
+            {currentVersion?.updatedAt && (
+              <>
+                <span className="body-s-medium px-1 font-medium text-secondary-light dark:text-secondary-dark">
+                  ·
+                </span>
+                <span>
+                  Last update{" "}
+                  {new Date(currentVersion?.updatedAt).toLocaleString("en-us", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
+              </>
+            )}
+
+            {/* Attribution */}
+            {data?.author && (
+              <>
+                <span className="body-s-medium px-1 font-medium text-secondary-light dark:text-secondary-dark">
+                  ·
+                </span>
+                <AuthorSection
+                  author={data?.author}
+                  href={authorHref}
+                  authorImage={authorImage}
+                />
+              </>
+            )}
+          </div>
+
+          <div className="flex mb-2 flex-col justify-between gap-4 lg:flex-row lg:items-center">
             <div className="flex items-center gap-xs">
               {data?.verified && (
                 <VerifiedBadge content="Regularly tested and maintained by our engineers and codemod expert community." />
@@ -108,48 +155,10 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                 </Link>
               )}
             </div>
-            {/* Attribution */}
-            {data?.author && (
-              <AuthorSection
-                author={data?.author}
-                href={authorHref}
-                authorImage={authorImage}
-              />
-            )}
           </div>
 
-          <div className="mt-6 flex flex-col gap-[12px]">
-            {data?.automationName && (
-              <h1 className="m-heading">{unslugify(data?.automationName)}</h1>
-            )}
-          </div>
+          {/* <div className="relative z-20 h-px w-full bg-gradient-to-r from-transparent via-[#0b151e39] dark:via-[#ffffff34]" /> */}
 
-          <div className="mt-6 flex items-center gap-s rounded-[8px] border border-border-light p-s dark:border-border-dark">
-            {/*{frameworks.length ? (*/}
-            {/*  <>*/}
-            {/*    <InfoCard*/}
-            {/*      value={frameworksDescription}*/}
-            {/*      label="Made for"*/}
-            {/*      icon="/icons/badge-info.svg"*/}
-            {/*    />*/}
-            {/*    <span className="h-full w-[2px] bg-border-light dark:bg-border-dark" />*/}
-            {/*  </>*/}
-            {/*) : null}*/}
-            {currentVersion?.updatedAt && (
-              <InfoCard
-                value={new Date(currentVersion?.updatedAt).toLocaleString(
-                  "en-us",
-                  {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  },
-                )}
-                label="Last update"
-                icon="/icons/calendar.svg"
-              />
-            )}
-          </div>
           {description ? (
             <div className="mt-10 hidden flex-col gap-4 lg:flex">
               {description}
@@ -157,10 +166,9 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
           ) : null}
         </div>
         {/* Sidebar */}
-        <aside className="lg:top-[128px] flex h-fit w-full flex-col gap-m lg:sticky lg:w-1/3 lg:min-w-[360px] lg:pl-[52px]">
+        <aside className="lg:top-[128px] flex h-fit w-full flex-col gap-m lg:sticky lg:w-1/3 lg:min-w-[360px] lg:pl-[0]">
           {/* Run */}
-
-          <div className="flex w-full flex-col gap-s rounded-[8px] border border-border-light p-s dark:border-border-dark">
+          <div className="flex w-full flex-col gap-m rounded-[8px] border border-border-light p-s dark:border-border-dark">
             <div className="flex items-center justify-between">
               <p className="xs-heading">Run</p>
               {data?.globalLabels?.documentationPopup && (
@@ -238,10 +246,10 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                   <a
                     target="_blank"
                     href={currentVersion?.sourceRepo}
-                    className="truncate underline"
+                    className="truncate"
                     rel="noreferrer"
                   >
-                    {currentVersion?.sourceRepo}
+                    {sourceRepo}
                   </a>
                 </div>
               </div>
@@ -255,9 +263,9 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
 
               <div className="flex-1" />
             </div> */}
-            <span className="h-px w-full bg-border-light dark:bg-border-dark" />
+            {/* <span className="h-px w-full bg-border-light dark:bg-border-dark" /> */}
             <div className="flex items-center gap-s">
-              <InfoCard value={String(data?.totalRuns)} label="Total runs" />
+              <InfoCard value={totalRuns} label="Total runs" />
               <span className="h-[36px] w-[2px] bg-border-light dark:bg-border-dark" />
               <InfoCard
                 value={String(currentVersion?.version)}
@@ -267,7 +275,6 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
             <div className="flex flex-wrap gap-2">
               {(currentVersion?.tags?.filter(Boolean).length || 0) > 0 && (
                 <>
-                  <span className="h-px w-full bg-border-light dark:bg-border-dark" />
                   {currentVersion?.tags?.filter(Boolean).map((label) => (
                     <Link prefetch key={label} href={`/registry?q=${label}`}>
                       <Tag key={label}>{label}</Tag>

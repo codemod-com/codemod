@@ -30,13 +30,13 @@ export default function VerifiedBadge({
         {content && (
           <div
             className={cx(
-              "absolute bottom-full left-0 z-10 w-56 cursor-default rounded-md border bg-white p-2 text-left shadow-xl transition-all duration-300 2xl:-left-24 dark:border-border-dark dark:border-opacity-40 dark:bg-background-dark",
+              "absolute bottom-full left-0 z-10 w-56 cursor-default border bg-white/75 p-4 space-y-2 text-left shadow-xl transition-all duration-300 2xl:-left-24 dark:border-border-dark dark:border-opacity-40 dark:bg-background-dark/75 backdrop-blur-lg rounded-xl",
 
               "pointer-events-none invisible translate-y-0 opacity-0",
               "group-hover:pointer-events-auto group-hover:visible group-hover:-translate-y-2 group-hover:opacity-100",
             )}
           >
-            <h5 className="body-s-medium pb-1 font-medium">Codemod verified</h5>
+            <h5 className="body-s-medium font-bold">Codemod verified</h5>
             <p className="body-s font-regular">{content}</p>
           </div>
         )}
