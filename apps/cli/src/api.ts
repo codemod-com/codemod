@@ -5,9 +5,8 @@ import type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
   GetCodemodResponse,
-  GetScopedTokenResponse,
-  GetUserDataResponse,
   VerifyTokenResponse,
+  ZitatelUserInfo,
 } from "@codemod-com/api-types";
 
 export const extractPrintableApiError = (err: unknown): string => {
@@ -16,19 +15,6 @@ export const extractPrintableApiError = (err: unknown): string => {
   }
 
   return err instanceof AxiosError ? err.response?.data.errorText : err.message;
-};
-
-export const getCLIAccessToken = async (
-  accessToken: string,
-): Promise<GetScopedTokenResponse> => {
-  const url = new URL(`${process.env.AUTH_BACKEND_URL}/appToken`);
-
-  const res = await Axios.get<GetScopedTokenResponse>(url.toString(), {
-    headers: { Authorization: `Bearer ${accessToken}` },
-    timeout: 10000,
-  });
-
-  return res.data;
 };
 
 export const validateCLIToken = async (
@@ -45,10 +31,12 @@ export const validateCLIToken = async (
   return res.data;
 };
 
-export const getUserData = async (accessToken: string): Promise<any | null> => {
+export const getUserData = async (
+  accessToken: string,
+): Promise<ZitatelUserInfo | null> => {
   try {
-    const { data } = await Axios.get<GetUserDataResponse | object>(
-      ``, //  ZITADEL INFO
+    const { data } = await Axios.get<ZitatelUserInfo | object>(
+      `${process.env.ZITADEL_URL}/oidc/v1/userinfo`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
         timeout: 5000,

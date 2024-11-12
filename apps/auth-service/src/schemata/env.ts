@@ -18,6 +18,7 @@ export const environmentSchema = object({
   CLERK_SECRET_KEY: string(),
   CLERK_JWT_KEY: string(),
   APP_TOKEN_TEMPLATE: string(),
+  ZITADEL_URL: string(),
   VERIFIED_PUBLISHERS: pipe(
     unknown(),
     transform((input) => {

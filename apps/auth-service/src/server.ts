@@ -1,20 +1,13 @@
 import "dotenv/config";
-
-import { createClerkClient } from "@clerk/backend";
-import { clerkPlugin, getAuth } from "@clerk/fastify";
+import type { ZitatelUserInfo } from "@codemod-com/api-types";
+import { prisma } from "@codemod-com/database";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyPluginCallback } from "fastify";
 
-import type {
-  GetScopedTokenResponse,
-  RevokeScopedTokenResponse,
-} from "@codemod-com/api-types";
+import { decodeJwt, jwtVerificationResult } from "@codemod-com/auth";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-
-import { createLoginIntent } from "./handlers/intents/create.js";
-import { getLoginIntent } from "./handlers/intents/get.js";
-import { populateLoginIntent } from "./handlers/intents/populate.js";
+import axios from "axios";
 import { environment } from "./util.js";
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
@@ -104,127 +97,130 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   return fastify;
 };
 
-const clerkClient = createClerkClient({
-  publishableKey: environment.CLERK_PUBLISH_KEY,
-  secretKey: environment.CLERK_SECRET_KEY,
-  jwtKey: environment.CLERK_JWT_KEY,
-});
-
 const routes: FastifyPluginCallback = (instance, _opts, done) => {
   instance.get("/", async (_, reply) => {
     reply.type("application/json").code(200);
     return { data: {} };
   });
 
-  instance.register(clerkPlugin, {
-    publishableKey: environment.CLERK_PUBLISH_KEY,
-    secretKey: environment.CLERK_SECRET_KEY,
-    jwtKey: environment.CLERK_JWT_KEY,
-  });
-
-  instance.get("/intents/:id", getLoginIntent);
-
-  instance.post("/intents", createLoginIntent);
-
-  instance.post("/populateLoginIntent", populateLoginIntent);
-
   instance.get("/verifyToken", async (request, reply) => {
-    const { userId } = getAuth(request);
+    const authHeader = request.headers.authorization;
 
-    if (!userId) {
-      return reply.status(401).send({ message: "Invalid token" });
+    const jwtToken =
+      typeof authHeader === "string"
+        ? authHeader.replace("Bearer ", "")
+        : undefined;
+
+    if (!jwtToken) {
+      return reply.status(401).send({ message: "No JWT token" });
     }
 
-    return reply.status(200).send({ userId });
+    const parsedToken = decodeJwt(jwtToken);
+
+    if (!parsedToken) {
+      return reply.status(401).send({ message: "Invalid JWT token" });
+    }
+
+    const kid = parsedToken.header.kid;
+
+    if (!kid) {
+      return reply.status(401).send({ message: "No kid in JWT token" });
+    }
+
+    const result = await jwtVerificationResult(jwtToken);
+
+    if (!result) {
+      return reply
+        .status(401)
+        .send({ message: "JWT token verification failed" });
+    }
+
+    try {
+      const { data } = await axios.get<ZitatelUserInfo | object>(
+        `${process.env.ZITADEL_URL}/oidc/v1/userinfo`,
+        {
+          headers: { Authorization: `Bearer ${jwtToken}` },
+          timeout: 5000,
+        },
+      );
+
+      if (!("name" in data)) {
+        return null;
+      }
+
+      return data.preferred_username;
+    } catch (err) {
+      return null;
+    }
   });
 
   instance.get("/userData", async (request, reply) => {
-    const { userId } = getAuth(request);
+    const authHeader = request.headers.authorization;
+    const jwtToken =
+      typeof authHeader === "string"
+        ? authHeader.replace("Bearer ", "")
+        : undefined;
 
-    if (!userId) {
-      return reply.status(200).send({});
+    if (!jwtToken) {
+      return reply.status(401).send({ message: "No JWT token" });
     }
 
-    const user = await clerkClient.users.getUser(userId);
-    const organizations = (
-      await clerkClient.users.getOrganizationMembershipList({ userId })
-    ).data.map((organization) => organization);
-    const allowedNamespaces = [
-      ...organizations.map(({ organization }) => organization.slug),
-    ].filter(isNeitherNullNorUndefined);
+    const parsedToken = decodeJwt(jwtToken);
 
-    if (user.username) {
-      allowedNamespaces.unshift(user.username);
-
-      if (environment.VERIFIED_PUBLISHERS.includes(user.username)) {
-        allowedNamespaces.push("codemod-com");
-      }
+    if (!parsedToken) {
+      return reply.status(401).send({ message: "Invalid JWT token" });
     }
 
-    return reply.status(200).send({
-      user,
-      organizations,
-      allowedNamespaces,
-    });
-  });
+    const kid = parsedToken.header.kid;
+    if (!kid) {
+      return reply.status(401).send({ message: "No kid in JWT token" });
+    }
 
-  instance.delete<{ Reply: RevokeScopedTokenResponse }>(
-    "/revokeToken",
-    async (request, reply) => {
-      const { userId, sessionId } = getAuth(request);
+    const result = jwtVerificationResult(jwtToken);
 
-      if (!userId && !sessionId) {
-        return reply
-          .status(401)
-          .send({ success: false, error: "Invalid token" });
-      }
+    if (!result) {
+      return reply
+        .status(401)
+        .send({ message: "JWT token verification failed" });
+    }
 
-      try {
-        await clerkClient.sessions.revokeSession(sessionId);
-      } catch (err) {
-        console.error("Failed to revoke session:\n", err);
-        return reply
-          .status(500)
-          .send({ success: false, error: "Failed to revoke session" });
-      }
-
-      return reply.status(200).send({ success: true });
-    },
-  );
-
-  instance.get<{ Reply: GetScopedTokenResponse | { message: string } }>(
-    "/appToken",
-    async (request, reply) => {
-      const { userId, sessionId } = getAuth(request);
-
-      if (!userId && !sessionId) {
-        return reply.status(401).send({ message: "Invalid token" });
-      }
-
-      const { jwt } = await clerkClient.sessions.getToken(
-        sessionId,
-        environment.APP_TOKEN_TEMPLATE,
+    try {
+      const { data } = await axios.get<ZitatelUserInfo | object>(
+        `${process.env.ZITADEL_URL}/oidc/v1/userinfo`,
+        {
+          headers: { Authorization: `Bearer ${jwtToken}` },
+          timeout: 5000,
+        },
       );
 
-      return reply.status(200).send({ token: jwt });
-    },
-  );
+      if (!("name" in data)) {
+        return null;
+      }
 
-  instance.get("/oAuthToken", async (request, reply) => {
-    const { userId } = getAuth(request);
+      const organizations = await prisma.organization.findMany({
+        where: {
+          users: {
+            hasSome: [data.preferred_username],
+          },
+        },
+      });
 
-    if (!userId) {
-      return reply.status(401).send({ message: "Invalid token" });
+      const allowedNamespaces = [
+        ...organizations.map(({ slug }) => slug),
+      ].filter(isNeitherNullNorUndefined);
+
+      if (data.preferred_username) {
+        allowedNamespaces.unshift(data.preferred_username);
+
+        if (environment.VERIFIED_PUBLISHERS.includes(data.preferred_username)) {
+          allowedNamespaces.push("codemod-com");
+        }
+      }
+
+      return data as ZitatelUserInfo;
+    } catch (err) {
+      return null;
     }
-
-    const { data } = await clerkClient.users.getUserOauthAccessToken(
-      userId,
-      "oauth_github",
-    );
-
-    const token = data[0]?.token;
-
-    return reply.status(200).send({ token });
   });
 
   done();

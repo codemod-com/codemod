@@ -9,8 +9,9 @@ import {
   credentialsStorage,
 } from "#credentials-storage.js";
 
-const AUTH_OPENID_ISSUER = "";
-const CLIENT_ID = "";
+const AUTH_OPENID_ISSUER =
+  process.env.AUTH_OPENID_ISSUER ?? "http://codemod-zitadel:52000";
+const CLIENT_ID = process.env.CLIENT_ID ?? "291351851578753026";
 const authSuccessUrl = "";
 
 export const handleLoginCliCommand = async (options: {
@@ -104,6 +105,8 @@ export const handleLoginCliCommand = async (options: {
   });
 
   const { access_token } = await promise;
+
+  console.log(access_token);
 
   if (access_token) {
     await credentialsStorage.set(CredentialsStorageType.ACCOUNT, access_token);

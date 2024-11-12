@@ -29,10 +29,12 @@
     "vitest": "^1.0.1"
   },
   "dependencies": {
-    "@codemod-com/database": "workspace:*",
     "@codemod-com/api-types": "workspace:*",
+    "@codemod-com/database": "workspace:*",
     "axios": "catalog:",
     "fastify": "catalog:",
-    "fastify-plugin": "catalog:"
+    "fastify-plugin": "catalog:",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.1.0"
   }
 }
