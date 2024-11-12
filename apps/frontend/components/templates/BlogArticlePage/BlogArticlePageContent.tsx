@@ -143,66 +143,6 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
                 />
               )}
             </div>
-            {/* Sidebar */}
-            {/* <aside className="sticky top-8 hidden h-fit w-1/3 px-s pl-[52px] lg:flex">
-            <div className="flex w-full flex-col">
-              {props.authors && (
-                <>
-                  <ArticleAuthors authors={props.authors} />
-                  <div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
-                </>
-              )}
-
-              {isCustomerStory && customerStorySidebar?.features && (
-                <>
-                  <Features features={customerStorySidebar?.features} />
-                  <div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
-                </>
-              )}
-
-              {isCustomerStory && customerStorySidebar?.stats && (
-                <>
-                  <Stats stats={customerStorySidebar?.stats} />
-                  <div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
-                </>
-              )}
-
-              {isCustomerStory
-                ? null
-                : articleSidebar?.showToc &&
-                  toc.length > 0 && (
-                    <>
-                      <TableOfContents
-                        variant="sidebar"
-                        outlines={toc}
-                        title={"On this page"}
-                      />
-                      <div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
-                    </>
-                  )}
-
-              {isCustomerStory && customerStorySidebar?.articleCta && (
-                <div className="">
-                  <CtaCard {...ctaCardProps} />
-                  <div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
-                </div>
-              )}
-
-              {props?.relatedArticles ? (
-                <RelatedLinks
-                  textStyle="medium"
-                  className=""
-                  title={
-                    props.globalLabels?.relatedArticles || "Related articles"
-                  }
-                  links={props?.relatedArticles.map((article) => ({
-                    title: article?.title || "",
-                    href: article?.pathname?.split("/")[2] || "",
-                  }))}
-                />
-              ) : null}
-            </div>
-          </aside> */}
           </div>
 
           {/* Footer  */}
