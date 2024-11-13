@@ -1,5 +1,5 @@
 import { backOff } from "exponential-backoff";
-import open from "open";
+import { open } from "../utils/open.js";
 
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
@@ -20,17 +20,10 @@ const routeUserToStudioForLogin = (
   sessionId: string,
   iv: string,
 ) => {
-  const success = open(
+  open(
     `${process.env.CODEMOD_HOME_PAGE_URL}?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}&sessionId=${sessionId}&iv=${iv}`,
+    printer,
   );
-
-  if (!success) {
-    printer.printOperationMessage({
-      kind: "error",
-      message:
-        "An unexpected error occurred while redirecting to the sign-in page. Please submit a GitHub issue (github.com/codemod-com/codemod/issues/new) or report it to us (codemod.com/community).",
-    });
-  }
 };
 export const handleLoginCliCommand = async (options: {
   printer: Printer;
