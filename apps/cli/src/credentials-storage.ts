@@ -54,7 +54,7 @@ async function warnMessage(error: any) {
         "\nArch Linux:",
         chalk.bold("sudo pacman -S libsecret"),
         chalk.cyan(
-          "\n\nIf you were not able to install the necessary package or CLI was not able to detect the installation" +
+          "\n\nIf you were not able to install the necessary package or CLI was not able to detect the installation " +
             "please reach out to us at our Community Slack channel.",
         ),
         chalk.yellow(
