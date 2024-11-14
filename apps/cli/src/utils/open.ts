@@ -3,10 +3,10 @@ import openOriginal from "open";
 
 export async function open(url: string, printer: Printer) {
   try {
-    // Show url inside coder
-    if (process.env.CODER_WORKSPACE_AGENT_NAME) {
-      throw new Error("Cannot open browser in a headless environment");
-    }
+    printer.printOperationMessage({
+      kind: "status",
+      message: `Opening the following URL in your browser: ${url}`,
+    });
     return await openOriginal(url);
   } catch (error: any) {
     printer.printOperationMessage({
