@@ -3,10 +3,7 @@ import openOriginal from "open";
 
 export async function open(url: string, printer: Printer) {
   try {
-    printer.printOperationMessage({
-      kind: "status",
-      message: `Opening the following URL in your browser: ${url}\n`,
-    });
+    console.log(`Opening the following URL in your browser: ${url}\n`);
     return await openOriginal(url);
   } catch (error: any) {
     printer.printOperationMessage({
