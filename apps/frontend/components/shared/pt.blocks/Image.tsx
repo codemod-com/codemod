@@ -4,8 +4,8 @@ import { SanityImage } from "../SanityImage";
 
 export default function ImageBlock(props: ImageBlock) {
   return (
-    <div className="my-10 flex flex-col ">
-      <div className={cx("overflow-hidden rounded-lg")}>
+    <div className="my-10 -mx-2 lg:-mx-10 flex flex-col gap-4">
+      <div className={cx("overflow-hidden rounded-xl")}>
         {
           <SanityImage
             maxWidth={1440}
@@ -15,7 +15,7 @@ export default function ImageBlock(props: ImageBlock) {
         }
       </div>
       {props.caption && (
-        <p className="body-s-medium mt-1 font-medium text-secondary-light dark:text-secondary-dark">
+        <p className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark text-center pb-0">
           {props.caption}
         </p>
       )}

@@ -49,7 +49,7 @@ export function CodeSnippet(props: { code: CodeBlockProps }) {
   return (
     <div
       className={clsx(
-        "codeblock relative mb-10 h-full overflow-hidden rounded-md bg-emphasis-light/5 p-4 pr-12 dark:bg-emphasis-dark/10",
+        "codeblock relative mb-10 h-full overflow-hidden rounded-md bg-emphasis-light/5 backdrop-blur-md p-4 pr-12 dark:bg-emphasis-dark/10",
         `${inconsolata.variable} font-mono text-lg`,
       )}
     >

@@ -85,7 +85,7 @@ function createDefaultComponents(
           {...prepareProps(props)}
           className={cx({
             uppercase: usage === "default",
-            "s-heading  py-4": usage === "textPage",
+            "s-heading py-4": usage === "textPage",
           })}
         >
           {props.children}
@@ -100,6 +100,11 @@ function createDefaultComponents(
         <h4 {...prepareProps(props)} className={cx("body-l-medium py-2")}>
           {props.children}
         </h4>
+      ),
+      p: (props) => (
+        <p {...prepareProps(props)} className={cx("body-l")}>
+          {props.children}
+        </p>
       ),
       normal: (props) => (
         <p
