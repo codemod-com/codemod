@@ -253,11 +253,11 @@ export default {
           },
         ],
         mdHeading: [
-          "32px",
+          "28px",
           {
             fontWeight: "700",
-            lineHeight: "40px",
-            letterSpacing: "-0.96px",
+            lineHeight: "36px",
+            letterSpacing: "-1.28px",
           },
         ],
         mdHeadingMobile: [
@@ -265,23 +265,23 @@ export default {
           {
             fontWeight: "700",
             lineHeight: "32px",
-            letterSpacing: "-0.72px",
+            letterSpacing: "-0.96px",
           },
         ],
         smHeading: [
-          "24px",
-          {
-            fontWeight: "700",
-            lineHeight: "32px",
-            letterSpacing: "-0.72px",
-          },
-        ],
-        smHeadingMobile: [
           "20px",
           {
             fontWeight: "700",
-            lineHeight: "28px",
-            letterSpacing: "-0.6px",
+            lineHeight: "26px",
+            letterSpacing: "-0.4px",
+          },
+        ],
+        smHeadingMobile: [
+          "16px",
+          {
+            fontWeight: "700",
+            lineHeight: "24px",
+            letterSpacing: "-0.32px",
           },
         ],
         xsHeading: [
@@ -302,7 +302,7 @@ export default {
           "18px",
           {
             fontWeight: "400",
-            lineHeight: "26px",
+            lineHeight: "27px",
           },
         ],
         bodyMdMedium: [
