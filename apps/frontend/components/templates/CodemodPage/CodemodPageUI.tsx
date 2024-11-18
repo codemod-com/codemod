@@ -101,14 +101,12 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
             )}
           </div>
 
-          <div className="flex mb-3 flex-row gap-xxs">
+          <div className="flex mb-3 items-center flex-row gap-xs">
             <span className="font-mono">{currentVersion?.version}</span>
 
             {currentVersion?.updatedAt && (
               <>
-                <span className="body-s-medium px-1 font-medium text-secondary-light dark:text-secondary-dark">
-                  ·
-                </span>
+                <i className="inline-block w-0.5 h-0.5 rounded-full bg-secondary-light dark:bg-secondary-dark" />
                 <span>
                   Last update{" "}
                   {new Date(currentVersion?.updatedAt).toLocaleString("en-us", {
@@ -123,9 +121,8 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
             {/* Attribution */}
             {data?.author && (
               <>
-                <span className="body-s-medium px-1 font-medium text-secondary-light dark:text-secondary-dark">
-                  ·
-                </span>
+                <i className="inline-block w-0.5 h-0.5 rounded-full bg-secondary-light dark:bg-secondary-dark" />
+
                 <AuthorSection
                   author={data?.author}
                   href={authorHref}

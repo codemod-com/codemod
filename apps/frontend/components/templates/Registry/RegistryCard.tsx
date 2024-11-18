@@ -163,7 +163,7 @@ export default function RegistryCard(props: RegistryCardData) {
             className="rounded-sm focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark"
           >
             <SanityLink
-              className="flex items-center gap-xxs group"
+              className="inline-flex items-center gap-xxs group"
               link={{
                 _type: "link",
                 href: `https://github.com/${props.author}`,
