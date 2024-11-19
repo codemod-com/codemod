@@ -142,3 +142,13 @@ export function transformAutomation(
     title: unslugify(automation.name),
   };
 }
+
+export function extractRepoPath(githubUrl: string) {
+  // Remove the protocol (e.g., https:// or http://) and split by "/"
+  const parts = githubUrl
+    .replace(/^https?:\/\/(www\.)?github\.com\//, "")
+    .split("/");
+
+  // Return "username/repo" if it exists, otherwise return an empty string
+  return parts.length >= 2 ? `${parts[0]}/${parts[1]}` : "";
+}
