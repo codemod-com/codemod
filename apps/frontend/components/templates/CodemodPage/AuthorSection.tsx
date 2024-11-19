@@ -11,8 +11,8 @@ export const AuthorSection = ({
     className="rounded-sm focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark"
     link={{ href }}
   >
-    <div className="flex items-center gap-xs group">
-      {/* <span className="body-s-medium font-medium">by</span> */}
+    <div className="flex items-center gap-xxs group">
+      <span className="body-s-medium font-medium">by</span>
       <>
         {authorImage?.image.light && (
           <SanityImage
