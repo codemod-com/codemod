@@ -22,8 +22,7 @@ import { environment } from "./util.js";
 const GET_USER_RETURN = {
   user: {
     username: "username",
-    primaryEmailAddressId: "123",
-    emailAddresses: [{ id: "123", emailAddress: "john.doe@gmail.com" }],
+    email: "john.doe@gmail.com",
     firstName: "John",
     lastName: "Doe",
   },
@@ -210,7 +209,7 @@ describe("/publish route", async () => {
         author: {
           username: GET_USER_RETURN.user.username,
           name: `${GET_USER_RETURN.user.firstName} ${GET_USER_RETURN.user.lastName}`,
-          email: GET_USER_RETURN.user.emailAddresses[0]?.emailAddress,
+          email: GET_USER_RETURN.user.email,
         },
       },
     );

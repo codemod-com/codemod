@@ -5,8 +5,8 @@ import type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
   GetCodemodResponse,
+  GetUserDataResponse,
   VerifyTokenResponse,
-  ZitatelUserInfo,
 } from "@codemod-com/api-types";
 
 export const extractPrintableApiError = (err: unknown): string => {
@@ -33,17 +33,17 @@ export const validateCLIToken = async (
 
 export const getUserData = async (
   accessToken: string,
-): Promise<ZitatelUserInfo | null> => {
+): Promise<GetUserDataResponse | null> => {
   try {
-    const { data } = await Axios.get<ZitatelUserInfo | object>(
-      `${process.env.ZITADEL_URL}/oidc/v1/userinfo`,
+    const { data } = await Axios.get<GetUserDataResponse | object>(
+      `${process.env.AUTH_BACKEND_URL}/userData`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
         timeout: 5000,
       },
     );
 
-    if (!("name" in data)) {
+    if (!("user" in data)) {
       return null;
     }
 

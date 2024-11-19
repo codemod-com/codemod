@@ -94,7 +94,8 @@ model CodeDiff {
 
 model Organization {
   id        Int      @id @default(autoincrement())
-  slug      String   @unique @db.VarChar(255)
+  slug      String   @db.VarChar(255)
+  name      String   @db.VarChar(255)
   users     String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

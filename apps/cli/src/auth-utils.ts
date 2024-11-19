@@ -15,7 +15,7 @@ export type UserData = GetUserDataResponse & {
   token: string;
 };
 
-export const getCurrentUserData = async (): Promise<any | null> => {
+export const getCurrentUserData = async (): Promise<UserData | null> => {
   const token = await credentialsStorage.get(CredentialsStorageType.ACCOUNT);
 
   if (!isNeitherNullNorUndefined(token)) {
@@ -80,18 +80,18 @@ export const getOrgsNames = (
   let mapFunc: (org: UserData["organizations"][number]) => string | null;
   switch (type) {
     case "slug":
-      mapFunc = (org) => org.organization.slug;
+      mapFunc = (org) => org.slug;
       break;
     case "name":
-      mapFunc = (org) => org.organization.name;
+      mapFunc = (org) => org.name;
       break;
     case "slug-and-name":
       mapFunc = (org) => {
-        if (org.organization.name === org.organization.slug) {
-          return org.organization.name;
+        if (org.name === org.slug) {
+          return org.name;
         }
 
-        return `${org.organization.name} (${org.organization.slug})`;
+        return `${org.name} (${org.slug})`;
       };
       break;
     default:

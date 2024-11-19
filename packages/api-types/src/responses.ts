@@ -1,6 +1,5 @@
 import type { Codemod, CodemodVersion } from "@codemod-com/database";
 import type { AllEngines, Arguments } from "@codemod-com/utilities";
-import type { OrganizationMembership, User } from "./clerk.js";
 
 export type ApiError = {
   error: string;
@@ -41,12 +40,28 @@ export type RevokeScopedTokenResponse =
   | { success: false; error: string };
 
 export type VerifyTokenResponse = {
-  userId: string;
+  sub: string;
+};
+
+export type User = {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  locale: string;
+  email: string;
+  emailVerified: boolean;
+};
+
+export type Organization = {
+  name: string;
+  slug: string;
+  users: string[];
 };
 
 export type GetUserDataResponse = {
   user: User;
-  organizations: OrganizationMembership[];
+  organizations: Organization[];
   allowedNamespaces: string[];
 };
 
