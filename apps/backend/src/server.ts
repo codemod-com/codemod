@@ -1,5 +1,10 @@
 import { randomBytes } from "node:crypto";
-import type { CodemodListResponse } from "@codemod-com/api-types";
+import type {
+  CodemodListResponse,
+  CreateAPIKeyResponse,
+  DeleteAPIKeysResponse,
+  ListAPIKeysResponse,
+} from "@codemod-com/api-types";
 import { getAuthPlugin } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
 import { decryptWithIv, encryptWithIv } from "@codemod-com/utilities";
@@ -10,6 +15,8 @@ import Fastify, {
   type FastifyPluginCallback,
   type FastifyRequest,
 } from "fastify";
+import { createAPIKeyHandler } from "./handlers/createAPIKeyHandler.js";
+import { deleteAPIKeysHandler } from "./handlers/deleteAPIKeysHandler.js";
 import {
   type GetCodemodDownloadLinkResponse,
   getCodemodDownloadLink,
@@ -20,6 +27,7 @@ import {
   getCodemodsHandler,
 } from "./handlers/getCodemodsHandler.js";
 import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
+import { listAPIKeysHandler } from "./handlers/listAPIKeysHandler.js";
 import {
   type PublishHandlerResponse,
   publishHandler,
@@ -167,6 +175,22 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       reply.type("application/json").code(200);
       return { version: packageJson.default.version };
     },
+  );
+
+  instance.post<{
+    Reply: CreateAPIKeyResponse;
+  }>("/api-keys", { preHandler: instance.getUserData }, createAPIKeyHandler);
+
+  instance.get<{
+    Reply: ListAPIKeysResponse;
+  }>("/api-keys", { preHandler: instance.getUserData }, listAPIKeysHandler);
+
+  instance.delete<{
+    Reply: DeleteAPIKeysResponse;
+  }>(
+    "/api-keys/:includes",
+    { preHandler: instance.getUserData },
+    deleteAPIKeysHandler,
   );
 
   instance.get("/codemods/:criteria", getCodemodHandler);

@@ -91,3 +91,10 @@ model CodeDiff {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+model ApiKey {
+  externalId String @db.VarChar(255)
+  key        String @db.VarChar(255)
+  keyId      String @db.VarChar(255)
+  @@id([key, keyId])
+}

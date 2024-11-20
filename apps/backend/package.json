@@ -43,6 +43,7 @@
     "@fastify/rate-limit": "catalog:",
     "@slack/web-api": "catalog:",
     "@types/tar": "catalog:",
+    "@unkey/api": "catalog:",
     "ai": "2.2.29",
     "axios": "catalog:",
     "bullmq": "catalog:",
