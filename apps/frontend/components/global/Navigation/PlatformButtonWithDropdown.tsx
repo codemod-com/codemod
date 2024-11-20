@@ -56,7 +56,7 @@ export default function PlatformButtonWithDropdown() {
           <div className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark">
             Build
           </div>
-          <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-s dark:border-b-border-dark">
+          <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-2 dark:border-b-border-dark">
             <DropdownMenu.Item asChild>
               <Link
                 href="/studio"
@@ -70,9 +70,9 @@ export default function PlatformButtonWithDropdown() {
           </DropdownMenu.Group>
 
           <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">
-            Share/Discover
+            Discover
           </div>
-          <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-s dark:border-b-border-dark">
+          <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-2 dark:border-b-border-dark">
             <DropdownMenu.Item asChild>
               <Link
                 href="/registry"
@@ -88,7 +88,7 @@ export default function PlatformButtonWithDropdown() {
           <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">
             Run
           </div>
-          <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-s dark:border-b-border-dark">
+          <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-2 dark:border-b-border-dark">
             <DropdownMenu.Item asChild>
               <Link
                 href="https://go.codemod.com/cli-docs"
@@ -102,7 +102,7 @@ export default function PlatformButtonWithDropdown() {
           </DropdownMenu.Group>
 
           <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">
-            Migrate at Scale
+            Scale
           </div>
           <DropdownMenu.Group className="pt-s">
             <DropdownMenu.Item asChild>
@@ -112,7 +112,7 @@ export default function PlatformButtonWithDropdown() {
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >
                 <Icon name="codemod-studio" className="h-5 w-5" />
-                <span>Private Alpha (Contact Us)</span>
+                <span>Private Alpha - Contact Us</span>
               </Link>
             </DropdownMenu.Item>
           </DropdownMenu.Group>

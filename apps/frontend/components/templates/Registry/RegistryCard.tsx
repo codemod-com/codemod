@@ -9,6 +9,7 @@ import { vercelStegaSplit } from "@vercel/stega";
 import { prop, uniqBy } from "ramda";
 import { SanityLink } from "../../shared/SanityLink";
 import Tag from "../../shared/Tag";
+import { AuthorSection } from "../CodemodPage/AuthorSection";
 import VerifiedBadge from "./VerifiedBadge";
 import {
   getAutomationFrameworkTitles,
@@ -22,6 +23,12 @@ export default function RegistryCard(props: RegistryCardData) {
   const { handleFilterChange, prefetchFilterChange } = useRegistryFilters();
 
   const { cleaned: author } = vercelStegaSplit(`${props.author}`);
+
+  const _author = {
+    title: props.author === "Codemod" ? "codemod" : props.author,
+    username: props.author === "Codemod" ? "codemod-com" : props.author,
+  };
+  const authorHref = `https://github.com/${_author.username}`;
 
   const formattedDescription = getDescriptionShortText(
     props.shortDescription || "",
@@ -153,56 +160,11 @@ export default function RegistryCard(props: RegistryCardData) {
 
         {/* Attribution */}
         {props.author && (
-          <div
-            // onClick={() =>
-            //   handleFilterChange(REGISTRY_FILTER_TYPES.owner, props.author)
-            // }
-            // onLoad={() =>
-            //   prefetchFilterChange(REGISTRY_FILTER_TYPES.owner, props.author)
-            // }
-            className="rounded-sm focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark"
-          >
-            <SanityLink
-              className="inline-flex items-center gap-xxs group"
-              link={{
-                _type: "link",
-                href: `https://github.com/${props.author}`,
-              }}
-            >
-              <span className="body-s-medium font-medium">by</span>
-
-              <>
-                {authorImage?.image.light && (
-                  <SanityImage
-                    maxWidth={20}
-                    image={authorImage.image.light}
-                    alt={authorImage.image.light.alt}
-                    elProps={{
-                      width: 20,
-                      height: 20,
-                      className: "h-5 w-5 dark:hidden",
-                    }}
-                  />
-                )}
-
-                {authorImage?.image.dark && (
-                  <SanityImage
-                    maxWidth={20}
-                    image={authorImage.image.dark}
-                    alt={authorImage.image.dark.alt}
-                    elProps={{
-                      width: 20,
-                      height: 20,
-                      className: "hidden h-5 w-5 dark:inline",
-                    }}
-                  />
-                )}
-              </>
-              <span className="body-s-medium font-mono group-hover:opacity-50 transition-opacity">
-                @{props.author}
-              </span>
-            </SanityLink>
-          </div>
+          <AuthorSection
+            author={_author.title}
+            authorImage={authorImage}
+            href={authorHref}
+          />
         )}
       </div>
     </li>
