@@ -1,6 +1,6 @@
 import type { CURSOR_PREFIX, VSCODE_PREFIX } from "@/constants";
 import { openLink } from "@/utils";
-import { populateLoginIntent } from "../api/populateLoginIntent";
+import { populateLoginIntent } from "../api/getAuthUrl";
 import { SEARCH_PARAMS_KEYS } from "../store/initialState";
 
 export const openIDELink = async (
