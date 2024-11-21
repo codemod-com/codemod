@@ -1,16 +1,17 @@
 import type { CreateAPIKeyRequest } from "@codemod-com/api-types";
 import { Unkey } from "@unkey/api";
+import { memoize } from "lodash-es";
 
 const UNKEY_API_ID = process.env.UNKEY_API_ID as string;
 const UNKEY_ROOT_KEY = process.env.UNKEY_ROOT_KEY as string;
 
-const unkey = new Unkey({ rootKey: UNKEY_ROOT_KEY });
+const getUnkey = memoize(() => new Unkey({ rootKey: UNKEY_ROOT_KEY }));
 
 export const createApiKey = async ({
   apiKeyData,
   externalId,
 }: { apiKeyData: CreateAPIKeyRequest; externalId: string }) => {
-  const response = await unkey.keys.create({
+  const response = await getUnkey().keys.create({
     apiId: UNKEY_API_ID,
     prefix: "codemod.com",
     externalId,
@@ -28,7 +29,7 @@ export const createApiKey = async ({
 };
 
 export const listApiKeys = async ({ externalId }: { externalId: string }) => {
-  const response = await unkey.apis.listKeys({
+  const response = await getUnkey().apis.listKeys({
     apiId: UNKEY_API_ID,
     externalId,
   });
@@ -43,7 +44,7 @@ export const listApiKeys = async ({ externalId }: { externalId: string }) => {
 export const deleteApiKeys = async ({ keyIds }: { keyIds: string[] }) => {
   await Promise.all(
     keyIds.map(async (keyId) =>
-      unkey.keys.delete({
+      getUnkey().keys.delete({
         keyId,
       }),
     ),

@@ -64,7 +64,8 @@
     "tar": "^6.2.0",
     "valibot": "catalog:",
     "ws": "^8.18.0",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "lodash-es": "catalog:"
   },
   "type": "module",
   "peerDependencies": {
