@@ -24,6 +24,7 @@
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
     "prettier": "^3.2.5",
     "ts-node": "10.9.1",
     "vitest": "^1.0.1"
