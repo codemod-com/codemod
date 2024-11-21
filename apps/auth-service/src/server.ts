@@ -19,6 +19,7 @@ import { environment } from "./util.js";
 
 import { Issuer, generators } from "openid-client";
 import { object, optional, parse, string } from "valibot";
+import type { GetScopedTokenResponse } from "../../../packages/api-types/dist/responses.js";
 import { createLoginIntent } from "./handlers/intents/create.js";
 import { getLoginIntent } from "./handlers/intents/get.js";
 import { populateLoginIntent } from "./handlers/intents/populate.js";
@@ -443,6 +444,17 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
+  instance.get<{ Reply: GetScopedTokenResponse | { message: string } }>(
+    "/appToken",
+    async (request, reply) => {
+      const authHeader = request.headers.authorization;
+
+      const jwt =
+        typeof authHeader === "string" ? authHeader.replace("Bearer ", "") : "";
+
+      return reply.status(200).send({ token: jwt });
+    },
+  );
   done();
 };
 
