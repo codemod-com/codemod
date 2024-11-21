@@ -3,13 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { getAuthUrl } from "@/app/(website)/studio/src/api/getAuthUrl";
 import {
   ACCESS_TOKEN_COMMANDS,
   ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY,
-  TWO_MINS_IN_MS,
 } from "@/constants";
 import { useAuth, useUser } from "@clerk/nextjs";
-import { populateLoginIntent } from "@studio/api/populateLoginIntent";
 import { Dialog, DialogContent } from "@studio/components/ui/dialog";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
 
@@ -48,41 +47,43 @@ export const TokenBuilder = () => {
       return;
     }
 
-    (async () => {
-      const clerkToken = await getToken();
-      if (clerkToken === null) {
-        return;
-      }
-      const timestamp =
-        ACCESS_TOKEN_COMMANDS.find((x) => localStorage.getItem(x)) ?? null;
+    console.log("isSignedIn1111", isSignedIn);
 
-      if (
-        timestamp === null ||
-        new Date().getTime() - Number.parseInt(timestamp, 10) > TWO_MINS_IN_MS
-      ) {
-        return;
-      }
+    // (async () => {
+    //   const clerkToken = await getToken();
+    //   if (clerkToken === null) {
+    //     return;
+    //   }
+    //   const timestamp =
+    //     ACCESS_TOKEN_COMMANDS.find((x) => localStorage.getItem(x)) ?? null;
 
-      if (localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)) {
-        const [sessionId, iv] =
-          localStorage
-            .getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)
-            ?.split(",") || [];
+    //   if (
+    //     timestamp === null ||
+    //     new Date().getTime() - Number.parseInt(timestamp, 10) > TWO_MINS_IN_MS
+    //   ) {
+    //     return;
+    //   }
 
-        // Polling should pick it up
-        try {
-          await populateLoginIntent({
-            clerkToken,
-            sessionId,
-            iv,
-          });
-          onLoginIntentPopulated("success");
-        } catch (err) {
-          onLoginIntentPopulated("fail");
-        }
-      }
-      ACCESS_TOKEN_COMMANDS.forEach((key) => localStorage.removeItem(key));
-    })();
+    //   if (localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)) {
+    //     const [sessionId, iv] =
+    //       localStorage
+    //         .getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)
+    //         ?.split(",") || [];
+
+    //     // Polling should pick it up
+    //     try {
+    //       await populateLoginIntent({
+    //         clerkToken,
+    //         sessionId,
+    //         iv,
+    //       });
+    //       onLoginIntentPopulated("success");
+    //     } catch (err) {
+    //       onLoginIntentPopulated("fail");
+    //     }
+    //   }
+    //   ACCESS_TOKEN_COMMANDS.forEach((key) => localStorage.removeItem(key));
+    // })();
 
     return () => {
       if (intervalRef.current) {
@@ -103,31 +104,49 @@ export const TokenBuilder = () => {
       return;
     }
 
-    if (isSignedIn) {
-      (async () => {
-        const clerkToken = await getToken();
-        if (clerkToken === null) {
-          return;
-        }
-        if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
-          const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
-          const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+    console.log("isSignedIn222", isSignedIn);
 
-          // Polling should pick it up
-          try {
-            await populateLoginIntent({
-              clerkToken,
-              sessionId,
-              iv,
-            });
-            onLoginIntentPopulated("success");
-          } catch (err) {
-            onLoginIntentPopulated("fail");
-          }
-        }
-      })();
-      return;
-    }
+    (async () => {
+      if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
+        const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
+        const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+
+        const url = await getAuthUrl({
+          sessionId,
+          iv,
+        });
+
+        console.log("url", url);
+
+        router.push(url);
+      }
+    })();
+
+    // if (isSignedIn) {
+    //   (async () => {
+    //     // const clerkToken = await getToken();
+    //     // if (clerkToken === null) {
+    //     //   return;
+    //     // }
+    //     if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
+    //       const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
+    //       const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+
+    //       // Polling should pick it up
+    //       try {
+    //         await populateLoginIntent({
+    //           clerkToken,
+    //           sessionId,
+    //           iv,
+    //         });
+    //         onLoginIntentPopulated("success");
+    //       } catch (err) {
+    //         onLoginIntentPopulated("fail");
+    //       }
+    //     }
+    //   })();
+    //   return;
+    // }
 
     if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
       const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
@@ -138,7 +157,7 @@ export const TokenBuilder = () => {
       localStorage.setItem(command, new Date().getTime().toString());
     }
 
-    router.push("/auth/sign-in");
+    // router.push("/auth/sign-in");
 
     return () => {
       if (intervalRef.current) {

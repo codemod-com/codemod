@@ -2,20 +2,31 @@ import "dotenv/config";
 
 import { createClerkClient } from "@clerk/backend";
 import { clerkPlugin, getAuth } from "@clerk/fastify";
-import cors, { type FastifyCorsOptions } from "@fastify/cors";
-import fastifyRateLimit from "@fastify/rate-limit";
-import Fastify, { type FastifyPluginCallback } from "fastify";
-
 import type {
   GetScopedTokenResponse,
   RevokeScopedTokenResponse,
 } from "@codemod-com/api-types";
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
+import { prisma } from "@codemod-com/database";
+import {
+  decryptWithIv,
+  encryptWithIv,
+  isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
+import cors, { type FastifyCorsOptions } from "@fastify/cors";
+import fastifyRateLimit from "@fastify/rate-limit";
+import Fastify, { type FastifyPluginCallback } from "fastify";
 
+import { object, optional, parse, string } from "valibot";
 import { createLoginIntent } from "./handlers/intents/create.js";
 import { getLoginIntent } from "./handlers/intents/get.js";
 import { populateLoginIntent } from "./handlers/intents/populate.js";
 import { environment } from "./util.js";
+
+import { Issuer, generators } from "openid-client";
+
+const AUTH_OPENID_ISSUER =
+  process.env.AUTH_OPENID_ISSUER ?? "http://codemod-zitadel:52000";
+const CLIENT_ID = process.env.CLIENT_ID ?? "291351851578753026";
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   const { PORT: port } = environment;
@@ -110,6 +121,20 @@ const clerkClient = createClerkClient({
   jwtKey: environment.CLERK_JWT_KEY,
 });
 
+const issuer = await Issuer.discover(AUTH_OPENID_ISSUER);
+
+const client = new issuer.Client({
+  client_id: CLIENT_ID,
+  redirect_uris: ["http://localhost:8080/callback"],
+  response_types: ["code"],
+  token_endpoint_auth_method: "none",
+});
+
+export const populateAccessTokenQuerySchema = object({
+  sessionId: optional(string()),
+  iv: optional(string()),
+});
+
 const routes: FastifyPluginCallback = (instance, _opts, done) => {
   instance.get("/", async (_, reply) => {
     reply.type("application/json").code(200);
@@ -127,6 +152,102 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
   instance.post("/intents", createLoginIntent);
 
   instance.post("/populateLoginIntent", populateLoginIntent);
+
+  instance.get("/callback", async (request, reply) => {
+    const params = client.callbackParams(request.raw);
+    const receivedState = params.state;
+
+    const { sessionId, ivStr, codeVerifier } = JSON.parse(
+      receivedState as string,
+    );
+
+    const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+    const iv = Buffer.from(ivStr, "base64url");
+
+    const decryptedSessionId = decryptWithIv(
+      "aes-256-cbc",
+      { key, iv },
+      Buffer.from(sessionId, "base64url"),
+    ).toString();
+
+    const { access_token } = await client.callback(
+      "http://localhost:8080/callback",
+      params,
+      {
+        code_verifier: codeVerifier,
+        state: receivedState,
+      },
+    );
+
+    const loginIntent = await prisma.userLoginIntent.update({
+      where: { id: decryptedSessionId },
+      data: {
+        token: encryptWithIv(
+          "aes-256-cbc",
+          { key, iv },
+          Buffer.from(access_token!),
+        ).toString("base64url"),
+      },
+    });
+
+    console.log("\n\n\n\n\nloginIntent:", loginIntent);
+  });
+
+  instance.get("/authUrl", async (request, reply) => {
+    const { sessionId, iv: ivStr } = parse(
+      populateAccessTokenQuerySchema,
+      request.query,
+    );
+
+    if (
+      !isNeitherNullNorUndefined(sessionId) ||
+      !isNeitherNullNorUndefined(ivStr)
+    ) {
+      return reply.status(400).send({
+        success: false,
+        message: "Missing required parameters",
+      });
+    }
+
+    const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+    const iv = Buffer.from(ivStr, "base64url");
+
+    const decryptedSessionId = decryptWithIv(
+      "aes-256-cbc",
+      { key, iv },
+      Buffer.from(sessionId, "base64url"),
+    ).toString();
+
+    const loginIntent = await prisma.userLoginIntent.findFirst({
+      where: { id: decryptedSessionId },
+    });
+
+    if (!loginIntent) {
+      return reply.status(404).send({
+        success: false,
+        message: "Login intent not found",
+      });
+    }
+
+    const codeVerifier = generators.codeVerifier();
+    const codeChallenge = generators.codeChallenge(codeVerifier);
+
+    const state = JSON.stringify({
+      sessionId,
+      ivStr,
+      decryptedSessionId,
+      codeVerifier,
+    });
+
+    const authorizationUrl = client.authorizationUrl({
+      scope: "openid email profile",
+      code_challenge: codeChallenge,
+      code_challenge_method: "S256",
+      state,
+    });
+
+    return reply.status(200).send({ url: authorizationUrl });
+  });
 
   instance.get("/verifyToken", async (request, reply) => {
     const { userId } = getAuth(request);

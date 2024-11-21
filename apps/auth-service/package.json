@@ -32,6 +32,7 @@
     "axios": "catalog:",
     "dotenv": "catalog:",
     "fastify": "catalog:",
+    "openid-client": "5.6.5",
     "valibot": "catalog:"
   },
   "type": "module",
