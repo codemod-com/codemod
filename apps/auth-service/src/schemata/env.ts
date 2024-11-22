@@ -19,6 +19,9 @@ export const environmentSchema = object({
   CLERK_JWT_KEY: string(),
   APP_TOKEN_TEMPLATE: string(),
   ZITADEL_URL: string(),
+  AUTH_OPENID_ISSUER: string(),
+  CLIENT_ID: string(),
+  REDIRECT_URL: string(),
   VERIFIED_PUBLISHERS: pipe(
     unknown(),
     transform((input) => {

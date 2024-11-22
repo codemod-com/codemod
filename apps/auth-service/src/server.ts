@@ -24,10 +24,6 @@ import { createLoginIntent } from "./handlers/intents/create.js";
 import { getLoginIntent } from "./handlers/intents/get.js";
 import { populateLoginIntent } from "./handlers/intents/populate.js";
 
-const AUTH_OPENID_ISSUER =
-  process.env.AUTH_OPENID_ISSUER ?? "http://codemod-zitadel:52000";
-const CLIENT_ID = process.env.CLIENT_ID ?? "291351851578753026";
-
 type ZitadelUserInfo = {
   sub: string;
   name: string;
@@ -127,11 +123,11 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   return fastify;
 };
 
-const issuer = await Issuer.discover(AUTH_OPENID_ISSUER);
+const issuer = await Issuer.discover(environment.AUTH_OPENID_ISSUER);
 
 const client = new issuer.Client({
-  client_id: CLIENT_ID,
-  redirect_uris: ["http://localhost:8080/callback"],
+  client_id: environment.CLIENT_ID,
+  redirect_uris: [environment.REDIRECT_URL],
   response_types: ["code"],
   token_endpoint_auth_method: "none",
 });
@@ -171,7 +167,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     ).toString();
 
     const { access_token } = await client.callback(
-      "http://localhost:8080/callback",
+      environment.REDIRECT_URL,
       params,
       {
         code_verifier: codeVerifier,
@@ -332,7 +328,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
     try {
       const { data: user } = await axios.get<ZitadelUserInfo>(
-        `${process.env.ZITADEL_URL}/oidc/v1/userinfo`,
+        `${environment.ZITADEL_URL}/oidc/v1/userinfo`,
         {
           headers: { Authorization: `Bearer ${jwtToken}` },
           timeout: 5000,
