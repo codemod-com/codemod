@@ -57,7 +57,7 @@ export const deleteAPIKeys = async (
   const url = new URL(`${process.env.BACKEND_URL}/api-keys`);
 
   const res = await Axios.delete<DeleteAPIKeysResponse>(
-    `${url.toString()}/${data.includes}`,
+    `${url.toString()}/${data.uuid}`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
       timeout: 10000,

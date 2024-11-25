@@ -10,7 +10,8 @@ const getUnkey = memoize(() => new Unkey({ rootKey: UNKEY_ROOT_KEY }));
 export const createApiKey = async ({
   apiKeyData,
   externalId,
-}: { apiKeyData: CreateAPIKeyRequest; externalId: string }) => {
+  uuid,
+}: { apiKeyData: CreateAPIKeyRequest; externalId: string; uuid: string }) => {
   const response = await getUnkey().keys.create({
     apiId: UNKEY_API_ID,
     prefix: "codemod.com",
@@ -19,6 +20,9 @@ export const createApiKey = async ({
     expires: apiKeyData.expiresAt
       ? Date.parse(apiKeyData.expiresAt)
       : undefined,
+    meta: {
+      uuid,
+    },
   });
 
   if (response.error) {

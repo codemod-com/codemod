@@ -8,14 +8,18 @@ export const listAPIKeysHandler: RouteHandler<{
 }> = async (request: UserDataPopulatedRequest) => {
   const user = request.user!;
 
-  const apiKeys = await listApiKeys({ externalId: user.id });
+  const apiKeys = await listApiKeys({ externalId: user.id }).then(
+    ({ keys }) => keys,
+  );
 
-  return {
-    keys: apiKeys.keys.map(({ start, name, createdAt, expires }) => ({
+  const reply: ListAPIKeysResponse = {
+    keys: apiKeys.map(({ start, name, createdAt, expires, meta }) => ({
       start,
       name,
       createdAt,
       expiresAt: expires,
+      uuid: meta?.uuid as string | undefined,
     })),
   };
+  return reply;
 };

@@ -23,7 +23,8 @@ export const handleCreateAPIKeyCommand = async (options: {
     "info",
     `
 ${options.data.name ?? ""}
-API key created successfully: ${apiKey.key}
+API key with id ${apiKey.uuid} created successfully:
+${apiKey.key}
 Please store this key in a safe place, as it will not be shown again.`,
   );
 };
@@ -49,7 +50,7 @@ export const handleListAPIKeysCommand = async (options: {
     "info",
     `
 API keys:
-${keys.map(({ name, start, createdAt, expiresAt }) => `  - ${[name, `${start}...`, `created at ${new Date(createdAt).toISOString()}`, expiresAt ? `expires at ${new Date(expiresAt).toISOString()}` : undefined].filter((info) => !!info).join("\n      ")}`).join("\n")}
+${keys.map(({ name, start, createdAt, expiresAt, uuid }) => `  - ${[name, `${start}...`, `created at ${new Date(createdAt).toISOString()}`, expiresAt ? `expires at ${new Date(expiresAt).toISOString()}` : undefined, uuid ? `id: ${uuid}` : undefined].filter((info) => !!info).join("\n      ")}`).join("\n")}
 `,
   );
 };

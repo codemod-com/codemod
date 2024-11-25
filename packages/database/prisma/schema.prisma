@@ -93,8 +93,8 @@ model CodeDiff {
 }
 
 model ApiKey {
-  externalId String @db.VarChar(255)
-  key        String @db.VarChar(255)
-  keyId      String @db.VarChar(255)
-  @@id([key, keyId])
+  externalId String @db.VarChar(32)
+  uuid       String @db.VarChar(36)
+  keyId      String @db.VarChar(32)
+  @@id([uuid, keyId])
 }

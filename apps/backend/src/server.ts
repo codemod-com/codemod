@@ -188,7 +188,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
   instance.delete<{
     Reply: DeleteAPIKeysResponse;
   }>(
-    "/api-keys/:includes",
+    "/api-keys/:uuid",
     { preHandler: instance.getUserData },
     deleteAPIKeysHandler,
   );

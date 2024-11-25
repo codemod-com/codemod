@@ -55,6 +55,7 @@
     "fuse.js": "catalog:",
     "ioredis": "catalog:",
     "langchain": "catalog:",
+    "lodash-es": "catalog:",
     "openai": "catalog:",
     "openai-edge": "catalog:",
     "parse-github-url": "catalog:",
@@ -62,10 +63,10 @@
     "replicate": "catalog:",
     "semver": "7.6.0",
     "tar": "^6.2.0",
+    "uuid": "^11.0.3",
     "valibot": "catalog:",
     "ws": "^8.18.0",
-    "zod": "catalog:",
-    "lodash-es": "catalog:"
+    "zod": "catalog:"
   },
   "type": "module",
   "peerDependencies": {

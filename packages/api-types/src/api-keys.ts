@@ -9,7 +9,7 @@ export const createAPIKeyRequestSchema = object({
 });
 
 export const deleteAPIKeysRequestSchema = object({
-  includes: string(),
+  uuid: string(),
 });
 
 export type DeleteAPIKeysRequest = InferInput<
@@ -18,7 +18,7 @@ export type DeleteAPIKeysRequest = InferInput<
 
 export type CreateAPIKeyRequest = InferInput<typeof createAPIKeyRequestSchema>;
 
-export type CreateAPIKeyResponse = { key: string };
+export type CreateAPIKeyResponse = { key: string; uuid: string };
 
 export type ListAPIKeysResponse = {
   keys: {
@@ -26,6 +26,7 @@ export type ListAPIKeysResponse = {
     name?: string;
     createdAt: number;
     expiresAt?: number;
+    uuid?: string;
   }[];
 };
 

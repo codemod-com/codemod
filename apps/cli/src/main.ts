@@ -302,10 +302,9 @@ export const main = async () => {
       "api-keys:delete",
       "list API keys",
       (y) =>
-        y.option("includes", {
+        y.option("id", {
           type: "string",
-          description:
-            "Part of the key to delete. Every key that includes this string will be deleted.",
+          description: "Key id",
           demandOption: true,
         }),
       async (args) => {
@@ -315,7 +314,7 @@ export const main = async () => {
         return executeCliCommand(async () => {
           await handleDeleteAPIKeysCommand({
             printer,
-            data: { includes: args.includes },
+            data: { uuid: args.id },
           });
         });
       },
