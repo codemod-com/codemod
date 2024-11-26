@@ -60,7 +60,7 @@ const ArticleSearch = ({
         setQuery={setSearchInput}
         placeholder={blogSearchPlaceholder ?? ""}
         loading={loading}
-        containerClassName="ml-auto overflow-hidden rounded-lg border text-primary-light transition hover:border-tertiary-light lg:w-80 dark:border-tertiary-dark dark:text-primary-dark dark:hover:border-secondary-dark"
+        containerClassName="ml-auto rounded overflow-hidden border text-primary-light transition hover:border-tertiary-light lg:w-80 dark:border-tertiary-dark dark:text-primary-dark dark:hover:border-secondary-dark"
         id="blog-search"
       />
       {!loading &&

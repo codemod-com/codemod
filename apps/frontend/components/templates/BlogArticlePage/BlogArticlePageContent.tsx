@@ -6,7 +6,6 @@ import { RichText } from "@/components/shared/RichText";
 import { SanityImage } from "@/components/shared/SanityImage";
 import { SanityLink } from "@/components/shared/SanityLink";
 import Section from "@/components/shared/Section";
-import TableOfContents from "@/components/shared/TableOfContents";
 import { CUSTOMER_STORY_TAG } from "@/constants";
 
 import type {
@@ -33,12 +32,12 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 
   return (
     <Section>
-      <div className="relative flex w-full flex-col items-start justify-center gap-l pb-xl pt-[calc(var(--header-height))] lg:gap-2xl lg:pb-[80px]">
+      <div className="relative flex w-full flex-col items-start justify-center gap-l pt-[calc(var(--header-height))] lg:gap-2xl">
         <div
           className={cx(
             "relative border py-8 lg:py-24 px-6 lg:px-32 border-black/10 dark:border-white/10 w-full",
-            "after:h-full after:w-[1px] after:border-l-[1px] after:border-dashed dark:after:border-white/10 after:border-black/10 after:absolute after:inset-y-0 after:left-1/3 z-0",
-            "before:h-full before:w-[1px] before:border-l-[1px] before:border-dashed dark:before:border-white/10 before:border-black/10 before:absolute before:inset-y-0 before:right-1/3 z-0",
+            // "after:h-full after:w-[1px] after:border-l-[1px] after:border-dashed dark:after:border-white/10 after:border-black/10 after:absolute after:inset-y-0 after:left-1/3 z-0",
+            // "before:h-full before:w-[1px] before:border-l-[1px] before:border-dashed dark:before:border-white/10 before:border-black/10 before:absolute before:inset-y-0 before:right-1/3 z-0",
           )}
         >
           {/* Header */}
@@ -97,7 +96,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
                   </>
                 )}
               </div>
-              {isCustomerStory
+              {/* {isCustomerStory
                 ? null
                 : articleSidebar?.showToc &&
                   toc.length > 0 && (
@@ -109,7 +108,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
                       />
                       <div className="mt-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
                     </>
-                  )}
+                  )} */}
             </div>
           </div>
 

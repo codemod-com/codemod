@@ -181,9 +181,11 @@ function createDefaultComponents(
       },
     },
     list: {
-      bullet: ({ children }) => <ul className="list-disc p-2">{children}</ul>,
+      bullet: ({ children }) => (
+        <ul className="list-disc p-2 space-y-2">{children}</ul>
+      ),
       number: ({ children }) => (
-        <ol className="list-decimal p-2">{children}</ol>
+        <ol className="list-decimal p-2 space-y-2">{children}</ol>
       ),
     },
 
