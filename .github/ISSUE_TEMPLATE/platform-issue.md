@@ -1,8 +1,8 @@
 ---
-name: Codemod Studio
-about: Report any issues, feedback, or feature requests for Codemod Studio.
-title: "[studio]"
-labels: studio
+name: Platform Issue
+about: Report any issues, feedback, or feature requests for Codemod Platform.
+title: "[issue-name]"
+labels: platform
 assignees: ''
 
 ---
