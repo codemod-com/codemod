@@ -6,6 +6,7 @@ import { RichText } from "@/components/shared/RichText";
 import { SanityImage } from "@/components/shared/SanityImage";
 import { SanityLink } from "@/components/shared/SanityLink";
 import Section from "@/components/shared/Section";
+import TableOfContents from "@/components/shared/TableOfContents";
 import { CUSTOMER_STORY_TAG } from "@/constants";
 
 import type {
@@ -96,19 +97,19 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
                   </>
                 )}
               </div>
-              {/* {isCustomerStory
+              {isCustomerStory
                 ? null
                 : articleSidebar?.showToc &&
                   toc.length > 0 && (
-                    <>
+                    <div className="hidden">
                       <TableOfContents
                         variant="sidebar"
                         outlines={toc}
                         title={"On this page"}
                       />
                       <div className="mt-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
-                    </>
-                  )} */}
+                    </div>
+                  )}
             </div>
           </div>
 
