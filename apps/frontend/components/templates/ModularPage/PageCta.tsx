@@ -48,7 +48,6 @@ function SimplePageCta(props: PageCta) {
             <LinkButton
               href={props.cta.link}
               intent={props.cta.style}
-              // icon={props.cta.icon}
               iconPosition="right"
               className="mt-xl"
             >
