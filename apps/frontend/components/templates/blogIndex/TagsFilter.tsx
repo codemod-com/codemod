@@ -1,5 +1,4 @@
 import Tag from "@/components/shared/Tag";
-import { CUSTOMER_STORY_TAG } from "@/constants";
 import type { BlogIndexPayload } from "@/types";
 import Link from "next/link";
 
@@ -29,10 +28,8 @@ export default function TagsFilter({
     value: "blog",
     label: defaultFilterTitle,
   };
-  const customerStory: FilterOption = CUSTOMER_STORY_TAG;
   const renderedOptions = [
     defaultOption,
-    customerStory,
     ...(tags
       .map((tag) =>
         !tag.slug.current
@@ -46,7 +43,7 @@ export default function TagsFilter({
   ];
 
   return (
-    <div className="flex flex-wrap gap-4 lg:gap-4">
+    <div className="flex flex-wrap gap-3">
       {renderedOptions.map((option) => (
         <Link
           className="border-none"
