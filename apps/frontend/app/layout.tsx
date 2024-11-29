@@ -32,6 +32,14 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: mediaStyles }}
           type="text/css"
         />
+        <Script>
+          {`
+          function initApollo(){var n=Math.random().toString(36).substring(7),o=document.createElement("Script");
+          o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n,o.async=!0,o.defer=!0,
+          o.onload=function(){window.trackingFunctions.onLoad({appId:"673fc665fd81de01b0053af5"})},
+          document.head.appendChild(o)}
+        initApollo();`}
+        </Script>
       </head>
       <body>
         {children}
