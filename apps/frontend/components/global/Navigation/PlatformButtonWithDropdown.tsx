@@ -1,3 +1,4 @@
+import useDebounce from "@/app/(website)/studio/src/hooks/useDebounce";
 import Icon from "@/components/shared/Icon";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
@@ -8,13 +9,14 @@ export default function PlatformButtonWithDropdown() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const debouncedOpen = useDebounce<boolean>(open, 150);
 
-  function handleMouseEnter(event: React.MouseEvent) {
+  function handleMouseEnter(event: any) {
     event.preventDefault();
     setOpen(true);
   }
 
-  function handleMouseLeave(event: React.MouseEvent) {
+  function handleMouseLeave(event: any) {
     event.preventDefault();
     setOpen(false);
   }
@@ -25,12 +27,18 @@ export default function PlatformButtonWithDropdown() {
   }, [pathname]);
 
   return (
-    <DropdownMenu.Root open={open} modal={false}>
+    <DropdownMenu.Root
+      open={debouncedOpen}
+      modal={false}
+      onOpenChange={setOpen}
+    >
       <DropdownMenu.Trigger
         className="select-none py-px"
         name="Navigation Button"
         aria-label="Hover for context menu"
+        asChild
         onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <span className="cursor-pointer flex items-center gap-2">
           <span className="font-medium body-s-medium">{"Platform"}</span>
@@ -47,10 +55,11 @@ export default function PlatformButtonWithDropdown() {
           align="start"
           side="bottom"
           sideOffset={16}
+          onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onCloseAutoFocus={(event) => event.preventDefault()}
-          onEscapeKeyDown={() => setOpen(false)}
-          onPointerDownOutside={() => setOpen(false)}
+          onEscapeKeyDown={handleMouseLeave}
+          onPointerDownOutside={handleMouseLeave}
           className="z-[99] min-w-[250px] animate-slideDownAndFade select-none rounded-[8px] border-[1px] border-border-light bg-primary-dark p-s shadow-sm dark:border-border-dark dark:bg-primary-light dark:shadow-none"
         >
           <div className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark">
