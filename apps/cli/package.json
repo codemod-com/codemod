@@ -43,6 +43,7 @@
     "@types/cli-progress": "catalog:",
     "@types/columnify": "catalog:",
     "@types/diff": "catalog:",
+    "@types/express": "^5.0.0",
     "@types/inquirer": "catalog:",
     "@types/node": "18.11.9",
     "@types/prettyjson": "catalog:",
@@ -91,10 +92,12 @@
   "dependencies": {
     "@ast-grep/cli": "catalog:",
     "@ast-grep/napi": "catalog:",
-    "keytar": "catalog:",
+    "@codemod.com/workflow": "workspace:*",
     "@octokit/rest": "catalog:",
     "blessed": "catalog:",
-    "@codemod.com/workflow": "workspace:*",
-    "esbuild": "^0.23.0"
+    "esbuild": "^0.23.0",
+    "express": "^4.21.1",
+    "keytar": "catalog:",
+    "openid-client": "^5.6.5"
   }
 }

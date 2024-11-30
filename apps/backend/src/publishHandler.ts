@@ -53,13 +53,9 @@ export const publishHandler: RouteHandler<{
   try {
     const allowedNamespaces = request.allowedNamespaces!;
 
-    const {
-      username,
-      primaryEmailAddressId,
-      emailAddresses,
-      firstName,
-      lastName,
-    } = request.user!;
+    const { username, email, firstName, lastName } = request.user!;
+
+    console.log("Publishing codemod for user:", username);
 
     if (username === null) {
       return reply.status(400).send({
@@ -115,6 +111,8 @@ export const publishHandler: RouteHandler<{
       source: unpackPath,
       throwOnNotFound: false,
     });
+
+    console.log("\n\n\n\nCodemod RC:", unpackPath);
 
     if (codemodRc === null) {
       return reply.code(400).send({
@@ -419,9 +417,7 @@ export const publishHandler: RouteHandler<{
           author: {
             username,
             name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,
-            email:
-              emailAddresses.find((e) => e.id === primaryEmailAddressId)
-                ?.emailAddress ?? null,
+            email,
           },
         });
       } catch (err) {

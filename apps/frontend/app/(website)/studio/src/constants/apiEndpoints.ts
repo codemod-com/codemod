@@ -1,4 +1,4 @@
 const SEND_CHAT = "sendChat";
-const POPULATE_LOGIN_INTENT = "populateLoginIntent";
+const GET_AUTH_URL = "authUrl";
 
-export { SEND_CHAT, POPULATE_LOGIN_INTENT };
+export { SEND_CHAT, GET_AUTH_URL };

@@ -5,7 +5,6 @@ import type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
   GetCodemodResponse,
-  GetScopedTokenResponse,
   GetUserDataResponse,
   VerifyTokenResponse,
 } from "@codemod-com/api-types";
@@ -16,19 +15,6 @@ export const extractPrintableApiError = (err: unknown): string => {
   }
 
   return err instanceof AxiosError ? err.response?.data.errorText : err.message;
-};
-
-export const getCLIAccessToken = async (
-  accessToken: string,
-): Promise<GetScopedTokenResponse> => {
-  const url = new URL(`${process.env.AUTH_BACKEND_URL}/appToken`);
-
-  const res = await Axios.get<GetScopedTokenResponse>(url.toString(), {
-    headers: { Authorization: `Bearer ${accessToken}` },
-    timeout: 10000,
-  });
-
-  return res.data;
 };
 
 export const validateCLIToken = async (

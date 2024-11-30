@@ -121,6 +121,8 @@ export const handlePublishCliCommand = async (options: {
     token,
   ).catch(() => null);
 
+  console.log("existingCodemod", existingCodemod);
+
   if (existingCodemod !== null) {
     if (
       existingCodemod.versions.find(
@@ -137,7 +139,7 @@ export const handlePublishCliCommand = async (options: {
       name: "namespace",
       choices: allowedNamespaces,
       default: allowedNamespaces.find(
-        (ns) => !organizations.map((org) => org.organization.slug).includes(ns),
+        (ns: any) => !organizations.map((org: any) => org.slug).includes(ns),
       ),
       message:
         "You have access to multiple namespaces. Please choose which one you would like to publish the codemod under.",

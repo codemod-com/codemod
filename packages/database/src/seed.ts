@@ -24,6 +24,8 @@ const frameworks = [
   "ESlint",
 ];
 
+const orgs = ["Facebook", "Google", "Microsoft", "Airbnb", "Netflix"];
+
 const engines = ["jscodeshift", "ts-morph", "ast-grep"];
 
 const getRandomElementOfArray = <T>(array: T[]) =>
@@ -35,6 +37,7 @@ const getRandomWord = () => faker.lorem.word();
 const getRandomWords = (min: number, max: number) =>
   faker.lorem.words({ min, max });
 const getRandomCategory = () => faker.helpers.arrayElement(useCaseCategories);
+const getRandomOrg = () => faker.helpers.arrayElement(orgs);
 const getRandomFramework = () => faker.helpers.arrayElement(frameworks);
 const getRandomEngine = () => faker.helpers.arrayElement(engines);
 const getRandomUrl = () => faker.internet.url();
@@ -187,11 +190,28 @@ async function seedDatabaseWithCodemods(): Promise<void> {
   );
 }
 
+async function seedDatabaseWithOrgs(): Promise<void> {
+  const { count } = await prisma.organization.createMany({
+    data: Array.from({ length: getRandomNumber(1, 3) }, () => {
+      const org = getRandomOrg();
+      return {
+        name: org,
+        slug: org,
+        users: ["mirai2k"],
+      };
+    }),
+    skipDuplicates: true,
+  });
+
+  console.log(`${count} orgs was added to database!`);
+}
+
 async function main() {
   try {
     await seedDatabaseWithFrameworks();
     await seedDatabaseWithCategories();
     await seedDatabaseWithCodemods();
+    await seedDatabaseWithOrgs();
     console.log("Database seeded successfully!");
   } catch (error) {
     console.error(error);
