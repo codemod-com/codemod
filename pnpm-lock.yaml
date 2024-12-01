@@ -2190,7 +2190,7 @@ importers:
         version: 0.11.11
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.16.1(@babel/preset-env@7.24.7)
     devDependencies:
       '@types/node':
         specifier: 20.10.3
@@ -3006,7 +3006,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3027,7 +3027,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3048,7 +3048,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3069,7 +3069,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3092,7 +3092,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3113,7 +3113,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3134,7 +3134,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3155,7 +3155,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3617,7 +3617,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3640,7 +3640,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3685,7 +3685,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3706,7 +3706,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3727,7 +3727,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3748,7 +3748,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3769,7 +3769,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7036,7 +7036,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7057,7 +7057,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7078,7 +7078,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7099,7 +7099,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7120,7 +7120,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7141,7 +7141,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7164,7 +7164,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7185,7 +7185,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7278,7 +7278,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7299,7 +7299,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7322,7 +7322,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7360,8 +7360,6 @@ importers:
       tsx:
         specifier: ^4.11.0
         version: 4.15.7
-
-  packages/database/generated/client: {}
 
   packages/deprecated: {}
 
@@ -7490,7 +7488,7 @@ importers:
         version: 4.1.0
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.16.1(@babel/preset-env@7.24.7)
       mdast-util-from-markdown:
         specifier: 'catalog:'
         version: 2.0.1
@@ -8830,10 +8828,6 @@ packages:
 
   '@babel/types@7.21.2':
     resolution: {integrity: sha512-3wRZSs7jiFaB8AjxiiD+VqN5DTG2iRvJGQ+qYFrs/654lg6kGTQWIOFjlBo5RaXuAZjBmP3+OQH4dmhqiiyYxw==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/types@7.22.5':
-    resolution: {integrity: sha512-zo3MIHGOkPOfoRXitsgHLjEXmlDaD/5KU1Uzuc9GNiZPhSqVxVRtxuPaSBZDsYZ9qV88AjtMtWW7ww98loJ9KA==}
     engines: {node: '>=6.9.0'}
 
   '@babel/types@7.24.7':
@@ -22936,7 +22930,7 @@ snapshots:
 
   '@babel/helper-split-export-declaration@7.24.7':
     dependencies:
-      '@babel/types': 7.22.5
+      '@babel/types': 7.24.7
 
   '@babel/helper-string-parser@7.24.7': {}
 
@@ -23689,12 +23683,6 @@ snapshots:
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
 
-  '@babel/types@7.22.5':
-    dependencies:
-      '@babel/helper-string-parser': 7.24.7
-      '@babel/helper-validator-identifier': 7.24.7
-      to-fast-properties: 2.0.0
-
   '@babel/types@7.24.7':
     dependencies:
       '@babel/helper-string-parser': 7.24.7
@@ -24200,11 +24188,11 @@ snapshots:
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
 
-  '@codemod.com/codemod-utils@1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))':
+  '@codemod.com/codemod-utils@1.0.0(@babel/preset-env@7.24.7)':
     dependencies:
       '@babel/parser': 7.24.7
       '@types/jscodeshift': 0.11.11
-      jscodeshift: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      jscodeshift: 0.16.1(@babel/preset-env@7.24.7)
     transitivePeerDependencies:
       - '@babel/preset-env'
       - supports-color
@@ -32846,7 +32834,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jscodeshift@0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7)):
+  jscodeshift@0.16.1(@babel/preset-env@7.24.7):
     dependencies:
       '@babel/core': 7.24.7
       '@babel/parser': 7.24.7
