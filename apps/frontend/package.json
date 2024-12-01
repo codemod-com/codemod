@@ -78,7 +78,7 @@
     "ai": "^2.1.32",
     "ast-node-builder": "catalog:",
     "ast-types": "catalog:",
-    "axios": "^1.7.4",
+    "axios": "^1.7.8",
     "change-case": "catalog:",
     "chart.js": "catalog:",
     "class-variance-authority": "catalog:",

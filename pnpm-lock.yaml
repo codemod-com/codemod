@@ -1435,8 +1435,8 @@ importers:
         specifier: 'catalog:'
         version: 0.14.2
       axios:
-        specifier: ^1.7.4
-        version: 1.7.4
+        specifier: ^1.7.8
+        version: 1.7.8
       change-case:
         specifier: 'catalog:'
         version: 5.4.4
@@ -2190,7 +2190,7 @@ importers:
         version: 0.11.11
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.16.1(@babel/preset-env@7.24.7)
     devDependencies:
       '@types/node':
         specifier: 20.10.3
@@ -3006,7 +3006,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3027,7 +3027,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3048,7 +3048,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3069,7 +3069,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3092,7 +3092,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3113,7 +3113,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3134,7 +3134,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3155,7 +3155,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3617,7 +3617,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3640,7 +3640,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3685,7 +3685,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3706,7 +3706,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3727,7 +3727,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3748,7 +3748,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3769,7 +3769,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7036,7 +7036,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7057,7 +7057,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7078,7 +7078,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7099,7 +7099,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7120,7 +7120,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7141,7 +7141,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7164,7 +7164,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7185,7 +7185,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7278,7 +7278,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7299,7 +7299,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7322,7 +7322,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 1.0.0(@babel/preset-env@7.24.7)
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7360,8 +7360,6 @@ importers:
       tsx:
         specifier: ^4.11.0
         version: 4.15.7
-
-  packages/database/generated/client: {}
 
   packages/deprecated: {}
 
@@ -7490,7 +7488,7 @@ importers:
         version: 4.1.0
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.16.1(@babel/preset-env@7.24.7)
       mdast-util-from-markdown:
         specifier: 'catalog:'
         version: 2.0.1
@@ -8830,10 +8828,6 @@ packages:
 
   '@babel/types@7.21.2':
     resolution: {integrity: sha512-3wRZSs7jiFaB8AjxiiD+VqN5DTG2iRvJGQ+qYFrs/654lg6kGTQWIOFjlBo5RaXuAZjBmP3+OQH4dmhqiiyYxw==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/types@7.22.5':
-    resolution: {integrity: sha512-zo3MIHGOkPOfoRXitsgHLjEXmlDaD/5KU1Uzuc9GNiZPhSqVxVRtxuPaSBZDsYZ9qV88AjtMtWW7ww98loJ9KA==}
     engines: {node: '>=6.9.0'}
 
   '@babel/types@7.24.7':
@@ -13968,11 +13962,11 @@ packages:
   axios@1.7.2:
     resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
 
-  axios@1.7.4:
-    resolution: {integrity: sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==}
-
   axios@1.7.7:
     resolution: {integrity: sha512-S4kL7XrjgBmvdGut0sN3yJxqYzrDOnivkBiN0OFs6hLiUam3UPvswUo0kqGyhqUZGEOytHyumEdXsAkgCOUf3Q==}
+
+  axios@1.7.8:
+    resolution: {integrity: sha512-Uu0wb7KNqK2t5K+YQyVCLM76prD5sRFjKHbJYCP1J7JFGEQ6nN7HWn9+04LAeiJ3ji54lgS/gZCH1oxyrf1SPw==}
 
   axobject-query@3.1.1:
     resolution: {integrity: sha512-goKlv8DZrK9hUh975fnHzhNIO4jUnFCfv/dszV5VwUGDFjI6vQ2VwoyjYjYNEbBE8AH87TduWP5uyDR1D+Iteg==}
@@ -22936,7 +22930,7 @@ snapshots:
 
   '@babel/helper-split-export-declaration@7.24.7':
     dependencies:
-      '@babel/types': 7.22.5
+      '@babel/types': 7.24.7
 
   '@babel/helper-string-parser@7.24.7': {}
 
@@ -23689,12 +23683,6 @@ snapshots:
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
 
-  '@babel/types@7.22.5':
-    dependencies:
-      '@babel/helper-string-parser': 7.24.7
-      '@babel/helper-validator-identifier': 7.24.7
-      to-fast-properties: 2.0.0
-
   '@babel/types@7.24.7':
     dependencies:
       '@babel/helper-string-parser': 7.24.7
@@ -24200,11 +24188,11 @@ snapshots:
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
 
-  '@codemod.com/codemod-utils@1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))':
+  '@codemod.com/codemod-utils@1.0.0(@babel/preset-env@7.24.7)':
     dependencies:
       '@babel/parser': 7.24.7
       '@types/jscodeshift': 0.11.11
-      jscodeshift: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+      jscodeshift: 0.16.1(@babel/preset-env@7.24.7)
     transitivePeerDependencies:
       - '@babel/preset-env'
       - supports-color
@@ -27259,7 +27247,7 @@ snapshots:
       '@slack/types': 2.12.0
       '@types/node': 20.14.8
       '@types/retry': 0.12.0
-      axios: 1.7.2
+      axios: 1.7.7
       eventemitter3: 5.0.1
       form-data: 4.0.0
       is-electron: 2.2.2
@@ -29378,23 +29366,23 @@ snapshots:
 
   axios@1.7.2:
     dependencies:
-      follow-redirects: 1.15.6(debug@3.2.7)
+      follow-redirects: 1.15.6
       form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-
-  axios@1.7.4:
-    dependencies:
-      follow-redirects: 1.15.9
-      form-data: 4.0.1
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
 
   axios@1.7.7:
     dependencies:
-      follow-redirects: 1.15.9
+      follow-redirects: 1.15.9(debug@3.2.7)
+      form-data: 4.0.1
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.7.8:
+    dependencies:
+      follow-redirects: 1.15.9(debug@3.2.7)
       form-data: 4.0.1
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -31690,15 +31678,15 @@ snapshots:
     dependencies:
       tslib: 2.6.3
 
-  follow-redirects@1.15.6(debug@3.2.7):
+  follow-redirects@1.15.6: {}
+
+  follow-redirects@1.15.9(debug@3.2.7):
     optionalDependencies:
       debug: 3.2.7(supports-color@5.5.0)
 
-  follow-redirects@1.15.6(debug@4.3.5):
+  follow-redirects@1.15.9(debug@4.3.5):
     optionalDependencies:
       debug: 4.3.5(supports-color@5.5.0)
-
-  follow-redirects@1.15.9: {}
 
   for-each@0.3.3:
     dependencies:
@@ -31868,7 +31856,7 @@ snapshots:
   get-it@8.6.3(debug@3.2.7):
     dependencies:
       decompress-response: 7.0.0
-      follow-redirects: 1.15.6(debug@3.2.7)
+      follow-redirects: 1.15.9(debug@3.2.7)
       is-retry-allowed: 2.2.0
       progress-stream: 2.0.0
       tunnel-agent: 0.6.0
@@ -31878,7 +31866,7 @@ snapshots:
   get-it@8.6.3(debug@4.3.5):
     dependencies:
       decompress-response: 7.0.0
-      follow-redirects: 1.15.6(debug@4.3.5)
+      follow-redirects: 1.15.9(debug@4.3.5)
       is-retry-allowed: 2.2.0
       progress-stream: 2.0.0
       tunnel-agent: 0.6.0
@@ -32846,7 +32834,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jscodeshift@0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7)):
+  jscodeshift@0.16.1(@babel/preset-env@7.24.7):
     dependencies:
       '@babel/core': 7.24.7
       '@babel/parser': 7.24.7
@@ -35260,7 +35248,7 @@ snapshots:
 
   posthog-node@4.0.1:
     dependencies:
-      axios: 1.7.7
+      axios: 1.7.8
       rusha: 0.8.14
     transitivePeerDependencies:
       - debug
