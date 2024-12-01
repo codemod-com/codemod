@@ -303,6 +303,9 @@ catalogs:
     '@types/yargs':
       specifier: ^17.0.13
       version: 17.0.32
+    '@unkey/api':
+      specifier: ^0.26.2
+      version: 0.26.2
     '@vercel/analytics':
       specifier: ^1.2.2
       version: 1.3.1
@@ -927,6 +930,9 @@ importers:
       '@fastify/rate-limit':
         specifier: 'catalog:'
         version: 9.0.1
+      '@unkey/api':
+        specifier: 'catalog:'
+        version: 0.26.2
       axios:
         specifier: 'catalog:'
         version: 1.7.2
@@ -1006,6 +1012,9 @@ importers:
       '@types/tar':
         specifier: 'catalog:'
         version: 6.1.13
+      '@unkey/api':
+        specifier: 'catalog:'
+        version: 0.26.2
       ai:
         specifier: 2.2.29
         version: 2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.4))
@@ -1039,6 +1048,9 @@ importers:
       langchain:
         specifier: 'catalog:'
         version: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.18.0)
+      lodash-es:
+        specifier: 'catalog:'
+        version: 4.17.21
       openai:
         specifier: 'catalog:'
         version: 4.23.0
@@ -1060,6 +1072,9 @@ importers:
       tar:
         specifier: ^6.2.0
         version: 6.2.1
+      uuid:
+        specifier: ^11.0.3
+        version: 11.0.3
       valibot:
         specifier: 'catalog:'
         version: 0.34.0
@@ -2123,6 +2138,9 @@ importers:
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../filemod
+      valibot:
+        specifier: 'catalog:'
+        version: 0.34.0
     devDependencies:
       prettier:
         specifier: ^3.2.5
@@ -2172,7 +2190,7 @@ importers:
         version: 0.11.11
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7)
+        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
     devDependencies:
       '@types/node':
         specifier: 20.10.3
@@ -2988,7 +3006,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3009,7 +3027,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3030,7 +3048,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3051,7 +3069,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3074,7 +3092,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3095,7 +3113,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3116,7 +3134,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3137,7 +3155,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3599,7 +3617,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3622,7 +3640,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3667,7 +3685,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3688,7 +3706,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3709,7 +3727,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3730,7 +3748,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -3751,7 +3769,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7018,7 +7036,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7039,7 +7057,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7060,7 +7078,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7081,7 +7099,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7102,7 +7120,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7123,7 +7141,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7146,7 +7164,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7167,7 +7185,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7260,7 +7278,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7281,7 +7299,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7304,7 +7322,7 @@ importers:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7)
+        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
@@ -7472,7 +7490,7 @@ importers:
         version: 4.1.0
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7)
+        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       mdast-util-from-markdown:
         specifier: 'catalog:'
         version: 2.0.1
@@ -8812,6 +8830,10 @@ packages:
 
   '@babel/types@7.21.2':
     resolution: {integrity: sha512-3wRZSs7jiFaB8AjxiiD+VqN5DTG2iRvJGQ+qYFrs/654lg6kGTQWIOFjlBo5RaXuAZjBmP3+OQH4dmhqiiyYxw==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/types@7.22.5':
+    resolution: {integrity: sha512-zo3MIHGOkPOfoRXitsgHLjEXmlDaD/5KU1Uzuc9GNiZPhSqVxVRtxuPaSBZDsYZ9qV88AjtMtWW7ww98loJ9KA==}
     engines: {node: '>=6.9.0'}
 
   '@babel/types@7.24.7':
@@ -13323,6 +13345,15 @@ packages:
 
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
+
+  '@unkey/api@0.26.2':
+    resolution: {integrity: sha512-huHF5AbX1NL2MJHSfsO1mB9CSA1CgTlgdPUGZgYCll3BOCKRneYiZ2GgYGiWFbtYaUimjaZgHyGnH9fpQlDFjA==}
+
+  '@unkey/error@0.2.0':
+    resolution: {integrity: sha512-DFGb4A7SrusZPP0FYuRIF0CO+Gi4etLUAEJ6EKc+TKYmscL0nEJ2Pr38FyX9MvjI4Wx5l35Wc9KsBjMm9Ybh7w==}
+
+  '@unkey/rbac@0.3.1':
+    resolution: {integrity: sha512-Hj+52XRIlBBl3/qOUq9K71Fwy3PWExBQOpOClVYHdrcmbgqNL6L4EdW/BzliLhqPCdwZTPVSJTnZ3Hw4ZYixsQ==}
 
   '@vercel/analytics@1.3.1':
     resolution: {integrity: sha512-xhSlYgAuJ6Q4WQGkzYTLmXwhYl39sWjoMA3nHxfkvG+WdBT25c563a7QhwwKivEOZtPJXifYHR1m2ihoisbWyA==}
@@ -21425,6 +21456,10 @@ packages:
   util@0.12.5:
     resolution: {integrity: sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==}
 
+  uuid@11.0.3:
+    resolution: {integrity: sha512-d0z310fCWv5dJwnX1Y/MncBAqGMKEzlBb1AOf7z9K8ALnd0utBX/msg/fA0+sbyN1ihbMsLhrBlnl1ak7Wa0rg==}
+    hasBin: true
+
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
@@ -22901,7 +22936,7 @@ snapshots:
 
   '@babel/helper-split-export-declaration@7.24.7':
     dependencies:
-      '@babel/types': 7.24.7
+      '@babel/types': 7.22.5
 
   '@babel/helper-string-parser@7.24.7': {}
 
@@ -23654,6 +23689,12 @@ snapshots:
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
 
+  '@babel/types@7.22.5':
+    dependencies:
+      '@babel/helper-string-parser': 7.24.7
+      '@babel/helper-validator-identifier': 7.24.7
+      to-fast-properties: 2.0.0
+
   '@babel/types@7.24.7':
     dependencies:
       '@babel/helper-string-parser': 7.24.7
@@ -24159,11 +24200,11 @@ snapshots:
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
 
-  '@codemod.com/codemod-utils@1.0.0(@babel/preset-env@7.24.7)':
+  '@codemod.com/codemod-utils@1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))':
     dependencies:
       '@babel/parser': 7.24.7
       '@types/jscodeshift': 0.11.11
-      jscodeshift: 0.16.1(@babel/preset-env@7.24.7)
+      jscodeshift: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
     transitivePeerDependencies:
       - '@babel/preset-env'
       - supports-color
@@ -28439,6 +28480,19 @@ snapshots:
       - '@codemirror/search'
 
   '@ungap/structured-clone@1.2.0': {}
+
+  '@unkey/api@0.26.2':
+    dependencies:
+      '@unkey/rbac': 0.3.1
+
+  '@unkey/error@0.2.0':
+    dependencies:
+      zod: 3.23.8
+
+  '@unkey/rbac@0.3.1':
+    dependencies:
+      '@unkey/error': 0.2.0
+      zod: 3.23.8
 
   '@vercel/analytics@1.3.1(next@14.2.4(@babel/core@7.24.7)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -32792,7 +32846,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jscodeshift@0.16.1(@babel/preset-env@7.24.7):
+  jscodeshift@0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7)):
     dependencies:
       '@babel/core': 7.24.7
       '@babel/parser': 7.24.7
@@ -38223,6 +38277,8 @@ snapshots:
       is-generator-function: 1.0.10
       is-typed-array: 1.1.13
       which-typed-array: 1.1.15
+
+  uuid@11.0.3: {}
 
   uuid@8.3.2: {}
 

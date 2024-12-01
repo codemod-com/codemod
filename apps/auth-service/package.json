@@ -25,6 +25,7 @@
     "@clerk/fastify": "catalog:",
     "@codemod-com/auth": "workspace:*",
     "@codemod-com/database": "workspace:*",
+    "@unkey/api": "catalog:",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/busboy": "catalog:",
     "@fastify/cors": "catalog:",
