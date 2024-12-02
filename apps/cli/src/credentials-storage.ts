@@ -7,14 +7,33 @@ export enum CredentialsStorageType {
   ACCOUNT = "user-account",
 }
 
+/**
+ * Find the filenames of all files in the `codemodDirectoryPath` that are for
+ * a given service. If the directory does not exist, silently return no results.
+ * @param service the service name to look for
+ * @returns a string array of all filenames that match the service name
+ */
+async function findServiceCredentialFiles(service: string): Promise<string[]> {
+  try {
+    return await readdir(codemodDirectoryPath).then((dir) =>
+      dir.filter((file) => file.startsWith(`${service}:`)),
+    );
+  } catch (error) {
+    // If the directory does not exist, treat it as "no results"
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return [];
+    }
+    // if there is another error, throw it
+    throw error;
+  }
+}
+
 const keytarShim = {
   default: {
     setPassword: async (service: string, account: string, password: string) =>
       writeFile(join(codemodDirectoryPath, `${service}:${account}`), password),
     findCredentials: async (service: string) => {
-      const entries = await readdir(codemodDirectoryPath).then((dir) =>
-        dir.filter((file) => file.startsWith(`${service}:`)),
-      );
+      const entries = await findServiceCredentialFiles(service);
 
       return Promise.all(
         entries.map(async (file) => ({
