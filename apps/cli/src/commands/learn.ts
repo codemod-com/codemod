@@ -1,7 +1,7 @@
 import { execSync } from "node:child_process";
 import { dirname, extname } from "node:path";
-import open from "open";
 import { Project } from "ts-morph";
+import { open } from "../utils/open.js";
 
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
@@ -272,13 +272,5 @@ export const handleLearnCliCommand = async (options: {
     chalk.cyan("Learning went successful! Opening the Codemod Studio...\n"),
   );
 
-  const success = open(url);
-
-  if (!success) {
-    printer.printOperationMessage({
-      kind: "error",
-      message: "Unexpected error occurred while opening the Codemod Studio.",
-    });
-    return;
-  }
+  open(url, printer);
 };

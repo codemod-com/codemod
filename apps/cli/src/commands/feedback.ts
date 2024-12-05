@@ -1,4 +1,4 @@
-import open from "open";
+import { open } from "../utils/open.js";
 
 import { type Printer, chalk } from "@codemod-com/printer";
 
@@ -13,13 +13,5 @@ export const handleFeedbackCommand = async (options: {
     chalk.cyan("Redirecting to the feedback page..."),
   );
 
-  const success = await open(feedbackUrl);
-
-  if (!success) {
-    printer.printOperationMessage({
-      kind: "error",
-      message:
-        "Unexpected error occurred while redirecting to the feedback page.",
-    });
-  }
+  await open(feedbackUrl, printer);
 };
