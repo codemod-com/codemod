@@ -2,11 +2,10 @@
 name: Faulty codemod
 about: Report issues with an existing codemod.
 title: "[codemod][FP/FN] <codemod-name>"
-labels: codemod-issue
+labels: codemod-issue, studio
 assignees: ''
 
 ---
-
 
 ### Faulty codemod
 

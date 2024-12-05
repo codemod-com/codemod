@@ -24,7 +24,3 @@ To contributors working on this task:
 - [ ] **Codemod Creator**: [Build](https://go.codemod.com/build-codemod-docs) and [publish](https://go.codemod.com/codemod-publish-doc) quality codemods that handle most edge cases. False negatives are acceptable, but there should be no false positives. Even if the transformation is tricky, build a codemod that can detect and add comments to guide developers to the areas needing manual changes.
 
 - Questions? -> [Community](https://go.codemod.com/community)
-
-
-
-

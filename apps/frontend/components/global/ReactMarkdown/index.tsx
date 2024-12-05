@@ -33,8 +33,13 @@ const Markdown = ({ children }: Props) => (
         </a>
       ),
       em: ({ children }) => <em>{children}</em>,
-      ul: ({ children }) => <ul className="list-disc p-2">{children}</ul>,
-      ol: ({ children }) => <ol className="list-decimal p-2">{children}</ol>,
+      ul: ({ children }) => (
+        <ul className="list-disc p-2 space-y-2">{children}</ul>
+      ),
+      ol: ({ children }) => (
+        <ol className="list-decimal p-2 space-y-2">{children}</ol>
+      ),
+      li: ({ children }) => <li className="mb-2">{children}</li>,
       h1: ({ children }) => <h1 className={cx("m-heading")}>{children}</h1>,
       h2: ({ children }) => <h2 className={cx("s-heading")}>{children}</h2>,
       h3: ({ children }) => (

@@ -25,8 +25,8 @@ export default function BlogIndexHero(props: BlogIndexProps) {
         "lg:mb-0": !featuredPosts?.length,
       })}
     >
-      <div className="controls mb-2 flex flex-col-reverse gap-8 md:flex-row-reverse md:justify-between  lg:items-start lg:gap-6 ">
-        <div className={cx("relative")}>
+      <div className="mb-2 flex flex-col gap-8 md:flex-row-reverse md:justify-between lg:items-start lg:gap-16">
+        <div className="flex-1">
           <Suspense>
             <ArticleSearch
               blogSearchNoResults="No results were found, try another search"
@@ -35,7 +35,7 @@ export default function BlogIndexHero(props: BlogIndexProps) {
           </Suspense>
         </div>
         <Suspense>
-          <div className="md:w-1/2 md:max-w-md">
+          <div className="flex-auto">
             <TagsFilter
               pathParam={props.pathParam}
               defaultFilterTitle={props.data?.defaultFilterTitle}

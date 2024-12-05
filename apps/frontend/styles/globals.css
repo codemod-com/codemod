@@ -80,7 +80,7 @@
   }
 
   .body-l {
-    @apply text-bodyLgRegular;
+    @apply text-bodyMdRegular lg:text-bodyLgRegular;
   }
 
   .body-m-medium {

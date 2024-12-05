@@ -103,6 +103,7 @@ catalog:
     "@types/vscode": ^1.74.0
     "@types/vscode-webview": ^1.57.1
     "@types/yargs": ^17.0.13
+    "@unkey/api": "^0.26.2"
     "@vercel/analytics": ^1.2.2
     "@vercel/stega": ^0.1.0
     "@vitejs/plugin-react": ^4.0.0
