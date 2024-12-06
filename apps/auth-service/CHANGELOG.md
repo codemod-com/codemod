@@ -1,5 +1,11 @@
 # @codemod-com/auth-service
 
+## 0.0.17
+
+### Patch Changes
+
+- 149e6e0: Add API key functionality
+
 ## 0.0.16
 
 ### Patch Changes
