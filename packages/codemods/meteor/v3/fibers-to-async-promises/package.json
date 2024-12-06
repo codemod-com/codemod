@@ -1,6 +1,7 @@
 {
   "name": "meteor-1-replace-fibers-with-promises",
   "license": "MIT",
+  "private": true,
   "devDependencies": {
     "@types/node": "20.9.0",
     "typescript": "^5.2.2",
