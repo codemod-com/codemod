@@ -1,6 +1,7 @@
 {
   "name": "three-js-pointer-lock-controls-to-controls-object",
   "license": "MIT",
+  "private": true,
   "devDependencies": {
     "@types/node": "20.9.0",
     "typescript": "^5.2.2",
