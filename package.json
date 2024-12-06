@@ -104,6 +104,7 @@
     }
   },
   "dependencies": {
+    "langchain": "^0.3.6",
     "react-use": "17.5.1"
   }
 }
