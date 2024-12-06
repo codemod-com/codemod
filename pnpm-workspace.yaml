@@ -177,7 +177,7 @@ catalog:
     jszip: ^3.10.1
     katex: ^0.16.10
     keytar: ^7.9.0
-    langchain: 0.2.20
+    langchain: 0.3.6
     lodash-es: ^4.17.21
     lottie-react: ^2.4.0
     lowlight: ^3.0.0
