@@ -229,7 +229,7 @@ catalog:
     react-tooltip: ^5.9.0
     react-treeview: ^0.4.7
     react-tweet: ^3.2.0
-    react-use: ^17.5.0
+    react-use: ^17.5.1
     reactjs-popup: ^2.0.5
     recast: ^0.22.0
     redux-persist: ^6.0.0

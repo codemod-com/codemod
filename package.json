@@ -102,5 +102,8 @@
     "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
     }
+  },
+  "dependencies": {
+    "react-use": "17.5.1"
   }
 }
