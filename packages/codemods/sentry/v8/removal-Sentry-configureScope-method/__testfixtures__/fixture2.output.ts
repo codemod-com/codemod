@@ -1,0 +1,1 @@
+Sentry.getCurrentScope().setTag('user', '123');
