@@ -1,4 +1,4 @@
-## What Changed
+
 
 This codemod updates registered file headers to be placed inside the `hooks.fileHeaders` property, instead of `fileHeader`. Note the shift from the singular to the plural form in this update.
 
