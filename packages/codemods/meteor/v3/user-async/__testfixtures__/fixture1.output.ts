@@ -1,0 +1,1 @@
+const user = await Meteor.userAsync();
