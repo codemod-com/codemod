@@ -1,0 +1,17 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "node/22.8.0/node-script-start-watch-upgrade",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "node",
+      "22.8.0",
+      "watch flag",
+      "upgrade"
+    ],
+    "git": "https://github.com/dfordp/node-22.8.0-node-script-start-watch-upgrade"
+  }
+}

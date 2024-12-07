@@ -1,0 +1,6 @@
+{
+    "name": "@codemod/node-22.8.0-migration-recipe",
+    "files": ["./README.md", "./.codemodrc.json"],
+    "type": "module",
+    "private": true
+  }
