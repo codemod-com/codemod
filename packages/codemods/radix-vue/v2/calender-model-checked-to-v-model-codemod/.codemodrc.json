@@ -1,0 +1,18 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "rekaUI-v2/searchTerm-props-of-Root-to-Input's-v-model",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "vue",
+      "radix",
+      "radix-vue v2",
+      "searchTerm",
+      "props-of-Root-to-Input's-v-model"
+    ],
+    "git": "https://github.com/codemod-com/codemod/packages/codemods/radix-vue/v2/calender-model-checked-to-v-model-codemod"
+  }
+}

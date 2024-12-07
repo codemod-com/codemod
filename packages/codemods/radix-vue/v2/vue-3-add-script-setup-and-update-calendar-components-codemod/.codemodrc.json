@@ -1,0 +1,18 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "rekaUI-v2/add-script-setup-and-update-calendar-components",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": [
+      "vue",
+      "radix",
+      "radix-vue v2",
+      "calendar",
+      "script setup and update"
+    ],
+    "git": "https://github.com/codemod-com/codemod/packages/codemods/radix-vue/v2/vue-3-add-script-setup-and-update-calendar-components-codemod"
+  }
+}
