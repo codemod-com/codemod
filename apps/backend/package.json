@@ -44,7 +44,7 @@
     "@slack/web-api": "catalog:",
     "@types/tar": "catalog:",
     "@unkey/api": "catalog:",
-    "ai": "2.2.29",
+    "ai": "4.0.12",
     "axios": "catalog:",
     "bullmq": "catalog:",
     "chatgpt": "catalog:",
