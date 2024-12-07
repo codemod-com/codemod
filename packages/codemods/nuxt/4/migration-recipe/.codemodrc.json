@@ -1,9 +1,19 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
   "name": "nuxt/4/migration-recipe",
-  "version": "1.0.4",
-  "private": false,
+  "version": "1.0.5",
   "engine": "recipe",
+  "private": false,
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"],
+  "applicability": {
+    "from": [["nuxt", ">=", "3.0.0"], ["nuxt", "<", "4.0.0"]],
+    "to": [["nuxt", ">=", "4.0.0"]]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": ["migration", "nuxt"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/nuxt/4/migration-recipe"
+  },
   "names": [
     "nuxt/4/absolute-watch-path",
     "nuxt/4/default-data-error-value",
@@ -11,14 +21,5 @@
     "nuxt/4/file-structure",
     "nuxt/4/shallow-function-reactivity",
     "nuxt/4/template-compilation-changes"
-  ],
-  "meta": {
-    "tags": ["migration", "nuxt"],
-    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/nuxt/4/migration-recipe"
-  },
-  "applicability": {
-    "from": [["nuxt", ">=", "3.0.0"], ["nuxt", "<", "4.0.0"]],
-    "to": [["nuxt", ">=", "4.0.0"]]
-  },
-  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"]
+  ]
 }
