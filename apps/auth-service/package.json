@@ -30,7 +30,7 @@
     "@fastify/cors": "catalog:",
     "@fastify/rate-limit": "catalog:",
     "@unkey/api": "catalog:",
-    "axios": "^1.7.4",
+    "axios": "catalog:",
     "dotenv": "catalog:",
     "fastify": "catalog:",
     "valibot": "catalog:"
