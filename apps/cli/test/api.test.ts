@@ -468,7 +468,6 @@ describe("API Client Tests", () => {
     });
 
     it("should return no scopes when all response headers missing", async () => {
-      const mockScopes = ["repo", "user"];
       const mockResponse = {
         status: 200,
       };
