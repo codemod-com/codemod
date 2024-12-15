@@ -1,3 +1,5 @@
+import { I18nextProvider } from "react-i18next";
+import { i18n } from "./i18n";
 import { env } from "@/env";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
@@ -13,7 +15,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <ClerkProvider
+    <I18nextProvider i18n={i18n}>
+<ClerkProvider
       appearance={{
         baseTheme: dark,
       }}
@@ -21,6 +24,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     >
       {children}
     </ClerkProvider>
+</I18nextProvider>
   );
 };
 export default AuthProvider;
