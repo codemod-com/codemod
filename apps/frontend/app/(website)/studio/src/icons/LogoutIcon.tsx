@@ -1,4 +1,8 @@
-export const LogoutIcon = () => (
+import { useTranslation } from "react-i18next";
+export const LogoutIcon = () =>  {
+const { t } = useTranslation("../(website)/studio/src/icons");
+
+return (
   <svg
     width="16"
     height="16"
@@ -6,7 +10,7 @@ export const LogoutIcon = () => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <title>Logout icon</title>
+    <title>{t('logout-icon')}</title>
     <path
       d="M6 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V3.33333C2 2.97971 2.14048 2.64057 2.39052 2.39052C2.64057 2.14048 2.97971 2 3.33333 2H6M10.6667 11.3333L14 8M14 8L10.6667 4.66667M14 8H6"
       stroke="#0B151E"
@@ -16,4 +20,5 @@ export const LogoutIcon = () => (
       strokeLinejoin="round"
     />
   </svg>
-);
+)
+};

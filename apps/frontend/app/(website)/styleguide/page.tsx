@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Automation from "@/app/api/og/templates/Automation";
 import AutomationToFrom from "@/app/api/og/templates/AutomationToFrom";
 import BlogArticle from "@/app/api/og/templates/BlogArticle";
@@ -13,56 +14,40 @@ import Tabs, { TabContent } from "@/components/shared/Tabs";
 import Tag from "@/components/shared/Tag";
 
 export default function Styleguide() {
+const { t } = useTranslation("../(website)/styleguide");
+
   return (
     <div className="pt-[calc(var(--header-height)+5rem)]">
       <div className="p-[40px]">
-        <h1 className="s-heading pb-6">Buttons</h1>
+        <h1 className="s-heading pb-6">{t('buttons')}</h1>
         <div className="flex w-full flex-wrap items-center justify-start gap-s">
-          <Button intent="primary">Button</Button>
+          <Button intent="primary">{t('button')}</Button>
 
-          <Button intent="primary" icon="arrow-right">
-            Button
-          </Button>
+          <Button intent="primary" icon="arrow-right">{t('button-fragment')}</Button>
 
-          <Button intent="primary" icon="book-open">
-            Docs
-          </Button>
+          <Button intent="primary" icon="book-open">{t('docs-fragment')}</Button>
 
-          <Button intent="secondary" icon="command" iconPosition="left">
-            Button
-          </Button>
+          <Button intent="secondary" icon="command" iconPosition="left">{t('button-fragment-2')}</Button>
 
-          <Button intent="primary" arrow>
-            Button
-          </Button>
+          <Button intent="primary" arrow>{t('button-fragment-3')}</Button>
 
-          <Button intent="primary" arrow disabled>
-            Button
-          </Button>
+          <Button intent="primary" arrow disabled>{t('button-fragment-4')}</Button>
 
-          <Button intent="primary" icon="arrow-right" disabled>
-            Button
-          </Button>
+          <Button intent="primary" icon="arrow-right" disabled>{t('button-fragment-5')}</Button>
 
-          <Button intent="primary" icon="arrow-right" loading>
-            Button
-          </Button>
+          <Button intent="primary" icon="arrow-right" loading>{t('button-fragment-6')}</Button>
 
-          <Button intent="secondary" icon="arrow-right" loading>
-            Button
-          </Button>
+          <Button intent="secondary" icon="arrow-right" loading>{t('button-fragment-7')}</Button>
 
           <Button intent="primary-icon-only" icon="copy" />
 
           <Button intent="secondary-icon-only" icon="arrow-right" />
 
-          <Button glow intent="secondary">
-            Glowing
-          </Button>
+          <Button glow intent="secondary">{t('glowing')}</Button>
         </div>
       </div>
       <div className="p-[40px]">
-        <h1 className="s-heading pb-6">Inputs</h1>
+        <h1 className="s-heading pb-6">{t('inputs')}</h1>
         <div className="flex w-full flex-wrap items-start justify-start gap-s">
           <Input />
 
@@ -74,10 +59,10 @@ export default function Styleguide() {
         </div>
       </div>
       <div className="p-[40px]">
-        <h1 className="s-heading pb-6">Select</h1>
+        <h1 className="s-heading pb-6">{t('select')}</h1>
         <div className="flex w-full flex-wrap items-start justify-start gap-s">
           <Dropdown
-            label="Default"
+            label={t('default-string')}
             options={[
               { value: "1", label: "Option 1" },
               {
@@ -87,7 +72,7 @@ export default function Styleguide() {
             ]}
           />
           <Dropdown
-            label="With error"
+            label={t('with-error-string')}
             error="There was an error"
             options={[
               { value: "1", label: "Option 1" },
@@ -100,44 +85,38 @@ export default function Styleguide() {
         </div>
       </div>
       <div className="p-[40px]">
-        <h1 className="s-heading pb-6">Checkbox</h1>
+        <h1 className="s-heading pb-6">{t('checkbox')}</h1>
         <div className="flex w-full flex-wrap items-start justify-start gap-s">
           <Checkbox />
           <Checkbox checked />
         </div>
       </div>
       <div className="p-[40px]">
-        <h1 className="s-heading pb-6">Tags</h1>
+        <h1 className="s-heading pb-6">{t('tags')}</h1>
         <div className="flex w-full flex-wrap items-start justify-start gap-s">
-          <Tag intent="primary">Primary</Tag>
-          <Tag intent="default">Default</Tag>
+          <Tag intent="primary">{t('primary')}</Tag>
+          <Tag intent="default">{t('default')}</Tag>
         </div>
       </div>
 
       <div className="p-[40px]">
-        <h1 className="s-heading pb-6">Filter buttons</h1>
+        <h1 className="s-heading pb-6">{t('filter-buttons')}</h1>
         <div className="flex w-full flex-col items-start justify-start gap-xs">
-          <FilterButton intent="default" icon="filter">
-            Filter default
-          </FilterButton>
-          <FilterButton intent="active" icon="filter">
-            Filter dismissable
-          </FilterButton>
-          <FilterButton icon="filter" disabled>
-            Filter disabled
-          </FilterButton>
+          <FilterButton intent="default" icon="filter">{t('filter-default-fragment')}</FilterButton>
+          <FilterButton intent="active" icon="filter">{t('filter-dismissable-fragment')}</FilterButton>
+          <FilterButton icon="filter" disabled>{t('filter-disabled-fragment')}</FilterButton>
         </div>
       </div>
 
       <div className="p-[40px]">
-        <h1 className="s-heading pb-6">Snippets</h1>
+        <h1 className="s-heading pb-6">{t('snippets')}</h1>
         <div className="flex w-full flex-col items-start justify-start gap-xs">
           <Snippet command="npm tinloof new" />
           <Snippet command="npx codemode learn" />
         </div>
       </div>
       <div className="p-[40px]">
-        <h1 className="s-heading pb-6">Tabs</h1>
+        <h1 className="s-heading pb-6">{t('tabs')}</h1>
         <div className="flex w-full flex-col items-start justify-start gap-xs">
           <Tabs
             items={[
@@ -147,10 +126,10 @@ export default function Styleguide() {
               { id: "4", label: "Tab 4" },
             ]}
           >
-            <TabContent forId="1">Tab 1 content</TabContent>
-            <TabContent forId="2">Tab 2 content</TabContent>
-            <TabContent forId="3">Tab 3 content</TabContent>
-            <TabContent forId="4">Tab 4 content</TabContent>
+            <TabContent forId="1">{t('tab-1-content')}</TabContent>
+            <TabContent forId="2">{t('tab-2-content')}</TabContent>
+            <TabContent forId="3">{t('tab-3-content')}</TabContent>
+            <TabContent forId="4">{t('tab-4-content')}</TabContent>
           </Tabs>
         </div>
       </div>
@@ -163,7 +142,7 @@ export default function Styleguide() {
       </div> */}
 
       <BlogArticle
-        title="Large-scale Next.js Migration at Cal.com: impact, challenges & lessons learned"
+        title={t('large-scale-nextjs-migration-calcom')}
         authors={[
           {
             image:
@@ -178,7 +157,7 @@ export default function Styleguide() {
         ]}
       />
       <Automation
-        title="Ant Design V5 - Removed Component Migration"
+        title={t('ant-design-v5-removed-component-migration')}
         automationAuthor={{
           image:
             "https://cdn.sanity.io/images/aho0e32c/production/61b763a05f41a7aea0b3b3265ff0fc83534ef28c-20x21.svg?w=20&fit=max&auto=format",
@@ -191,7 +170,7 @@ export default function Styleguide() {
         }}
       />
       <AutomationToFrom
-        title="ESLint to Biome"
+        title={t('eslint-to-biome')}
         automationFrom={{
           image:
             "https://cdn.sanity.io/images/aho0e32c/production/9072bff9a7ad7a7b6dfc7c9d0d058f278b7a9e17-2500x2197.svg?w=20&fit=max&auto=format",
@@ -204,13 +183,13 @@ export default function Styleguide() {
         }}
       />
       <Registry
-        title="Registry"
+        title={t('registry')}
         imageUrl="https://uca7084de71fddf93019da37f4e9.previews.dropboxusercontent.com/p/thumb/ACP2Dx2k6fG9judy9AKhiXvk_fpSSZ3xUX6ii6iWmA1mF7Yxk6LHAn3HGnmAAUO9FqSGx42Q7ziz2tLTb117EjgZN4apQ_glvgbGxew2uXblYygmmVJLbzqfQJ5gUgSBLQbLYaPRozy8xZASKH-6gw2Liq8W8XNd3cbcH6umBp5oDpba4wPeu4679kpUP0hprdjpJBdeoqiBtCjDotnXa5JRTp37MPBjdTiMvKUjd0rwRC5EvtHdT8flz73A9H5l-3pnnjuYu3p2KKya3goJOT6NL4JQchwsFV8iRpJRZ95PapXHEMN8OtXMQ2Icp-hfqNSGFCl-XRxJXedA9Fh7JE-g8wzps6ybKZS6hpJ1kTjJ5DGQNi3OAAzhlmg-bxy4Pms/p.png"
       />
       <Job
         department="Engineering"
         location="Remote"
-        title="Senior Software Engineer"
+        title={t('senior-software-engineer')}
       />
     </div>
   );

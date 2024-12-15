@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
 import type { useAiService } from "@chatbot/useAiService";
 import { useAuth } from "@clerk/nextjs";
@@ -37,6 +38,8 @@ export const AssistantTab = ({
   afterPanel: PanelData;
   aiAssistantData: ReturnType<typeof useAiService>;
 }) => {
+const { t } = useTranslation("../(website)/studio/main/PaneLayout");
+
   const { activeTab } = useViewStore();
   const { engine } = useSnippetsStore();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -100,7 +103,7 @@ export const AssistantTab = ({
   if (engine === "ts-morph") {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <Text>The Assistant is not yet available for TS-Morph codemods.</Text>
+        <Text>{t('the-assistant-is-not-yet-available-for-ts-morph-codemods')}</Text>
       </div>
     );
   }

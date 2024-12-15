@@ -1,0 +1,7 @@
+{
+  "please-provide-the-snippet-before-the-transformation-to-execute-the-codemod": "Please provide the snippet before the transformation to execute the codemod.",
+  "please-provide-the-codemod-to-execute-it": "Please provide the codemod to execute it.",
+  "codemod-has-execution-error-check-the": "Codemod has execution error(s). Please, check the",
+  "debugger": "Debugger",
+  "to-get-more-info": "to get more info."
+}

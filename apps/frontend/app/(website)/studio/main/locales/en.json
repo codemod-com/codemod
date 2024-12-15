@@ -1,0 +1,15 @@
+{
+  "codemod-studio-desktop-usage": "Codemod Studio is designed for desktop usage.",
+  "codemod-studio-demo-video": "Check out this brief demo video below to learn more about Codemod Studio.",
+  "browser-video-tag-support": "Your browser does not support the video tag.",
+  "codemod": "Codemod",
+  "engine": "Engine:",
+  "after": "After",
+  "download-and-run-locally": "Download and Run Locally",
+  "unzip-the-codemod-package-into-your-preferred-folder-copy-its-path-update-the-command-below-with-the-copied-path-and-run-it": "Unzip the codemod package into your preferred folder, copy its path, update the command below with the copied path, and run it.",
+  "npm": "npm",
+  "pnpm": "pnpm",
+  "your-codemod-is-now-available": "Your codemod is now available to be run via Codemod CLI. To do so use the command below.",
+  "run-via-cli": "Run via CLI",
+  "will-publish-the-codemod": "Will publish the codemod to the Codemod Registry"
+}

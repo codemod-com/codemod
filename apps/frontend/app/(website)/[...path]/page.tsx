@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import dynamic from "next/dynamic";
 import { draftMode } from "next/headers";
 
@@ -31,6 +32,8 @@ export async function generateMetadata(
 }
 
 export default async function DynamicRoute(props: RouteProps) {
+const { t } = useTranslation("../(website)/[...path]");
+
   const initial = await loadSanityPageByRouteProps(props);
 
   if (!initial.data) {
@@ -64,7 +67,7 @@ export default async function DynamicRoute(props: RouteProps) {
 
     // %CLI/TEMPLATE-CASE%
     default:
-      return <div>Template not found</div>;
+      return <div>{t('template-not-found')}</div>;
   }
 }
 

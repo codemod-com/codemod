@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
 import { useAiService } from "@chatbot/useAiService";
 import type { KnownEngines } from "@codemod-com/utilities";
@@ -34,6 +35,8 @@ import {
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
 
 const Main = () => {
+const { t } = useTranslation("../(website)/studio/main");
+
   const panelRefs: PanelsRefs = useRef({});
   const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
     useSnippetsPanels({ panelRefs });
@@ -56,9 +59,7 @@ const Main = () => {
   const codemodHeader = (
     <Panel.Header className="h-[30px]">
       <Panel.HeaderTab>
-        <Panel.HeaderTitle className="h-full">
-          Codemod
-          <div className="flex items-center gap-1">
+        <Panel.HeaderTitle className="h-full">{t('codemod')}<div className="flex items-center gap-1">
             <Select onValueChange={onEngineChange} value={engine}>
               <SelectTrigger className="flex flex-1 h-full select-none items-center font-semibold">
                 <span
@@ -68,9 +69,7 @@ const Main = () => {
                       "text-slate-200": isDark,
                     },
                   )}
-                >
-                  Engine:
-                </span>
+                >{t('engine')}</span>
                 <SelectValue placeholder={engine} />
               </SelectTrigger>
               <SelectContent>
@@ -115,7 +114,7 @@ const Main = () => {
             }}
           >
             <VisibilityIcon visibilityOptions={afterPanel.visibilityOptions} />
-            <span className="hidden_panel_indicator_text">After</span>
+            <span className="hidden_panel_indicator_text">{t('after')}</span>
           </div>
         )}
       </CodeSnippets>

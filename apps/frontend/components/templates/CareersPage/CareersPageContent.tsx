@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import GradientBlob from "@/components/shared/GradientBlob";
 import GradientBorderBox from "@/components/shared/GradientBorderBox";
 import LinkButton from "@/components/shared/LinkButton";
@@ -51,9 +52,11 @@ function JobsList({ jobs }: { jobs: CareersPagePayload["jobs"] }) {
 }
 
 function JobsListEmptyState() {
+const { t } = useTranslation("../../components/templates/CareersPage");
+
   return (
     <div className="mt-[80px] flex w-full items-center justify-center p-m lg:p-[80px]">
-      <h3 className="xs-heading">There are no open position at the moment</h3>
+      <h3 className="xs-heading">{t('there-are-no-open-positions-at-the-moment')}</h3>
     </div>
   );
 }
@@ -67,6 +70,8 @@ function Job({
   index: number;
   count: number;
 }) {
+const { t } = useTranslation("../../components/templates/CareersPage");
+
   const getSides = () => {
     return {
       right: false,
@@ -99,9 +104,7 @@ function Job({
             {job?.department}
           </span>
         </div>
-        <LinkButton intent="primary" href={href} arrow>
-          Apply
-        </LinkButton>
+        <LinkButton intent="primary" href={href} arrow>{t('apply')}</LinkButton>
       </div>
     </GradientBorderBox>
   );

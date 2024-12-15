@@ -1,17 +1,17 @@
 .field {
-	width: 100%;
+  width: 100%;
 }
 
 .fieldLayout {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .label {
-	font-size: var(--type-ramp-base-font-size);
-	line-height: var(--type-ramp-base-line-height);
-	display: block;
-	color: var(--foreground);
-	user-select: none;
+  font-size: var(--type-ramp-base-font-size);
+  line-height: var(--type-ramp-base-line-height);
+  display: block;
+  color: var(--foreground);
+  user-select: none;
 }

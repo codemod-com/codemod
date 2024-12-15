@@ -1,0 +1,13 @@
+{
+  "try": "Try",
+  "copied": "Copied",
+  "search": "\"Search\"",
+  "cursor-ide-svg": "\"cursor-ide-svg\"",
+  "honeypot": "\"honeypot\"",
+  "your-email": "\"Your email\"",
+  "submit": "Submit",
+  "system-error-message": "There has been a system error. Please, send your form again.",
+  "submission-acknowledgment-privacy-policy": "By submitting, you acknowledge codemod's <0>{{_props_privacyLink_label_Privacy_Policy_}}</0>",
+  "subscription-confirmation": "Thanks! You're subscribed",
+  "stay-in-the-loop-message": "Get ready to stay in the loop with all the latest updates, news, and exciting announcements straight to your inbox"
+}

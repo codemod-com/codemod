@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { SanityImage } from "@/components/shared/SanityImage";
 import { SanityLink } from "@/components/shared/SanityLink";
 import type { FilterIcon } from "@/components/templates/Registry/helpers";
@@ -6,13 +7,16 @@ export const AuthorSection = ({
   author,
   authorImage,
   href,
-}: { author: string; authorImage: FilterIcon; href: string }) => (
+}: { author: string; authorImage: FilterIcon; href: string }) =>  {
+const { t } = useTranslation("../../components/templates/CodemodPage");
+
+return (
   <SanityLink
     className="rounded-sm focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark"
     link={{ href }}
   >
     <div className="flex items-center gap-xxs group">
-      <span className="body-s-medium font-medium">by</span>
+      <span className="body-s-medium font-medium">{t('by')}</span>
       <>
         {authorImage?.image.light && (
           <SanityImage
@@ -45,4 +49,5 @@ export const AuthorSection = ({
       </span>
     </div>
   </SanityLink>
-);
+)
+};

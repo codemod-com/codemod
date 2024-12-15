@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import CompanyLogoSVG from "@/assets/icons/company_logo.svg";
 import { cn } from "@/utils";
 import type { LLMMessage } from "@chatbot/types";
@@ -61,6 +62,8 @@ const CodeContent = ({ inline, className, children, message, ...others }) => {
 };
 
 export const ChatMessage = ({ message }: Props) => {
+const { t } = useTranslation("../(website)/studio/features/modGPT/ChatWindow/ChatMessage");
+
   const [collapsed, setCollapsed] = useState(message.role === "user");
   const { isDark } = useTheme();
 
@@ -74,7 +77,7 @@ export const ChatMessage = ({ message }: Props) => {
         {message.role === "user" ? (
           <UserIcon />
         ) : (
-          <Image src={CompanyLogoSVG} alt="Codemod Logo" />
+          <Image src={CompanyLogoSVG} alt={t('codemod-logo')} />
         )}
       </div>
       <Button

@@ -1,9 +1,12 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
 import { ArrowDown as ArrowDownIcon } from "@phosphor-icons/react";
 import { Button, type ButtonProps } from "@studio/components/ui/button";
 import { useScrollToBottomDetector } from "@studio/hooks/useScrollToBottomDetector";
 
 export const ScrollToBottomButton = ({ className, ...props }: ButtonProps) => {
+const { t } = useTranslation("../(website)/studio/features/modGPT/PromptPanel");
+
   const scrollWindow =
     document.getElementsByClassName("scrollWindow")?.[0] ?? null;
   const isAtBottom = useScrollToBottomDetector(scrollWindow);
@@ -26,7 +29,7 @@ export const ScrollToBottomButton = ({ className, ...props }: ButtonProps) => {
       {...props}
     >
       <ArrowDownIcon />
-      <span className="sr-only">Scroll to bottom</span>
+      <span className="sr-only">{t('scroll-to-bottom')}</span>
     </Button>
   );
 };

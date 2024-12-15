@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
 import Text from "@studio/components/Text";
 import { useSelectFirstTreeNodeForSnippet } from "@studio/main/ASTViewer/useSelectFirstTreeNodeForSnippet";
@@ -9,6 +10,8 @@ import { type NodeApi, Tree } from "react-arborist";
 import useResizeObserver from "use-resize-observer";
 
 export const ASTViewer = ({ type }: { type: EditorType }) => {
+const { t } = useTranslation("../(website)/studio/main/ASTViewer");
+
   const ASTTreeRef = useRef<HTMLDivElement | null>(null);
   const { width = 0, height = 0 } = useResizeObserver({ ref: ASTTreeRef });
   const getFirstTreeNode = useSelectFirstTreeNodeForSnippet();
@@ -88,9 +91,7 @@ export const ASTViewer = ({ type }: { type: EditorType }) => {
   if (!rootNode) {
     return (
       <div className="flex h-full flex-col w-full overflow-hidden p-2">
-        <Text>
-          Please provide a snippet to render an Abstract Syntax Tree for it.
-        </Text>
+        <Text>{t('please-provide-a-snippet-to-render-an-abstract-syntax-tree-for-it')}</Text>
       </div>
     );
   }

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import GradientBlob from "@/components/shared/GradientBlob";
 import GradientBorderBox from "@/components/shared/GradientBorderBox";
 import { RichText } from "@/components/shared/RichText";
@@ -126,6 +127,8 @@ type TeamMemberProps = {
 };
 
 function TeamMemberGridItem(props: TeamMemberProps) {
+const { t } = useTranslation("../../components/templates/AboutPage");
+
   const getSides = () => {
     return {
       right: false,
@@ -157,7 +160,7 @@ function TeamMemberGridItem(props: TeamMemberProps) {
             <img
               src="/static/img-placeholder.svg"
               className="h-full w-full rounded-s bg-secondary-light dark:bg-secondary-dark"
-              alt="Placeholder"
+              alt={t('placeholder')}
             />
           )}
         </div>
@@ -182,13 +185,13 @@ function TeamMemberGridItem(props: TeamMemberProps) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/logotypes/light/linkedin.svg"
-                alt="Linkedin logo"
+                alt={t('linkedin-logo-1')}
                 className="dark:hidden"
               />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/logotypes/dark/linkedin.svg"
-                alt="Linkedin logo"
+                alt={t('linkedin-logo-2')}
                 className="hidden dark:block"
               />
             </a>
@@ -198,13 +201,13 @@ function TeamMemberGridItem(props: TeamMemberProps) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/logotypes/light/x.svg"
-                alt="X/Twitter logo"
+                alt={t('x-twitter-logo-1')}
                 className="dark:hidden"
               />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/logotypes/dark/x.svg"
-                alt="X/Twitter logo"
+                alt={t('x-twitter-logo-2')}
                 className="hidden dark:block"
               />
             </a>
@@ -217,14 +220,10 @@ function TeamMemberGridItem(props: TeamMemberProps) {
 
         <div className="mt-auto flex items-center gap-xs justify-self-end">
           {props.previousCompanyLogo?.darkModeImage?.asset && (
-            <span className="body-s-medium hidden font-medium dark:block">
-              Previously:
-            </span>
+            <span className="body-s-medium hidden font-medium dark:block">{t('previously-1')}</span>
           )}
           {props.previousCompanyLogo?.lightModeImage?.asset && (
-            <span className="body-s-medium font-medium dark:hidden">
-              Previously:
-            </span>
+            <span className="body-s-medium font-medium dark:hidden">{t('previously-2')}</span>
           )}
 
           {/* eslint-disable-next-line @next/next/no-img-element */}

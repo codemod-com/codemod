@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import NavigationLink from "@/components/global/Navigation/NavigationLink";
 import CtaCard from "@/components/shared/CtaCard";
 import Icon, { TechLogo } from "@/components/shared/Icon";
@@ -18,6 +19,8 @@ import getBlocksToc from "@/utils/getBlocksToc";
 import { cx } from "cva";
 
 export default function BlogArticlePageContent(props: BlogArticlePayload) {
+const { t } = useTranslation("../../components/templates/BlogArticlePage");
+
   const isCustomerStory = props._type === "blog.customerStory";
   const toc = getBlocksToc(props.body);
 
@@ -103,7 +106,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
                       <TableOfContents
                         variant="sidebar"
                         outlines={toc}
-                        title={"On this page"}
+                        title={t('on-this-page')}
                       />
                       <div className="mt-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
                     </div>
@@ -118,8 +121,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
                 {typeof props.readTime === "number" && (
                   <span className="inline-flex gap-2 items-center body-s-medium font-medium text-secondary-light dark:text-secondary-dark">
                     <Icon name="countdown-timer" />
-                    {Number(props.readTime)} min read
-                  </span>
+                    {Number(props.readTime)}{t('min-read')}</span>
                 )}
 
                 {props.publishedAt && (
@@ -195,11 +197,11 @@ const Stats = (props: { stats: CustomerStorySidebar["stats"] }) => {
   );
 };
 const Features = (props: { features: CustomerStorySidebar["features"] }) => {
+const { t } = useTranslation("../../components/templates/BlogArticlePage");
+
   return (
     <div className="space-y-2">
-      <h4 className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark">
-        Features Highlighted
-      </h4>
+      <h4 className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark">{t('features-highlighted')}</h4>
       {props?.features?.map((feature, index) => (
         <SanityLink
           key={index}
