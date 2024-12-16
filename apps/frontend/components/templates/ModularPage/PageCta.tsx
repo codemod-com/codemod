@@ -27,7 +27,7 @@ export default function PageCta(props: PageCtaProps) {
 
 function SimplePageCta(props: PageCta) {
   return (
-    <Section className="relative z-10 w-full pb-[80px]">
+    <Section className="relative z-10 w-full py-[80px]">
       <GradientBorderBox className="w-full max-w-none">
         <div className="flex w-full flex-col items-start gap-4 bg-white/60 px-m py-2xl lg:px-[128px] lg:py-[86px] dark:bg-background-dark/40">
           <h2 className="l-heading">{props.title}</h2>
@@ -224,7 +224,7 @@ function PageCtaTriple(props: PageCtaTriple) {
                 <span className="block font-bold">{titleLine2}</span>
               )}
             </h2>
-            <div className="body-l max-w-[540px] lg:text-center">
+            <div className="body-l mx-auto max-w-[540px] lg:text-center">
               <RichText value={props.paragraph} />
             </div>
           </div>
