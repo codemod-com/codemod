@@ -3,9 +3,12 @@ title: Package requirements
 ---
 
 A codemod package is compatible with Codemod platform when it:
+
 1. uses a supported codemod engine
-1. has a valid `.codemodrc.json` configuration file in its root directory
-2. has a valid codemod package structure.
+
+2. has a valid `.codemodrc.json` configuration file in its root directory
+
+3. has a valid codemod package structure.
 
 The `.codemodrc.json` configuration file allows Codemod platform to better understand information about your codemod, as well as bring an [enhanced running experience](/platform/run#benefits-and-features).
 
@@ -18,7 +21,7 @@ Codemod platform currently supports the following codemod engines: [`ast-grep`](
 ## `.codemodrc.json` reference
 
 The `.codemodrc.json` configuration file includes several metafields that can be used to help Codemod platform understand more information about your codemod package.
-  
+
 <ResponseField name="name" type="string" required>
   Specifies the slugified name of the codemod published to the codemod registry.
 </ResponseField>
@@ -38,13 +41,16 @@ The `.codemodrc.json` configuration file includes several metafields that can be
 <ResponseField name="engine" type="string" required>
   Specifies the engine used to run the codemod.
   Can be any of:
-  - `ast-grep`
-  - `jscodeshift`
-  - `ts-morph`
-  - `Workflow Engine`
-  - `piranha` (requires additional `language` field that specifies one of the supported piranha languages:
-  `java`, `kt`, `go`, `py`, `swift`, `ts`, `tsx`, or `scala`)
-  - `recipe` (requires additional `names` field, which is an ordered array of codemod names that will be executed)
+
+  * `ast-grep`
+
+  * `jscodeshift`
+
+  * `ts-morph`
+
+  * `workflow`
+
+  * `recipe` (requires additional `names` field, which is an ordered array of codemod names that will be executed)
 </ResponseField>
 
 <ResponseField name="include" type="glob pattern array">
@@ -54,16 +60,23 @@ The `.codemodrc.json` configuration file includes several metafields that can be
 <ResponseField name="applicability" type="object">
   The applicability field is an object with `from` and `to` keys that are both arrays of tuples.
   This field can be used to specify the dependencies and versions this codemod is made for.
-  
+
   Specifying the applicability criteria of your codemod helps:
+
   1. Reduce false positives
+
   2. Proactively recommend the codemod to users who might need it
+
   3. Improve codemod performance, as it will only process projects that make sense
+
   4. Allow daisy-chaining codemods (e.g., migrating from v1 to v3 by combining v1-to-v2 and v2-to-v3 codemods)
 
   Each tuple consists of three elements:
+
   1. a library name
+
   2. a comparison operator (`<`, `>`, `<=`, `>=`, `=`)
+
   3. a version number ([SemVer](https://semver.org/) compatible)
 </ResponseField>
 
@@ -71,9 +84,12 @@ The `.codemodrc.json` configuration file includes several metafields that can be
   Can be used to specify dependencies to be installed after successful a codemod run.
   You can also specify a package to be removed by prepending it with a `-` sign.
   Each dependency should be a string in one of the following formats:
-  - `package-name@version`
-  - `-package-name`
-  - `package-name`
+
+  * `package-name@version`
+
+  * `-package-name`
+
+  * `package-name`
 </ResponseField>
 
 <ResponseField name="arguments" type="array of objects">
@@ -96,7 +112,6 @@ The `.codemodrc.json` configuration file includes several metafields that can be
       Specifies if the argument is required.
     </ResponseField>
   </Expandable>
-
 </ResponseField>
 
 <ResponseField name="meta" type="object">
@@ -137,62 +152,58 @@ Below, you can find the required codemod package structure for each codemod engi
     ```
 
     <CodeGroup>
-
-    ```json .codemodrc.json
-    {
-    "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-    "version": "1.0.0",
-    "private": false,
-    "name": "framework/version/codemod-name",
-    "description": "example codemod description",
-    "engine": "jscodeshift/ts-morph/workflow",
-    "meta": {
-      "tags": ["framework", "migration", "etc"],
-        "git": "https://github.com/user/repo"
-    },
-    "applicability": {
-      "from": [["framework", "<=", "version"]],
-      "to": [["framework", "=", "version"]]
+      ```json .codemodrc.json
+      {
+      "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+      "version": "1.0.0",
+      "private": false,
+      "name": "framework/version/codemod-name",
+      "description": "example codemod description",
+      "engine": "jscodeshift/ts-morph/workflow",
+      "meta": {
+        "tags": ["framework", "migration", "etc"],
+          "git": "https://github.com/user/repo"
+      },
+      "applicability": {
+        "from": [["framework", "<=", "version"]],
+        "to": [["framework", "=", "version"]]
+        }
       }
-    }
-    ```
-
-    ```markdown README.md
-
-    This codemod does X, Y, and Z. // example codemod description
-
-    ## Example
-
-    ### Before
-
-    // code before transformation
-
-    ### After
-
-    // code after transformation
-
-    ## Other links
-
-    - [Link to migration guide reference]()
-    ```
-
-    </CodeGroup>
-
-    </Tab>
-    <Tab title="ast-grep">
-
-      To learn how to build your first rule, check out [ast-grep's documentation](https://ast-grep.github.io/guide/rule-config.html).
-
-      ```bash
-      ├── src
-      │   ├── rule.yaml # ast-grep rule file.
-      │   package.json
-      ├── .codemodrc.json # should contain "engine" field set to "ast-grep"
-      └── README.md
       ```
 
-      <CodeGroup>
+      ```markdown README.md
 
+      This codemod does X, Y, and Z. // example codemod description
+
+      ## Example
+
+      ### Before
+
+      // code before transformation
+
+      ### After
+
+      // code after transformation
+
+      ## Other links
+
+      - [Link to migration guide reference]()
+      ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="ast-grep">
+    To learn how to build your first rule, check out [ast-grep's documentation](https://ast-grep.github.io/guide/rule-config.html).
+
+    ```bash
+    ├── src
+    │   ├── rule.yaml # ast-grep rule file.
+    │   package.json
+    ├── .codemodrc.json # should contain "engine" field set to "ast-grep"
+    └── README.md
+    ```
+
+    <CodeGroup>
       ```json .codemodrc.json
       {
       "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
@@ -240,11 +251,10 @@ Below, you can find the required codemod package structure for each codemod engi
 
       - [Link to migration guide reference]()
       ```
-
-      </CodeGroup>
+    </CodeGroup>
   </Tab>
-  <Tab title="Recipes">
 
+  <Tab title="Recipes">
     ```bash
     │   package.json
     ├── .codemodrc.json # should contain "engine" field set to "recipe" and "names" field with an ordered array of codemod names that will be executed.
@@ -257,46 +267,43 @@ Below, you can find the required codemod package structure for each codemod engi
     Unlike JavaScript and ast-grep codemods, recipes do not inlcude input files in `.codemodrc.json`. To specify codemods that should be run by the recipe, simply add the codemod names under the `names` field.
 
     <CodeGroup>
-
-    ```json .codemodrc.json
-    {
-      "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-      "name": "framework/version/recipe-name",
-      "version": "1.0.0",
-      "private": false,
-      "engine": "recipe",
-      "names": [
-        "framework/version/codemod-1",
-        "framework/version/codemod-2",
-        "framework/version/codemod-3"
-      ],
-      "meta": {
-        "tags": ["framework", "migration"],
-        "git": "https://github.com/user/repo"
-      },
-      "applicability": {
-        "from": [["framework", "<=", "version"]],
-        "to": [["framework", "=", "version"]]
+      ```json .codemodrc.json
+      {
+        "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+        "name": "framework/version/recipe-name",
+        "version": "1.0.0",
+        "private": false,
+        "engine": "recipe",
+        "names": [
+          "framework/version/codemod-1",
+          "framework/version/codemod-2",
+          "framework/version/codemod-3"
+        ],
+        "meta": {
+          "tags": ["framework", "migration"],
+          "git": "https://github.com/user/repo"
+        },
+        "applicability": {
+          "from": [["framework", "<=", "version"]],
+          "to": [["framework", "=", "version"]]
+        }
       }
-    }
-    ```
+      ```
 
-    ```markdown README.md
-    This recipe runs a set of codemods that assist you with some migration process.
+      ```markdown README.md
+      This recipe runs a set of codemods that assist you with some migration process.
 
-    The recipe includes the following codemods:
+      The recipe includes the following codemods:
 
-    - codemod 1
-    - codemod 2
-    - ..
+      - codemod 1
+      - codemod 2
+      - ..
 
-    ## Other links
+      ## Other links
 
-    - [Link to migration guide reference]()
-    ```
-
+      - [Link to migration guide reference]()
+      ```
     </CodeGroup>
-
   </Tab>
 </Tabs>
 
@@ -306,17 +313,18 @@ Below, you can find the required codemod package structure for each codemod engi
   <Card title="jscodeshift package" href="https://github.com/codemod-com/codemod/tree/main/packages/codemods/react/prop-types-typescript">
     An example of a valid jscodeshift React codemod package.
   </Card>
+
   <Card title="ast-grep package" href="https://github.com/codemod-com/codemod/tree/main/packages/codemods/python/orjson/json.dumps">
     An example of a valid ast-grep Python codemod package.
   </Card>
+
   <Card title="Recipe package" href="https://github.com/codemod-com/codemod/tree/main/packages/codemods/react/19/migration-recipe">
     An example of a valid React migration recipe package.
   </Card>
-
 </CardGroup>
 
 ## Next steps
 
 <Card title="Building a codemod package ->" icon="wrench" href="/building-codemods/build-package">
-Get started with building a codemod package.
+  Get started with building a codemod package.
 </Card>
