@@ -1,0 +1,3 @@
+[submodule "packages/codemods/svelte-kit"]
+	path = packages/codemods/svelte-kit
+	url = https://github.com/Priyanshuthapliyal2005/Migrating-to-SvelteKit-v2.git
