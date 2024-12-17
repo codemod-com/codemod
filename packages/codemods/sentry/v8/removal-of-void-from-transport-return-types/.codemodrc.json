@@ -1,0 +1,17 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "sentry/v8/removal-of-void-from-transport-return-types",
+  "description": "Codemod to remove void from Transport.send return types and ensure it returns TransportMakeRequestResponse in Sentry SDK.",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "applicability": {
+    "from": [["sentry", "<=", "7"]],
+    "to": [["sentry", ">=", "8"]]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": ["sentry", "migration","codemod"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/sentry/v8/removal-of-void-from-transport-return-types"
+  }
+}
