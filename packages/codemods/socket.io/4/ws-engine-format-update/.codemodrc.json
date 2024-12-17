@@ -1,0 +1,13 @@
+{
+  "version": "1.0.8",
+  "name": "socket.io/4/ws-engine-format-update",
+  "private": false,
+  "engine": "jscodeshift",
+  "meta": {
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/socket.io/4/ws-engine-format-update",
+    "tags": ["socket.io", "migration"]
+  },
+  "applicability": {
+    "from": [["socket.io", "<=", "4"]]
+  }
+}
