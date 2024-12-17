@@ -8,7 +8,7 @@ export default function transformer(file: FileInfo, api: API) {
     path.node.body.body.forEach((member) => {
       if (
         (member.type === "ClassMethod" || member.type === "ClassProperty") &&
-        "accessibility" in member
+        "accessibility" in member && member.accessibility === "public"
       ) {
         member.accessibility = undefined;
       }

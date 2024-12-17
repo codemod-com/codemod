@@ -73,16 +73,20 @@ describe("remove-public-modifier", () => {
     );
   });
 
-  it("class with other modifiers (static, readonly)", () => {
+  it("class with other modifiers (private, protected, static, readonly)", () => {
     const INPUT = `
 				class MyClass {
 					public static readonly myProperty: string = 'value';
+					private secondProperty: string = 'value';
+					protected thirdProperty: string = 'value';
 				}		  
 			`;
 
     const OUTPUT = `
 				class MyClass {
 					static readonly myProperty: string = 'value';
+					private secondProperty: string = 'value';
+					protected thirdProperty: string = 'value';
 				}	
 			`;
     const fileInfo: FileInfo = {
