@@ -695,7 +695,8 @@ export function getCodemodProjectFiles(input: ProjectDownloadInput) {
       "README.md": readme(input),
       ".codemodrc.json": codemodRc(input),
       "package.json": packageJson(input),
-      ".gitignore": "node_modules\ndist",
+      ".gitignore":
+        "node_modules\ncdmd_dist\npnpm-lock.yaml\npackage-lock.json",
       "src/index.js": mainFileContent,
       "test/test.js": testBody(input),
       "vitest.config.js": vitestConfig(),
@@ -706,7 +707,8 @@ export function getCodemodProjectFiles(input: ProjectDownloadInput) {
       "README.md": readme(input),
       ".codemodrc.json": codemodRc(input),
       "package.json": packageJson(input),
-      ".gitignore": "node_modules\ndist",
+      ".gitignore":
+        "node_modules\ncdmd_dist\npnpm-lock.yaml\npackage-lock.json",
       "src/index.ts": mainFileContent,
       "test/test.ts": testBody(input),
       "vitest.config.ts": vitestConfig(),
