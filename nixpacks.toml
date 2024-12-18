@@ -1,0 +1,18 @@
+[phases.setup]
+nixPkgs = [
+    '...',
+    'python311',
+    'nodePackages.node-gyp',
+    'nodePackages.node-gyp-build',
+]
+aptPkgs = ['build-essential', 'libpq-dev', 'postgresql-client']
+
+[phases.build]
+nixLibs = ['openssl']
+cmds = [
+    "pnpm build --filter @codemod-com/backend",
+    "pnpm db:migrate:deploy --filter @codemod-com/database",
+]
+
+[start]
+cmd = "node apps/backend/build/index.js"

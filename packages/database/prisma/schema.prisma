@@ -2,7 +2,8 @@
 
 generator client {
   provider   = "prisma-client-js"
-  engineType = "binary"
+  engineType = "library"
+  binaryTargets = ["native"]
 }
 
 generator json {
