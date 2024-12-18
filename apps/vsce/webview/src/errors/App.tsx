@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   VSCodeDataGrid,
   VSCodeDataGridCell,
@@ -43,6 +44,8 @@ declare global {
 }
 
 export const App = () => {
+  const { t } = useTranslation("../errors");
+
   const [props, setProps] = useState(window.errorWebviewViewProps);
 
   useEffect(() => {
@@ -79,7 +82,7 @@ export const App = () => {
     return (
       <main>
         <p className={styles.welcomeMessage}>
-          No execution errors found for the selected codemod run.
+          {t("no-execution-errors-found-for-the-selected-codemod-run")}
         </p>
       </main>
     );

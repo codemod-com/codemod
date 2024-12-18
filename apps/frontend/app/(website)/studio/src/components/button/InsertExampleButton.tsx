@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Tooltip from "@studio/components/Tooltip/Tooltip";
 import { Button } from "@studio/components/ui/button";
 import { ExampleIcon } from "@studio/icons/Example";
@@ -9,6 +10,8 @@ import { buildDefaultCodemodSource, useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "../../store/snippets";
 
 const InsertExampleButton = () => {
+const { t } = useTranslation("../(website)/studio/src/components/button");
+
   const { engine, getSelectedEditors, clearAll } = useSnippetsStore();
   const { setContent } = useModStore();
   return (
@@ -26,10 +29,10 @@ const InsertExampleButton = () => {
           variant="ghost"
         >
           <ExampleIcon />
-          <span className="sr-only">Insert Example</span>
+          <span className="sr-only">{t('insert-example')}</span>
         </Button>
       }
-      content={<p className="font-normal">Insert an example</p>}
+      content={<p className="font-normal">{t('insert-an-example')}</p>}
     />
   );
 };

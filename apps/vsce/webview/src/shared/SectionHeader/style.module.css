@@ -1,43 +1,43 @@
 .root {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .icon {
-	width: 16px;
-	height: 16px;
-	margin: 0 2px;
+  width: 16px;
+  height: 16px;
+  margin: 0 2px;
 }
 
 .title {
-	font-size: 11px;
-	text-transform: uppercase;
-	color: var(--vscode-sideBarSectionHeader-foreground);
-	font-weight: 700;
-	line-height: 22px;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--vscode-sideBarSectionHeader-foreground);
+  font-weight: 700;
+  line-height: 22px;
 }
 
 .sectionHeader {
-	display: flex;
-	align-items: center;
-	height: 22px;
-	line-height: 22px;
-	color: var(--vscode-sideBarSectionHeader-foreground);
-	background-color: var(--vscode-sideBarSectionHeader-background);
-	cursor: pointer;
-	user-select: none;
+  display: flex;
+  align-items: center;
+  height: 22px;
+  line-height: 22px;
+  color: var(--vscode-sideBarSectionHeader-foreground);
+  background-color: var(--vscode-sideBarSectionHeader-background);
+  cursor: pointer;
+  user-select: none;
 }
 
 .commands {
-	margin-left: auto;
-	margin-right: 4px;
-	display: flex;
-	align-items: center;
+  margin-left: auto;
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
 }
 
 .content {
-	flex-grow: 1;
-	overflow-y: auto;
+  flex-grow: 1;
+  overflow-y: auto;
 }

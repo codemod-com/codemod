@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
 import cn from "classnames";
 import styles from "./style.module.css";
@@ -10,12 +11,15 @@ const handleCopyCommand = (command: string) => {
 };
 
 const CodemodEngineNodeNotFound = () => {
+  const { t } = useTranslation("../CodemodEngineNodeNotFound");
+
   return (
     <div className={styles.root}>
-      <h1>Halfway there!</h1>
+      <h1>{t("halfway-there")}</h1>
       <p>
-        Use one of the two commands below to install the latest Codemod CLI and
-        complete the installation:
+        {t(
+          "use-one-of-the-two-commands-below-to-install-the-latest-codemod-cli-and-complete-the-installation",
+        )}
       </p>
       {[
         INSTALL_CODEMOD_ENGINE_NODE_COMMAND_NPM,
@@ -40,9 +44,9 @@ const CodemodEngineNodeNotFound = () => {
       ))}
 
       <small className={styles.reminder}>
-        Reminder, Codemod is CLI-centric so you can use its core features
-        without an IDE and easily integrate it with the existing tools in your
-        workflow.
+        {t(
+          "reminder-codemod-is-cli-centric-so-you-can-use-its-core-features-without-an-ide-and-easily-integrate-it-with-the-existing-tools-in-your-workflow",
+        )}
       </small>
     </div>
   );

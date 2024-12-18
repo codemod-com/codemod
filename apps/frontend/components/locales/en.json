@@ -1,0 +1,7 @@
+{
+  "login-successful": "Login successful.",
+  "return-to-cli": "You can return to the CLI now.",
+  "tab-close-timer": "This tab will close in <0>{{timeleft}}seconds</0>...",
+  "login-failed-contact-codemod": "Login failed. Please contact Codemod team.",
+  "preview-mode": "Preview mode"
+}

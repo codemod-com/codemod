@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { VSCodeButton, VSCodeCheckbox } from "@vscode/webview-ui-toolkit/react";
 import type React from "react";
 import type { PanelViewProps } from "../../../../src/components/webview/panelViewProps";
@@ -35,6 +36,8 @@ export const Header = ({
   onReportIssue,
 }: // onFixInStudio,
 HeaderProps) => {
+  const { t } = useTranslation("../jobDiffView/DiffViewer");
+
   const jobKindText = getJobKindText(jobKind as unknown as JobKind);
   const hasDiff = diff !== null;
   const handleCopyFileName = (event: React.FormEvent<HTMLElement>) => {
@@ -107,8 +110,9 @@ HeaderProps) => {
                     backgroundColor: "var(--vscode-tab-inactiveBackground)",
                   }}
                 >
-                  Saved in the temporary dry-run file. Not applied to the
-                  workspace.
+                  {t(
+                    "saved-in-the-temporary-dry-run-file-not-applied-to-the-workspace",
+                  )}
                 </div>
               }
               placement="bottom"
@@ -117,7 +121,7 @@ HeaderProps) => {
                 className="my-0 ml-2 highlighted-text align-self-center user-select-none"
                 style={{ fontSize: "0.7rem" }}
               >
-                Saved
+                {t("saved")}
               </h4>
             </CustomPopover>
           ) : null}
@@ -141,7 +145,7 @@ HeaderProps) => {
                 color: "var(--button-secondary-foreground)",
               }}
             >
-              Reviewed
+              {t("reviewed")}
             </p>
           </div>
           <CustomPopover
@@ -152,8 +156,9 @@ HeaderProps) => {
                   backgroundColor: "var(--vscode-tab-inactiveBackground)",
                 }}
               >
-                Open a Github issue with a provided template to report a
-                problem.
+                {t(
+                  "open-a-github-issue-with-a-provided-template-to-report-a-problem",
+                )}
               </div>
             }
             placement="bottom"
@@ -163,7 +168,7 @@ HeaderProps) => {
               onClick={onReportIssue}
               // className="mr-1"
             >
-              Report Issue
+              {t("report-issue")}
             </VSCodeButton>
           </CustomPopover>
           {/* <VSCodeButton

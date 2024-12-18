@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation, Trans } from "react-i18next";
+
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -14,6 +16,8 @@ import { Dialog, DialogContent } from "@studio/components/ui/dialog";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
 
 export const TokenBuilder = () => {
+const { t } = useTranslation("../../components");
+
   const { getToken } = useAuth();
   const { isLoaded, isSignedIn } = useUser();
   const router = useRouter();
@@ -152,17 +156,17 @@ export const TokenBuilder = () => {
       <DialogContent className="max-w-2xl bg-white text-gray-dark m-auto flex-col flex items-center gap-2">
         {result === "success" ? (
           <>
-            <span>Login successful.</span>
-            <span>You can return to the CLI now.</span>
-            <span>
-              This tab will close in{" "}
-              <span className="text-red-500">{timeleft} seconds</span>...
-            </span>
+            <span>{t('login-successful')}</span>
+            <span>{t('return-to-cli')}</span>
+            <span><Trans
+i18nKey="tab-close-timer"
+values={{ timeleft }}
+components={{"0": 
+              <span className="text-red-500" />}}
+/></span>
           </>
         ) : (
-          <span className="text-red-500">
-            Login failed. Please contact Codemod team.
-          </span>
+          <span className="text-red-500">{t('login-failed-contact-codemod')}</span>
         )}
       </DialogContent>
     </Dialog>

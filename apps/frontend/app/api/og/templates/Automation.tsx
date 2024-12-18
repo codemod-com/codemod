@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { capitalize } from "@/utils/strings";
 
 type Props = {
@@ -7,6 +8,8 @@ type Props = {
 };
 
 const Automation = (props: Props) => {
+const { t } = useTranslation("../api/og/templates");
+
   return (
     <div
       style={{
@@ -548,7 +551,7 @@ const Automation = (props: Props) => {
                 >
                   <img
                     src={props.automationAuthor.image}
-                    alt=""
+                    alt={t('empty-string-fragment-0')}
                     width="48px"
                     height="48px"
                     style={{}}
@@ -608,7 +611,7 @@ const Automation = (props: Props) => {
                   {props.automationFrom.image && (
                     <img
                       src={props.automationFrom.image}
-                      alt=""
+                      alt={t('empty-string-fragment-1')}
                       width={
                         props.automationFrom.framework === "React" ? 32 : 28
                       }

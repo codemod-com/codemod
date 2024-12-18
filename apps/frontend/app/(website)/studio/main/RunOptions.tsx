@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useAuth, useSession } from "@clerk/nextjs";
 import {
   buildCodemodSlug,
@@ -33,6 +34,8 @@ import { DownloadZip } from "./DownloadZip";
 import { CopyTerminalCommands } from "./TerminalCommands";
 
 export const RunOptions = () => {
+const { t } = useTranslation("../(website)/studio/main");
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishedName, setPublishedName] = useState<string | null>(null);
@@ -140,15 +143,12 @@ export const RunOptions = () => {
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl bg-white">
-          <p>
-            Your codemod is now available to be run via Codemod CLI. To do so
-            use the command below.
-          </p>
+          <p>{t('your-codemod-is-now-available')}</p>
 
           <Tabs defaultValue="npm">
             <TabsList>
-              <TabsTrigger value="npm">npm</TabsTrigger>
-              <TabsTrigger value="pnpm">pnpm</TabsTrigger>
+              <TabsTrigger value="npm">{t('npm')}</TabsTrigger>
+              <TabsTrigger value="pnpm">{t('pnpm')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="npm">
@@ -167,18 +167,14 @@ export const RunOptions = () => {
           variant="outline"
           className="text-white flex gap-1 bg-inherit border-none hover:bg-gray-700 pl-4 z-10 peer"
           hint={
-            <p className="font-normal">
-              Will publish the codemod to the Codemod Registry
-            </p>
+            <p className="font-normal">{t('will-publish-the-codemod')}</p>
           }
           isLoading={isPublishing}
           disabled={!modStore.content || isPublishing}
           onClick={handleClick}
           id="run-codemod-button"
         >
-          <PlayIcon className="w-3" />
-          Run via CLI
-        </Button>
+          <PlayIcon className="w-3" />{t('run-via-cli')}</Button>
 
         <Separator orientation="vertical" className="mx-2 h-2/3 z-10" />
 

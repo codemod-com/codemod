@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
 import { GenerateTestCasesButton } from "@chatbot/PromptPanel/GenerateTestCasesButton";
 import type { useAiService } from "@chatbot/useAiService";
@@ -75,7 +76,10 @@ export const TestTabsComponent = ({
   return (
     <Tabs.Root defaultValue="0" className="tabs">
       <Tabs.List className="tabs-list overflow-x-auto" ref={tabsRef}>
-        {editors.map((editor, i) => (
+        {editors.map((editor, i) =>  {
+const { t } = useTranslation("../(website)/studio/main/PageBottomPane");
+
+return (
           <div
             key={editor.name}
             className={cn(
@@ -112,13 +116,12 @@ export const TestTabsComponent = ({
                 <DropdownMenu.Item
                   className="dropdown-menu-item"
                   onClick={() => removePair(i)}
-                >
-                  Remove Snippet
-                </DropdownMenu.Item>
+                >{t('remove-snippet')}</DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu.Root>
           </div>
-        ))}
+        )
+})}
         {!getHasReachedTabsLimit() && (
           <>
             <button className="add-tab-button" onClick={() => addPair()}>

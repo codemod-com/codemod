@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { getIntroJsOptions } from "@features/FirstLoginExperience/config";
 import { Lightbulb } from "@phosphor-icons/react";
 import { IconButton } from "@studio/components/button/IconButton";
@@ -6,6 +7,8 @@ import "intro.js/introjs.css";
 import { useEffect, useState } from "react";
 
 export const FirstLoginExperience = () => {
+const { t } = useTranslation("../(website)/studio/features/FirstLoginExperience");
+
   const [isEnabled, setIsEnabled] = useState(false);
   const onStart = () => {
     setIsEnabled(true);
@@ -48,7 +51,7 @@ export const FirstLoginExperience = () => {
       />
       <IconButton
         Icon={Lightbulb}
-        text="Tour"
+        text={t('tour')}
         onClick={onStart}
         hint="Explain the app"
       />

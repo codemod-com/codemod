@@ -1,195 +1,195 @@
 .flex {
-	display: flex;
+  display: flex;
 }
 .gap-4 {
-	column-gap: 4px;
+  column-gap: 4px;
 }
 
 .w-full {
-	width: 100%;
+  width: 100%;
 }
 
 .w-half {
-	width: 50%;
+  width: 50%;
 }
 
 .h-full {
-	height: 100%;
+  height: 100%;
 }
 
 .flex-col {
-	flex-direction: column;
+  flex-direction: column;
 }
 
 .flex-row {
-	flex-direction: row;
+  flex-direction: row;
 }
 .flex-wrap {
-	flex-wrap: wrap;
+  flex-wrap: wrap;
 }
 .flex-nowrap {
-	flex-wrap: nowrap;
+  flex-wrap: nowrap;
 }
 
 .justify-center {
-	justify-content: center;
+  justify-content: center;
 }
 
 .justify-start {
-	justify-content: flex-start;
+  justify-content: flex-start;
 }
 
 .justify-end {
-	justify-content: flex-end;
+  justify-content: flex-end;
 }
 
 .justify-between {
-	justify-content: space-between;
+  justify-content: space-between;
 }
 
 .align-items-center {
-	align-items: center;
+  align-items: center;
 }
 .align-self-center {
-	align-self: center;
+  align-self: center;
 }
 .flex-1 {
-	flex-grow: 1;
+  flex-grow: 1;
 }
 
 .text-center {
-	text-align: center;
+  text-align: center;
 }
 .p-3 {
-	padding: 3px;
+  padding: 3px;
 }
 .p-10 {
-	padding: 10px;
+  padding: 10px;
 }
 .px-5 {
-	padding: 5px;
+  padding: 5px;
 }
 .py-2-5 {
-	padding-top: 2.5px;
-	padding-bottom: 2.5px;
+  padding-top: 2.5px;
+  padding-bottom: 2.5px;
 }
 .pb-2-5 {
-	padding-bottom: 2.5px;
+  padding-bottom: 2.5px;
 }
 .px-10 {
-	padding-left: 10px;
-	padding-right: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 .py-10 {
-	padding-top: 10px;
-	padding-bottom: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 .pb-10 {
-	padding-bottom: 10px;
+  padding-bottom: 10px;
 }
 
 .my-0 {
-	margin-top: 0;
-	margin-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .ml-3 {
-	margin-left: 3px;
+  margin-left: 3px;
 }
 .ml-10 {
-	margin-left: 10px;
+  margin-left: 10px;
 }
 .my-10 {
-	margin-top: 10px;
-	margin-bottom: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 .mb-10 {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 .m-10 {
-	margin: 10px;
+  margin: 10px;
 }
 .mr-10 {
-	margin-right: 10px;
+  margin-right: 10px;
 }
 .mr-2 {
-	margin-right: 2px;
+  margin-right: 2px;
 }
 .mt-2 {
-	margin-top: 2px;
+  margin-top: 2px;
 }
 .mb-2 {
-	margin-bottom: 2px;
+  margin-bottom: 2px;
 }
 .mt-10 {
-	margin-top: 10px;
+  margin-top: 10px;
 }
 .ml-50 {
-	margin-left: 50px;
+  margin-left: 50px;
 }
 
 .rounded {
-	border-radius: 5px;
+  border-radius: 5px;
 }
 
 .mt-0 {
-	margin-top: 0;
+  margin-top: 0;
 }
 
 .right-0 {
-	right: 0;
+  right: 0;
 }
 
 .top-0 {
-	top: 0;
+  top: 0;
 }
 .absolute {
-	position: absolute;
+  position: absolute;
 }
 .text-xl {
-	font-size: 1rem;
+  font-size: 1rem;
 }
 
 .bold {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .cursor-pointer {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .pointer-events-none {
-	pointer-events: none;
+  pointer-events: none;
 }
 
 .user-select-none {
-	user-select: none;
+  user-select: none;
 }
 
 .relative {
-	position: relative;
+  position: relative;
 }
 
 .overflow-hidden {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 .overflow-y-auto {
-	overflow-y: auto;
+  overflow-y: auto;
 }
 
 .codicon,
 .defaultIcon {
-	width: 16px;
-	height: 16px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: inherit;
-	padding: 0 0.5px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: inherit;
+  padding: 0 0.5px;
 }
 
 .codicon svg,
 .defaultIcon svg {
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
 }

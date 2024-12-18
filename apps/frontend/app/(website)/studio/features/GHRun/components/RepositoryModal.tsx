@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type {
   CodemodRunRequest,
   GHBranch,
@@ -32,6 +33,8 @@ export const RepositoryModal = ({
   repositoriesToShow,
   areReposLoading,
 }: RepositoryModalProps) => {
+const { t } = useTranslation("../(website)/studio/features/GHRun/components");
+
   const [selectedRepository, setSelectedRepository] =
     useState<GithubRepository>();
   const selectRepository = (name: GithubRepository["full_name"]) => {
@@ -81,12 +84,12 @@ export const RepositoryModal = ({
 
   return isRepositoryModalShown ? (
     <Modal onClose={hideRepositoryModal} centered transparent={false}>
-      <h2 className="text-center p-2">Run Codemod on Github branch</h2>
+      <h2 className="text-center p-2">{t('run-codemod-on-github-branch')}</h2>
       <DropdownSelector
         isLoading={areReposLoading}
         loadingMessage="Fetching repos"
         items={repositoriesToShow}
-        placeholder="Select a repository (required)"
+        placeholder={t('select-a-repository-required')}
         onSelect={selectRepository}
         selectedValue={selectedRepository}
         propName="full_name"
@@ -96,7 +99,7 @@ export const RepositoryModal = ({
         isLoading={areBranchesLoading}
         items={branchesToShow}
         loadingMessage="Fetching branches"
-        placeholder="Select a branch (required)"
+        placeholder={t('select-a-branch-required')}
         onSelect={selectBranch}
         selectedValue={selectedBranch}
         propName="name"
@@ -108,9 +111,7 @@ export const RepositoryModal = ({
         onClick={handleButtonClick}
         hint={<p className="font-normal">{renderHint()}</p>}
         disabled={isButtonDisabled}
-      >
-        Run Codemod
-      </Button>
+      >{t('run-codemod')}</Button>
     </Modal>
   ) : null;
 };

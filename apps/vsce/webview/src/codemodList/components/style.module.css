@@ -1,22 +1,22 @@
 .textField {
-	flex-grow: 1;
+  flex-grow: 1;
 }
 
 .textField::part(control) {
-	font-size: 12px;
-	opacity: 0.75;
+  font-size: 12px;
+  opacity: 0.75;
 }
 
 .option {
-	min-height: 20px;
-	width: 100%;
-	display: inline-block;
-	line-height: 20px;
+  min-height: 20px;
+  width: 100%;
+  display: inline-block;
+  line-height: 20px;
 }
 
 .autocompleteItems {
-	background-color: var(--vscode-editor-background);
-	padding: 4px;
-	max-height: 250px;
-	overflow-y: auto;
+  background-color: var(--vscode-editor-background);
+  padding: 4px;
+  max-height: 250px;
+  overflow-y: auto;
 }

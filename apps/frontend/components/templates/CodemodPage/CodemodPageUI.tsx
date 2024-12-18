@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Button from "@/components/shared/Button";
 import Icon from "@/components/shared/Icon";
 import Section from "@/components/shared/Section";
@@ -29,6 +30,8 @@ export interface CodemodPageProps {
 }
 
 export default function CodemodPageUI({ data, description }: CodemodPageProps) {
+const { t } = useTranslation("../../components/templates/CodemodPage");
+
   const { cleaned: author } = vercelStegaSplit(`${data?.author}`);
 
   const frameworkIcons = getFilterSection(
@@ -108,8 +111,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
             {currentVersion?.updatedAt && (
               <>
                 <i className="inline-block w-0.5 h-0.5 rounded-full bg-secondary-light dark:bg-secondary-dark" />
-                <span>
-                  Last update{" "}
+                <span>{t('last-update')}
                   {new Date(currentVersion?.updatedAt).toLocaleString("en-us", {
                     month: "short",
                     day: "numeric",
@@ -168,7 +170,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
           {/* Run */}
           <div className="flex w-full flex-col gap-m rounded-[8px] border border-border-light p-s dark:border-border-dark">
             <div className="flex items-center justify-between">
-              <p className="xs-heading">Run</p>
+              <p className="xs-heading">{t('run')}</p>
               {data?.globalLabels?.documentationPopup && (
                 <InfoTooltip
                   cta={data.globalLabels.documentationPopupLink}
@@ -234,12 +236,12 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                   <img
                     src="/logotypes/light/github.svg"
                     className="dark:hidden"
-                    alt="GitHub icon"
+                    alt={t('github-icon-1')}
                   />
                   <img
                     src="/logotypes/dark/github.svg"
                     className="hidden dark:block"
-                    alt="GitHub icon"
+                    alt={t('github-icon-2')}
                   />
                   <a
                     target="_blank"
@@ -263,11 +265,11 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
             </div> */}
             {/* <span className="h-px w-full bg-border-light dark:bg-border-dark" /> */}
             <div className="flex items-center gap-s">
-              <InfoCard value={totalRuns} label="Total runs" />
+              <InfoCard value={totalRuns} label={t('total-runs')} />
               <span className="h-[36px] w-[2px] bg-border-light dark:bg-border-dark" />
               <InfoCard
                 value={String(currentVersion?.version)}
-                label="Version"
+                label={t('version')}
               />
             </div>
             <div className="flex flex-wrap gap-2">

@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 
 import { openLink } from "@/utils";
 import type { ReactNode } from "react";
@@ -19,6 +21,8 @@ export default function RunCTAButton({
   toastMessage,
   toastOptions,
 }: RunCTAButtonProps) {
+const { t } = useTranslation("../../components/shared");
+
   return (
     <Button
       iconPosition="left"
@@ -30,7 +34,7 @@ export default function RunCTAButton({
             src="/icons/cursor-ide.svg"
             width={20}
             height={20}
-            alt="cursor-ide-svg"
+            alt={t('cursor-ide-svg')}
             style={{ marginLeft: "-1rem" }}
           />
         )

@@ -1,45 +1,45 @@
 .root {
-	display: flex;
-	align-items: center;
-	z-index: 1001;
-	position: sticky;
-	height: 35px;
-	top: 0;
-	padding: 4px 8px;
-	background-color: var(--vscode-tab-inactiveBackground);
-	gap: 8px;
+  display: flex;
+  align-items: center;
+  z-index: 1001;
+  position: sticky;
+  height: 35px;
+  top: 0;
+  padding: 4px 8px;
+  background-color: var(--vscode-tab-inactiveBackground);
+  gap: 8px;
 }
 
 .icon {
-	stroke: var(--vscode-icon-foreground);
-	height: 16px;
-	width: 16px;
+  stroke: var(--vscode-icon-foreground);
+  height: 16px;
+  width: 16px;
 }
 
 .actionsContainer {
-	display: flex;
-	gap: 8px;
+  display: flex;
+  gap: 8px;
 }
 
 .actionsContainer span {
-	padding: 8px;
+  padding: 8px;
 }
 
 .checkbox {
-	color: var(--vscode-icon-foreground);
-	margin-left: 32px;
+  color: var(--vscode-icon-foreground);
+  margin-left: 32px;
 }
 
 .buttonGroup {
-	display: flex;
-	margin-left: auto;
-	align-items: center;
-	gap: 8px;
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  gap: 8px;
 }
 
 .buttonGroup h4 {
-	user-select: none;
-	font-size: var(--vscode-editor-font-size);
-	overflow: hidden;
-	text-overflow: ellipsis;
+  user-select: none;
+  font-size: var(--vscode-editor-font-size);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

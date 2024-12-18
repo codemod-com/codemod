@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Icon from "@/components/shared/Icon";
 
 type Props = {
@@ -7,6 +8,8 @@ type Props = {
 };
 
 const AutomationToFrom = (props: Props) => {
+const { t } = useTranslation("../api/og/templates");
+
   return (
     <div
       style={{
@@ -471,7 +474,7 @@ const AutomationToFrom = (props: Props) => {
                   width={36}
                   height={32}
                   src={props.automationFrom.image}
-                  alt="automation-from"
+                  alt={t('automation-from')}
                 />
               )}
             </div>
@@ -513,7 +516,7 @@ const AutomationToFrom = (props: Props) => {
                     width={36}
                     height={32}
                     src={props.automationTo.image}
-                    alt=""
+                    alt={t('empty-string')}
                   />
                 )}
               </div>
@@ -563,9 +566,7 @@ const AutomationToFrom = (props: Props) => {
             lineHeight: "100%",
             color: "rgba(11, 21, 30, 0.60)",
           }}
-        >
-          Codemod Registry
-        </div>
+        >{t('codemod-registry')}</div>
       </div>
     </div>
   );

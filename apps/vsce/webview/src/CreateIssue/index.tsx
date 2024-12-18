@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -32,6 +33,8 @@ type Props = Readonly<{
 }>;
 
 const CreateIssue = (props: Props) => {
+  const { t } = useTranslation("../CreateIssue");
+
   const [title, setTitle] = useState("");
 
   const onChangeTitle = (e: Event | React.FormEvent<HTMLElement>) => {
@@ -98,17 +101,17 @@ const CreateIssue = (props: Props) => {
 
   return (
     <div className={styles.root}>
-      <h1 className={styles.header}>Report codemod issue</h1>
+      <h1 className={styles.header}>{t("report-codemod-issue")}</h1>
       <form onSubmit={handleSubmit} className={styles.form}>
         <VSCodeTextField
-          placeholder="Title"
+          placeholder={t("title")}
           value={title}
           onInput={onChangeTitle}
           className={styles.title}
         >
-          Title
+          {t("title-fragment")}
         </VSCodeTextField>
-        <label className={styles.label}>Description</label>
+        <label className={styles.label}>{t("description")}</label>
         <EditorContent editor={editor} />
 
         <div className={styles.actions}>
@@ -124,7 +127,7 @@ const CreateIssue = (props: Props) => {
             {props.loading ? (
               <div className={styles.loadingContainer}>
                 <VSCodeProgressRing className={styles.progressRing} />
-                <span>Creating...</span>
+                <span>{t("creating")}</span>
               </div>
             ) : (
               "Create Issue"

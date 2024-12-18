@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   VSCodeOption,
   VSCodeTextField,
@@ -34,6 +35,8 @@ export const DirectorySelector = ({
   onChange,
   autocompleteItems,
 }: Props) => {
+  const { t } = useTranslation("../codemodList/components");
+
   const [value, setValue] = useState(initialValue);
   const [focusedOptionIdx, setFocusedOptionIdx] = useState<number | null>(null);
   const [showOptions, setShowOptions] = useState(false);
@@ -121,7 +124,7 @@ export const DirectorySelector = ({
           onInput={handleChange}
           onFocus={handleFocus}
         >
-          --target
+          {t("target")}
         </VSCodeTextField>
         <div className={styles.autocompleteItems}>
           {showOptions &&

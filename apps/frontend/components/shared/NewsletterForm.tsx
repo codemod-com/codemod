@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation, Trans } from "react-i18next";
+
 
 import {
   NEWSLETTER_ENDPOINT,
@@ -11,6 +13,8 @@ import Button from "./Button";
 import Input from "./Input";
 
 export default function NewsletterForm(props: PageCtaDouble) {
+const { t } = useTranslation("../../components/shared");
+
   const { formState, handleSubmit, formRef } = useFormSubmission();
 
   return formState !== "success" ? (
@@ -23,7 +27,7 @@ export default function NewsletterForm(props: PageCtaDouble) {
           onSubmit={handleSubmit}
           action={NEWSLETTER_ENDPOINT}
         >
-          <input name="honeypot" placeholder="honeypot" type="hidden" />
+          <input name="honeypot" placeholder={t('honeypot')} type="hidden" />
 
           <Input
             name="email"
@@ -33,7 +37,7 @@ export default function NewsletterForm(props: PageCtaDouble) {
                 ? "border-error-light dark:border-error-dark"
                 : "",
             )}
-            placeholder="Your email"
+            placeholder={t('your-email')}
             type="email"
             inputMode="email"
             required
@@ -44,36 +48,31 @@ export default function NewsletterForm(props: PageCtaDouble) {
             arrow
             disabled={formState === "loading"}
             loading={formState === "loading"}
-          >
-            Submit
-          </Button>
+          >{t('submit')}</Button>
         </form>
         {formState === "error" ? (
-          <span className="body-s text-error-light dark:text-error-dark">
-            There has been a system error. Please, send your form again.
-          </span>
+          <span className="body-s text-error-light dark:text-error-dark">{t('system-error-message')}</span>
         ) : null}
         {props.privacyLink?.link && (
-          <span className="body-xs text-secondary-light dark:text-secondary-dark">
-            By submitting, you acknowledge codemod&apos;s{" "}
+          <span className="body-xs text-secondary-light dark:text-secondary-dark"><Trans
+i18nKey="submission-acknowledgment-privacy-policy"
+values={{ _props_privacyLink_label_Privacy_Policy_: <>
+              {props.privacyLink?.label || "Privacy Policy"}</> }}
+components={{"0": 
             <Link
               href={props.privacyLink?.link}
               className="underline underline-offset-2"
-            >
-              {props.privacyLink?.label || "Privacy Policy"}
-            </Link>
+             />}}
+/>
           </span>
         )}
       </div>
     </div>
   ) : (
     <div className="flex flex-col items-start py-[80px] lg:px-[52px] lg:pt-[140px]">
-      <h2 className="m-heading text-balance">Thanks! You&apos;re subscribed</h2>
+      <h2 className="m-heading text-balance">{t('subscription-confirmation')}</h2>
       <div className="mt-s">
-        <span className="body-l">
-          Get ready to stay in the loop with all the latest updates, news, and
-          exciting announcements straight to your inbox
-        </span>
+        <span className="body-l">{t('stay-in-the-loop-message')}</span>
       </div>
     </div>
   );

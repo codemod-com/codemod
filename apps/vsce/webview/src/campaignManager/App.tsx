@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import cn from "classnames";
 import type { CaseHash } from "../../../src/cases/types";
 import type { CodemodRunsTree } from "../../../src/selectors/selectCodemodRunsTree";
@@ -31,11 +32,13 @@ const InfoIcon = ({ createdAt, path }: InfoIconProps) => {
 export const App = (
   props: MainWebviewViewProps & { activeTabId: "codemodRuns" },
 ) => {
+  const { t } = useTranslation("../campaignManager");
+
   if (props.codemodRunsTree === null) {
     // no workspace is chosen
     return (
       <p className={styles.welcomeMessage}>
-        No change to review! Run some codemod from "Codemods" tab!
+        {t("no-change-to-review-run-some-codemod-from-codemods-tab")}
       </p>
     );
   }
@@ -43,10 +46,10 @@ export const App = (
   if (props.codemodRunsTree.nodeData.length === 0) {
     return props.codemodExecutionInProgress ? (
       // `nodeData.length` can be zero momentarily even if a codemod is actually in progress
-      <LoadingProgress description="Executing codemod..." />
+      <LoadingProgress description={t("executing-codemod")} />
     ) : (
       <p className={styles.welcomeMessage}>
-        No change to review! Run some codemod from "Codemods" tab!
+        {t("no-change-to-review-run-some-codemod-from-codemods-tab-duplicate")}
       </p>
     );
   }

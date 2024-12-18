@@ -1,4 +1,8 @@
-export const ExampleIcon = () => (
+import { useTranslation } from "react-i18next";
+export const ExampleIcon = () =>  {
+const { t } = useTranslation("../(website)/studio/src/icons");
+
+return (
   <svg
     width="99"
     height="20"
@@ -6,7 +10,7 @@ export const ExampleIcon = () => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <title>Example</title>
+    <title>{t('example')}</title>
     <path
       d="M16.3333 8.33333L14.6667 10L16.3333 11.6667M19.6667 11.6667L21.3333 10L19.6667 8.33333M12.1667 2.5H23.8333C24.7538 2.5 25.5 3.24619 25.5 4.16667V15.8333C25.5 16.7538 24.7538 17.5 23.8333 17.5H12.1667C11.2462 17.5 10.5 16.7538 10.5 15.8333V4.16667C10.5 3.24619 11.2462 2.5 12.1667 2.5Z"
       stroke="#0B151E"
@@ -19,4 +23,5 @@ export const ExampleIcon = () => (
       fill="#0B151E"
     />
   </svg>
-);
+)
+};

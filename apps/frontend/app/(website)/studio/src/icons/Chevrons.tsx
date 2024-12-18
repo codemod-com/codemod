@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Arrows from "@/assets/icons/double-arrow.svg";
 import Image from "next/image";
 
@@ -15,6 +16,8 @@ export const Chevrons = ({
   className?: string;
   direction?: "left" | "right" | "up" | "down";
 }) => {
+const { t } = useTranslation("../(website)/studio/src/icons");
+
   return (
     <Image
       className={className}
@@ -23,7 +26,7 @@ export const Chevrons = ({
         zoom: 0.7,
         transform: `rotate(${degs[direction]}deg)`,
       }}
-      alt="arrow"
+      alt={t('arrow')}
       src={Arrows}
     />
   );

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 type Props = {
   title: string;
   authors: { name: string; image: string }[];
@@ -520,7 +521,10 @@ const BlogArticle = (props: Props) => {
                 marginLeft: "24px",
               }}
             >
-              {props.authors.map((author, idx) => (
+              {props.authors.map((author, idx) =>  {
+const { t } = useTranslation("../api/og/templates");
+
+return (
                 <div
                   key={author.name}
                   style={{
@@ -538,7 +542,7 @@ const BlogArticle = (props: Props) => {
                   {author.image && (
                     <img
                       src={author.image}
-                      alt=""
+                      alt={t('empty-string')}
                       style={{
                         width: "100%",
                         height: "100%",
@@ -547,7 +551,8 @@ const BlogArticle = (props: Props) => {
                     />
                   )}
                 </div>
-              ))}
+              )
+})}
             </div>
             <p
               style={{

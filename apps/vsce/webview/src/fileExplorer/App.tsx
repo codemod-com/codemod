@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useCallback } from "react";
 import type { CaseHash } from "../../../src/cases/types";
 import type {
@@ -52,6 +53,8 @@ export const App = (
       activeTabId: "codemodRuns";
     },
 ) => {
+  const { t } = useTranslation("../fileExplorer");
+
   const { changeExplorerTree, codemodExecutionInProgress } = props;
   const progress = useProgressBar();
   const caseHash = changeExplorerTree?.caseHash ?? null;
@@ -90,7 +93,7 @@ export const App = (
       />
     ) : (
       <p className={styles.welcomeMessage}>
-        Choose a Codemod from "Results" to explore its changes!
+        {t("choose-a-codemod-from-results-to-explore-its-changes")}
       </p>
     );
   }
@@ -108,7 +111,7 @@ export const App = (
           setSearchPhrase={(searchPhrase) =>
             setSearchPhrase(changeExplorerTree.caseHash, searchPhrase)
           }
-          placeholder="Search by file name"
+          placeholder={t("search-by-file-name")}
         />
       )}
       <div className={styles.treeContainer}>

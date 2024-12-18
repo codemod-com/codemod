@@ -1,59 +1,59 @@
 .root {
-	width: 100%;
-	padding: 0 0.5rem;
+  width: 100%;
+  padding: 0 0.5rem;
 }
 
 .form {
-	display: flex;
-	flex-direction: column;
-	row-gap: 8px;
-	padding: 4px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  padding: 4px;
 }
 
 .actionButton {
-	height: 24px;
-	width: 160px;
+  height: 24px;
+  width: 160px;
 }
 
 .formField {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .actions {
-	display: flex;
-	column-gap: 8px;
-	justify-content: flex-end;
+  display: flex;
+  column-gap: 8px;
+  justify-content: flex-end;
 }
 
 .title::part(label) {
-	margin-bottom: 0.5rem;
-	cursor: default;
+  margin-bottom: 0.5rem;
+  cursor: default;
 }
 
 .body::part(label) {
-	margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .label {
-	font-size: var(--type-ramp-base-font-size);
-	line-height: var(--type-ramp-base-line-height);
-	display: block;
-	color: var(--foreground);
-	user-select: none;
+  font-size: var(--type-ramp-base-font-size);
+  line-height: var(--type-ramp-base-line-height);
+  display: block;
+  color: var(--foreground);
+  user-select: none;
 }
 
 .loadingContainer {
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .progressRing {
-	width: 16px;
-	height: 16px;
-	margin-right: 12px;
+  width: 16px;
+  height: 16px;
+  margin-right: 12px;
 }
 
 .progressRing::part(indeterminate-indicator-1) {
-	stroke: var(--vscode-icon-foreground);
+  stroke: var(--vscode-icon-foreground);
 }

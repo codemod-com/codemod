@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 
 import { cx } from "cva";
 import { type KeyboardEvent, useRef } from "react";
@@ -30,6 +32,8 @@ export default function Searchbar({
   keydownHandler = () => {},
   id,
 }: SearchbarProps) {
+const { t } = useTranslation("../../components/shared");
+
   const ref = useRef<HTMLInputElement>(null);
   useDebounce(
     () => {
@@ -59,7 +63,7 @@ export default function Searchbar({
       )}
       <input
         ref={ref}
-        aria-label="Search"
+        aria-label={t('search')}
         type="text"
         className={cx(
           "body-m bg-white placeholder:text-secondary-light  dark:bg-primary-light dark:placeholder:text-secondary-dark",

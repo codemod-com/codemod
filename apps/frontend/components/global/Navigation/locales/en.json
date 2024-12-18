@@ -1,0 +1,18 @@
+{
+  "build": "Build",
+  "codemod-studio": "Codemod Studio",
+  "discover": "Discover",
+  "codemod-registry": "Codemod Registry",
+  "run": "Run",
+  "cli": "CLI",
+  "scale": "Scale",
+  "private-alpha-contact-us": "Private Alpha - Contact Us",
+  "brand": "Brand",
+  "copy-logo-as-a-svg": "Copy logo as a SVG",
+  "copy-wordmark-as-a-svg": "Copy wordmark as a SVG",
+  "brand-guidelines": "Brand guidelines",
+  "go-to-homepage": "Go to homepage",
+  "platform": "Platform",
+  "automation-registry": "Automation Registry",
+  "vs-code-extension": "VS Code Extension"
+}

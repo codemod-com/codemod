@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
@@ -30,6 +31,8 @@ const Button = ({
   active,
   ...restProps
 }: ButtonProps) => {
+const { t } = useTranslation("../(website)/studio/src/components/button");
+
   const buttonClasses = cn(
     "btn",
     color === "gray" && variant === "solid" && "btn-gray btn-gray-solid",
@@ -97,7 +100,7 @@ const Button = ({
               fill="currentFill"
             />
           </svg>
-          <span className="sr-only">Loading...</span>
+          <span className="sr-only">{t('loading')}</span>
         </span>
         {icon && <span className="mr-2">{icon}</span>}
         {children}

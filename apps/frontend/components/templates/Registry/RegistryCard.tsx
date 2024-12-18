@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Markdown from "@/components/global/ReactMarkdown";
 import Icon from "@/components/shared/Icon";
 import { SanityImage } from "@/components/shared/SanityImage";
@@ -20,6 +21,8 @@ import {
 } from "./helpers";
 
 export default function RegistryCard(props: RegistryCardData) {
+const { t } = useTranslation("../../components/templates/Registry");
+
   const { handleFilterChange, prefetchFilterChange } = useRegistryFilters();
 
   const { cleaned: author } = vercelStegaSplit(`${props.author}`);
@@ -61,7 +64,7 @@ export default function RegistryCard(props: RegistryCardData) {
     <li className="flex flex-col items-start gap-m py-l transition-[width] focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light   dark:focus-visible:ring-border-dark">
       <div className="flex flex-col items-start">
         <div>
-          {props.featured && <span className="tag">Featured</span>}
+          {props.featured && <span className="tag">{t('featured')}</span>}
           <SanityLink
             link={{
               _type: "link",

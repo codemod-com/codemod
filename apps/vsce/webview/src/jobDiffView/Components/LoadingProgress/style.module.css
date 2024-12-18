@@ -1,13 +1,13 @@
 .root {
-	padding: 8px;
-	padding-top: calc(8px * 4);
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	row-gap: 8px;
+  padding: 8px;
+  padding-top: calc(8px * 4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 8px;
 }
 
 .progressRing {
-	width: 45px;
-	height: 45px;
+  width: 45px;
+  height: 45px;
 }

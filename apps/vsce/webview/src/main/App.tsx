@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,6 +26,8 @@ declare global {
 }
 
 function App() {
+  const { t } = useTranslation("");
+
   const ref = useRef(null);
   const theme = useTheme();
   const [screenWidth, setScreenWidth] = useState<number | null>(null);
@@ -80,7 +83,7 @@ function App() {
     return (
       <main className="App" ref={ref}>
         <p className="warning">
-          Open a workspace folder to use the Codemod VSCode Extension.
+          {t("open-a-workspace-folder-to-use-the-codemod-vscode-extension")}
         </p>
       </main>
     );

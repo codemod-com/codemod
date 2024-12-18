@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation, Trans } from "react-i18next";
+
 
 import Button from "@/components/shared/Button";
 import Checkbox from "@/components/shared/Checkbox";
@@ -16,6 +18,8 @@ export default function ApplyToJobForm({
   jobTitle: string;
   privacyPolicy?: { label?: string; href?: string };
 }) {
+const { t } = useTranslation("../../components/templates/JobListingPage");
+
   const { formState, handleSubmit, formRef } = useFormSubmission();
 
   switch (formState) {
@@ -29,13 +33,13 @@ export default function ApplyToJobForm({
           action={APPLY_TO_JOB_ENDPOINT}
         >
           <div>
-            <Input name="name" label="Name" placeholder="Name" required />
+            <Input name="name" label={t('name-fragment')} placeholder={t('name-fragment-duplicate')} required />
           </div>
           <div className="mt-6">
             <Input
               name="email"
-              label="Email"
-              placeholder="Placeholder"
+              label={t('email-fragment')}
+              placeholder={t('placeholder-fragment')}
               required
               type="email"
             />
@@ -45,19 +49,21 @@ export default function ApplyToJobForm({
             <Input
               name="message"
               isTextArea
-              label="Message"
-              placeholder="Your message"
+              label={t('message-fragment')}
+              placeholder={t('your-message-fragment')}
               required
             />
           </div>
           <div className="mt-6">
             {privacyPolicy?.href && (
               <Checkbox required className="text-primary">
-                <span className="body-s">
-                  By submitting, you agree to our{" "}
-                  <a href={privacyPolicy?.href} className="underline">
-                    {privacyPolicy?.label || "Privacy Policy"}
-                  </a>
+                <span className="body-s"><Trans
+i18nKey="submission-agreement-fragment"
+values={{ _privacyPolicy_label_Privacy_Policy_: <>
+                    {privacyPolicy?.label || "Privacy Policy"}</> }}
+components={{"0": 
+                  <a href={privacyPolicy?.href} className="underline" />}}
+/>
                 </span>
               </Checkbox>
             )}
@@ -65,8 +71,8 @@ export default function ApplyToJobForm({
           <div className="hidden">
             <Input
               name="job_title"
-              label="Job title"
-              placeholder="Job title"
+              label={t('job-title-fragment')}
+              placeholder={t('job-title-fragment-duplicate')}
               required
               value={jobTitle}
             />
@@ -79,7 +85,7 @@ export default function ApplyToJobForm({
             disabled={formState === "loading"}
             loading={formState === "loading"}
           >
-            <span>Submit</span>
+            <span>{t('submit-button')}</span>
           </Button>
         </form>
       );
@@ -87,22 +93,17 @@ export default function ApplyToJobForm({
     case "success":
       return (
         <div className="flex flex-col items-start gap-m">
-          <h3 className="s-heading">Thank you!</h3>
-          <p className="body-m">
-            We have received your application and will get back to you as soon
-            as possible.
-          </p>
+          <h3 className="s-heading">{t('thank-you-message')}</h3>
+          <p className="body-m">{t('application-received-message')}</p>
         </div>
       );
 
     case "error":
       return (
         <div className="flex flex-col items-start gap-m">
-          <h3 className="s-heading">Something went wrong!</h3>
+          <h3 className="s-heading">{t('error-message')}</h3>
 
-          <LinkButton href="/careers" intent="primary" arrow>
-            Try again
-          </LinkButton>
+          <LinkButton href="/careers" intent="primary" arrow>{t('try-again-message')}</LinkButton>
         </div>
       );
 
