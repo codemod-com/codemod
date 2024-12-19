@@ -1,7 +1,6 @@
 import NavigationLink from "@/components/global/Navigation/NavigationLink";
 import CtaCard from "@/components/shared/CtaCard";
 import Icon, { TechLogo } from "@/components/shared/Icon";
-import RelatedLinks from "@/components/shared/RelatedLinks";
 import { RichText } from "@/components/shared/RichText";
 import { SanityImage } from "@/components/shared/SanityImage";
 import { SanityLink } from "@/components/shared/SanityLink";
@@ -144,30 +143,12 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
           </div>
 
           {/* Footer  */}
-          <div className="relative mt-2xl grid w-full grid-cols-1 gap-8 sm:grid-cols-2 lg:hidden">
-            {props?.relatedArticles ? (
-              <>
-                <RelatedLinks
-                  textStyle="medium"
-                  className="lg:hidden"
-                  title={
-                    props.globalLabels?.relatedArticles || "Related articles"
-                  }
-                  links={props?.relatedArticles.map((article) => ({
-                    title: article?.title || "",
-                    href: article?.pathname?.split("/")[2] || "",
-                  }))}
-                />
-              </>
-            ) : null}
-
-            {isCustomerStory && customerStorySidebar?.articleCta && (
-              <div className="">
-                <CtaCard {...ctaCardProps} />
-                <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent sm:hidden dark:via-emphasis-dark" />
-              </div>
-            )}
-          </div>
+          {isCustomerStory && customerStorySidebar?.articleCta && (
+            <div className="relative mt-2xl grid w-full grid-cols-1 gap-8 sm:grid-cols-2 lg:hidden">
+              <CtaCard {...ctaCardProps} />
+              <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent sm:hidden dark:via-emphasis-dark" />
+            </div>
+          )}
         </div>
       </div>
     </Section>

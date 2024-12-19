@@ -94,7 +94,7 @@ const services: Array<{
     type: "http",
     available: true,
     webhook:
-      "https://api.instatus.com/v3/integrations/webhook/clzbu3lnj92520kcn6cl27ceck",
+      "https://api.instatus.com/v3/integrations/webhook/cm4l90uo5000i11bu1bb6ryk7",
   },
   {
     name: "ModGPT Service",

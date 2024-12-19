@@ -4,7 +4,7 @@ import { languageToPrismId } from "@/components/shared/pt.blocks/CodeSnippet";
 import theme from "@/styles/codeSnippetTheme";
 import clsx from "clsx";
 import { cx } from "cva";
-import { Inconsolata } from "next/font/google";
+import { GeistMono } from "geist/font/mono";
 import { Highlight, Prism } from "prism-react-renderer";
 import { isValidElement, useEffect, useState } from "react";
 
@@ -12,12 +12,6 @@ type Props = {
   children: React.ReactNode[];
   scrollable: boolean;
 };
-
-const inconsolata = Inconsolata({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--inconsolata",
-});
 
 const getCodeProps = (
   children: React.ReactNode[],
@@ -86,8 +80,8 @@ const CodeBlock = ({ children, scrollable = true }: Props) => {
   return (
     <div
       className={clsx(
-        "codeblock relative mb-10 h-full rounded-[8px] bg-emphasis-light/5 p-4 pr-12 dark:bg-emphasis-dark/10",
-        `${inconsolata.variable} font-mono text-lg`,
+        "codeblock relative mb-10 h-full dark:bg-black/10 bg-black/5 rounded-lg border-black/10 dark:border-white/10 p-4 pr-12",
+        `${GeistMono.className} font-mono`,
         {
           "overflow-hidden": scrollable,
         },

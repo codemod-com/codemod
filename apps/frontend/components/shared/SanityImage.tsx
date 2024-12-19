@@ -1,4 +1,5 @@
 import { getImageProps } from "@/utils/getImageProps";
+import clsx from "clsx";
 import type { CSSProperties } from "react";
 import type React from "react";
 import { preload } from "react-dom";
@@ -7,13 +8,6 @@ type SanityImageBaseProps = {
   alt?: string;
   loading?: "lazy" | "eager";
   preload?: boolean;
-  /**
-   * If this <img> component's size is constrained in ways that force it to have a different
-   * aspect-ratio than the native image, then `applyHotspot` will apply a CSS `object-position`
-   * to reflect the hotspot selected by editors in Sanity.
-   *
-   * @see https://toolkit.tinloof.com/images
-   */
   applyHotspot?: boolean;
   elProps?: Partial<
     React.DetailedHTMLProps<
@@ -30,41 +24,74 @@ export function SanityImage({
   loading = "lazy",
   ...props
 }: SanityImageBaseProps) {
-  const imageProps = getImageProps(props);
+  const image = props.image;
+  const maxWidth = props.maxWidth || 0;
 
+  if (!image) return null;
+
+  // Handle light/dark mode images
+  const lightImage = image?.lightImage || image; // Fallback for legacy
+  const darkImage = image?.darkImage;
+
+  // Get image props
+  const lightProps = lightImage?.asset
+    ? getImageProps({ image: lightImage, maxWidth })
+    : null;
+  const darkProps = darkImage?.asset
+    ? getImageProps({ image: darkImage, maxWidth })
+    : null;
+
+  // Extract className from elProps to avoid spreading it
+  const { className, ...restElProps } = elProps;
+
+  // Apply hotspot styles
   const hotspotStyle: CSSProperties = props.applyHotspot
     ? {
         objectFit: "cover",
-        objectPosition: props.image?.hotspot
-          ? `${props.image?.hotspot.x * 100}% ${props.image?.hotspot.y * 100}%`
+        objectPosition: lightImage?.hotspot
+          ? `${lightImage.hotspot.x * 100}% ${lightImage.hotspot.y * 100}%`
           : undefined,
       }
     : {};
-  const style = { ...hotspotStyle, ...imageProps.style, ...elProps.style };
 
-  if (!imageProps?.src) {
-    return null;
-  }
+  const style = { ...hotspotStyle, ...lightProps?.style, ...restElProps.style };
 
-  if (shouldPreload) {
-    preload(imageProps.src as string, {
+  // Preload logic for light mode image
+  if (shouldPreload && lightProps?.src) {
+    preload(lightProps.src as string, {
       fetchPriority: "high",
-      imageSizes: elProps.sizes ?? imageProps.sizes,
-      imageSrcSet: elProps.srcSet ?? imageProps.srcSet,
-      // @ts-ignore
+      imageSizes: restElProps.sizes ?? lightProps.sizes,
+      imageSrcSet: restElProps.srcSet ?? lightProps.srcSet,
       as: "image",
     });
   }
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={imageProps.src as string}
-      alt={alt || props.image.alt || props.image.caption || ""}
-      {...imageProps}
-      {...elProps}
-      style={style}
-      loading={loading}
-    />
+    <>
+      {/* Light Mode Image */}
+      {lightProps?.src && (
+        <img
+          src={lightProps.src}
+          alt={alt || lightImage?.alt || ""}
+          className={clsx(
+            darkProps?.src && "block dark:hidden",
+            className, // Add user-provided className here
+          )}
+          style={style}
+          {...restElProps} // Spread elProps without className
+        />
+      )}
+
+      {/* Dark Mode Image */}
+      {darkProps?.src && (
+        <img
+          src={darkProps.src}
+          alt={alt || darkImage?.alt || ""}
+          className={clsx("hidden dark:block", className)}
+          style={style}
+          {...restElProps}
+        />
+      )}
+    </>
   );
 }
