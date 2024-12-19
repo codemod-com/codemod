@@ -47,9 +47,19 @@ const TableOfContents = ({
 
   const scrollToPt = (ptId: string) => {
     const ptElem = document.getElementById(ptId);
-    ptElem?.scrollIntoView({
-      behavior: "smooth",
-    });
+    const navigationElem = document.getElementById("desktop-navigation");
+
+    if (ptElem && navigationElem) {
+      const navHeight = navigationElem.offsetHeight || 0; // Get navigation element height
+      const ptOffsetTop = ptElem.offsetTop; // Get the target element's top offset
+      const targetScrollPosition = ptOffsetTop - navHeight; // Adjust position
+
+      // Smooth scroll to the target position
+      window.scrollTo({
+        top: targetScrollPosition,
+        behavior: "smooth",
+      });
+    }
   };
 
   const updateTyAmount = useCallback(

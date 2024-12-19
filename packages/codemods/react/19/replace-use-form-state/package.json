@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/codemod-react-replace-use-form-state",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "private": true,
   "dependencies": {},
   "devDependencies": {

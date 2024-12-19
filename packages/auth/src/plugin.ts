@@ -64,25 +64,37 @@ export async function getAuthPlugin(authBackendUrl: string) {
       ) => {
         try {
           const authHeader = request.headers.authorization;
+          const apiKey = request.headers["x-api-key"] as string;
 
-          if (!authHeader) {
+          if (authHeader) {
+            const { data } = await axios.get(`${authBackendUrl}/userData`, {
+              headers: {
+                Authorization: authHeader,
+              },
+            });
+
+            const { user, organizations, allowedNamespaces } = data;
+
+            request.user = user;
+            request.organizations = organizations;
+            request.allowedNamespaces = allowedNamespaces;
+          } else if (apiKey) {
+            const { data } = await axios.get(`${authBackendUrl}/apiUserData`, {
+              headers: {
+                "x-api-key": apiKey,
+              },
+            });
+
+            const { user, organizations, allowedNamespaces } = data;
+
+            request.user = user;
+            request.organizations = organizations;
+            request.allowedNamespaces = allowedNamespaces;
+          } else {
             request.user = undefined;
             request.organizations = undefined;
             request.allowedNamespaces = undefined;
-            return;
           }
-
-          const { data } = await axios.get(`${authBackendUrl}/userData`, {
-            headers: {
-              Authorization: authHeader,
-            },
-          });
-
-          const { user, organizations, allowedNamespaces } = data;
-
-          request.user = user;
-          request.organizations = organizations;
-          request.allowedNamespaces = allowedNamespaces;
         } catch (error) {
           console.error(error);
           reply.code(401).send({ error: "Unauthorized" });

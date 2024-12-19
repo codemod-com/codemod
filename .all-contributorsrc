@@ -373,6 +373,34 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "poswalsameer",
+      "name": "Sameer Poswal",
+      "avatar_url": "https://avatars.githubusercontent.com/u/106386145?v=4",
+      "profile": "https://github.com/poswalsameer",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "stramel",
+      "name": "Michael Stramel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/855184?v=4",
+      "profile": "https://github.com/stramel",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "spirulence",
+      "name": "Cameron Seebach",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1297151?v=4",
+      "profile": "https://github.com/spirulence",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -15,7 +15,6 @@ import {
   execPromise,
   getCodemodRc,
 } from "@codemod-com/utilities";
-import open from "open";
 import { version as cliVersion } from "#/../package.json";
 import { getDiff, getDiffScreen } from "#dryrun-diff.js";
 import { fetchCodemod, populateCodemodArgs } from "#fetch-codemod.js";
@@ -27,6 +26,7 @@ import type { TelemetryEvent } from "#telemetry.js";
 import type { NamedFileCommand } from "#types/commands.js";
 import { originalStdoutWrite } from "#utils/constants.js";
 import { logsPath, writeLogs } from "#utils/logs.js";
+import { open } from "../utils/open.js";
 
 const checkFileTreeVersioning = async (target: string) => {
   let force = true;
@@ -102,7 +102,7 @@ export const handleRunCliCommand = async (options: {
   const nameOrPath = args._.at(0)?.toString() ?? args.source ?? null;
   if (nameOrPath === null) {
     if (args.logs) {
-      return open(logsPath);
+      return open(logsPath, printer);
     }
 
     throw new Error("Codemod to run was not specified!");

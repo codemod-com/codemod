@@ -41,8 +41,8 @@ function BlogGradientBlob() {
   return (
     <div
       className={cx(
-        "pointer-events-none absolute ",
-        "gradient-planet -bottom-[15%] -right-40 z-0 h-[390px] w-[390px] shrink-0 rotate-[151.909deg]  rounded-[390.038px] opacity-30 blur-[30px]  sm:-right-[20%] sm:h-[550px] sm:w-[620px]  lg:-bottom-28 lg:h-[662px] lg:w-[662px] lg:blur-[90px] dark:opacity-10",
+        "pointer-events-none absolute max-w-[90vw]",
+        "gradient-planet -bottom-[15%] right-0 z-0 h-[320px] w-[320px] rounded-full opacity-30 blur-[30px] sm:h-[550px] sm:w-[620px]  lg:-bottom-28 lg:h-[662px] lg:w-[662px] lg:blur-[90px] dark:opacity-10",
       )}
     />
   );

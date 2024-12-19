@@ -29,14 +29,14 @@ export const SearchResults = ({
 
   return (
     <div className="scrollbar-color relative z-40">
-      <div className="absolute right-0 top-4 z-10 w-full md:w-96 lg:w-[560px] ">
-        <div className="overflow-y border-secondary-dark-light max-h-80 overflow-x-hidden rounded-lg border bg-white dark:border-tertiary-dark dark:bg-background-dark">
-          <div className="mx-6 my-2">
+      <div className="absolute right-0 top-4 z-10 w-full md:w-96 lg:w-[560px]">
+        <div className="overflow-y border-secondary-dark-light/20 max-h-[360px] overflow-x-hidden rounded border bg-white/90 dark:border-tertiary-dark/10 dark:bg-background-dark/90 backdrop-blur-lg shadow-xl">
+          <div className="m-4">
             {articlesData.length > 0 ? (
               articlesData.map((article) => (
                 <div
                   key={article._id}
-                  className="relative cursor-pointer py-4"
+                  className="relative cursor-pointer pb-8"
                   onClick={handleScroll}
                 >
                   {article.pathname && (
@@ -76,11 +76,9 @@ export const SearchResults = ({
               ))
             ) : (
               <div className="py-2">
-                <div className="flex flex-col gap-2">
-                  <h6 className="copy-m truncate font-bold dark:text-primary-dark">
-                    {noResultsText}
-                  </h6>
-                </div>
+                <h6 className="copy-m text-center truncate font-bold dark:text-primary-dark">
+                  {noResultsText}
+                </h6>
               </div>
             )}
           </div>

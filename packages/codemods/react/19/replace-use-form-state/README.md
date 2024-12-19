@@ -26,7 +26,7 @@ function StatefulForm({}) {
 ### After:
 
 ```ts
-import { useActionState } from "react-dom";
+import { useActionState } from "react";
 
 async function increment(previousState, formData) {
   return previousState + 1;
@@ -57,10 +57,10 @@ function StatefulForm({}) {
 ### After:
 
 ```ts
-import * as ReactDOM from "react-dom";
+import { useActionState } from "react";
 
 function StatefulForm({}) {
-  const [state, formAction] = ReactDOM.useActionState(increment, 0);
+  const [state, formAction] = useActionState(increment, 0);
   return <form></form>;
 }
 ```

@@ -413,6 +413,8 @@ export const publishHandler: RouteHandler<{
             to: codemodRc.applicability?.to?.map((tuple) => tuple.join(" ")),
             engine: codemodRc.engine,
             publishedAt: createdAtTimestamp,
+            bucket,
+            uploadKey,
           },
           author: {
             username,
