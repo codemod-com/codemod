@@ -299,6 +299,7 @@ export const handlePublishCliCommand = async (options: {
       source,
       esm,
       codemodRc.engine,
+      false,
     ).catch(() => null);
 
     if (builtExecutable === null) {

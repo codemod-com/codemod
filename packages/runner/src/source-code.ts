@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { getEntryPath, isJavaScriptName } from "@codemod-com/utilities";
 import esbuild from "esbuild";
+import { glob } from "glob";
 import * as v from "valibot";
 
 export type TransformFunction = (
@@ -183,7 +184,22 @@ export const getCodemodExecutable = async (
   source: string,
   esm?: boolean,
   engine?: string,
+  shouldCheckForExisting = true,
 ) => {
+  if (shouldCheckForExisting) {
+    const existing = await glob(BUILT_SOURCE_GLOB, {
+      cwd: source,
+      absolute: true,
+    });
+
+    if (existing.length > 0) {
+      // biome-ignore lint: it exists
+      return await readFile(existing[0]!, { encoding: "utf8" }).catch(() => {
+        throw new Error(`Could not read ${existing[0]}`);
+      });
+    }
+  }
+
   const { path: entryPoint } = await getEntryPath({
     source,
     throwOnNotFound: true,
