@@ -299,6 +299,7 @@ export const handlePublishCliCommand = async (options: {
       source,
       esm,
       codemodRc.engine,
+      false,
     ).catch(() => null);
 
     if (builtExecutable === null) {
@@ -309,6 +310,14 @@ export const handlePublishCliCommand = async (options: {
         ),
       );
     }
+
+    const cdmdDistPath = join(source, "cdmd_dist");
+    await fs.promises.mkdir(cdmdDistPath, { recursive: true });
+    await fs.promises.writeFile(
+      join(cdmdDistPath, "index.cjs"),
+      builtExecutable,
+      "utf8",
+    );
 
     codemodFileBuffers.push({
       name: DEFAULT_BUILD_PATH,
