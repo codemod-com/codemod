@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 
 import { useLiveMode } from "@sanity/react-loader";
 import { VisualEditing } from "next-sanity";
@@ -31,6 +33,8 @@ export default function LiveVisualEditing() {
 }
 
 function PreviewIndicator() {
+const { t } = useTranslation("../components");
+
   return (
     <span className="fixed bottom-2 left-2 inline-flex items-center gap-x-1.5 rounded-md bg-pink-100 px-2 py-1 font-medium text-xs text-pink-700">
       <svg
@@ -39,8 +43,6 @@ function PreviewIndicator() {
         aria-hidden="true"
       >
         <circle cx={3} cy={3} r={3} />
-      </svg>
-      Preview mode
-    </span>
+      </svg>{t('preview-mode')}</span>
   );
 }

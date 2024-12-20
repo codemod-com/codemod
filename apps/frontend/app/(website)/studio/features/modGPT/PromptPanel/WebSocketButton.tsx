@@ -1,3 +1,4 @@
+import { useTranslation, Trans } from "react-i18next";
 import type { useAiService } from "@chatbot/useAiService";
 import type { useCodemodAI } from "@chatbot/useAiService/codemodAI/useCodemodAI";
 import ButtonWithTooltip from "@studio/components/button/BottonWithTooltip";
@@ -12,18 +13,18 @@ export const WebSocketButton = ({
   >["startIterativeCodemodGeneration"];
   isLoading: ReturnType<typeof useAiService>["isLoading"];
 }) => {
+const { t } = useTranslation("(website)/studio/features/modGPT/PromptPanel");
+
   return (
     <ButtonWithTooltip
       tooltipContent={
-        <>
-          with selected model and Codemod’s iterative AI system.
-          <Link
+        <><Trans
+i18nKey="with-selected-model-and-codemods-iterative-ai-system"
+components={{"0": <Link
             style={{ color: "blue" }}
             href="https://codemod.com/blog/iterative-ai-system"
-          >
-            {" "}
-            Learn more
-          </Link>
+           />}}
+/>
         </>
       }
       variant="default"
@@ -32,8 +33,6 @@ export const WebSocketButton = ({
       // className="group my-0 h-8 whitespace-nowrap !py-0 text-xs font-bold bg-primary"
       onClick={handleButtonClick}
       disabled={isLoading}
-    >
-      Autogenerate with Codemod AI
-    </ButtonWithTooltip>
+    >{t('autogenerate-with-codemod-ai')}</ButtonWithTooltip>
   );
 };

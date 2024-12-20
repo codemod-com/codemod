@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 
 import { cx } from "cva";
 import { useState } from "react";
@@ -18,6 +20,8 @@ export default function Snippet({
   onCopy,
   toastText = "Copied command to clipboard",
 }: SnippetProps) {
+const { t } = useTranslation("../components/shared");
+
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -65,7 +69,7 @@ export default function Snippet({
           )}
           onClick={handleCopy}
         >
-          {variant === "primary" && <span>Try</span>}
+          {variant === "primary" && <span>{t('try')}</span>}
           <Icon name="copy" className="h-4 w-4" />
         </button>
       ) : (
@@ -79,7 +83,7 @@ export default function Snippet({
             },
           )}
         >
-          {variant === "primary" && <span>Copied</span>}
+          {variant === "primary" && <span>{t('copied')}</span>}
           <Icon name="check" className="h-4 w-4" />
         </button>
       )}

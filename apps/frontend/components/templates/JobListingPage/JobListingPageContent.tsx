@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import NavigationLink from "@/components/global/Navigation/NavigationLink";
 import CtaCard from "@/components/shared/CtaCard";
 import Icon from "@/components/shared/Icon";
@@ -7,6 +8,8 @@ import type { Job } from "@/types";
 import ApplyToJobForm from "./ApplyToJobForm";
 
 export default function JobListingPageContent(props: Job) {
+const { t } = useTranslation("../components/templates/JobListingPage");
+
   return (
     <div className="relative flex w-full flex-col items-start justify-center gap-l px-s pb-xl pt-[calc(var(--header-height)+24px)] lg:gap-2xl lg:px-[128px] lg:pb-[80px]">
       {/* Link back to /careers */}
@@ -88,11 +91,11 @@ export default function JobListingPageContent(props: Job) {
       >
         {/* Left */}
         <div className="block w-full max-w-none lg:hidden">
-          <h2 className="l-heading">Apply to position</h2>
+          <h2 className="l-heading">{t('apply-to-position-1')}</h2>
         </div>
 
         <div className="relative hidden w-full max-w-none pr-2xl lg:block">
-          <h2 className="l-heading">Apply to position</h2>
+          <h2 className="l-heading">{t('apply-to-position-2')}</h2>
           <div className="absolute right-0 top-0 hidden h-full w-[1px] bg-gradient-to-b from-transparent via-[#0b151e39] via-10% to-transparent to-95% lg:block dark:via-emphasis-dark" />
         </div>
 

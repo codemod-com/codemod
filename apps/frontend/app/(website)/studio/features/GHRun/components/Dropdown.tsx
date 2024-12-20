@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
 import {
   Combobox,
@@ -33,6 +34,8 @@ export const DropdownSelector = <T,>({
   isLoading = false,
   loadingMessage = "Fetching",
 }: DropdownSelectorProps<T>) => {
+const { t } = useTranslation("(website)/studio/features/GHRun/components");
+
   const [repoSelectorOpen, setRepoSelectorOpen] = useState(false);
   const [valueToFilterBy, setValueToFilterBy] = useState<string>();
 
@@ -102,7 +105,7 @@ export const DropdownSelector = <T,>({
               </div>
               <Combobox
                 autoSelect
-                placeholder="Search"
+                placeholder={t('search')}
                 className="combobox w-full"
                 // Ariakit's Combobox manually triggers a blur event on virtually
                 // blurred items, making them work as if they had actual DOM

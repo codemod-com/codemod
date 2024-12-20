@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
 import { MagicWand, Stop as StopIcon } from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
@@ -14,13 +15,14 @@ export const ControlButtons: React.FC<ControlButtonsProps> = ({
   stop,
   expandedHelper,
   toggleHelper,
-}) => (
+}) =>  {
+const { t } = useTranslation("(website)/studio/features/modGPT/PromptPanel");
+
+return (
   <div className="flex h-10 items-center justify-center m-2">
     {isLoading && (
       <Button variant="outline" onClick={stop} className="bg-background">
-        <StopIcon className="mr-2" />
-        Stop generating
-      </Button>
+        <StopIcon className="mr-2" />{t('stop-generating')}</Button>
     )}
     <Button
       variant="outline"
@@ -39,4 +41,5 @@ export const ControlButtons: React.FC<ControlButtonsProps> = ({
       <MagicWand />
     </Button>
   </div>
-);
+)
+};

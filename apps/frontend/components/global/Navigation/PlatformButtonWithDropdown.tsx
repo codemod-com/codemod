@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import useDebounce from "@/app/(website)/studio/src/hooks/useDebounce";
 import Icon from "@/components/shared/Icon";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -6,6 +7,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function PlatformButtonWithDropdown() {
+const { t } = useTranslation("../components/global/Navigation");
+
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -62,9 +65,7 @@ export default function PlatformButtonWithDropdown() {
           onPointerDownOutside={handleMouseLeave}
           className="z-[99] min-w-[250px] animate-slideDownAndFade select-none rounded-[8px] border-[1px] border-border-light bg-primary-dark p-s shadow-sm dark:border-border-dark dark:bg-primary-light dark:shadow-none"
         >
-          <div className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark">
-            Build
-          </div>
+          <div className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark">{t('build')}</div>
           <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-2 dark:border-b-border-dark">
             <DropdownMenu.Item asChild>
               <Link
@@ -73,14 +74,12 @@ export default function PlatformButtonWithDropdown() {
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >
                 <Icon name="codemod-studio" className="h-5 w-5" />
-                <span>Codemod Studio</span>
+                <span>{t('codemod-studio')}</span>
               </Link>
             </DropdownMenu.Item>
           </DropdownMenu.Group>
 
-          <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">
-            Discover
-          </div>
+          <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">{t('discover')}</div>
           <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-2 dark:border-b-border-dark">
             <DropdownMenu.Item asChild>
               <Link
@@ -89,14 +88,12 @@ export default function PlatformButtonWithDropdown() {
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >
                 <Icon name="layers-2" className="h-5 w-5" />
-                <span>Codemod Registry</span>
+                <span>{t('codemod-registry')}</span>
               </Link>
             </DropdownMenu.Item>
           </DropdownMenu.Group>
 
-          <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">
-            Run
-          </div>
+          <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">{t('run')}</div>
           <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-2 dark:border-b-border-dark">
             <DropdownMenu.Item asChild>
               <Link
@@ -105,14 +102,12 @@ export default function PlatformButtonWithDropdown() {
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >
                 <Icon name="terminal" className="h-5 w-5" />
-                <span>CLI</span>
+                <span>{t('cli')}</span>
               </Link>
             </DropdownMenu.Item>
           </DropdownMenu.Group>
 
-          <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">
-            Scale
-          </div>
+          <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">{t('scale')}</div>
           <DropdownMenu.Group className="pt-s">
             <DropdownMenu.Item asChild>
               <Link
@@ -121,7 +116,7 @@ export default function PlatformButtonWithDropdown() {
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >
                 <Icon name="codemod-studio" className="h-5 w-5" />
-                <span>Private Alpha - Contact Us</span>
+                <span>{t('private-alpha-contact-us')}</span>
               </Link>
             </DropdownMenu.Item>
           </DropdownMenu.Group>

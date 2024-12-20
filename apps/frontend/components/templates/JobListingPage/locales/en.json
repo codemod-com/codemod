@@ -1,0 +1,18 @@
+{
+  "apply-to-position-1": "Apply to position",
+  "apply-to-position-2": "Apply to position",
+  "name-label": "\"Name\"",
+  "name-label-duplicate": "\"Name\"",
+  "email-label": "\"Email\"",
+  "placeholder-label": "\"Placeholder\"",
+  "message-label": "\"Message\"",
+  "your-message-placeholder": "\"Your message\"",
+  "submission-agreement-message": "By submitting, you agree to our <0>{{_privacyPolicy_label_Privacy_Policy_}}</0>",
+  "job-title-label": "\"Job title\"",
+  "job-title-label-duplicate": "\"Job title\"",
+  "submit-button": "Submit",
+  "thank-you-message": "Thank you!",
+  "application-received-message": "We have received your application and will get back to you as soon as possible.",
+  "error-message": "Something went wrong!",
+  "try-again-message": "Try again"
+}

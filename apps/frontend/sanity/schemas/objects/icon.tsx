@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Icon, {
   IconId,
   TechLogoId,
@@ -58,6 +59,8 @@ const StyledFlex = styled(Flex)`
 `;
 
 function CustomSelect(props: any) {
+const { t } = useTranslation("../sanity/schemas/objects");
+
   const [open, setOpen] = useState(false);
   const onClose = useCallback(() => setOpen(false), []);
   const onOpen = useCallback(() => setOpen(true), []);
@@ -132,7 +135,7 @@ function CustomSelect(props: any) {
             padding={3}
             gap={4}
           >
-            <Text>Click to select an Icon</Text>
+            <Text>{t('click-to-select-an-icon')}</Text>
           </StyledFlex>
         )}
       </Flex>
@@ -148,7 +151,7 @@ function CustomSelect(props: any) {
           <Box padding={4}>
             <TextInput
               onChange={(event) => setSearch(event.currentTarget.value)}
-              placeholder="Search for an icon"
+              placeholder={t('search-for-an-icon')}
               icon={SearchIcon}
               value={search}
             />

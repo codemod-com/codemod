@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 import { Drawer } from "vaul";
 
 import Button from "@/components/shared/Button";
@@ -17,6 +19,8 @@ export default function MobileFilterComponent({
   automationFilters?: RegistryIndexPayload["automationFilters"];
   filterIconDictionary?: RegistryIndexPayload["filterIconDictionary"];
 }) {
+const { t } = useTranslation("../components/templates/Registry");
+
   const { mobileOpen, toggleSidebar } = useSidebar();
   const { toggleFilters } = useRegistryFilters();
 
@@ -60,16 +64,12 @@ export default function MobileFilterComponent({
                   toggleFilters(true);
                   toggleSidebar();
                 }}
-              >
-                Clear and close
-              </Button>
+              >{t('clear-and-close')}</Button>
               <Button
                 className="w-full"
                 intent="primary"
                 onClick={() => toggleSidebar()}
-              >
-                Apply filters
-              </Button>
+              >{t('apply-filters')}</Button>
             </div>
           </Drawer.Content>
         </Drawer.Portal>

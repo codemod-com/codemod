@@ -1,9 +1,12 @@
+import { useTranslation } from "react-i18next";
 type Props = {
   title: string;
   imageUrl: string;
 };
 
 const Registry = (props: Props) => {
+const { t } = useTranslation("api/og/templates");
+
   return (
     <div
       style={{
@@ -438,7 +441,7 @@ const Registry = (props: Props) => {
         </div>
         {props.imageUrl && (
           <img
-            alt=""
+            alt={t('empty-string')}
             style={{
               marginTop: "40px",
             }}

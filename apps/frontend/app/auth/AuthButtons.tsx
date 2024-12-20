@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import WButton from "@/components/shared/Button";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { SignIn as SignInIcon } from "@phosphor-icons/react";
@@ -9,6 +10,8 @@ const AuthButtons = ({
   variant = "studio",
   redirectUrl,
 }: { variant: "studio" | "www"; redirectUrl: string }) => {
+const { t } = useTranslation("auth");
+
   const isStudio = variant === "studio";
   const router = useRouter();
 
@@ -27,9 +30,7 @@ const AuthButtons = ({
           variant="outline"
           intent="inline"
         >
-          {isStudio && <SignInIcon className="mr-2 h-4 w-4" />}
-          Sign in
-        </Button>
+          {isStudio && <SignInIcon className="mr-2 h-4 w-4" />}{t('sign-in')}</Button>
       </SignedOut>
       <SignedIn>
         <div className="flex items-center gap-2">

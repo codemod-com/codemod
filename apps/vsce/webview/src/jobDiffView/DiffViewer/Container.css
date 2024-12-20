@@ -1,69 +1,69 @@
 .container {
-	width: 100%;
-	display: flex;
-	font-family: var(--vscode-editor-font-family);
+  width: 100%;
+  display: flex;
+  font-family: var(--vscode-editor-font-family);
 }
 
 .checkbox-container {
-	padding: 2px 10px;
-	background-color: var(--checkbox-background);
+  padding: 2px 10px;
+  background-color: var(--checkbox-background);
 }
 
 .diff-title {
-	padding: 5px 8px;
-	background: var(--vscode-editor-background);
-	border-radius: 3px;
-	overflow: hidden;
+  padding: 5px 8px;
+  background: var(--vscode-editor-background);
+  border-radius: 3px;
+  overflow: hidden;
 }
 
 .highlighted-text {
-	color: var(--vscode-editorSuggestWidget-focusHighlightForeground);
-	padding: 5px 0px 5px 8px;
-	background: transparent;
-	border-radius: 3px;
-	overflow: hidden;
+  color: var(--vscode-editorSuggestWidget-focusHighlightForeground);
+  padding: 5px 0px 5px 8px;
+  background: transparent;
+  border-radius: 3px;
+  overflow: hidden;
 }
 
 .diff-changes {
-	padding: 2px 4px;
-	margin-left: 2px;
-	border-radius: 2px;
+  padding: 2px 4px;
+  margin-left: 2px;
+  border-radius: 2px;
 }
 
 .diff-removed {
-	color: #cb3b3b;
+  color: #cb3b3b;
 }
 .diff-added {
-	color: #3ac06b;
+  color: #3ac06b;
 }
 
 /* VSCodeButton creates a shadow <button /> element with part='control' */
 .vscode-button::part(control):focus {
-	outline: none;
+  outline: none;
 }
 
 .icon-container {
-	background-color: var(--vscode-editor-background);
-	border-radius: 5px;
-	margin-left: 4px;
-	overflow: hidden;
+  background-color: var(--vscode-editor-background);
+  border-radius: 5px;
+  margin-left: 4px;
+  overflow: hidden;
 }
 
 .icon {
-	width: 32px;
-	height: 32px;
-	margin-left: 22px;
-	stroke: var(--vscode-editor-foreground);
+  width: 32px;
+  height: 32px;
+  margin-left: 22px;
+  stroke: var(--vscode-editor-foreground);
 }
 
 /** monaco fix **/
 .monaco-diff-editor .diffViewport {
-	/** Override the monaco css **/
-	background-color: transparent !important;
+  /** Override the monaco css **/
+  background-color: transparent !important;
 }
 
 .copy-icon {
-	stroke: var(--vscode-icon-foreground);
-	height: 18px;
-	width: 18px;
+  stroke: var(--vscode-icon-foreground);
+  height: 18px;
+  width: 18px;
 }

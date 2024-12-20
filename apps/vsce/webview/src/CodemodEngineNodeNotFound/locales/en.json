@@ -1,0 +1,5 @@
+{
+  "halfway-there": "Halfway there!",
+  "install-codemod-cli": "Use one of the two commands below to install the latest Codemod CLI and complete the installation:",
+  "reminder-codemod-cli-centric": "Reminder, Codemod is CLI-centric so you can use its core features without an IDE and easily integrate it with the existing tools in your workflow."
+}

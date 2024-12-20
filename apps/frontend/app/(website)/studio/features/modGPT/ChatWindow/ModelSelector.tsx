@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
 import { type LLMEngine, llmEngines } from "@codemod-com/utilities";
 import { useTheme } from "@context/useTheme";
@@ -11,6 +12,8 @@ import {
 import { useCFSStore } from "app/(website)/studio/src/store/CFS";
 
 export const EngineSelector = () => {
+const { t } = useTranslation("(website)/studio/features/modGPT/ChatWindow");
+
   const {
     AIAssistant: { engine },
     setEngine,
@@ -28,9 +31,7 @@ export const EngineSelector = () => {
           className={cn("mr-[0.75rem] text-xs font-light text-slate-500", {
             "text-slate-200": isDark,
           })}
-        >
-          LLM:
-        </span>
+        >{t('llm')}</span>
         <SelectValue placeholder={engine} />
       </SelectTrigger>
       <SelectContent>

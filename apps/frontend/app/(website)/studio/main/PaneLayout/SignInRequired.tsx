@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useTheme } from "@/app/context";
 import ChevronRightSVG from "@/assets/icons/chevronright.svg";
 import themeConfig from "@/tailwind.config";
@@ -7,6 +8,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export function SignInRequired() {
+const { t } = useTranslation("(website)/studio/main/PaneLayout");
+
   const theme = useTheme();
   const router = useRouter();
   const signUserIn = () => {
@@ -33,15 +36,12 @@ export function SignInRequired() {
               : themeConfig.theme.extend.colors["gray-dark"]
           }
         />
-        <p className="font-bold text-lg">Sign in required</p>
-        <p className="font-normal text-sm text-center">
-          Sign in to use AI assistant to build codemod
-        </p>
+        <p className="font-bold text-lg">{t('sign-in-required')}</p>
+        <p className="font-normal text-sm text-center">{t('sign-in-to-use-ai-assistant-to-build-codemod')}</p>
         <Button
           onClick={signUserIn}
           className="flex w-full text-white gap-2 items-center"
-        >
-          Sign in <Image src={ChevronRightSVG} className="w-1.5" alt="" />
+        >{t('sign-in')}<Image src={ChevronRightSVG} className="w-1.5" alt={t('empty-string')} />
         </Button>
       </section>
     </div>

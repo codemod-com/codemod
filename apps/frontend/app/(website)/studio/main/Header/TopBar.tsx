@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import AuthButtons from "@auth/AuthButtons";
 import { FirstLoginExperience } from "@features/FirstLoginExperience";
 import { StudioThemeSwitcher } from "@features/ThemeSwitcher";
@@ -8,6 +9,8 @@ import { CodemodLogo } from "@studio/icons/CodemodLogo";
 import { usePathname } from "next/navigation";
 
 export const TopBar = () => {
+const { t } = useTranslation("(website)/studio/main/Header");
+
   const pathname = usePathname();
 
   return (
@@ -24,13 +27,13 @@ export const TopBar = () => {
         <StudioThemeSwitcher />
         <IconButton
           Icon={Chat}
-          text="Feedback"
+          text={t('feedback')}
           href="https://github.com/codemod-com/codemod/issues/new/choose"
           hint="Share your feedback"
         />
         <IconButton
           Icon={SlackLogo}
-          text="Slack"
+          text={t('slack')}
           href="https://go.codemod.com/community"
           hint="Community Slack"
         />

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import GradientBlob from "@/components/shared/GradientBlob";
 import Icon from "@/components/shared/Icon";
 import LinkButton from "@/components/shared/LinkButton";
@@ -38,6 +39,8 @@ export default function PricingSection({ data }: PricingPageProps) {
 }
 
 function PricePlanCard(props: Plan) {
+const { t } = useTranslation("../components/templates/PricingPage");
+
   const { cleaned: title } = vercelStegaSplit(props.title || "");
   return (
     <div className="flex min-h-[500px] flex-1 flex-col rounded-[8px] border border-border-light p-l lg:min-h-[600px] dark:border-border-dark">
@@ -64,9 +67,7 @@ function PricePlanCard(props: Plan) {
           <RichText value={props.targetPlanDescription} />
         )}
         {props.title === "Developer" ? (
-          <div className="body-s-medium h-fit whitespace-nowrap rounded-[4px] bg-gradient-to-br from-accent from-[32%] to-[#EEFDC2] to-[87%] px-xs py-xxs font-medium text-primary-light">
-            Free forever
-          </div>
+          <div className="body-s-medium h-fit whitespace-nowrap rounded-[4px] bg-gradient-to-br from-accent from-[32%] to-[#EEFDC2] to-[87%] px-xs py-xxs font-medium text-primary-light">{t('free-forever')}</div>
         ) : null}
       </div>
 

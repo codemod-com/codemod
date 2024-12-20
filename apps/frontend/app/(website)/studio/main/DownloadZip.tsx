@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 import { useAuth, useSession } from "@clerk/nextjs";
 import { getHumanCodemodName } from "@studio/api/getHumanCodemodName";
 import { Button } from "@studio/components/ui/button";
@@ -21,6 +23,8 @@ import { useMemo, useState } from "react";
 import { CopyTerminalCommands } from "./TerminalCommands";
 
 export const DownloadZip = () => {
+const { t } = useTranslation("(website)/studio/main");
+
   const [isOpen, setIsOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -86,21 +90,16 @@ export const DownloadZip = () => {
           onClick={handleClick}
           id="download-zip-button"
         >
-          <DownloadIcon className="h-4" />
-          Download and Run Locally
-        </Button>
+          <DownloadIcon className="h-4" />{t('download-and-run-locally')}</Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-2xl bg-white">
-        <p>
-          Unzip the codemod package into your preferred folder, copy its path,
-          update the command below with the copied path, and run it.
-        </p>
+        <p>{t('unzip-the-codemod-package-into-your-preferred-folder-copy-its-path-update-the-command-below-with-the-copied-path-and-run-it')}</p>
 
         <Tabs defaultValue="npm">
           <TabsList>
-            <TabsTrigger value="npm">npm</TabsTrigger>
-            <TabsTrigger value="pnpm">pnpm</TabsTrigger>
+            <TabsTrigger value="npm">{t('npm')}</TabsTrigger>
+            <TabsTrigger value="pnpm">{t('pnpm')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="npm">

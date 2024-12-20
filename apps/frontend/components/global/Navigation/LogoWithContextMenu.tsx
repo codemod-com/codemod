@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Icon, {
   codemodBrandString,
   codemodLogoString,
@@ -11,6 +12,8 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function LogoWithContextMenu() {
+const { t } = useTranslation("../components/global/Navigation");
+
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -78,9 +81,7 @@ export default function LogoWithContextMenu() {
           onPointerDownOutside={() => setOpen(false)}
           className="z-[99] min-w-[250px] animate-slideDownAndFade select-none rounded-[8px] border-[1px] border-border-light bg-primary-dark p-s shadow-sm dark:border-border-dark dark:bg-primary-light dark:shadow-none"
         >
-          <div className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark">
-            Brand
-          </div>
+          <div className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark">{t('brand')}</div>
           <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-s dark:border-b-border-dark">
             <DropdownMenu.Item
               className="body-s-medium flex cursor-pointer items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
@@ -99,7 +100,7 @@ export default function LogoWithContextMenu() {
               }}
             >
               <Icon name="codemod-brand" className="h-5 w-5" />
-              <span>Copy logo as a SVG</span>
+              <span>{t('copy-logo-as-a-svg')}</span>
             </DropdownMenu.Item>
             <DropdownMenu.Item
               className="body-s-medium flex cursor-pointer items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
@@ -118,7 +119,7 @@ export default function LogoWithContextMenu() {
               }}
             >
               <Icon name="type" className="h-5 w-5" />
-              <span>Copy wordmark as a SVG</span>
+              <span>{t('copy-wordmark-as-a-svg')}</span>
             </DropdownMenu.Item>
             <DropdownMenu.Item asChild>
               <a
@@ -128,7 +129,7 @@ export default function LogoWithContextMenu() {
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >
                 <Icon name="drafting" className="h-5 w-5" />
-                <span>Brand guidelines</span>
+                <span>{t('brand-guidelines')}</span>
               </a>
             </DropdownMenu.Item>
             <DropdownMenu.Item asChild>
@@ -138,14 +139,12 @@ export default function LogoWithContextMenu() {
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >
                 <Icon name="home" className="h-5 w-5" />
-                <span>Go to homepage</span>
+                <span>{t('go-to-homepage')}</span>
               </Link>
             </DropdownMenu.Item>
           </DropdownMenu.Group>
 
-          <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">
-            Platform
-          </div>
+          <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">{t('platform')}</div>
           <DropdownMenu.Group className="pt-s">
             <DropdownMenu.Item asChild>
               <a
@@ -155,7 +154,7 @@ export default function LogoWithContextMenu() {
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >
                 <Icon name="codemod-studio" className="h-5 w-5" />
-                <span>Codemod Studio</span>
+                <span>{t('codemod-studio')}</span>
               </a>
             </DropdownMenu.Item>
             <DropdownMenu.Item asChild>
@@ -166,7 +165,7 @@ export default function LogoWithContextMenu() {
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >
                 <Icon name="file" className="h-5 w-5" />
-                <span>Automation Registry</span>
+                <span>{t('automation-registry')}</span>
               </a>
             </DropdownMenu.Item>
             <DropdownMenu.Item asChild>
@@ -177,7 +176,7 @@ export default function LogoWithContextMenu() {
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >
                 <Icon name="vscode" className="h-4 w-4" />
-                <span>VS Code Extension</span>
+                <span>{t('vs-code-extension')}</span>
               </a>
             </DropdownMenu.Item>
             <DropdownMenu.Item asChild>
@@ -187,7 +186,7 @@ export default function LogoWithContextMenu() {
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >
                 <Icon name="terminal" className="h-5 w-5" />
-                <span>CLI</span>
+                <span>{t('cli')}</span>
               </Link>
             </DropdownMenu.Item>
           </DropdownMenu.Group>

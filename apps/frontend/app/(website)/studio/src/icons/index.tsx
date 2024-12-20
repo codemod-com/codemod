@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 export * from "./User";
 export * from "./VSCode";
 export * from "./Example";
@@ -8,9 +9,11 @@ export * from "./CodemodLogo";
 export * from "./VisibilityIcon";
 
 export function CheckIcon() {
+const { t } = useTranslation("(website)/studio/src/icons");
+
   return (
     <svg viewBox="0 0 16 16" fill="currentColor" width="16" height="16">
-      <title>CheckIcon</title>
+      <title>{t('check-icon')}</title>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -21,6 +24,8 @@ export function CheckIcon() {
 }
 
 export function ChevronUpDownIcon() {
+const { t } = useTranslation("(website)/studio/src/icons");
+
   return (
     <svg
       width="16"
@@ -32,7 +37,7 @@ export function ChevronUpDownIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <title>ChevronUpDownIcon</title>
+      <title>{t('chevron-up-down-icon')}</title>
       <path d="m7 15 5 5 5-5" />
       <path d="m7 9 5-5 5 5" />
     </svg>
@@ -40,6 +45,8 @@ export function ChevronUpDownIcon() {
 }
 
 export function SearchIcon() {
+const { t } = useTranslation("(website)/studio/src/icons");
+
   return (
     <svg
       width="16"
@@ -51,7 +58,7 @@ export function SearchIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <title>SearchIcon</title>
+      <title>{t('search-icon')}</title>
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.3-4.3" />
     </svg>

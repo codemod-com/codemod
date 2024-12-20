@@ -1,4 +1,8 @@
-export const CodemodLogo = () => (
+import { useTranslation } from "react-i18next";
+export const CodemodLogo = () =>  {
+const { t } = useTranslation("(website)/studio/src/icons");
+
+return (
   <svg
     width="133"
     height="22"
@@ -6,7 +10,7 @@ export const CodemodLogo = () => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <title>Codemod Studio</title>
+    <title>{t('codemod-studio')}</title>
     <g clipPath="url(#clip0_1128_14925)">
       <mask
         id="mask0_1128_14925"
@@ -168,4 +172,5 @@ export const CodemodLogo = () => (
       </clipPath>
     </defs>
   </svg>
-);
+)
+};

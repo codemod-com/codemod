@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cx } from "cva";
 import Icon from "../../shared/Icon";
 import Tag from "../../shared/Tag";
@@ -9,6 +10,8 @@ export default function VerifiedBadge({
   className?: string;
   content?: string;
 }) {
+const { t } = useTranslation("../components/templates/Registry");
+
   return (
     <div
       className={cx(
@@ -36,7 +39,7 @@ export default function VerifiedBadge({
               "group-hover:pointer-events-auto group-hover:visible group-hover:-translate-y-2 group-hover:opacity-100",
             )}
           >
-            <h5 className="body-s-medium font-bold">Codemod verified</h5>
+            <h5 className="body-s-medium font-bold">{t('codemod-verified')}</h5>
             <p className="body-s font-regular">{content}</p>
           </div>
         )}

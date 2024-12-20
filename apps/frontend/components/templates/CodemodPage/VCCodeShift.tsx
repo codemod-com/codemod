@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Icon from "@/components/shared/Icon";
 import RunCTAButton from "@/components/shared/RunCTAButton";
 import { CURSOR_PREFIX, VSCODE_PREFIX } from "../../../../../constants";
@@ -6,9 +7,12 @@ import type { CodemodPagePayload } from "@/types";
 import type { AutomationResponseVersion } from "@/types/object.types";
 export const VCCodeShift = (
   data: CodemodPagePayload & { currentVersion: AutomationResponseVersion },
-) => (
+) =>  {
+const { t } = useTranslation("../components/templates/CodemodPage");
+
+return (
   <div className="flex flex-col gap-xs">
-    <p className="body-s">IDE extension</p>
+    <p className="body-s">{t('ide-extension')}</p>
     <RunCTAButton
       href={data.currentVersion.vsCodeLink}
       title={data.globalLabels?.vsCodeExtensionButtonLabel || "Run in VS Code"}
@@ -23,7 +27,7 @@ export const VCCodeShift = (
         VSCODE_PREFIX,
         CURSOR_PREFIX,
       )}
-      title={"Run in Cursor"}
+      title={t('run-in-cursor')}
       toastMessage="Opening Cursor..."
       toastOptions={{
         icon: (
@@ -31,7 +35,7 @@ export const VCCodeShift = (
             src="/icons/cursor-ide.svg"
             width={30}
             height={30}
-            alt="cursor-ide-svg"
+            alt={t('cursor-ide-svg')}
             style={{ marginLeft: "0.2rem" }}
           />
         ),
@@ -39,4 +43,5 @@ export const VCCodeShift = (
       }}
     />
   </div>
-);
+)
+};

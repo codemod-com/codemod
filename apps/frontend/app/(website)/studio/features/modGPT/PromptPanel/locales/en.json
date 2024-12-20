@@ -1,0 +1,7 @@
+{
+  "generate-new-pair-before-after": " Generate a new pair of before/after based on your existing code examples OR based on the natural language description.",
+  "stop-generating": "Stop generating",
+  "autogenerate-with-codemod-ai": "Autogenerate with Codemod AI",
+  "with-selected-model-and-codemods-iterative-ai-system": "with selected model and Codemod’s iterative AI system.<0> Learn more</0>",
+  "scroll-to-bottom": "Scroll to bottom"
+}

@@ -1,4 +1,8 @@
-const LoadingIndicator = () => (
+import { useTranslation } from "react-i18next";
+const LoadingIndicator = () =>  {
+const { t } = useTranslation("(website)/studio/src/components/LoadingIndicator");
+
+return (
   <div role="status">
     <svg
       aria-hidden="true"
@@ -16,7 +20,8 @@ const LoadingIndicator = () => (
         fill="currentFill"
       />
     </svg>
-    <span className="sr-only">Loading...</span>
+    <span className="sr-only">{t('loading')}</span>
   </div>
-);
+)
+};
 export default LoadingIndicator;

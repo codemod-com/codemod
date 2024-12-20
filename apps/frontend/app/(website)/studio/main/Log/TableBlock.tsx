@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
 import {
   Table as ShadCNTable,
@@ -65,6 +66,8 @@ export const TableBlock: React.FC<TableBlockProps> = ({
   onMouseEnter,
   onMouseLeave,
 }) => {
+const { t } = useTranslation("(website)/studio/main/Log");
+
   const rows = events
     .map((event, index) => buildTableRow(event, activeEventHashDigest, index))
     .filter((e) => e.details.length > 0);
@@ -84,8 +87,8 @@ export const TableBlock: React.FC<TableBlockProps> = ({
         >
           <TableHeader>
             <ShadCNTableRow>
-              <TableHead className="w-[5rem]">Nº</TableHead>
-              <TableHead>Output</TableHead>
+              <TableHead className="w-[5rem]">{t('nº')}</TableHead>
+              <TableHead>{t('output')}</TableHead>
             </ShadCNTableRow>
           </TableHeader>
           <TableBody>

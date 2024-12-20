@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
 import { type StringInputProps, set, unset } from "sanity";
 
@@ -7,6 +8,8 @@ import { Card, Select, Spinner, Text } from "@sanity/ui";
 const cardProps = { shadow: 1, padding: 3, radius: 2 };
 
 export default function FilterIconPicker(props: StringInputProps) {
+const { t } = useTranslation("../sanity/lib/components");
+
   const { onChange, value } = props;
 
   const { data, fetchAutomations, loaderState } = useFetchAutomations({
@@ -35,7 +38,7 @@ export default function FilterIconPicker(props: StringInputProps) {
   if (loaderState === "error")
     return (
       <Card tone="critical" {...cardProps}>
-        <Text>There has been an error</Text>
+        <Text>{t('there-has-been-an-error')}</Text>
       </Card>
     );
 

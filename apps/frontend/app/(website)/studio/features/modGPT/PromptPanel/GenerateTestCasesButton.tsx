@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
 import { MagicWand } from "@phosphor-icons/react";
 import Tooltip from "@studio/components/Tooltip/Tooltip";
@@ -11,6 +12,8 @@ export const GenerateTestCasesButton = ({
   handleButtonClick: () => void;
   isTestCaseGenerated: boolean;
 }) => {
+const { t } = useTranslation("(website)/studio/features/modGPT/PromptPanel");
+
   useEffect(() => {
     const t = toast;
     if (isTestCaseGenerated) {
@@ -33,11 +36,7 @@ export const GenerateTestCasesButton = ({
         </button>
       }
       content={
-        <p>
-          {" "}
-          Generate a new pair of before/after based on your existing code
-          examples OR based on the natural language description.
-        </p>
+        <p>{t('generate-new-pair-before-after')}</p>
       }
     />
   );

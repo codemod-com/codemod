@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 
 import FilterButton from "@/components/shared/FilterButton";
 import Input from "@/components/shared/Input";
@@ -37,6 +39,8 @@ export default function FilterSection(
     placeholders?: RegistryIndexPayload["placeholders"];
   },
 ) {
+const { t } = useTranslation("../components/templates/Registry");
+
   const [showAllFilters, setShowAllFilters] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const search = useSearchParams();
@@ -83,7 +87,7 @@ export default function FilterSection(
         <>
           {availableFilters?.length === 0 && (
             <div className="body-s flex w-full items-center justify-center text-secondary-light dark:text-secondary-dark">
-              <span>No Results</span>
+              <span>{t('no-results')}</span>
             </div>
           )}
           {availableFilters
@@ -194,9 +198,7 @@ export default function FilterSection(
             intent="default"
             className="w-full"
           >
-            <div className="flex w-full items-center justify-center text-secondary-light dark:text-secondary-dark">
-              Clear
-            </div>
+            <div className="flex w-full items-center justify-center text-secondary-light dark:text-secondary-dark">{t('clear')}</div>
           </FilterButton>
         )}
         {Number(availableFilters?.length) > DEFAULT_FILTER_LENGTH && (

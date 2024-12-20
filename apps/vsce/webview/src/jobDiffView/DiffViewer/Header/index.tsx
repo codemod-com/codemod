@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 import cn from "classnames";
 import { ReactComponent as SplitIcon } from "../../../assets/Split.svg";
@@ -13,6 +14,8 @@ type Props = Readonly<{
 }>;
 
 export const Header = (props: Props) => {
+  const { t } = useTranslation("../jobDiffView/DiffViewer/Header");
+
   return (
     <div className={styles.root}>
       <div className={styles.actionsContainer}>
@@ -24,7 +27,7 @@ export const Header = (props: Props) => {
                 backgroundColor: "var(--vscode-tab-inactiveBackground)",
               }}
             >
-              Move to the previous file
+              {t("move-to-the-previous-file")}
             </div>
           }
           placement="right"
@@ -48,7 +51,7 @@ export const Header = (props: Props) => {
                 backgroundColor: "var(--vscode-tab-inactiveBackground)",
               }}
             >
-              Move to the next file
+              {t("move-to-the-next-file")}
             </div>
           }
           placement="right"
@@ -68,19 +71,21 @@ export const Header = (props: Props) => {
       <div className={styles.buttonGroup}>
         {props.viewType === "side-by-side" ? (
           <VSCodeButton
-            title="Inline"
+            title={t("inline")}
             appearance="icon"
             onClick={() => props.onViewChange("inline")}
           >
-            Inline <UnifiedIcon className={styles.icon} />
+            {t("inline-fragment")}
+            <UnifiedIcon className={styles.icon} />
           </VSCodeButton>
         ) : (
           <VSCodeButton
-            title="Side by Side"
+            title={t("side-by-side")}
             appearance="icon"
             onClick={() => props.onViewChange("side-by-side")}
           >
-            Side by Side <SplitIcon className={styles.icon} />
+            {t("side-by-side-fragment")}
+            <SplitIcon className={styles.icon} />
           </VSCodeButton>
         )}
       </div>

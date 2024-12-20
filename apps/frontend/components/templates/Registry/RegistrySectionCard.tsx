@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 
 import Markdown from "@/components/global/ReactMarkdown";
 import Icon from "@/components/shared/Icon";
@@ -22,6 +24,8 @@ export default function RegistrySectionCard(
     onFilter: (key?: string | null, value?: string | null) => void;
   },
 ) {
+const { t } = useTranslation("../components/templates/Registry");
+
   const formattedDescription = getDescriptionShortText(
     props.shortDescription || "",
   );
@@ -53,7 +57,7 @@ export default function RegistrySectionCard(
     <li className="flex flex-col items-start gap-m py-l transition-[width] focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark">
       <div className="flex flex-col items-start">
         <div>
-          {props.featured && <span className="tag">Featured</span>}
+          {props.featured && <span className="tag">{t('featured')}</span>}
           <SanityLink
             link={{
               _type: "link",
@@ -139,7 +143,7 @@ export default function RegistrySectionCard(
             }
           >
             <div className="flex items-center gap-xs">
-              <span className="body-s-medium font-medium">by</span>
+              <span className="body-s-medium font-medium">{t('by')}</span>
               <>
                 {authorImage?.image.light && (
                   <SanityImage

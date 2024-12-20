@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 
 import RegistryCard from "@/components/templates/Registry/RegistryCard";
 import useInView from "@/hooks/useInView";
@@ -18,6 +20,8 @@ export default function CodemodList({
 }: {
   initial: (RegistryIndexPayload & { entriesPerPage?: number }) | null;
 }) {
+const { t } = useTranslation("../components/templates/Registry");
+
   const { toggleFilters } = useRegistryFilters();
   const searchParams = useSearchParams();
   const [nextPage, setPage] = useState(2);
@@ -86,9 +90,7 @@ export default function CodemodList({
                 <h5 className="body-s mb-2 text-secondary-light/60 dark:text-secondary-dark/60">
                   {initial?.placeholders?.emptyStateText}
                 </h5>
-                <Button intent="secondary" onClick={() => toggleFilters(true)}>
-                  Clear filters
-                </Button>
+                <Button intent="secondary" onClick={() => toggleFilters(true)}>{t('clear-filters')}</Button>
               </div>
             )}
           </ul>

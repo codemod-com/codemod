@@ -1,0 +1,9 @@
+{
+  "search": "\"Search\"",
+  "run-codemod-on-github-branch": "Run Codemod on Github branch",
+  "select-a-repository-required": "\"Select a repository (required)\"",
+  "select-a-branch-required": "\"Select a branch (required)\"",
+  "run-codemod": "Run Codemod",
+  "yes": "Yes",
+  "no": "No"
+}

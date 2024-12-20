@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ShareButton } from "@features/share/ShareButton";
 import { Backspace as BackspaceIcon } from "@phosphor-icons/react/dist/csr/Backspace";
 import { Button } from "@studio/components/ui/button";
@@ -11,6 +12,8 @@ type ButtonProps = {
 };
 
 const ClearAllButton = () => {
+const { t } = useTranslation("(website)/studio/main/Header");
+
   const { clearAll } = useSnippetsStore();
   const { setContent } = useModStore();
   const hintText = "Clear all inputs";
@@ -27,9 +30,7 @@ const ClearAllButton = () => {
       className="flex gap-1"
       hint={<p className="font-normal">{hintText}</p>}
     >
-      <BackspaceIcon className="h-4 w-4" />
-      Clear all inputs
-    </Button>
+      <BackspaceIcon className="h-4 w-4" />{t('clear-all-inputs')}</Button>
   );
 };
 export const HeaderButtons = () => {

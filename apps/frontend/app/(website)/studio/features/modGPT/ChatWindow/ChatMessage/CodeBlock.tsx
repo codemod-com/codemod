@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Markdown/CodeBlock.tsx
 
@@ -22,6 +23,8 @@ interface Props {
 }
 
 const CodeBlock: FC<Props> = ({ language, value }) => {
+const { t } = useTranslation("(website)/studio/features/modGPT/ChatWindow/ChatMessage");
+
   const { isCopied, copy } = useCopyToClipboard({ timeout: 2000 });
   const { setContent } = useModStore();
   const { isDark } = useTheme();
@@ -41,27 +44,27 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
 
   const copyToCodemodPanelBtn = (
     <ButtonWithTooltip
-      tooltipContent={<>Copy to Codemod panel</>}
+      tooltipContent={<>{t('copy-to-codemod-panel-1')}</>}
       variant="ghost"
       size="icon"
       className={buttonClass}
       onClick={handleCopyToCodemodPanel}
     >
       <ArrowArcRightIcon />
-      <span className="sr-only">Copy to Codemod panel</span>
+      <span className="sr-only">{t('copy-to-codemod-panel-2')}</span>
     </ButtonWithTooltip>
   );
 
   const copyToClipboardBtn = (
     <ButtonWithTooltip
-      tooltipContent={<>Copy to clipboard</>}
+      tooltipContent={<>{t('copy-to-clipboard-1')}</>}
       variant="ghost"
       size="icon"
       className={buttonClass}
       onClick={handleCopyToClipboard}
     >
       {isCopied ? <CheckIcon /> : <CopyIcon />}
-      <span className="sr-only">Copy to clipboard</span>
+      <span className="sr-only">{t('copy-to-clipboard-2')}</span>
     </ButtonWithTooltip>
   );
   return (

@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 
 import Button from "@/components/shared/Button";
 import Checkbox from "@/components/shared/Checkbox";
@@ -15,6 +17,8 @@ export interface ContactPageProps {
 }
 
 export default function ContactPageUI({ data }: ContactPageProps) {
+const { t } = useTranslation("../components/templates/ContactPage");
+
   const { formState, handleSubmit, formRef } = useFormSubmission();
   const getSides = () => {
     return {
@@ -55,7 +59,7 @@ export default function ContactPageUI({ data }: ContactPageProps) {
               onSubmit={handleSubmit}
               action={CONTACT_ENDPOINT}
             >
-              <input name="honeypot" placeholder="honeypot" type="hidden" />
+              <input name="honeypot" placeholder={t('honeypot')} type="hidden" />
               <div className="">
                 <Input
                   name="name"
@@ -120,10 +124,8 @@ export default function ContactPageUI({ data }: ContactPageProps) {
               {formState === "error" ? (
                 <div className="mt-8 flex items-center gap-xs rounded-[8px] bg-errorSecondary-light p-xs dark:bg-errorSecondary-dark">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/icons/error-info.svg" alt="Warning info icon" />
-                  <span className="body-s text-error-light dark:text-error-dark">
-                    There has been a system error. Please, send your form again.
-                  </span>
+                  <img src="/icons/error-info.svg" alt={t('warning-info-icon')} />
+                  <span className="body-s text-error-light dark:text-error-dark">{t('system-error-message-1')}</span>
                 </div>
               ) : null}
             </form>
@@ -201,10 +203,8 @@ export default function ContactPageUI({ data }: ContactPageProps) {
               {formState === "error" ? (
                 <div className="mt-8 flex items-center gap-xs rounded-[8px] bg-errorSecondary-light p-xs dark:bg-errorSecondary-dark">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/icons/error-info.svg" alt="Warning info icon" />
-                  <span className="body-s text-error-light dark:text-error-dark">
-                    There has been a system error. Please, send your form again.
-                  </span>
+                  <img src="/icons/error-info.svg" alt={t('warning-info-icon-duplicate')} />
+                  <span className="body-s text-error-light dark:text-error-dark">{t('system-error-message-2')}</span>
                 </div>
               ) : null}
             </form>
@@ -219,14 +219,10 @@ export default function ContactPageUI({ data }: ContactPageProps) {
             sides={getMobileSides()}
             dots={dots}
           >
-            <div className="l-heading mb-s font-bold">
-              Thanks for contacting us
-            </div>
-            <div className="body-l">
-              We will get back to you as soon as soon as possible.
-            </div>
+            <div className="l-heading mb-s font-bold">{t('thanks-for-contacting-us-1')}</div>
+            <div className="body-l">{t('we-will-get-back-to-you-soon-1')}</div>
             <LinkButton intent="primary" className="mt-l" arrow href="/">
-              <span>Go back home</span>
+              <span>{t('go-back-home-1')}</span>
             </LinkButton>
           </GradientBorderBox>
 
@@ -235,14 +231,10 @@ export default function ContactPageUI({ data }: ContactPageProps) {
             dots={dots}
             className="mt-xl hidden min-h-[600px] items-start lg:mt-0 lg:flex lg:flex-col lg:pl-2xl"
           >
-            <div className="l-heading mb-s font-bold">
-              Thanks for contacting us
-            </div>
-            <div className="body-l">
-              We will get back to you as soon as soon as possible.
-            </div>
+            <div className="l-heading mb-s font-bold">{t('thanks-for-contacting-us-2')}</div>
+            <div className="body-l">{t('we-will-get-back-to-you-soon-2')}</div>
             <LinkButton intent="primary" className="mt-l" arrow href="/">
-              <span>Go back home</span>
+              <span>{t('go-back-home-2')}</span>
             </LinkButton>
           </GradientBorderBox>
         </>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ArrowDown as ArrowDownIcon } from "@phosphor-icons/react";
 import { type ReactNode, useState } from "react";
 
@@ -18,6 +19,8 @@ const Collapsable = ({
   className,
   contentWrapperClassName,
 }: CollapsableProps) => {
+const { t } = useTranslation("(website)/studio/src/components/Collapsable");
+
   const [collapsed, setCollapsed] = useState(defaultCollapsed ?? false);
 
   return (
@@ -37,7 +40,7 @@ const Collapsable = ({
             className={`h-4 w-4 transition-all ${
               collapsed ? "rotate-180 transform" : ""
             } dark:text-white `}
-            alt="arrow-down"
+            alt={t('arrow-down')}
           />
         </div>
       </div>

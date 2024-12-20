@@ -1,29 +1,29 @@
 .root {
-	display: flex;
-	align-items: center;
-	width: 100%;
-	z-index: 1001;
-	height: 35px;
-	top: 0;
-	padding: 4px 6px 4px 4px;
-	background-color: var(--vscode-tab-inactiveBackground);
-	gap: 8px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  z-index: 1001;
+  height: 35px;
+  top: 0;
+  padding: 4px 6px 4px 4px;
+  background-color: var(--vscode-tab-inactiveBackground);
+  gap: 8px;
 }
 
 .icon {
-	width: 22px;
-	height: 22px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .progressRing {
-	margin-right: 8px;
-	width: 18px;
-	height: 18px;
+  margin-right: 8px;
+  width: 18px;
+  height: 18px;
 }
 
 .progressRing::part(indeterminate-indicator-1) {
-	stroke: var(--vscode-icon-foreground);
+  stroke: var(--vscode-icon-foreground);
 }

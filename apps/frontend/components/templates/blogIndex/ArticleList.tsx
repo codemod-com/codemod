@@ -1,4 +1,6 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 
 import Button from "@/components/shared/Button";
 import { useLoadMoreArticles } from "@/hooks/useLoadMoreArticles";
@@ -15,6 +17,8 @@ export default function ArticleList({
   initial: (BlogIndexPayload & { entriesPerPage?: number }) | null;
   pathParam?: string;
 }) {
+const { t } = useTranslation("../components/templates/blogIndex");
+
   const [nextPage, setPage] = useState(2);
   const { data, loaderState, loadMore } = useLoadMoreArticles({
     pageNumber: nextPage,
@@ -52,9 +56,7 @@ export default function ArticleList({
             disabled={loaderState === "loading" || nextPage > totalPageCount}
             intent="secondary"
             icon={loaderState === "loading" ? "loading" : undefined}
-          >
-            Load More
-          </Button>
+          >{t('load-more')}</Button>
         )}
       </div>
     </>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { VSCodeProgressRing } from "@vscode/webview-ui-toolkit/react";
 import { useEffect, useMemo, useRef } from "react";
 import {
@@ -19,6 +20,8 @@ export const CodemodRuns = (
     screenWidth: number | null;
   },
 ) => {
+  const { t } = useTranslation("");
+
   const resultsRef = useRef<ImperativePanelHandle | null>(null);
   const changeExplorerRef = useRef<ImperativePanelHandle | null>(null);
 
@@ -73,7 +76,7 @@ export const CodemodRuns = (
         autoSaveId="codemodRunsPanelGroup"
       >
         <SectionHeader
-          title={"Results"}
+          title={t("results")}
           commands={commands}
           collapsed={props.resultsCollapsed}
           onClick={(event) => {
@@ -90,7 +93,7 @@ export const CodemodRuns = (
           minSize={0}
           defaultSize={
             props.resultsCollapsed
-              ? props.panelGroupSettings["0,0"]?.[0] ?? 50
+              ? (props.panelGroupSettings["0,0"]?.[0] ?? 50)
               : 0
           }
           style={{
@@ -113,7 +116,7 @@ export const CodemodRuns = (
         </ResizablePanel>
         <PanelResizeHandle className="resize-handle" />
         <SectionHeader
-          title={"Change Explorer"}
+          title={t("change-explorer")}
           commands={[]}
           collapsed={props.changeExplorerCollapsed}
           onClick={(event) => {
@@ -131,7 +134,7 @@ export const CodemodRuns = (
           defaultSize={
             props.changeExplorerCollapsed
               ? 0
-              : props.panelGroupSettings["0,0"]?.[1] ?? 50
+              : (props.panelGroupSettings["0,0"]?.[1] ?? 50)
           }
           style={{
             overflowY: "auto",

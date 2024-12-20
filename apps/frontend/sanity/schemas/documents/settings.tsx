@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { CogIcon } from "@sanity/icons";
 import { TextInput } from "@sanity/ui";
 
@@ -94,6 +95,8 @@ export const settings = {
 };
 
 function ArrayInput({ members, ...props }: any) {
+const { t } = useTranslation("../sanity/schemas/documents");
+
   const [search, setSearch] = React.useState("");
 
   const filteredMembers = !search
@@ -109,7 +112,7 @@ function ArrayInput({ members, ...props }: any) {
     <div style={{ display: "grid", gap: 8 }}>
       <TextInput
         type="text"
-        placeholder="Filter by source or destination"
+        placeholder={t('filter-by-source-or-destination')}
         value={search}
         onChange={(e) => setSearch(e.currentTarget.value)}
       />

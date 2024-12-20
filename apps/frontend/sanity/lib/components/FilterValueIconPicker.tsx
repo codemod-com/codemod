@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
 import { type StringInputProps, set, unset, useFormValue } from "sanity";
 
@@ -7,6 +8,8 @@ import { Card, Select, Spinner, Text } from "@sanity/ui";
 const cardProps = { shadow: 1, padding: 3, radius: 2 };
 
 export default function FilterValueIconPicker(props: StringInputProps) {
+const { t } = useTranslation("../sanity/lib/components");
+
   const document: any = useFormValue([]);
   const { onChange, value } = props;
 
@@ -41,7 +44,7 @@ export default function FilterValueIconPicker(props: StringInputProps) {
   if (loaderState === "error")
     return (
       <Card tone="critical" {...cardProps}>
-        <Text>There has been an error</Text>
+        <Text>{t('there-has-been-an-error')}</Text>
       </Card>
     );
 
