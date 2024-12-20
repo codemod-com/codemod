@@ -12,6 +12,8 @@
     "@vscode/webview-ui-toolkit": "catalog:",
     "classnames": "^2.3.2",
     "fp-ts": "^2.14.0",
+    "i18next": "^24.1.0",
+    "i18next-browser-languagedetector": "^8.0.2",
     "lowlight": "catalog:",
     "monaco-editor": "^0.37.1",
     "preact": "catalog:",
@@ -19,6 +21,7 @@
     "rc-progress": "catalog:",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^15.2.0",
     "react-resizable-panels": "^0.0.51",
     "react-toastify": "catalog:",
     "tippy.js": "catalog:",
@@ -32,7 +35,11 @@
     "build:webview": "pnpm build:main && pnpm build:jobDiffView && pnpm build:errors"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",

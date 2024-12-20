@@ -1,3 +1,5 @@
+import { I18nextProvider } from "react-i18next";
+import { i18n } from "./i18n";
 import globalFontsVariables from "@/fonts";
 import { Analytics } from "@vercel/analytics/react";
 import { cx } from "cva";
@@ -15,7 +17,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cx(globalFontsVariables, "scroll-smooth light")}>
+    <I18nextProvider i18n={i18n}>
+<html lang="en" className={cx(globalFontsVariables, "scroll-smooth light")}>
       <head>
         <Script id="gtm">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -46,5 +49,6 @@ export default async function RootLayout({
         <Analytics />
       </body>
     </html>
+</I18nextProvider>
   );
 }
