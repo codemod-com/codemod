@@ -1,11 +1,17 @@
 import type { CreateAPIKeyRequest } from "@codemod-com/api-types";
 import { Unkey } from "@unkey/api";
-import { memoize } from "lodash-es";
 
 const UNKEY_API_ID = process.env.UNKEY_API_ID as string;
 const UNKEY_ROOT_KEY = process.env.UNKEY_ROOT_KEY as string;
 
-const getUnkey = memoize(() => new Unkey({ rootKey: UNKEY_ROOT_KEY }));
+let unkey: Unkey | null = null;
+
+const getUnkey = () => {
+  if (!unkey) {
+    unkey = new Unkey({ rootKey: UNKEY_ROOT_KEY });
+  }
+  return unkey;
+};
 
 export const createApiKey = async ({
   apiKeyData,

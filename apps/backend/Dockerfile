@@ -31,31 +31,16 @@ COPY packages/auth /app/packages/auth/
 
 RUN turbo prune @codemod-com/backend --docker
 
-
-
-FROM base AS installer
-WORKDIR /app
-
-RUN apk update
-RUN apk add --no-cache libc6-compat
-
-# First install the dependencies (as they change less often)
-COPY --from=builder /app/out/json/ .
 RUN pnpm install
-
-# Build the project
-COPY --from=builder /app/out/full/ .
 RUN pnpm build --filter @codemod-com/backend
-
-
 
 FROM base AS runner
 # Copy stuff for prisma to work
-COPY --from=installer /app/node_modules/.pnpm/@prisma+client@5.15.1_prisma@5.15.1/node_modules/.prisma/ ./node_modules/.pnpm/@prisma+client@5.15.1_prisma@5.15.1/node_modules/.prisma/
+COPY --from=builder /app/node_modules/.pnpm/@prisma+client@5.15.1_prisma@5.15.1/node_modules/.prisma/ ./node_modules/.pnpm/@prisma+client@5.15.1_prisma@5.15.1/node_modules/.prisma/
 
 WORKDIR /app
-COPY --from=installer /app/apps/backend ./apps/backend
-COPY --from=installer /app/packages/database ./packages/database
+COPY --from=builder /app/apps/backend ./apps/backend
+COPY --from=builder /app/packages/database ./packages/database
 
 CMD cd packages/database && pnpm dlx prisma@latest migrate deploy && cd - && node apps/backend/build/index.js
 
