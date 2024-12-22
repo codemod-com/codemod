@@ -6,7 +6,7 @@ esbuild
     bundle: true,
     minify: false,
     platform: "node",
-    outfile: "build/index.js",
-    format: "esm",
+    outfile: "build/index.cjs",
+    format: "cjs",
   })
   .catch(() => process.exit(1));

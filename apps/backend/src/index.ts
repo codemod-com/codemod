@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import { startCronJobs } from "./cron.js";
 import { runServer } from "./server.js";
 

@@ -1,8 +1,9 @@
 // https://github.com/prisma/prisma/issues/1787 hangs at prisma issues from 2019
 
 generator client {
-  provider   = "prisma-client-js"
-  engineType = "binary"
+  provider      = "prisma-client-js"
+  engineType    = "binary"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
 }
 
 generator json {
