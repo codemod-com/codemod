@@ -418,7 +418,8 @@ export const publishHandler: RouteHandler<{
           },
           author: {
             username,
-            name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,
+            firstName: firstName ?? null,
+            lastName: lastName ?? null,
             email:
               emailAddresses.find((e) => e.id === primaryEmailAddressId)
                 ?.emailAddress ?? null,
