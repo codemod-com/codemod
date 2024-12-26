@@ -1055,9 +1055,6 @@ importers:
       langchain:
         specifier: 'catalog:'
         version: 0.3.6(@langchain/core@0.2.36(openai@4.23.0))(axios@1.7.7)(handlebars@4.7.8)(openai@4.23.0)
-      lodash-es:
-        specifier: 'catalog:'
-        version: 4.17.21
       openai:
         specifier: 'catalog:'
         version: 4.23.0
@@ -1276,27 +1273,6 @@ importers:
       yargs:
         specifier: 'catalog:'
         version: 17.7.2
-
-  apps/cli/dist/jscodeshift:
-    devDependencies:
-      '@codemod.com/codemod-utils':
-        specifier: '*'
-        version: 1.0.0(@babel/preset-env@7.24.7(@babel/core@7.24.7))
-      '@types/jscodeshift':
-        specifier: ^0.11.10
-        version: 0.11.11
-      '@types/node':
-        specifier: 20.9.0
-        version: 20.9.0
-      jscodeshift:
-        specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
-      typescript:
-        specifier: ^5.2.2
-        version: 5.5.4
-      vitest:
-        specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
 
   apps/frontend:
     dependencies:
@@ -7391,6 +7367,8 @@ importers:
       tsx:
         specifier: ^4.11.0
         version: 4.15.7
+
+  packages/database/generated/client: {}
 
   packages/deprecated: {}
 
@@ -29471,7 +29449,7 @@ snapshots:
 
   archiver-utils@5.0.2:
     dependencies:
-      glob: 10.4.2
+      glob: 10.4.5
       graceful-fs: 4.2.11
       is-stream: 2.0.1
       lazystream: 1.0.1
@@ -36632,7 +36610,7 @@ snapshots:
 
   rimraf@5.0.7:
     dependencies:
-      glob: 10.4.2
+      glob: 10.4.5
 
   rollup@3.29.4:
     optionalDependencies:
@@ -37611,7 +37589,7 @@ snapshots:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
       commander: 4.1.1
-      glob: 10.4.2
+      glob: 10.4.5
       lines-and-columns: 1.2.4
       mz: 2.7.0
       pirates: 4.0.6

@@ -4,7 +4,8 @@ esbuild
   .build({
     entryPoints: ["src/index.ts"],
     bundle: true,
-    minify: true,
+    minify: false,
+    sourcemap: true,
     platform: "node",
     outfile: "build/index.js",
     banner: {
