@@ -140,8 +140,14 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         return reply.code(401).send();
       }
 
-      const { codemodSource, codemodEngine, repoUrl, branch, persistent } =
-        parseCodemodRunBody(request.body);
+      const {
+        codemodSource,
+        codemodEngine,
+        repoUrl,
+        branch,
+        persistent,
+        codemodArguments,
+      } = parseCodemodRunBody(request.body);
 
       const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
         codemodSource,
@@ -150,6 +156,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         repoUrl,
         branch,
         persistent,
+        codemodArguments,
       });
 
       if (!job.id) {

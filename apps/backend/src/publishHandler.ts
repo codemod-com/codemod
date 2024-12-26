@@ -147,7 +147,11 @@ export const publishHandler: RouteHandler<{
         throwOnNotFound: false,
       });
 
-      const built = await getCodemodExecutable(unpackPath).catch(() => null);
+      const built = await getCodemodExecutable(
+        unpackPath,
+        false,
+        codemodRc.engine,
+      ).catch(() => null);
 
       if (path === null || built === null) {
         return reply.code(400).send({
@@ -409,6 +413,8 @@ export const publishHandler: RouteHandler<{
             to: codemodRc.applicability?.to?.map((tuple) => tuple.join(" ")),
             engine: codemodRc.engine,
             publishedAt: createdAtTimestamp,
+            bucket,
+            uploadKey,
           },
           author: {
             username,

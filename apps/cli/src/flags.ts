@@ -11,6 +11,7 @@ import {
   DEFAULT_THREAD_COUNT,
   DEFAULT_USE_JSON,
 } from "@codemod-com/runner";
+import { ALL_ENGINES } from "@codemod-com/utilities";
 
 export type GlobalArgvOptions = Awaited<
   ReturnType<ReturnType<typeof buildGlobalOptions>>["argv"]
@@ -39,6 +40,12 @@ export const buildGlobalOptions = <T>(y: Argv<T>) =>
     .option("version", {
       alias: "v",
       description: "Show version number",
+    })
+    .option("esm", {
+      type: "boolean",
+      description:
+        "Use to specify that you intend to use ESM-specific features in your codemods.",
+      default: false,
     })
     .option("json", {
       alias: "j",
@@ -81,6 +88,12 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       alias: "s",
       type: "string",
       description: "Source path of the local codemod to run",
+    })
+    .option("engine", {
+      type: "string",
+      choices: ALL_ENGINES,
+      description:
+        "Engine to be used with standalone codemod. Can be used to skip the prompt.",
     })
     .option("logs", {
       type: "boolean",

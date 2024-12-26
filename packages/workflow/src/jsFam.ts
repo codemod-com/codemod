@@ -58,7 +58,7 @@ export function jsFamLogic(
       return { callback };
     })
     .helpers(helpers)
-    .setParentArgs({ defaultGlob: "**/*.{js,jsx,ts,tsx,cjs,mjs}" })
+    .setParentArgs({ defaultGlob: "**/*.{js,jsx,ts,tsx,cjs,mjs,cts,mts,d.ts}" })
     .return((self) => self.wrappedHelpers())
     .executor(async (next, self) => {
       const { callback } = self.getArguments();

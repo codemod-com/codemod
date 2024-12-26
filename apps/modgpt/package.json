@@ -9,6 +9,7 @@
   "keywords": [],
   "author": "Codemod inc.",
   "license": "ISC",
+  "private": true,
   "dependencies": {
     "@codemod-com/auth": "workspace:*",
     "@fastify/cors": "catalog:",
@@ -29,6 +30,6 @@
     "@types/node": "20.10.5",
     "esbuild": "^0.21.1",
     "fastify-plugin": "catalog:",
-    "nodemon": "^2.0.15"
+    "nodemon": "^3.1.7"
   }
 }

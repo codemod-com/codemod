@@ -22,7 +22,11 @@ import {
 } from "@codemod-com/utilities";
 import type { AuthServiceInterface } from "@codemod.com/workflow";
 import type { RunnerServiceInterface } from "#runner-service.js";
-import { getCodemodExecutable, getTransformer } from "#source-code.js";
+import {
+  getCodemodExecutable,
+  getRunConfig,
+  temporaryLoadedModules,
+} from "#source-code.js";
 import { astGrepLanguageToPatterns } from "./engines/ast-grep.js";
 import type { Dependencies } from "./engines/filemod.js";
 import { runFilemod } from "./engines/filemod.js";
@@ -105,6 +109,7 @@ export class Runner {
       await onFailure?.(error);
     }
 
+    temporaryLoadedModules.clear();
     return executionErrors;
   }
 
@@ -116,12 +121,15 @@ export class Runner {
     printer: Printer;
   }) {
     const { codemod, flowSettings, onError, onSuccess, printer } = options;
-
     const cloudRunner = await this._options.runnerService?.startCodemodRun({
-      source: await getCodemodExecutable(codemod.path),
+      source: await getCodemodExecutable(
+        codemod.path,
+        flowSettings.esm,
+        codemod.config.engine,
+      ),
       engine: codemod.config.engine as "workflow",
+      args: codemod.safeArgumentRecord,
     });
-    console.log({ cloudRunner });
   }
 
   private async buildPatterns(
@@ -270,6 +278,10 @@ export class Runner {
               "**/*.jsx",
               "**/*.ts",
               "**/*.tsx",
+              "**/*.mjs",
+              "**/*.cjs",
+              "**/*.mts",
+              "**/*.cts",
               "**/*.vue",
               "**/*.svelte",
             ]
@@ -480,8 +492,12 @@ export class Runner {
       return await onSuccess?.({ codemod, output: "", commands: [] });
     }
 
-    const codemodSource = await getCodemodExecutable(codemod.path);
-    const transformer = getTransformer(codemodSource);
+    const codemodSource = await getCodemodExecutable(
+      codemod.path,
+      flowSettings.esm,
+      codemod.config.engine,
+    );
+    const { transformer } = await getRunConfig(codemodSource);
 
     if (codemod.config.engine === "workflow") {
       if (transformer === null) {

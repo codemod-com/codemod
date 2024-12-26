@@ -1,5 +1,6 @@
 {
   "name": "@codemod/nuxt-4-default-data-error-value",
+  "private": true,
   "dependencies": {},
   "devDependencies": {
     "typescript": "^5.2.2",

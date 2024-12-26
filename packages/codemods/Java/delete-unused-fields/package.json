@@ -1,5 +1,6 @@
 {
   "name": "@codemod-com/codemod-java-delete-unused-fields",
   "files": ["./README.md", "./.codemodrc.json"],
-  "type": "module"
+  "type": "module",
+  "private": true
 }

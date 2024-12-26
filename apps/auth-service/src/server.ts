@@ -12,10 +12,24 @@ import type {
 } from "@codemod-com/api-types";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 
+import { Unkey } from "@unkey/api";
 import { createLoginIntent } from "./handlers/intents/create.js";
 import { getLoginIntent } from "./handlers/intents/get.js";
 import { populateLoginIntent } from "./handlers/intents/populate.js";
 import { environment } from "./util.js";
+
+const unkey = new Unkey({ rootKey: process.env.UNKEY_ROOT_KEY as string });
+const apiId = process.env.UNKEY_API_ID as string;
+
+const getUserId = async (key: string) => {
+  const response = await unkey.keys.verify({ apiId, key });
+
+  if (response.error) {
+    throw new Error(response.error.message);
+  }
+
+  return response.result.identity?.externalId ?? response.result.ownerId;
+};
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   const { PORT: port } = environment;
@@ -140,6 +154,37 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
   instance.get("/userData", async (request, reply) => {
     const { userId } = getAuth(request);
+
+    if (!userId) {
+      return reply.status(200).send({});
+    }
+
+    const user = await clerkClient.users.getUser(userId);
+    const organizations = (
+      await clerkClient.users.getOrganizationMembershipList({ userId })
+    ).data.map((organization) => organization);
+    const allowedNamespaces = [
+      ...organizations.map(({ organization }) => organization.slug),
+    ].filter(isNeitherNullNorUndefined);
+
+    if (user.username) {
+      allowedNamespaces.unshift(user.username);
+
+      if (environment.VERIFIED_PUBLISHERS.includes(user.username)) {
+        allowedNamespaces.push("codemod-com");
+      }
+    }
+
+    return reply.status(200).send({
+      user,
+      organizations,
+      allowedNamespaces,
+    });
+  });
+
+  instance.get("/apiUserData", async (request, reply) => {
+    const apiKey = request.headers["x-api-key"] as string;
+    const userId = await getUserId(apiKey);
 
     if (!userId) {
       return reply.status(200).send({});

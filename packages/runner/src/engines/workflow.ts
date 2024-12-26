@@ -1,6 +1,6 @@
 import type { ArgumentRecord } from "@codemod-com/utilities";
 import type { AuthServiceInterface } from "@codemod.com/workflow";
-import { api, setAuthService } from "@codemod.com/workflow";
+// import { api, setAuthService } from "@codemod.com/workflow";
 import type { TransformFunction } from "#source-code.js";
 
 export const runWorkflowCodemod = async (
@@ -8,9 +8,10 @@ export const runWorkflowCodemod = async (
   safeArgumentRecord: ArgumentRecord,
   authService?: AuthServiceInterface,
 ) => {
+  const workflowEngine = await import("@codemod.com/workflow");
   if (authService !== undefined) {
-    setAuthService(authService);
+    workflowEngine.setAuthService(authService);
   }
 
-  return await workflow(api, safeArgumentRecord);
+  return await workflow(workflowEngine.api, safeArgumentRecord);
 };

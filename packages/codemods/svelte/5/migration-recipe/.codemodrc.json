@@ -1,0 +1,31 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "svelte/5/migration-recipe",
+  "version": "1.0.4",
+  "private": false,
+  "engine": "recipe",
+  "names": [
+    "svelte/5/components-as-functions",
+    "svelte/5/components-as-functions-destroyfunction",
+    "svelte/5/components-as-functions-onfunction",
+    "svelte/5/is-where-scoping",
+    "svelte/5/server-api-changes",
+    "svelte/5/svelte-element-expression"
+  ],
+  "meta": {
+    "tags": ["migration", "svelte"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/svelte/5/migration-recipe"
+  },
+  "applicability": {
+    "from": [["svelte", ">=", "4.0.0"], ["svelte", "<", "5.0.0"]],
+    "to": [["svelte", ">=", "5.0.0"]]
+  },
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.vue",
+    "**/*.svelte"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "webpack/v5/json-imports-to-default-imports",
+  "description": "This codemod migrates imports from JSON modules that use named exports to use default exports instead",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "applicability": {
+    "from": [["webpack", "<=", "4"]],
+    "to": [["webpack", ">=", "5"]]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": ["webpack", "migration", "codemod"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/webpack/v5/json-imports-to-default-imports"
+  }
+}

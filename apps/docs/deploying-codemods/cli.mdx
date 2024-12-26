@@ -12,15 +12,28 @@ The Codemod CLI accepts a variety of subcommands and options to explore, publish
 
 ## Installation
 
-```bash
+<CodeGroup>
+
+```bash npm
 npm i -g codemod
 ```
+
+```bash pnpm
+pnpm add -g codemod
+```
+
+```bash yarn
+yarn global add codemod
+```
+
+</CodeGroup>
+
 
 ## Build
 
 ### `codemod learn`
 
-The `learn` command uses the diff of the latest edited file to automatically build a codemod using [Codemod Studio](/building-codemods/codemod-studio/).
+The `learn` command uses the diff of the latest edited file to automatically build a codemod using [Codemod Studio](/codemod-studio/).
 
 After running this command, if any git diff exists, the Codemod Engine will use the diff as before/after snippets in Codemod Studio.
 
@@ -28,19 +41,11 @@ After running this command, if any git diff exists, the Codemod Engine will use 
 codemod learn
 ```
 
-### `codemod build`
-
-Can be used to build a JavaScript codemod package. If you are using any of the [supported JavaScript codemod engines](/guides/building-codemods/package-requirements#supported-codemod-engines), you can use the CLI to build the main executable file.
-
-```bash
-codemod build
-```
-
 ## Share/discover
 
 ### `codemod search`
 
-Can be used to list the codemods available in Codemod Registry and optionally search for a specific codemod using its name or tags.
+Can be used to list the codemods available in [Codemod Registry](/codemod-registry/introduction) and optionally search for a specific codemod using its name or tags.
 
 Aliases: `list` and `ls`
 
@@ -80,7 +85,7 @@ codemod init
 
 Can be used to publish a codemod to Codemod Registry.
 
-Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/guides/building-codemods/package-requirements).
+Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/building-codemods/package-requirements).
 
 To do so, use the `publish` command inside the codemod package directory:
 
@@ -120,7 +125,7 @@ Codemod CLI allows you to run codemods:
 1. from [Codemod Registry](/codemod-registry)
 2. from source
     - using a <Tooltip tip="A codemod package is a codemod with a valid `.codemodrc.json` configuration file.">codemod package</Tooltip>
-    - using a <Tooltip tip="This file can be a simple transfofrm file using any of the supported codemod engines.">transform file</Tooltip>
+    - using a <Tooltip tip="This file can be a simple transform file using any of the supported codemod engines.">transform file</Tooltip>
 
 <Tabs>
   <Tab title="Run from Codemod Registry">
@@ -128,8 +133,12 @@ Codemod CLI allows you to run codemods:
     codemod [codemod-name]
     ```
 
+    <Tip>
+    To run a specific codemod version, you can use `codemod [codemod-name]@[version]`.
+    </Tip>
+
     <AccordionGroup>
-    <Accordion title="Example">
+    <Accordion title="Example: Running a codemod from registry">
       <Steps>
       <Step title="Go to project directory">
         Make sure you are in the project directory to avoid running the codemod over the wrong directory on your machine.
@@ -153,15 +162,14 @@ Codemod CLI allows you to run codemods:
 
   </Tab>
   <Tab title="Run from source">
-    To run a local codemod package, you can:
+    To run a local codemod, you can run:
     ```bash
     codemod -s [path]
     ```
 
-    or you can run a transform file ([using a supported codemod engine](/guides/building-codemods/package-requirements#supported-codemod-engines)) by using:
-    ```bash
-    codemod -s [path] --engine [codemod-engine]
-    ```
+    If the target source includes a [codemod package](/building-codemods/package-requirements), the codemod will run automatically.
+    
+    If the codemod is an <Tooltip tip="E.g. a single transform.js file of a jscodeshift codemod">atomic transform file</Tooltip>, Codemod CLI will ask you to specify a [codemod engine](/building-codemods/package-requirements#supported-codemod-engines) to run the codemod.
   </Tab>
 </Tabs>
 
@@ -269,6 +277,17 @@ codemod [codemod-name] --format
 
 </ResponseField>
 
+<ResponseField name="--esm" type="boolean">
+  If you want to use ESM-specific features like top-level `await` or `import.meta` in your codemods, you can use this flag.
+
+  <Tip>You can also rename your codemod entry-point file to use `.mjs` or `.mts` extension to omit using this compatibility flag.</Tip>
+
+```bash
+codemod [codemod-name] --json
+```
+
+</ResponseField>
+
 <ResponseField name="--no-cache" type="boolean">
   Can be used to disable caching downloaded codemod files.
 
@@ -299,6 +318,26 @@ codemod [codemod-name] --no-telemetry
 
 </ResponseField>
 
+<ResponseField name="--no-interactive" type="boolean">
+  Can be used to skip interactive prompts (run the CLI in no output mode).
+
+```bash
+codemod [codemod-name] --no-interactive
+```
+
+</ResponseField>
+
+<ResponseField name="--engine" type="string">
+  Used to specify the engine for standalone codemod runs.
+
+  <Note>When running standalone codemods (the ones that do not have a [codemod-compatible directory structure](/codemod-registry/introduction#required-codemod-package-structure)), you will be prompted to select a codemod engine that your codemod was built with. To support non-interactive mode, we added this optional flag.</Note>
+
+```bash
+codemod [codemod-name] --no-interactive
+```
+
+</ResponseField>
+
 <ResponseField name="--json (-j)" type="boolean">
   Can be used to switch the CLI responses to JSON format.
 
@@ -314,6 +353,21 @@ codemod [codemod-name] --json
 ```bash
 codemod [codemod-name] -n [number-of-threads]
 ```
+</ResponseField>
+
+<ResponseField name="--log" type="boolean">
+  Can be used to generate a log file when running a codemod.
+
+```bash
+codemod [codemod-name] --logs
+```
+
+You can then open the log file by running:
+
+```bash
+codemod --logs
+```
+
 </ResponseField>
 
 ## Other commands

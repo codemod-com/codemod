@@ -311,7 +311,9 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/1954752?v=4",
       "profile": "https://with-heart.xyz/",
       "contributions": [
-        "bug"
+        "bug",
+        "doc",
+        "ideas"
       ]
     },
     {
@@ -320,7 +322,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/128405481?v=4",
       "profile": "https://github.com/manishjha-04",
       "contributions": [
-        "bug"
+        "bug",
+        "code"
       ]
     },
     {
@@ -332,10 +335,76 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "xmatthias",
+      "name": "Matthias",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5024695?v=4",
+      "profile": "https://blog.xmatthias.com",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "ppashakhanloo",
+      "name": "Pardis Pashakhanloo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8430554?v=4",
+      "profile": "http://pardisp.github.io",
+      "contributions": [
+        "code",
+        "blog",
+        "data"
+      ]
+    },
+    {
+      "login": "Aslemammad",
+      "name": "Mohammad Bagher Abiyat",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37929992?v=4",
+      "profile": "http://minimalistweb.dev",
+      "contributions": [
+        "infra"
+      ]
+    },
+    {
+      "login": "Yugal41735",
+      "name": "Yugal Agarwal",
+      "avatar_url": "https://avatars.githubusercontent.com/u/74638775?v=4",
+      "profile": "https://github.com/Yugal41735",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "poswalsameer",
+      "name": "Sameer Poswal",
+      "avatar_url": "https://avatars.githubusercontent.com/u/106386145?v=4",
+      "profile": "https://github.com/poswalsameer",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "stramel",
+      "name": "Michael Stramel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/855184?v=4",
+      "profile": "https://github.com/stramel",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "spirulence",
+      "name": "Cameron Seebach",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1297151?v=4",
+      "profile": "https://github.com/spirulence",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
-  "skipCi": true,
+  "skipCi": false,
   "repoType": "github",
   "repoHost": "https://github.com",
   "projectName": "codemod",

@@ -7,6 +7,7 @@ export const codemodRunBodySchema = v.object({
     v.literal("ts-morph"),
     v.literal("workflow"),
   ]),
+  codemodArguments: v.optional(v.string()),
   repoUrl: v.optional(v.string()),
   branch: v.optional(v.string()),
   persistent: v.optional(v.boolean()),

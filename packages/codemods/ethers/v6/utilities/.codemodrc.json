@@ -1,0 +1,11 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "Ethers/6/Utilities",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": ["ethers.js", "migration"]
+  }
+}

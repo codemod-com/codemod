@@ -1,13 +1,14 @@
 import { spawn } from "node:child_process";
 import * as fs from "node:fs";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 import { glob } from "glob";
 import inquirer from "inquirer";
 import * as semver from "semver";
 import * as v from "valibot";
 
+import { tmpdir } from "node:os";
 import { type Printer, chalk } from "@codemod-com/printer";
-import { BUILT_SOURCE_PATH, getCodemodExecutable } from "@codemod-com/runner";
+import { DEFAULT_BUILD_PATH, getCodemodExecutable } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   type CodemodConfig,
@@ -23,23 +24,61 @@ import { extractPrintableApiError, getCodemod, publish } from "#api.js";
 import { getCurrentUserOrLogin } from "#auth-utils.js";
 import { handleInitCliCommand } from "#commands/init.js";
 import type { TelemetryEvent } from "#telemetry.js";
-import { codemodDirectoryPath } from "#utils/constants.js";
 import { isFile } from "#utils/general.js";
+
+const API_KEY = process.env.CODEMOD_API_KEY;
 
 export const handlePublishCliCommand = async (options: {
   printer: Printer;
   source: string;
   telemetry: TelemetrySender<TelemetryEvent>;
+  esm?: boolean;
+  namespace?: string;
 }) => {
-  let { source, printer, telemetry } = options;
+  let { source, printer, telemetry, esm } = options;
 
-  const { token, allowedNamespaces, organizations } =
-    await getCurrentUserOrLogin({
+  const requestCredentials = await (async () => {
+    if (API_KEY) {
+      return { apiKey: API_KEY };
+    }
+
+    const { token } = await getCurrentUserOrLogin({
       message: "Authentication is required to publish codemods. Proceed?",
       printer,
     });
 
-  const tempDirectory = join(codemodDirectoryPath, "temp");
+    return { accessToken: token };
+  })();
+
+  const getNamespace = async (
+    codemodRc: NonNullable<Awaited<ReturnType<typeof getCodemodRc>>["config"]>,
+  ) => {
+    if (API_KEY) {
+      return options.namespace;
+    }
+
+    const { allowedNamespaces, organizations } = await getCurrentUserOrLogin({
+      message: "Authentication is required to publish codemods. Proceed?",
+      printer,
+    });
+
+    if (allowedNamespaces.length > 1 && !codemodRc.name.startsWith("@")) {
+      const { namespace } = await inquirer.prompt<{ namespace: string }>({
+        type: "list",
+        name: "namespace",
+        choices: allowedNamespaces,
+        default: allowedNamespaces.find(
+          (ns) =>
+            !organizations.map((org) => org.organization.slug).includes(ns),
+        ),
+        message:
+          "You have access to multiple namespaces. Please choose which one you would like to publish the codemod under.",
+      });
+
+      return namespace;
+    }
+  };
+
   const formData = new FormData();
   const excludedPaths = [
     "node_modules/**",
@@ -53,8 +92,11 @@ export const handlePublishCliCommand = async (options: {
     source = await handleInitCliCommand({
       printer,
       source,
-      target: tempDirectory,
+      target: tmpdir(),
       noLogs: true,
+      noFixtures: true,
+      build: true,
+      esm,
     });
 
     const { choice } = await inquirer.prompt<{ choice: string }>({
@@ -115,7 +157,7 @@ export const handlePublishCliCommand = async (options: {
   let bumpedVersion = false;
   const existingCodemod = await getCodemod(
     buildCodemodSlug(codemodRc.name),
-    token,
+    requestCredentials,
   ).catch(() => null);
 
   if (existingCodemod !== null) {
@@ -128,19 +170,12 @@ export const handlePublishCliCommand = async (options: {
       await updateCodemodRC(codemodRc);
       bumpedVersion = true;
     }
-  } else if (allowedNamespaces.length > 1 && !codemodRc.name.startsWith("@")) {
-    const { namespace } = await inquirer.prompt<{ namespace: string }>({
-      type: "list",
-      name: "namespace",
-      choices: allowedNamespaces,
-      default: allowedNamespaces.find(
-        (ns) => !organizations.map((org) => org.organization.slug).includes(ns),
-      ),
-      message:
-        "You have access to multiple namespaces. Please choose which one you would like to publish the codemod under.",
-    });
+  } else {
+    const namespace = await getNamespace(codemodRc);
 
-    formData.append("namespace", namespace);
+    if (namespace) {
+      formData.append("namespace", namespace);
+    }
   }
 
   if (codemodRc.engine !== "recipe") {
@@ -150,57 +185,66 @@ export const handlePublishCliCommand = async (options: {
     });
   }
 
-  if (!codemodRc.meta?.git) {
-    const { gitUrl } = await inquirer.prompt<{
-      gitUrl: string;
-    }>({
-      type: "input",
-      name: "gitUrl",
-      suffix: " (leave empty if none)",
-      message:
-        "Enter the URL of the git repository where this codemod is located.",
-      validate: (input) => {
-        const stringParsingResult = v.safeParse(v.string(), input);
-        if (stringParsingResult.success === false) {
-          return stringParsingResult.issues[0].message;
-        }
+  let gitUrl = codemodRc.meta?.git ?? null;
+  if (gitUrl === null) {
+    const repoGitUrl = await execPromise("git config --get remote.origin.url", {
+      cwd: source,
+    }).catch(() => null);
 
-        const stringInput = stringParsingResult.output;
-        if (stringInput.length === 0) {
+    if (repoGitUrl !== null) {
+      const url = repoGitUrl.stdout.trim();
+
+      gitUrl = url.startsWith("git@")
+        ? `https://${url.slice(4).replace(":", "/")}`
+        : url;
+    } else {
+      const { gitUrl: userAnsweredGitUrl } = await inquirer.prompt<{
+        gitUrl: string;
+      }>({
+        type: "input",
+        name: "gitUrl",
+        suffix: " (leave empty if none)",
+        message:
+          "Enter the URL of the git repository where this codemod is located.",
+        validate: (input) => {
+          const stringParsingResult = v.safeParse(v.string(), input);
+          if (stringParsingResult.success === false) {
+            return stringParsingResult.issues[0].message;
+          }
+
+          const stringInput = stringParsingResult.output;
+          if (stringInput.length === 0) {
+            return true;
+          }
+
+          const urlParsingResult = v.safeParse(
+            v.pipe(v.string(), v.url()),
+            stringInput,
+          );
+          if (urlParsingResult.success === false) {
+            return urlParsingResult.issues[0].message;
+          }
+
           return true;
-        }
+        },
+      });
 
-        const urlParsingResult = v.safeParse(
-          v.pipe(v.string(), v.url()),
-          stringInput,
-        );
-        if (urlParsingResult.success === false) {
-          return urlParsingResult.issues[0].message;
-        }
+      if (userAnsweredGitUrl?.length > 0) {
+        gitUrl = userAnsweredGitUrl;
 
-        return true;
-      },
-    });
-
-    if (gitUrl) {
-      try {
-        await execPromise("git init", { cwd: source });
-
-        await execPromise(`git remote add origin ${gitUrl}`, {
-          cwd: source,
-        });
-
-        codemodRc.meta = { tags: [], ...codemodRc.meta, git: gitUrl };
-
-        await updateCodemodRC(codemodRc);
-      } catch (err) {
-        printer.printConsoleMessage(
-          "error",
-          `Failed to initialize a git package with provided repository link:\n${
-            (err as Error).message
-          }. Setting it to null...`,
-        );
+        try {
+          await execPromise("git init", { cwd: source });
+          await execPromise(`git remote add origin ${userAnsweredGitUrl}`, {
+            cwd: source,
+          });
+        } catch (err) {}
       }
+    }
+
+    // If it was null but we changed it, we need to update the RC file
+    if (gitUrl !== null) {
+      codemodRc.meta = { tags: [], ...codemodRc.meta, git: gitUrl };
+      await updateCodemodRC(codemodRc);
     }
   }
 
@@ -238,16 +282,25 @@ export const handlePublishCliCommand = async (options: {
   });
 
   const codemodFileBuffers = await Promise.all(
-    codemodFilePaths.map(async (path) => ({
-      name: path.replace(new RegExp(`.*${source}/`), ""),
-      data: await fs.promises.readFile(path),
-    })),
+    codemodFilePaths.map(async (path) => {
+      const searchTerm = `${source}${sep}`;
+
+      return {
+        name: path
+          .slice(path.indexOf(searchTerm) + searchTerm.length)
+          .replace(/\\/g, "/"),
+        data: await fs.promises.readFile(path),
+      };
+    }),
   );
 
   if (codemodRc.engine !== "recipe") {
-    const builtExecutable = await getCodemodExecutable(source).catch(
-      () => null,
-    );
+    const builtExecutable = await getCodemodExecutable(
+      source,
+      esm,
+      codemodRc.engine,
+      false,
+    ).catch(() => null);
 
     if (builtExecutable === null) {
       throw new Error(
@@ -258,8 +311,16 @@ export const handlePublishCliCommand = async (options: {
       );
     }
 
+    const cdmdDistPath = join(source, "cdmd_dist");
+    await fs.promises.mkdir(cdmdDistPath, { recursive: true });
+    await fs.promises.writeFile(
+      join(cdmdDistPath, "index.cjs"),
+      builtExecutable,
+      "utf8",
+    );
+
     codemodFileBuffers.push({
-      name: BUILT_SOURCE_PATH,
+      name: DEFAULT_BUILD_PATH,
       data: Buffer.from(builtExecutable),
     });
   }
@@ -285,7 +346,7 @@ export const handlePublishCliCommand = async (options: {
   );
 
   try {
-    await publish(token, formData);
+    await publish(requestCredentials, formData);
     publishSpinner.succeed();
   } catch (error) {
     publishSpinner.fail();
@@ -300,7 +361,7 @@ export const handlePublishCliCommand = async (options: {
       message: errorMessage,
     });
   } finally {
-    if (source.includes(tempDirectory)) {
+    if (source.includes(tmpdir())) {
       await fs.promises.rm(source, { recursive: true, force: true });
     }
   }

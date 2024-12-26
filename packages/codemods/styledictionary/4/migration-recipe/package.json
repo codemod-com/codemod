@@ -1,0 +1,6 @@
+{
+  "name": "@codemod/styledictionary-4-migration-recipe",
+  "files": ["./README.md", "./.codemodrc.json"],
+  "type": "module",
+  "private": true
+}

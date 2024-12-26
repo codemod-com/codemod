@@ -79,8 +79,7 @@ export default function SectionExample(props: TestiomonialsProps) {
                           image={item?.companyLogoLight}
                           elProps={{
                             alt: item?.companyLogoLight?.alt,
-                            className:
-                              "h-full object-contain dark:hidden w-max",
+                            className: "h-full object-contain dark:hidden",
                           }}
                         />
                         <SanityImage
@@ -89,7 +88,7 @@ export default function SectionExample(props: TestiomonialsProps) {
                           elProps={{
                             alt: item?.companyLogoDark?.alt,
                             className:
-                              "h-full object-contain hidden dark:block w-max",
+                              "h-full object-contain hidden dark:block",
                           }}
                         />
                       </div>
@@ -105,7 +104,7 @@ export default function SectionExample(props: TestiomonialsProps) {
                           elProps={{
                             alt: item?.image?.alt,
                             className:
-                              "h-[44px] w-[44px] object-cover w-max rounded-[4px]",
+                              "h-[44px] w-[44px] object-cover rounded-[4px]",
                           }}
                         />
 
@@ -138,8 +137,7 @@ export default function SectionExample(props: TestiomonialsProps) {
                           image={item?.companyLogoLight}
                           elProps={{
                             alt: item?.companyLogoLight?.alt,
-                            className:
-                              "h-full object-contain dark:hidden w-max",
+                            className: "h-full object-contain dark:hidden",
                           }}
                         />
                         <SanityImage
@@ -148,7 +146,7 @@ export default function SectionExample(props: TestiomonialsProps) {
                           elProps={{
                             alt: item?.companyLogoDark?.alt,
                             className:
-                              "h-full object-contain hidden dark:block w-max",
+                              "h-full object-contain hidden dark:block",
                           }}
                         />
                       </div>
@@ -164,7 +162,7 @@ export default function SectionExample(props: TestiomonialsProps) {
                           elProps={{
                             alt: item?.image?.alt,
                             className:
-                              "h-[44px] w-[44px] object-cover w-max rounded-[4px]",
+                              "h-[44px] w-[44px] object-cover rounded-[4px]",
                           }}
                         />
 

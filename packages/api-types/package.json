@@ -8,6 +8,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
+  "private": true,
   "files": [
     "./dist",
     "!**/*.test.js",
@@ -30,6 +31,7 @@
   "dependencies": {
     "@clerk/backend": "catalog:",
     "@codemod-com/database": "workspace:*",
-    "@codemod-com/filemod": "workspace:*"
+    "@codemod-com/filemod": "workspace:*",
+    "valibot": "catalog:"
   }
 }

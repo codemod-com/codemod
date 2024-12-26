@@ -3,28 +3,28 @@ import { SanityImage } from "../SanityImage";
 
 export const Quote = (props: QuoteProps) => {
   return (
-    <blockquote className="mt-4 border-l-2 border-black pl-6">
+    <blockquote className="my-10">
       {props.image && (
         <SanityImage
           maxWidth={450}
           image={props.image}
-          elProps={{ className: "mb-10 block" }}
+          elProps={{ className: "mb-6 block h-10 w-auto" }}
           alt={props.authorImage?.alt}
         />
       )}
-      <q className="s-heading mb-8 block max-w-2xl font-medium">
+      <q className="body-l-medium lg:m-heading mb-8 block font-medium">
         {props.quote}
       </q>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-3">
         {props.authorImage && (
           <SanityImage
-            elProps={{ className: "rounded-sm w-11 h-11" }}
+            elProps={{ className: "rounded-full w-8 h-8" }}
             maxWidth={100}
             image={props.authorImage}
             alt={props.authorImage?.alt}
           />
         )}
-        <div className="flex flex-col gap-1">
+        <div className="flex items-center flex-row flex-wrap gap-1">
           <cite className="body-s-medium font-medium not-italic">
             {props.authorName}
           </cite>
@@ -40,9 +40,5 @@ export const Quote = (props: QuoteProps) => {
 };
 
 export default function QuoteBlock(props: QuoteProps) {
-  return (
-    <div className="mt-10">
-      <Quote {...props} />
-    </div>
-  );
+  return <Quote {...props} />;
 }

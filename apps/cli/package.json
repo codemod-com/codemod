@@ -4,7 +4,7 @@
   "imports": {
     "#*": "./src/*"
   },
-  "version": "0.13.6",
+  "version": "0.15.0",
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,
@@ -39,7 +39,6 @@
     "@codemod-com/runner": "workspace:*",
     "@codemod-com/telemetry": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@codemod.com/workflow": "workspace:*",
     "@types/blessed": "catalog:",
     "@types/cli-progress": "catalog:",
     "@types/columnify": "catalog:",
@@ -95,6 +94,7 @@
     "keytar": "catalog:",
     "@octokit/rest": "catalog:",
     "blessed": "catalog:",
+    "@codemod.com/workflow": "workspace:*",
     "esbuild": "^0.23.0"
   }
 }

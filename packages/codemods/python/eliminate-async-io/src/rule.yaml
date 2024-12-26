@@ -1,0 +1,29 @@
+id: remove-async-def
+language: python
+rule:
+  pattern:
+    context: 'async def $FUNC($$$ARGS): $$$BODY'
+    selector: function_definition
+fix: |-
+  def $FUNC($$$ARGS):
+    $$$BODY
+---
+id: remove-import
+language: python
+rule:
+  pattern: import asyncio
+fix: ''
+---
+id: change-async-run
+language: python
+rule:
+  pattern: asyncio.run($$$ARGS)
+fix: $$$ARGS
+---
+id: remove-await-call
+language: python
+rule:
+  pattern:
+    selector: await
+    context: 'await $$$CALL'
+fix: $$$CALL

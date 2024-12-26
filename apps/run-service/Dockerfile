@@ -10,6 +10,9 @@ COPY ./apps/run-service/package.json /app/apps/run-service/
 COPY ./packages/tsconfig /app/packages/tsconfig/
 COPY ./packages/utilities /app/packages/utilities/
 COPY ./packages/filemod /app/packages/filemod/
+COPY ./packages/database /app/packages/database/
+COPY ./packages/api-types /app/packages/api-types/
+COPY ./packages/auth /app/packages/auth/
 
 RUN pnpm install
 

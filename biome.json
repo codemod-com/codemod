@@ -9,6 +9,7 @@
       "*.d.ts",
       "*.js",
       "dist",
+      "cdmd_dist",
       "build",
       "pnpm-lock.yaml",
       "node_modules",
@@ -116,6 +117,7 @@
       "input.js",
       "output.js",
       "dist",
+      "cdmd_dist",
       "build",
       "pnpm-lock.yaml",
       "node_modules",
@@ -133,6 +135,7 @@
     "ignore": [
       "node_modules",
       "dist",
+      "cdmd_dist",
       "build",
       ".next",
       ".vscode",

@@ -116,9 +116,24 @@ export class WorkerManager {
       return;
     }
 
-    const data = (await fs.promises.readFile(filePath, {
-      encoding: "utf8",
-    })) as string;
+    const data = await fs.promises.readFile(filePath, "utf8").catch(() => null);
+    if (data === null) {
+      this.__idleWorkerIds.push(id);
+      this._options.onError?.({
+        message: "Could not read from file",
+        filePath: filePath,
+      });
+      this._options.onPrinterMessage({
+        kind: "progress",
+        processedFileNumber: ++this.__processedFileNumber,
+        totalFileNumber: this.__totalFileCount,
+        processedFileName: relative(
+          this._options.flowSettings.target,
+          resolve(filePath),
+        ),
+      });
+      return;
+    }
 
     this.__workers[id]?.postMessage({
       kind: "runCodemod",
@@ -136,9 +151,7 @@ export class WorkerManager {
       worker.postMessage({ kind: "exit" } satisfies MainThreadMessage);
     }
 
-    this._options.onPrinterMessage({
-      kind: "finish",
-    });
+    this._options.onPrinterMessage({ kind: "finish" });
   }
 
   private _getShouldFinish() {

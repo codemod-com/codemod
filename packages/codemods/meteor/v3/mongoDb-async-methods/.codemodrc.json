@@ -1,0 +1,16 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "meteor/v3/mongo-db-async-methods",
+  "version": "1.0.4",
+  "engine": "jscodeshift",
+  "private": false,
+  "applicability": {
+    "from": [["meteor", ">=", "2"], ["meteor", "<", "3"]],
+    "to": [["meteor", ">=", "3"]]
+  },
+  "arguments": [],
+  "meta": {
+    "tags": ["meteor", "v3"],
+    "git": "https://github.com/codemod-com/codemod/pull/1277"
+  }
+}

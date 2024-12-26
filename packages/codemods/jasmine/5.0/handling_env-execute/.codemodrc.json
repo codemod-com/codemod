@@ -1,0 +1,12 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "jasmine/v5/handling-env-execute-callbacks",
+  "version": "1.0.2",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": ["jasmine", "migration", "v5"],
+    "git": "https://github.com/codemod-com/codemod/pull/1319/files"
+  }
+}

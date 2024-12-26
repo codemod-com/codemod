@@ -85,7 +85,7 @@ function createDefaultComponents(
           {...prepareProps(props)}
           className={cx({
             uppercase: usage === "default",
-            "s-heading  py-4": usage === "textPage",
+            "s-heading py-4": usage === "textPage",
           })}
         >
           {props.children}
@@ -100,6 +100,11 @@ function createDefaultComponents(
         <h4 {...prepareProps(props)} className={cx("body-l-medium py-2")}>
           {props.children}
         </h4>
+      ),
+      p: (props) => (
+        <p {...prepareProps(props)} className={cx("body-l")}>
+          {props.children}
+        </p>
       ),
       normal: (props) => (
         <p
@@ -176,9 +181,11 @@ function createDefaultComponents(
       },
     },
     list: {
-      bullet: ({ children }) => <ul className="list-disc p-2">{children}</ul>,
+      bullet: ({ children }) => (
+        <ul className="list-disc p-2 space-y-2">{children}</ul>
+      ),
       number: ({ children }) => (
-        <ol className="list-decimal p-2">{children}</ol>
+        <ol className="list-decimal p-2 space-y-2">{children}</ol>
       ),
     },
 

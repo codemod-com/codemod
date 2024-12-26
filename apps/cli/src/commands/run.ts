@@ -25,7 +25,8 @@ import { RunnerService } from "#services/runner-service.js";
 import type { TelemetryEvent } from "#telemetry.js";
 import type { NamedFileCommand } from "#types/commands.js";
 import { originalStdoutWrite } from "#utils/constants.js";
-import { writeLogs } from "#utils/logs.js";
+import { logsPath, writeLogs } from "#utils/logs.js";
+import { open } from "../utils/open.js";
 
 const checkFileTreeVersioning = async (target: string) => {
   let force = true;
@@ -98,19 +99,12 @@ export const handleRunCliCommand = async (options: {
 
   const flowSettings = await parseFlowSettings(args, printer);
 
-  if (
-    !flowSettings.dry &&
-    !args.readme &&
-    !args.config &&
-    !args.version &&
-    args.interactive &&
-    !args.mode
-  ) {
-    await checkFileTreeVersioning(flowSettings.target);
-  }
-
   const nameOrPath = args._.at(0)?.toString() ?? args.source ?? null;
   if (nameOrPath === null) {
+    if (args.logs) {
+      return open(logsPath, printer);
+    }
+
     throw new Error("Codemod to run was not specified!");
   }
 
@@ -206,6 +200,10 @@ export const handleRunCliCommand = async (options: {
     runnerService,
   });
 
+  if (!flowSettings.dry && args.interactive) {
+    await checkFileTreeVersioning(flowSettings.target);
+  }
+
   const depsToInstall: Record<
     string,
     { deps: string[]; affectedFiles: string[] }
@@ -239,12 +237,12 @@ export const handleRunCliCommand = async (options: {
       if (args.mode === "json" && typeof output === "object") {
         process.stdout.write = originalStdoutWrite;
         process.stdout.write(JSON.stringify(output, null, 2));
+        process.stdout.write = () => false;
       } else if (args.mode === "plain") {
         process.stdout.write = originalStdoutWrite;
         process.stdout.write(String(output));
+        process.stdout.write = () => false;
       }
-
-      process.stdout.write = () => false;
 
       let codemodName: string;
       if (codemod.type === "standalone") {

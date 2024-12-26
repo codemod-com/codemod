@@ -1,6 +1,7 @@
 {
   "name": "@codemod-com/codemod-react-replace-act-import",
   "version": "1.0.0",
+  "private": true,
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.12.3",
