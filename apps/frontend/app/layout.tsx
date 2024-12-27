@@ -40,6 +40,18 @@ export default async function RootLayout({
           document.head.appendChild(o)}
         initApollo();`}
         </Script>
+        <Script>
+          {`
+          <!-- Google tag (gtag.js) -->
+          <script async src="https://www.googletagmanager.com/gtag/js?id=AW-11521847611">
+          </script>
+          <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'AW-11521847611');`}
+        </Script>
       </head>
       <body>
         {children}
