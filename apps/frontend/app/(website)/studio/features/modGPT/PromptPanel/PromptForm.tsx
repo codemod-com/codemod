@@ -74,7 +74,7 @@ export const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
             onChange={(e) => setInput(e.target.value)}
             placeholder="Send a message."
             spellCheck={false}
-            className="promptTextarea min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-xs"
+            className="promptTextarea min-h-[60px] w-full resize-none bg-transparent px-10 pr-[70px] py-[1.3rem] focus-within:outline-none sm:text-xs"
           />
           <div className="absolute right-0 top-3 sm:right-4">
             <Tooltip
@@ -92,6 +92,7 @@ export const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
               content="Send message"
             />
           </div>
+
         </div>
       </form>
     );
