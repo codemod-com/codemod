@@ -1,5 +1,6 @@
 import useDebounce from "@/app/(website)/studio/src/hooks/useDebounce";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
 import { useState } from "react";
 
@@ -21,16 +22,38 @@ export const NavigationDropdown: React.FC<NavigationDropdownProps> = ({
   const [open, setOpen] = useState(false);
   const debouncedOpen = useDebounce<boolean>(open, 150);
 
-  function handleMouseEnter(event: any) {
-    event.preventDefault();
-    setOpen(true);
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
+
+  // Mobile layout
+  if (isMobile) {
+    return (
+      <>
+        <div
+          className="bg-primary-dark dark:bg-primary-light"
+          onClick={() => setOpen(!open)}
+        >
+          {trigger(open)}
+        </div>
+
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              key="dropdown"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden px-s"
+            >
+              {children}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </>
+    );
   }
 
-  function handleMouseLeave(event: any) {
-    event.preventDefault();
-    setOpen(false);
-  }
-
+  // Desktop layout
   return (
     <DropdownMenu.Root
       open={debouncedOpen}
@@ -39,8 +62,14 @@ export const NavigationDropdown: React.FC<NavigationDropdownProps> = ({
     >
       <DropdownMenu.Trigger
         asChild
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={(event) => {
+          event.preventDefault();
+          setOpen(true);
+        }}
+        onMouseLeave={(event) => {
+          event.preventDefault();
+          setOpen(false);
+        }}
       >
         {trigger(open)}
       </DropdownMenu.Trigger>
@@ -50,11 +79,17 @@ export const NavigationDropdown: React.FC<NavigationDropdownProps> = ({
           align={align}
           side={side}
           sideOffset={sideOffset}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={(event) => {
+            event.preventDefault();
+            setOpen(true);
+          }}
+          onMouseLeave={(event) => {
+            event.preventDefault();
+            setOpen(false);
+          }}
           onCloseAutoFocus={(event) => event.preventDefault()}
-          onEscapeKeyDown={handleMouseLeave}
-          onPointerDownOutside={handleMouseLeave}
+          onEscapeKeyDown={() => setOpen(false)}
+          onPointerDownOutside={() => setOpen(false)}
           className="z-[99] min-w-[250px] animate-slideDownAndFade select-none rounded-[8px] border-[1px] border-border-light bg-primary-dark/80 backdrop-blur-lg p-s shadow-sm dark:border-border-dark dark:bg-primary-light/90 dark:shadow-none"
         >
           {children}

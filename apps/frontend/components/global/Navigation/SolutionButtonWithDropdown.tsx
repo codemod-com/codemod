@@ -1,5 +1,6 @@
 import Icon from "@/components/shared/Icon";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { motion } from "framer-motion";
 import { FileUp, Languages, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -7,7 +8,12 @@ import { useEffect } from "react";
 import HoverArrow from "../HoverArrow";
 import { NavigationDropdown } from "./NavigationDropdown";
 
-export default function SolutionButtonWithDropdown() {
+type DropdownProps = {
+  animationVariants?: Record<string, any>;
+};
+export default function SolutionButtonWithDropdown({
+  animationVariants,
+}: DropdownProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -19,15 +25,34 @@ export default function SolutionButtonWithDropdown() {
     <NavigationDropdown
       align="center"
       trigger={(open: boolean) => (
-        <span className="cursor-pointer flex items-center gap-2">
-          <span className="font-medium body-s-medium">{"Solution"}</span>
-          <Icon
-            name="chevron-down"
-            className={`w-3 transform transition-transform duration-200 ${
-              open ? "rotate-180" : "rotate-0"
-            }`}
-          />
-        </span>
+        <div className="cursor-pointer">
+          <div className="lg:flex hidden items-center gap-2">
+            <span className="font-medium body-s-medium">{"Solution"}</span>
+            <Icon
+              name="chevron-down"
+              className={`w-3 transform transition-transform duration-200 ${
+                open ? "rotate-180" : "rotate-0"
+              }`}
+            />
+          </div>
+
+          {/* Mobile */}
+          <motion.div
+            variants={animationVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="lg:hidden flex justify-between items-center bg-primary-dark rounded-[8px] p-s dark:bg-primary-light transition-colors hover:bg-primary-light/5 dark:hover:bg-primary-dark/5"
+          >
+            <span className="font-medium body-s-medium">{"Solution"}</span>
+            <Icon
+              name="chevron-down"
+              className={`w-4 transform transition-transform duration-200 ${
+                open ? "rotate-180" : "rotate-0"
+              }`}
+            />
+          </motion.div>
+        </div>
       )}
     >
       <DropdownMenu.Group className="flex flex-col space-y-4">
