@@ -30,7 +30,7 @@ export default function SectionFullWidthMedia(
             {props.mediaTabs.map((item) => {
               return (
                 <TabContent key={item._key} forId={item._key}>
-                  <div className="aspect-video overflow-hidden rounded-lg">
+                  <div className="aspect-video overflow-hidden rounded-[8px] flex items-center justify-center">
                     {item?.mediaItem?.[0] &&
                       (item?.mediaItem?.[0] as any)?._type === "muxVideo" && (
                         // @ts-ignore
@@ -41,6 +41,10 @@ export default function SectionFullWidthMedia(
                       "imageWithAltField" && (
                       <SanityImage
                         image={item.mediaItem?.[0] as SanityImageWithAltField}
+                        elProps={{
+                          className:
+                            "h-full w-auto object-contain rounded-[8px]",
+                        }}
                         maxWidth={1440}
                       />
                     )}

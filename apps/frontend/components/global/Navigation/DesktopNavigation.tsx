@@ -12,6 +12,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import NavigationLink from "./NavigationLink";
 import PlatformButtonWithDropdown from "./PlatformButtonWithDropdown";
+import SolutionButtonWithDropdown from "./SolutionButtonWithDropdown";
 
 type DesktopNavigationProps = {
   items: (SanityLinkType & { isCurrent?: boolean })[];
@@ -82,6 +83,8 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
         />
       }
       <PlatformButtonWithDropdown />
+      <SolutionButtonWithDropdown />
+
       {items?.map((item, index) => (
         <NavigationLink className={cx()} key={item.href} href={item.href}>
           <span

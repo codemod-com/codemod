@@ -363,3 +363,26 @@ h6[class*="heading"] a {
 .tab-item.input-error {
   border-color: red;
 }
+
+/* HoverArrow.css */
+@media (pointer: fine) {
+  /* For devices with precise pointers (e.g., mouse) */
+  .group:hover .opacity-0 {
+    opacity: 1;
+  }
+
+  .group:hover .translate-x-offset {
+    transform: translateX(3px);
+  }
+}
+
+@media (pointer: coarse) {
+  /* For devices with less precise pointers (e.g., touch) */
+  .group:active .opacity-0 {
+    opacity: 1;
+  }
+
+  .group:active .translate-x-offset {
+    transform: translateX(3px);
+  }
+}

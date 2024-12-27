@@ -55,7 +55,14 @@ export default function SectionExample(props: TestiomonialsProps) {
           </div>
         </div>
 
-        <div className={cx("row-auto grid w-full grid-cols-1 lg:grid-cols-3")}>
+        <div
+          className={cx(
+            "grid w-full gap-4",
+            props.items.length === 1
+              ? "grid-cols-1"
+              : "grid-cols-1 lg:grid-cols-3",
+          )}
+        >
           {props.items.map((item, index) => {
             return (
               <div
