@@ -32,13 +32,31 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: mediaStyles }}
           type="text/css"
         />
-        <Script>
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=AW-11521847611"
+        >
           {`
           function initApollo(){var n=Math.random().toString(36).substring(7),o=document.createElement("Script");
           o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n,o.async=!0,o.defer=!0,
           o.onload=function(){window.trackingFunctions.onLoad({appId:"673fc665fd81de01b0053af5"})},
           document.head.appendChild(o)}
         initApollo();`}
+        </Script>
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=AW-11521847611"
+        >
+          {`
+          `}
+        </Script>
+        <Script>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'AW-11521847611');`}
         </Script>
       </head>
       <body>
