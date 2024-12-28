@@ -283,21 +283,23 @@ export const publishHandler: RouteHandler<{
       arguments: codemodRc.arguments,
     };
 
-    // Check if a codemod with the name already exists from other author
-    const existingCodemod = await prisma.codemod.findUnique({
-      where: {
-        name,
-        author: {
-          not: author,
+    if (!isVerified) {
+      // Check if a codemod with the name already exists from other author
+      const existingCodemod = await prisma.codemod.findUnique({
+        where: {
+          name,
+          author: {
+            not: author,
+          },
         },
-      },
-    });
-
-    if (existingCodemod !== null) {
-      return reply.code(400).send({
-        error: CODEMOD_NAME_TAKEN,
-        errorText: `Codemod name \`${name}\` is already taken.`,
       });
+
+      if (existingCodemod !== null) {
+        return reply.code(400).send({
+          error: CODEMOD_NAME_TAKEN,
+          errorText: `Codemod name \`${name}\` is already taken.`,
+        });
+      }
     }
 
     let createdAtTimestamp: number;
