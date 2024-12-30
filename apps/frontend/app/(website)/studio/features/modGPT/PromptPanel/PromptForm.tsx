@@ -92,7 +92,6 @@ export const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
               content="Send message"
             />
           </div>
-
         </div>
       </form>
     );
