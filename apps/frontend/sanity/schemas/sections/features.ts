@@ -20,7 +20,7 @@ export const features = defineSection({
       title: "Features",
       description:
         "The third feature will be displayed as a large card. The rest will be small cards.",
-      validation: (Rule) => Rule.min(5).max(5),
+      validation: (Rule) => Rule.min(2).max(5),
       options: {
         sortable: false,
       },

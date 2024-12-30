@@ -8,6 +8,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import NavigationLink from "./NavigationLink";
+import PlatformButtonWithDropdown from "./PlatformButtonWithDropdown";
+import SolutionButtonWithDropdown from "./SolutionButtonWithDropdown";
 
 type MobileNavigationProps = {
   items: SanityLinkType[];
@@ -56,10 +58,12 @@ export function MobileDropdown({
   }, []);
 
   return (
-    <div className="z-[100] flex w-screen max-w-full flex-col bg-primary-dark px-m pb-s pt-m dark:bg-primary-light">
+    <div className="z-[100] flex w-screen max-w-full flex-col bg-primary-dark px-xs pb-s pt-m dark:bg-primary-light">
       <AnimatePresence>
         {visible && (
           <>
+            <PlatformButtonWithDropdown animationVariants={animationVariants} />
+            <SolutionButtonWithDropdown animationVariants={animationVariants} />
             {items?.map((item, index) => (
               <MobileDropdownItem
                 key={item.href}
@@ -69,7 +73,7 @@ export function MobileDropdown({
                 <NavigationLink
                   isCurrent={item.href === pathname}
                   onClick={closeFn}
-                  className="w-full py-s transition-colors hover:bg-primary-light/5 dark:hover:bg-primary-dark/5"
+                  className="w-full p-s transition-colors rounded-[8px] hover:bg-primary-light/5 dark:hover:bg-primary-dark/5"
                   href={item.href}
                 >
                   {item.label}
@@ -77,7 +81,7 @@ export function MobileDropdown({
               </MobileDropdownItem>
             ))}
             <NavigationLink
-              className="w-full py-s transition-colors hover:bg-primary-light/5 dark:hover:bg-primary-dark/5"
+              className="w-full p-s transition-colors rounded-[8px] hover:bg-primary-light/5 dark:hover:bg-primary-dark/5"
               hideExternalIcon
               href={`https://github.com/codemod-com/codemod`}
             >
@@ -127,7 +131,7 @@ export function MobileDropdown({
   );
 }
 
-function MobileDropdownItem({
+export function MobileDropdownItem({
   children,
   index,
   animationVariants,
@@ -139,7 +143,7 @@ function MobileDropdownItem({
   return (
     <DropdownMenu.Item asChild>
       <motion.div
-        className="bg-primary-dark first:pt-xxs last:pb-xxs dark:bg-primary-light [&:not(:last-child)]:border-b-[1px] [&:not(:last-child)]:border-b-border-light [&:not(:last-child)]:dark:border-border-dark"
+        className="bg-primary-dark dark:bg-primary-light"
         variants={animationVariants}
         initial="initial"
         animate="animate"
