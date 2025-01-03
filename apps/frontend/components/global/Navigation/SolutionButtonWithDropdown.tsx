@@ -1,7 +1,7 @@
 import Icon from "@/components/shared/Icon";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { motion } from "framer-motion";
-import { FileUp, Languages, ShieldAlert } from "lucide-react";
+import { Languages } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -73,47 +73,6 @@ export default function SolutionButtonWithDropdown({
 
               <span className="body-xs opacity-50 group-hover:opacity-100 transition-opacity">
                 Replace hard-coded strings with i18n keys
-              </span>
-            </div>
-          </Link>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item asChild>
-          <Link
-            href="/upgrades"
-            prefetch
-            className="body-s-medium flex items-center gap-3 group rounded-[8px] font-medium text-primary-light focus:outline-none dark:text-primary-dark"
-          >
-            <div className="p-2 transition-colors group-hover:bg-accent border border-border-light dark:border-border-dark rounded-[6px]">
-              <FileUp className="size-5 transition-colors group-hover:text-black" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-medium">
-                Upgrades
-                <HoverArrow className="ml-2" />
-              </span>
-
-              <span className="body-xs opacity-50 group-hover:opacity-100 transition-opacity">
-                Upgrade packages
-              </span>
-            </div>
-          </Link>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item asChild>
-          <Link
-            href="/security"
-            prefetch
-            className="body-s-medium flex items-center gap-3 group rounded-[8px] font-medium text-primary-light focus:outline-none dark:text-primary-dark"
-          >
-            <div className="p-2 transition-colors group-hover:bg-accent border border-border-light dark:border-border-dark rounded-[6px]">
-              <ShieldAlert className="size-5 transition-colors group-hover:text-black" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-medium">
-                Security
-                <HoverArrow className="ml-2" />
-              </span>
-              <span className="body-xs opacity-50 group-hover:opacity-100 transition-opacity">
-                Fix security issues
               </span>
             </div>
           </Link>
