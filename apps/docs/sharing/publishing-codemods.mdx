@@ -42,6 +42,10 @@ Creating and publishing a [Codemod-compatible package](/building-codemods/packag
     ```bash
     codemod publish
     ```
+
+    <Tip>
+      Alternatively, you can use [`codemod-template`](https://github.com/codemod-com/codemod-template/) and your codemods, or any future updates to them, will automatically get published to Codemod Registry.
+    </Tip>
   </Step>
 </Steps>
 
@@ -59,21 +63,21 @@ Creating and publishing a [Codemod-compatible package](/building-codemods/packag
   <Step title="Publish codemod">
     Publish the codemod from source by specifying the path to the transform file:
 
-        <Note>
-        To generate a [Codemod-compatible package](/building-codemods/package-requirements), Codemod CLI will ask you a few questions about your codemod to generate the [`codemodrc.json` configuration file](/building-codemods/package-requirements#codemodrc-json-reference) automatically for you.
-        </Note>
+    <Note>
+      To generate a [Codemod-compatible package](/building-codemods/package-requirements), Codemod CLI will ask you a few questions about your codemod to generate the [`codemodrc.json` configuration file](/building-codemods/package-requirements#codemodrc-json-reference) automatically for you.
+    </Note>
 
-        <Tip>If you want to use ESM-specific features like top-level `await` or `import.meta`, you can rename it to use `.mjs` or `.mts` extension or specify `--esm` flag to treat the source file as ESM package explicitly.</Tip>
+    <Tip>If you want to use ESM-specific features like top-level `await` or `import.meta`, you can rename it to use `.mjs` or `.mts` extension or specify `--esm` flag to treat the source file as ESM package explicitly.</Tip>
 
-        ```bash
-        codemod publish [path] --source
-        ```
+    ```bash
+    codemod publish [path] --source
+    ```
 
-        **Example:**
+    **Example:**
 
-         ```bash
-        codemod publish src/index.ts --source
-        ```
+    ```bash
+    codemod publish src/index.ts --source
+    ```
   </Step>
 </Steps>
 
