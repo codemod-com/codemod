@@ -1,5 +1,11 @@
 # codemod
 
+## 0.16.0
+
+### Minor Changes
+
+- d8c7c67: Fixed issues with the Codemod CLI, including resolving the build failure on the publish command, removing automatic dependency installation during the init command, fixing .gitignore in package-boilerplate.ts, and removing the LICENSE file from the boilerplate list.
+
 ## 0.15.0
 
 ### Minor Changes
