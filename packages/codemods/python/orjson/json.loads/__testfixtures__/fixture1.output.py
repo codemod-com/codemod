@@ -1,1 +1,0 @@
-raw_data = orjson.loads(data)

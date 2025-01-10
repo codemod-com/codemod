@@ -1,6 +1,0 @@
-{
-  "name": "@codemod-com/codemod-python-orjson-recipe",
-  "files": ["./README.md", "./.codemodrc.json"],
-  "type": "module",
-  "private": true
-}

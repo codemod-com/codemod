@@ -1,1 +1,0 @@
-contract.foo.estimateGas(addr);

@@ -1,1 +1,0 @@
-sigBytes = joinSignature(splitSig);

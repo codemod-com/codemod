@@ -1,5 +1,0 @@
-id: json-load-orjson
-language: python
-rule:
-  pattern: "json.load($$$A)"
-fix: "orjson.loads($$$A.read())"

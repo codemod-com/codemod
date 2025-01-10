@@ -1,1 +1,0 @@
-txBytes = serializeTransaction(tx, sig);

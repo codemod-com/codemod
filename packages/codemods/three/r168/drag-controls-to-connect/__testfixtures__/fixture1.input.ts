@@ -1,1 +1,0 @@
-taScene.dragControls.activate();

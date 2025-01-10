@@ -1,9 +1,0 @@
-{
-  "name": "@codemod-com/antd5-utils",
-  "type": "module",
-  "exports": "./index.js",
-  "private": true,
-  "devDependencies": {
-    "jscodeshift": "^0.15.1"
-  }
-}

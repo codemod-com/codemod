@@ -1,2 +1,0 @@
-ethers.ZeroAddress;
-ethers.ZeroHash;
