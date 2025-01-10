@@ -1,5 +1,13 @@
 # @codemod-com/auth-service
 
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies [d0c2110]
+  - @codemod-com/utilities@1.2.0
+  - @codemod-com/database@1.0.0
+
 ## 0.0.17
 
 ### Patch Changes

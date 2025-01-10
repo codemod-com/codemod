@@ -1,5 +1,14 @@
 # @codemod-com/runner
 
+## 1.3.1
+
+### Patch Changes
+
+- Updated dependencies [d0c2110]
+  - @codemod-com/utilities@1.2.0
+  - @codemod-com/printer@1.0.1
+  - @codemod.com/workflow@0.0.31
+
 ## 1.3.0
 
 ### Minor Changes
