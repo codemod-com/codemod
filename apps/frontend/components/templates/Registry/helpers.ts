@@ -19,7 +19,10 @@ export const getDescriptionShortText = (description: string) => {
   const descriptionWithoutHeadings = description
     .split("\n")
     .filter(
-      (line) => !line.startsWith("# ") && !line.startsWith("## Description"),
+      (line) =>
+        !line.startsWith("# ") &&
+        !line.startsWith("## Description") &&
+        !line.startsWith("## Example"),
     )
     .join("\n");
 
