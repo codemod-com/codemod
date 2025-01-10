@@ -1,1 +1,0 @@
-dragControls.deactivate();

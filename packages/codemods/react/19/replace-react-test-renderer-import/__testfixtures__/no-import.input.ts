@@ -1,1 +1,0 @@
-import something from 'otherlib';

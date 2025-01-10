@@ -1,1 +1,0 @@
-nodeUV = viewportUV.flipY();

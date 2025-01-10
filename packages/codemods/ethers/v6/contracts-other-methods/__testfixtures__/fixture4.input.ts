@@ -1,1 +1,0 @@
-contract.populateTransaction.foo(addr);

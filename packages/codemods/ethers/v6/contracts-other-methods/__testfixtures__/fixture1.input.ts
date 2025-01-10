@@ -1,1 +1,0 @@
-contract.functions.foo(addr);

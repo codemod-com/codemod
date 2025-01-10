@@ -1,1 +1,0 @@
-splitSig = splitSignature(sigBytes);

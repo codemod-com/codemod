@@ -1,9 +1,0 @@
-const var1 = !!useFlag(user, 'simple-case', true);
-const var2 = !!!true;
-const var3 = !false;
-const var4 = !!false;
-const var5 = !!x;
-const var6 = !!'string';
-const var7 = !5;
-const var8 = !!!!'';
-const var9 = !{};

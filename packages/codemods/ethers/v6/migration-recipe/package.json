@@ -1,6 +1,0 @@
-{
-  "name": "@codemod/ethers-6-migration-recipe",
-  "files": ["./README.md", "./.codemodrc.json"],
-  "type": "module",
-  "private": true
-}

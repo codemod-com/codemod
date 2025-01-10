@@ -1,6 +1,0 @@
-{
-  "name": "@codemod/webpack-v5-migration-recipe",
-  "files": ["./README.md", "./.codemodrc.json"],
-  "type": "module",
-  "private": true
-}

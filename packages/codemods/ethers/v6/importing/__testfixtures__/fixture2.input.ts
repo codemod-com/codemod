@@ -1,1 +1,0 @@
-const { InfuraProvider } = providers;
