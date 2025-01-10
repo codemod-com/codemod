@@ -87,23 +87,26 @@ export function isAstGrepProjectFiles(
 const beautify = (input: string, options?: Parameters<typeof js>[1]) =>
   js(input, { brace_style: "preserve-inline", indent_size: 2, ...options });
 
-const readme = ({ cases }: ProjectDownloadInput) => {
+const readme = ({ cases, name }: ProjectDownloadInput) => {
+  const packageName = changeCase.kebabCase(name);
+
   return `
+This is a [Codemod](https://codemod.com) created with [\`\`\`codemod init\`\`\`](https://docs.codemod.com/deploying-codemods/cli#codemod-init).
 
+## Using this codemod
+You can run this codemod with the following command:
+\`\`\`bash
+npx codemod ${packageName}
+\`\`\`
 
-## Example
 ${cases?.map(({ before, after }) => {
-  return `This codemod turns X into Y. It also does Z.
-Note: this is a contrived example. Please modify it.
-
+  return `
 ### Before
-
 \`\`\`ts
 ${beautify(before)}
 \`\`\`
 
 ### After
-
 \`\`\`ts
 ${beautify(after)}
 \`\`\`
