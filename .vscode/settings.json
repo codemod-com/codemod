@@ -25,7 +25,7 @@
     "titleBar.inactiveForeground": "#d6ff62",
     "titleBar.border": "#d6ff62",
     "statusBar.background": "#d6ff62",
-    "statusBar.foreground": "#000",
-    "statusBar.border": "#000"
-  },
+    "statusBar.foreground": "#0B151E",
+    "statusBar.border": "#0B151E"
+  }
 }
