@@ -11,6 +11,11 @@ import {
 } from "@codemod-com/telemetry";
 import { doubleQuotify, execPromise } from "@codemod-com/utilities";
 import { version } from "#/../package.json";
+import {
+  handleCreateAPIKeyCommand,
+  handleDeleteAPIKeysCommand,
+  handleListAPIKeysCommand,
+} from "#commands/api-keys.js";
 import { handleFeedbackCommand } from "#commands/feedback.js";
 import { handleInitCliCommand } from "#commands/init.js";
 import { handleLearnCliCommand } from "#commands/learn.js";
@@ -247,13 +252,87 @@ export const main = async () => {
       },
     )
     .command(
+      "api-keys:create",
+      "create a new API key",
+      (y) =>
+        y
+          .option("name", {
+            type: "string",
+            description:
+              "A way to easily identify the key by giving it a name.",
+            demandOption: false,
+          })
+          .option("expiresAt", {
+            type: "string",
+            description:
+              "The date and time when the key will expire. Format: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#date_time_string_format",
+            demandOption: false,
+          }),
+      async (args) => {
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
+
+        return executeCliCommand(async () => {
+          await handleCreateAPIKeyCommand({
+            printer,
+            data: {
+              name: args.name,
+              expiresAt: args.expiresAt,
+            },
+          });
+        });
+      },
+    )
+    .command(
+      "api-keys:list",
+      "list API keys",
+      (y) => y,
+      async (args) => {
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
+
+        return executeCliCommand(async () => {
+          await handleListAPIKeysCommand({
+            printer,
+          });
+        });
+      },
+    )
+    .command(
+      "api-keys:delete",
+      "list API keys",
+      (y) =>
+        y.option("id", {
+          type: "string",
+          description: "Key id",
+          demandOption: true,
+        }),
+      async (args) => {
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
+
+        return executeCliCommand(async () => {
+          await handleDeleteAPIKeysCommand({
+            printer,
+            data: { uuid: args.id },
+          });
+        });
+      },
+    )
+    .command(
       "publish",
       "publish the codemod to Codemod Registry",
       (y) =>
-        y.option("source", {
-          type: "string",
-          description: "path to the codemod to be published",
-        }),
+        y
+          .option("source", {
+            type: "string",
+            description: "path to the codemod to be published",
+          })
+          .option("namespace", {
+            type: "string",
+            description: "namespace to publish the codemod under",
+            demandOption: false,
+          }),
       async (args) => {
         const { executeCliCommand, printer, telemetryService } =
           await initializeDependencies(args);
@@ -264,6 +343,7 @@ export const main = async () => {
             source: args.source ?? process.cwd(),
             telemetry: telemetryService,
             esm: args.esm,
+            namespace: args.namespace,
           });
         });
       },

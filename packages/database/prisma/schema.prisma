@@ -100,3 +100,10 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+model ApiKey {
+  externalId String @db.VarChar(32)
+  uuid       String @db.VarChar(36)
+  keyId      String @db.VarChar(32)
+  @@id([uuid, keyId])
+}

@@ -86,7 +86,7 @@ function ParagraphWithTitle(props: PargraphProps) {
         }}
       >
         <h2 className="m-heading text-center">{props.title}</h2>
-        <div className="body-l max-w-[480px] text-balance text-center">
+        <div className="body-l max-w-[768px] text-balance text-center">
           <RichText value={props.content} />
         </div>
       </GradientBorderBox>
@@ -104,7 +104,12 @@ function TeamGrid(props: GridProps) {
     <Section className="w-full py-2xl lg:py-[80px]">
       <div className="flex flex-col gap-l">
         <h2 className="l-heading text-center">{props.title}</h2>
-        <div className="grid grid-cols-2 gap-0 lg:grid-cols-4 lg:gap-x-0 lg:gap-y-xs">
+        <div
+          className="grid gap-6 lg:gap-8"
+          style={{
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          }}
+        >
           {props.teamMembers.map((member) => (
             <TeamMemberGridItem key={member.name} {...member} />
           ))}
@@ -140,16 +145,16 @@ function TeamMemberGridItem(props: TeamMemberProps) {
   );
 
   return (
-    <div className="flex flex-col p-s lg:p-m ">
+    <div className="flex flex-col">
       <div className="flex h-full flex-col">
-        <div className="max-h-[212px] max-w-[212px] bg-emphasis-light lg:h-[212px] lg:w-[212px] dark:bg-emphasis-dark">
+        <div className="bg-emphasis-light dark:bg-emphasis-dark overflow-hidden rounded-[4px]">
           {props.image ? (
             <SanityImage
-              maxWidth={212}
+              maxWidth={500}
               image={props.image}
               alt={props.image?.alt}
               elProps={{
-                className: "rounded-[4px]",
+                className: "rounded-[4px] w-full aspect-square",
               }}
             />
           ) : (

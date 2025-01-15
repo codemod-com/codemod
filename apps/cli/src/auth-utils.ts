@@ -1,6 +1,6 @@
 import { backOff } from "exponential-backoff";
 import inquirer from "inquirer";
-import open from "open";
+import { open } from "./utils/open.js";
 
 import type { GetUserDataResponse } from "@codemod-com/api-types";
 import { type Printer, chalk } from "@codemod-com/printer";
@@ -108,17 +108,10 @@ const routeUserToStudioForPermissions = ({
   printer: Printer;
   scopes: string[];
 }) => {
-  const success = open(
+  open(
     `${process.env.CODEMOD_HOME_PAGE_URL}?permissions=github&scopes=${scopes.join("&scopes=")}`,
+    printer,
   );
-
-  if (!success) {
-    printer.printOperationMessage({
-      kind: "error",
-      message:
-        "An unexpected error occurred while redirecting to the permissions page. Please submit a GitHub issue (github.com/codemod-com/codemod/issues/new) or report it to us (codemod.com/community).",
-    });
-  }
 };
 
 export const requestGithubPermissions = async (options: {

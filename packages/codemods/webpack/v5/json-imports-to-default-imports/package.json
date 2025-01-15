@@ -1,6 +1,7 @@
 {
   "name": "json-imports-to-default-imports",
   "license": "MIT",
+  "private": true,
   "devDependencies": {
     "@types/node": "20.9.0",
     "typescript": "^5.2.2",

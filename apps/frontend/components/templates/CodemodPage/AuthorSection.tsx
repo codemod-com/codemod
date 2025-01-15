@@ -1,20 +1,18 @@
 import { SanityImage } from "@/components/shared/SanityImage";
+import { SanityLink } from "@/components/shared/SanityLink";
 import type { FilterIcon } from "@/components/templates/Registry/helpers";
-import Link from "next/link";
 
 export const AuthorSection = ({
   author,
   authorImage,
   href,
 }: { author: string; authorImage: FilterIcon; href: string }) => (
-  <Link
-    href={href}
+  <SanityLink
     className="rounded-sm focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark"
-    prefetch
+    link={{ href }}
   >
-    <div className="flex items-center gap-xs">
+    <div className="flex items-center gap-xxs group">
       <span className="body-s-medium font-medium">by</span>
-
       <>
         {authorImage?.image.light && (
           <SanityImage
@@ -42,7 +40,9 @@ export const AuthorSection = ({
           />
         )}
       </>
-      <span className="body-s-medium font-medium">{author}</span>
+      <span className="body-s-medium font-mono group-hover:opacity-50 transition-opacity">
+        @{author}
+      </span>
     </div>
-  </Link>
+  </SanityLink>
 );

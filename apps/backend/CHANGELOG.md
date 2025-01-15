@@ -1,5 +1,11 @@
 # @codemod-com/backend
 
+## 0.0.163
+
+### Patch Changes
+
+- 149e6e0: Add API key functionality
+
 ## 0.0.160
 
 ### Patch Changes

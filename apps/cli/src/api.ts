@@ -4,8 +4,13 @@ import Axios, { AxiosError, type RawAxiosRequestHeaders } from "axios";
 import type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
+  CreateAPIKeyRequest,
+  CreateAPIKeyResponse,
+  DeleteAPIKeysRequest,
+  DeleteAPIKeysResponse,
   GetCodemodResponse,
   GetUserDataResponse,
+  ListAPIKeysResponse,
   VerifyTokenResponse,
 } from "@codemod-com/api-types";
 
@@ -15,6 +20,50 @@ export const extractPrintableApiError = (err: unknown): string => {
   }
 
   return err instanceof AxiosError ? err.response?.data.errorText : err.message;
+};
+
+export const createAPIKey = async (
+  accessToken: string,
+  data: CreateAPIKeyRequest,
+): Promise<CreateAPIKeyResponse> => {
+  const url = new URL(`${process.env.BACKEND_URL}/api-keys`);
+
+  const res = await Axios.post<CreateAPIKeyResponse>(url.toString(), data, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    timeout: 10000,
+  });
+
+  return res.data;
+};
+
+export const listAPIKeys = async (
+  accessToken: string,
+): Promise<ListAPIKeysResponse> => {
+  const url = new URL(`${process.env.BACKEND_URL}/api-keys`);
+
+  const res = await Axios.get<ListAPIKeysResponse>(url.toString(), {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    timeout: 10000,
+  });
+
+  return res.data;
+};
+
+export const deleteAPIKeys = async (
+  accessToken: string,
+  data: DeleteAPIKeysRequest,
+): Promise<DeleteAPIKeysResponse> => {
+  const url = new URL(`${process.env.BACKEND_URL}/api-keys`);
+
+  const res = await Axios.delete<DeleteAPIKeysResponse>(
+    `${url.toString()}/${data.uuid}`,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      timeout: 10000,
+    },
+  );
+
+  return res.data;
 };
 
 export const validateCLIToken = async (
@@ -54,14 +103,25 @@ export const getUserData = async (
 };
 
 export const publish = async (
-  accessToken: string,
+  credentials:
+    | {
+        apiKey: string;
+        accessToken?: undefined;
+      }
+    | {
+        accessToken: string;
+        apiKey?: undefined;
+      },
   formData: FormData,
 ): Promise<void> => {
+  const headers: RawAxiosRequestHeaders = {};
+  if (credentials.accessToken) {
+    headers.Authorization = `Bearer ${credentials.accessToken}`;
+  } else if (credentials.apiKey) {
+    headers["X-API-Key"] = credentials.apiKey;
+  }
   await Axios.post(`${process.env.BACKEND_URL}/publish`, formData, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "multipart/form-data",
-    },
+    headers,
     timeout: 10000,
   });
 };
@@ -89,13 +149,23 @@ export const revokeCLIToken = async (accessToken: string): Promise<void> => {
 
 export const getCodemod = async (
   name: string,
-  accessToken?: string,
+  credentials:
+    | {
+        apiKey: string;
+        accessToken?: undefined;
+      }
+    | {
+        accessToken: string;
+        apiKey?: undefined;
+      },
 ): Promise<GetCodemodResponse> => {
   const url = new URL(`${process.env.BACKEND_URL}/codemods/${name}`);
 
   const headers: RawAxiosRequestHeaders = {};
-  if (accessToken) {
-    headers.Authorization = `Bearer ${accessToken}`;
+  if (credentials.accessToken) {
+    headers.Authorization = `Bearer ${credentials.accessToken}`;
+  } else if (credentials.apiKey) {
+    headers["X-API-Key"] = credentials.apiKey;
   }
 
   const res = await Axios.get<GetCodemodResponse>(url.toString(), {

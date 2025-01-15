@@ -48,7 +48,6 @@ function SimplePageCta(props: PageCta) {
             <LinkButton
               href={props.cta.link}
               intent={props.cta.style}
-              icon={props.cta.icon}
               iconPosition="right"
               className="mt-xl"
             >
@@ -225,7 +224,7 @@ function PageCtaTriple(props: PageCtaTriple) {
                 <span className="block font-bold">{titleLine2}</span>
               )}
             </h2>
-            <div className="body-l max-w-[540px] lg:text-center">
+            <div className="body-l mx-auto max-w-[540px] lg:text-center">
               <RichText value={props.paragraph} />
             </div>
           </div>

@@ -1,6 +1,7 @@
 {
   "name": "ethers-5-replace-split-join-signature",
   "license": "MIT",
+  "private": true,
   "devDependencies": {
     "@types/node": "20.9.0",
     "typescript": "^5.2.2",

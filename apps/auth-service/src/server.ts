@@ -17,6 +17,7 @@ import Fastify, {
 import axios from "axios";
 import { environment } from "./util.js";
 
+import { Unkey } from "@unkey/api";
 import { Issuer, generators } from "openid-client";
 import { object, optional, parse, string } from "valibot";
 import type { GetScopedTokenResponse } from "../../../packages/api-types/dist/responses.js";
@@ -34,6 +35,19 @@ type ZitadelUserInfo = {
   preferred_username: string;
   email: string;
   email_verified: boolean;
+};
+
+const unkey = new Unkey({ rootKey: process.env.UNKEY_ROOT_KEY as string });
+const apiId = process.env.UNKEY_API_ID as string;
+
+const getUserId = async (key: string) => {
+  const response = await unkey.keys.verify({ apiId, key });
+
+  if (response.error) {
+    throw new Error(response.error.message);
+  }
+
+  return response.result.identity?.externalId ?? response.result.ownerId;
 };
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {

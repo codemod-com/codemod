@@ -26,19 +26,58 @@ import { handleInitCliCommand } from "#commands/init.js";
 import type { TelemetryEvent } from "#telemetry.js";
 import { isFile } from "#utils/general.js";
 
+const API_KEY = process.env.CODEMOD_API_KEY;
+
 export const handlePublishCliCommand = async (options: {
   printer: Printer;
   source: string;
   telemetry: TelemetrySender<TelemetryEvent>;
   esm?: boolean;
+  namespace?: string;
 }) => {
   let { source, printer, telemetry, esm } = options;
 
-  const { token, allowedNamespaces, organizations } =
-    await getCurrentUserOrLogin({
+  const requestCredentials = await (async () => {
+    if (API_KEY) {
+      return { apiKey: API_KEY };
+    }
+
+    const { token } = await getCurrentUserOrLogin({
       message: "Authentication is required to publish codemods. Proceed?",
       printer,
     });
+
+    return { accessToken: token };
+  })();
+
+  const getNamespace = async (
+    codemodRc: NonNullable<Awaited<ReturnType<typeof getCodemodRc>>["config"]>,
+  ) => {
+    if (API_KEY) {
+      return options.namespace;
+    }
+
+    const { allowedNamespaces, organizations } = await getCurrentUserOrLogin({
+      message: "Authentication is required to publish codemods. Proceed?",
+      printer,
+    });
+
+    if (allowedNamespaces.length > 1 && !codemodRc.name.startsWith("@")) {
+      const { namespace } = await inquirer.prompt<{ namespace: string }>({
+        type: "list",
+        name: "namespace",
+        choices: allowedNamespaces,
+        default: allowedNamespaces.find(
+          (ns) =>
+            !organizations.map((org) => org.organization.slug).includes(ns),
+        ),
+        message:
+          "You have access to multiple namespaces. Please choose which one you would like to publish the codemod under.",
+      });
+
+      return namespace;
+    }
+  };
 
   const formData = new FormData();
   const excludedPaths = [
@@ -118,7 +157,7 @@ export const handlePublishCliCommand = async (options: {
   let bumpedVersion = false;
   const existingCodemod = await getCodemod(
     buildCodemodSlug(codemodRc.name),
-    token,
+    requestCredentials,
   ).catch(() => null);
 
   console.log("existingCodemod", existingCodemod);
@@ -145,7 +184,9 @@ export const handlePublishCliCommand = async (options: {
         "You have access to multiple namespaces. Please choose which one you would like to publish the codemod under.",
     });
 
-    formData.append("namespace", namespace);
+    if (namespace) {
+      formData.append("namespace", namespace);
+    }
   }
 
   if (codemodRc.engine !== "recipe") {
@@ -269,6 +310,7 @@ export const handlePublishCliCommand = async (options: {
       source,
       esm,
       codemodRc.engine,
+      false,
     ).catch(() => null);
 
     if (builtExecutable === null) {
@@ -279,6 +321,14 @@ export const handlePublishCliCommand = async (options: {
         ),
       );
     }
+
+    const cdmdDistPath = join(source, "cdmd_dist");
+    await fs.promises.mkdir(cdmdDistPath, { recursive: true });
+    await fs.promises.writeFile(
+      join(cdmdDistPath, "index.cjs"),
+      builtExecutable,
+      "utf8",
+    );
 
     codemodFileBuffers.push({
       name: DEFAULT_BUILD_PATH,
@@ -307,7 +357,7 @@ export const handlePublishCliCommand = async (options: {
   );
 
   try {
-    await publish(token, formData);
+    await publish(requestCredentials, formData);
     publishSpinner.succeed();
   } catch (error) {
     publishSpinner.fail();
