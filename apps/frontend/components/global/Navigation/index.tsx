@@ -78,7 +78,7 @@ export default function Navigation({ data }: NavigationProps) {
         ref={headerRef}
         id={"desktop-navigation"}
         className={cx(
-          "left-0 top-0 z-40 w-full border-b-[1px]  transition-all duration-150 ease-out z-10000",
+          "left-0 top-0 z-[80] w-full border-b-[1px]  transition-all duration-150 ease-out z-10000",
           isStaticHeader ? "absolute" : "fixed",
           {
             "-translate-y-10 opacity-0": !hasMounted,
