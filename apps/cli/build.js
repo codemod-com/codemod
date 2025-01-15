@@ -10,6 +10,10 @@ const localProdBuildEnvs = {
   "process.env.CODEMOD_STUDIO_URL": '"https://codemod.com/studio"',
   "process.env.IGNORE_TELEMETRY": "true",
   "process.env.RUNNER_URL": '"https://backend.codemod.com/run"',
+  // TODO: Update this to the correct value before release
+  "process.env.AUTH_OPENID_ISSUER":
+    '"https://auth.enterprise-staging.internal.codemod.com"',
+  "process.env.CLIENT_ID": '"288774368824188931"',
 };
 
 // Build envs for staging, it is the default when running `pnpm build`
@@ -20,6 +24,9 @@ const stagingBuildEnvs = {
   "process.env.CODEMOD_HOME_PAGE_URL": '"https://staging.codemod.com"',
   "process.env.CODEMOD_STUDIO_URL": '"https://staging.codemod.com/studio"',
   "process.env.IGNORE_TELEMETRY": "true",
+  "process.env.AUTH_OPENID_ISSUER":
+    '"https://auth.enterprise-staging.internal.codemod.com"',
+  "process.env.CLIENT_ID": '"288774368824188931"',
 };
 
 // Build envs for publishing to npm, it would usually happen during prepublishOnly script
@@ -38,6 +45,9 @@ const localEnvs = {
   "process.env.CODEMOD_STUDIO_URL": '"http://localhost:3000/studio"',
   "process.env.IGNORE_TELEMETRY": "true",
   "process.env.RUNNER_URL": '"http://localhost:8083"',
+  "process.env.AUTH_OPENID_ISSUER":
+    '"https://auth.enterprise-staging.internal.codemod.com"',
+  "process.env.CLIENT_ID": '"288774368824188931"',
 };
 
 const argv = hideBin(process.argv);

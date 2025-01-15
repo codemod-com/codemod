@@ -106,8 +106,6 @@ export const handleLoginCliCommand = async (options: {
 
   const { access_token } = await promise;
 
-  console.log(access_token);
-
   if (access_token) {
     await credentialsStorage.set(CredentialsStorageType.ACCOUNT, access_token);
   }

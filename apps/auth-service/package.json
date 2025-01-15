@@ -18,7 +18,8 @@
     "esbuild": "^0.19.12",
     "esbuild-plugin-copy": "catalog:",
     "ts-node": "10.9.2",
-    "tsx": "^4.7.1"
+    "tsx": "^4.7.1",
+    "csv": "6.3.11"
   },
   "dependencies": {
     "@clerk/backend": "catalog:",

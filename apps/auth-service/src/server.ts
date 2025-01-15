@@ -316,30 +316,6 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         ? authHeader.replace("Bearer ", "")
         : undefined;
 
-    if (!jwtToken) {
-      return reply.status(401).send({ message: "No JWT token" });
-    }
-
-    const parsedToken = decodeJwt(jwtToken);
-
-    if (!parsedToken) {
-      return reply.status(401).send({ message: "Invalid JWT token" });
-    }
-
-    const kid = parsedToken.header.kid;
-
-    if (!kid) {
-      return reply.status(401).send({ message: "No kid in JWT token" });
-    }
-
-    const result = await jwtVerificationResult(jwtToken);
-
-    if (!result) {
-      return reply
-        .status(401)
-        .send({ message: "JWT token verification failed" });
-    }
-
     try {
       const { data: user } = await axios.get<ZitadelUserInfo>(
         `${environment.ZITADEL_URL}/oidc/v1/userinfo`,

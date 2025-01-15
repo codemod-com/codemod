@@ -18,7 +18,6 @@ import {
   deleteAPIKeys,
   extractPrintableApiError,
   generateUserLoginIntent,
-  getCLIAccessToken,
   getCodemod,
   getCodemodDownloadURI,
   getCodemodList,
@@ -149,37 +148,12 @@ describe("API Client Tests", () => {
       organizations: [],
       user: {
         id: "user-id",
-        passwordEnabled: true,
-        totpEnabled: false,
-        backupCodeEnabled: false,
-        twoFactorEnabled: false,
-        banned: false,
-        createdAt: new Date().getTime(),
-        updatedAt: new Date().getTime(),
-        imageUrl: "https://example.com/avatar.jpg",
-        hasImage: true,
-        primaryEmailAddressId: "email-id",
-        primaryPhoneNumberId: null,
-        primaryWeb3WalletId: null,
-        lastSignInAt: null,
-        externalId: null,
         username: "testuser",
         firstName: "Test",
+        locale: "",
         lastName: "User",
-        publicMetadata: {},
-        privateMetadata: {},
-        unsafeMetadata: {},
-        emailAddresses: [],
-        phoneNumbers: [],
-        web3Wallets: [],
-        externalAccounts: [],
-        samlAccounts: [],
-        lastActiveAt: null,
-        createOrganizationEnabled: false,
-        fullName: null,
-        primaryEmailAddress: null,
-        primaryPhoneNumber: null,
-        primaryWeb3Wallet: null,
+        email: "email-id",
+        emailVerified: true,
       },
     };
 
@@ -231,16 +205,6 @@ describe("API Client Tests", () => {
         },
       );
       expect(result).toEqual(mockResponse);
-    });
-  });
-
-  describe("getCLIAccessToken", () => {
-    it("should get the CLI access token", async () => {
-      const mockResponse = { token: "test" };
-
-      mockedAxios.get.mockResolvedValueOnce({ data: mockResponse });
-
-      expect(await getCLIAccessToken(mockAccessToken)).toEqual(mockResponse);
     });
   });
 

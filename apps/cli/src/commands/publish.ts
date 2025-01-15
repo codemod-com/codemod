@@ -68,8 +68,7 @@ export const handlePublishCliCommand = async (options: {
         name: "namespace",
         choices: allowedNamespaces,
         default: allowedNamespaces.find(
-          (ns) =>
-            !organizations.map((org) => org.organization.slug).includes(ns),
+          (ns) => !organizations.map((org) => org.slug).includes(ns),
         ),
         message:
           "You have access to multiple namespaces. Please choose which one you would like to publish the codemod under.",
@@ -172,17 +171,8 @@ export const handlePublishCliCommand = async (options: {
       await updateCodemodRC(codemodRc);
       bumpedVersion = true;
     }
-  } else if (allowedNamespaces.length > 1 && !codemodRc.name.startsWith("@")) {
-    const { namespace } = await inquirer.prompt<{ namespace: string }>({
-      type: "list",
-      name: "namespace",
-      choices: allowedNamespaces,
-      default: allowedNamespaces.find(
-        (ns: any) => !organizations.map((org: any) => org.slug).includes(ns),
-      ),
-      message:
-        "You have access to multiple namespaces. Please choose which one you would like to publish the codemod under.",
-    });
+  } else {
+    const namespace = await getNamespace(codemodRc);
 
     if (namespace) {
       formData.append("namespace", namespace);

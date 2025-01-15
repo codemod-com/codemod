@@ -7,6 +7,14 @@ vi.mock("node:fs/promises", () => fs.promises);
 // Use a mock homedir in order to reliably have a memfs home directory
 vi.mock("node:os", () => ({ homedir: () => "/home/codemod-test/" }));
 
+vi.mock("keytar", () => ({
+  default: {
+    findCredentials: async (service: string) => {
+      throw new Error("keytar not available");
+    },
+  },
+}));
+
 import {
   CredentialsStorage,
   CredentialsStorageType,
