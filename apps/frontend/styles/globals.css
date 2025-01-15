@@ -386,3 +386,19 @@ h6[class*="heading"] a {
     transform: translateX(3px);
   }
 }
+
+.scrollbar::-webkit-scrollbar {
+  @apply w-1;
+}
+.scrollbar::-webkit-scrollbar, .scrollbar::-webkit-scrollbar-thumb {
+
+		@apply overflow-visible rounded;
+}
+.scrollbar::-webkit-scrollbar-thumb {
+
+		@apply bg-slate-500/20;
+}
+
+
+
+

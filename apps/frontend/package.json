@@ -84,6 +84,8 @@
     "class-variance-authority": "catalog:",
     "classnames": "2.5.1",
     "clsx": "catalog:",
+    "cobe": "^0.6.3",
+    "codehike": "^1.0.4",
     "constants-browserify": "catalog:",
     "cva": "catalog:",
     "esbuild-wasm": "^0.23.0",
