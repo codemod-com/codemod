@@ -3,7 +3,7 @@
 import { cn } from "@/utils";
 import createGlobe, { type COBEOptions } from "cobe";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useThemeDetector } from "../hooks";
+import { useThemeDetector } from "../../Preview/hooks";
 
 const LIGHT_THEME_CONFIG: Partial<COBEOptions> = {
   dark: 0,

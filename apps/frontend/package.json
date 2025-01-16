@@ -103,6 +103,7 @@
     "lucide-react": "catalog:",
     "match-sorter": "catalog:",
     "monaco-editor": "^0.36.1",
+    "motion": "^11.18.0",
     "next": "catalog:",
     "next-sanity": "catalog:",
     "node-fetch": "catalog:",
