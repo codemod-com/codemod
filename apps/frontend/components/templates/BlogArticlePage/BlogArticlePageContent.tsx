@@ -75,7 +75,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
               )}
             </div>
 
-            <h1 className="l-heading lg:xl-heading text-center">
+            <h1 className="l-heading lg:xl-heading text-center w-[768px] max-w-full">
               {props?.title}
             </h1>
             <ArticleAuthors authors={props.authors} />
@@ -112,7 +112,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 
           <div className="relative flex w-full mt-m z-10">
             {/* Body */}
-            <div className="body-l relative max-w-full flex-1 lg:max-w-xl xl:max-w-2xl mx-auto [&_p]:pb-8">
+            <div className="body-l relative max-w-full flex-1 lg:max-w-xl xl:max-w-2xl mx-auto [&_p]:pb-8 [&_p]:dark:opacity-85">
               <div className="flex flex-wrap flex-row justify-between mb-8 lg:mb-16">
                 {typeof props.readTime === "number" && (
                   <span className="inline-flex gap-2 items-center body-s-medium font-medium text-secondary-light dark:text-secondary-dark">
