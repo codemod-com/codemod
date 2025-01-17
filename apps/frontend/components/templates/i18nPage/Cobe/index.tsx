@@ -11,29 +11,25 @@ const CobeSection = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-1">
-              <p className="mb-2 body-l uppercase opacity-50">
-                MAXIMIZE CONTROL
-              </p>
+              <p className="mb-2 body-l uppercase opacity-50">Time to market</p>
               <p className="whitespace-pre-wrap s-heading tracking-tighter text-black md:text-4xl dark:text-white">
-                <NumberTicker value={95} suffix="%" />
+                <NumberTicker value={10} suffix="x" />
               </p>
-              <p className="body-s-medium">Reduction in Vendor Dependency</p>
+              <p className="body-s-medium">Faster time to market</p>
             </div>
             <div className="col-span-1">
-              <p className="mb-2 body-l uppercase opacity-50">
-                DRIVE EFFICIENCY
-              </p>
+              <p className="mb-2 body-l uppercase opacity-50">Revenue Growth</p>
               <p className="whitespace-pre-wrap s-heading tracking-tighter text-black md:text-4xl dark:text-white">
-                <NumberTicker value={30} suffix="%" />
+                <NumberTicker value={5} suffix="x" />
               </p>
-              <p className="body-s-medium">Faster Operational Processes</p>
+              <p className="body-s-medium">More revenue potential</p>
             </div>
           </div>
           <p className="body-l max-w-2xl">
-            Internalizing key processes can reduce external vendor reliance by
-            up to 95%, giving businesses complete control over their operations.
-            Additionally, companies can experience up to 30% faster workflows,
-            ensuring scalable growth and significant cost savings over time.
+            Enter the global market faster and drive unprecedented business
+            growth, all while freeing your engineering team from thousands of
+            tedious code changes. Let engineers focus on building core product
+            features, not preparing the app for internationalization.
           </p>
         </div>
         <Globe className="" />
