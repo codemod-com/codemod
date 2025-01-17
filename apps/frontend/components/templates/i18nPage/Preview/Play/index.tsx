@@ -24,7 +24,7 @@ export function Play({ className, onClick }: PlayProps) {
             className={`relative flex size-20 scale-100 items-center justify-center rounded-full bg-gradient-to-b from-lime-500/30 to-lime-500 shadow-md transition-all duration-200 ease-out group-hover:scale-[1.2]`}
           >
             <PlayIcon
-              className="size-8 scale-100 fill-white text-white transition-transform duration-200 ease-out group-hover:scale-105"
+              className="size-8 -mr-1 scale-100 fill-white text-white transition-transform duration-200 ease-out group-hover:scale-105"
               style={{
                 filter:
                   "drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))",
@@ -32,6 +32,10 @@ export function Play({ className, onClick }: PlayProps) {
             />
           </div>
         </div>
+      </div>
+
+      <div className="pointer-events-none mt-48 hidden h-5 select-none items-center rounded border border-b-2 px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+        space
       </div>
     </motion.div>
   );

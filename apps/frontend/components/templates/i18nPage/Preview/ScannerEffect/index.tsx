@@ -10,10 +10,10 @@ const Scanner = ({ onComplete }: { onComplete?: () => void }) => {
         zIndex: 40,
       }}
       initial={{ right: "100%" }} // Start 100% to the right of the container
-      animate={{ right: "-20%" }} // End slightly outside the right boundary
+      animate={{ right: "-1%" }} // End slightly outside the right boundary
       exit={{ opacity: 0 }}
       transition={{
-        right: { type: "spring", stiffness: 40, damping: 20 }, // Smooth spring transition
+        right: { duration: 1, ease: "easeOut" }, // Smooth spring transition
         opacity: { duration: 0, ease: "easeOut" }, // Gradual fade-out
       }}
       onAnimationComplete={onComplete} // Callback when animation is complete
