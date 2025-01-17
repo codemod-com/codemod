@@ -23,7 +23,6 @@ const Code: React.FC<CodeProps> = ({ step, setStep, isAnimating }) => {
   const handleNext = useCallback(() => {
     if (!isAnimating) return;
 
-    console.log("123");
     setTimeout(() => {
       setStep((prevStep) => Math.min(prevStep + 1, 3));
     }, 2000);
@@ -54,6 +53,7 @@ const Code: React.FC<CodeProps> = ({ step, setStep, isAnimating }) => {
           }
           transition={{
             duration: 0.8,
+            delay: 1,
           }}
           className="overflow-hidden"
           onAnimationComplete={() => {
@@ -74,6 +74,7 @@ const Code: React.FC<CodeProps> = ({ step, setStep, isAnimating }) => {
             exit={{ opacity: 0, y: 20 }}
             transition={{
               duration: 0.75,
+              delay: 0.5,
             }}
           >
             {jsonInfos && (

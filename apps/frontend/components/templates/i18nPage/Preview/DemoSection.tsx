@@ -5,18 +5,18 @@ import { Play } from "@/components/templates/i18nPage/Preview/Play";
 import TaskCard from "@/components/templates/i18nPage/Preview/Step/TaskCard";
 import { Steps } from "@/components/templates/i18nPage/Preview/types";
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function DemoSection() {
   const [step, setStep] = useState<Steps>(Steps.Analyzing);
   const [isAnimating, setIsAnimating] = useState(false);
   const [resetKey, setResetKey] = useState(0);
 
-  const handleAnimationReset = () => {
+  const handleAnimationReset = useCallback(() => {
     setResetKey((prevKey) => prevKey + 1);
     setStep(Steps.Analyzing);
     setIsAnimating(true);
-  };
+  }, []);
 
   const handleStepComplete = () => {
     setStep(Steps.Finish);
@@ -24,6 +24,23 @@ export default function DemoSection() {
       setIsAnimating(false);
     }, 3000);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === " ") {
+        event.preventDefault();
+
+        if (!isAnimating) {
+          handleAnimationReset?.();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleAnimationReset, isAnimating]);
 
   return (
     <>
