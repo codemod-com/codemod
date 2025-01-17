@@ -34,7 +34,7 @@ export function Play({ className, onClick }: PlayProps) {
         </div>
       </div>
 
-      <div className="pointer-events-none mt-48 hidden h-5 select-none items-center rounded border border-b-2 px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+      <div className="pointer-events-none mt-36 hidden h-5 select-none items-center rounded border border-opacity-50 border-b-2 px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
         space
       </div>
     </motion.div>
