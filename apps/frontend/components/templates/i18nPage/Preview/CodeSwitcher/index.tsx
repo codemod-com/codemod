@@ -4,9 +4,9 @@ import Scanner from "@/components/templates/i18nPage/Preview/ScannerEffect";
 import { Steps } from "@/components/templates/i18nPage/Preview/types";
 import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import LoadingSpinner from "../Spinner";
-import { useAnimationControl, useHighlights } from "../hooks";
+import { useHighlights } from "../hooks";
 import { CodeSwitcher } from "./Code";
 import JsonHighlighter from "./JSONHighlighter";
 
@@ -17,47 +17,31 @@ interface CodeProps {
 }
 
 const Code: React.FC<CodeProps> = ({ step, setStep, isAnimating }) => {
-  const timeline = [500, 1500];
   const [JSXComplete, setJSXComplete] = useState(false);
   const { infos, jsonInfos, loading } = useHighlights();
-  const { next } = useAnimationControl(isAnimating);
 
-  const infosLength = infos.length;
-  const handleNext = () => {
-    next(() => {
-      setStep((prevStep) => (prevStep + 1) as Steps);
-    });
-  };
+  const handleNext = useCallback(() => {
+    if (!isAnimating) return;
 
-  useEffect(() => {
-    if (isAnimating) {
-      let currentTimeout: NodeJS.Timeout | null = null;
-
-      timeline.reduce((acc, delay) => {
-        const nextTime = acc + delay;
-        currentTimeout = setTimeout(() => {
-          handleNext();
-        }, nextTime);
-        return nextTime; // Accumulate delays
-      }, 0);
-
-      return () => {
-        if (currentTimeout) clearTimeout(currentTimeout); // Cleanup on unmount or dependency change
-      };
-    }
-  }, [isAnimating]);
+    console.log("123");
+    setTimeout(() => {
+      setStep((prevStep) => Math.min(prevStep + 1, 3));
+    }, 2000);
+  }, [isAnimating, setStep]);
 
   if (loading) {
     return <LoadingSpinner />;
   }
 
-  const index = step >= infosLength ? infosLength - 1 : step;
-  const iindex = step - 2;
+  const jsxIndex = Math.min(step, 2);
+  const jsonIndex = step >= 3 ? 1 : 0;
 
   return (
     <>
       <AnimatePresence>
-        {isAnimating && step === Steps.Analyzing && <Scanner />}
+        {isAnimating && step === Steps.Analyzing && (
+          <Scanner onComplete={handleNext} />
+        )}
       </AnimatePresence>
 
       {infos && infos.length > 0 && (
@@ -76,7 +60,7 @@ const Code: React.FC<CodeProps> = ({ step, setStep, isAnimating }) => {
             setJSXComplete(true);
           }}
         >
-          {infos[index] && <CodeSwitcher info={infos[index]} />}
+          {infos[jsxIndex] && <CodeSwitcher info={infos[jsxIndex]} />}
         </motion.div>
       )}
 
@@ -93,7 +77,10 @@ const Code: React.FC<CodeProps> = ({ step, setStep, isAnimating }) => {
             }}
           >
             {jsonInfos && (
-              <JsonHighlighter step={step} code={jsonInfos[iindex] || null} />
+              <JsonHighlighter
+                step={step}
+                code={jsonInfos[jsonIndex] || null}
+              />
             )}
           </motion.div>
         )}
@@ -102,4 +89,4 @@ const Code: React.FC<CodeProps> = ({ step, setStep, isAnimating }) => {
   );
 };
 
-export default Code;
+export default memo(Code);

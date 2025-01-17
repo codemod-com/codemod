@@ -33,8 +33,7 @@ export const LanguageSwitchAnimation = ({
 
       // Set random position near center relative to the parent
       const randomOffset = () => Math.random() * 100 - 50; // Random offset
-      const centerX =
-        parentRect.width - parentRect.width * 0.2 + randomOffset();
+      const centerX = parentRect.width / 2 - randomOffset();
       const centerY = parentRect.height / 2 + randomOffset();
       x.set(centerX);
       y.set(centerY);
@@ -53,11 +52,11 @@ export const LanguageSwitchAnimation = ({
 
         // Animate x and y to button bottom center
         animate(x, buttonBottomCenter.x, {
-          duration: 1.5,
+          duration: 4,
           ease: "easeInOut",
         });
         animate(y, buttonBottomCenter.y, {
-          duration: 1.5,
+          duration: 4,
           ease: "easeInOut",
           onComplete: () => {
             // Scale up the cursor when reaching the button
@@ -102,6 +101,7 @@ export const LanguageSwitchAnimation = ({
       </AnimatePresence>
 
       {/* Language Switch Button */}
+      {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
       <button
         ref={buttonRef}
         className={cn(
