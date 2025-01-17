@@ -16,7 +16,7 @@ const TextTransitions = () => {
         </motion.span>
         <TextRotate
           texts={["Effortlessly", "Seamlessly", "Efficiently", "Confidently"]}
-          mainClassName="l-heading overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center !font-mono font-bold"
+          mainClassName="l-heading overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center !font-mono !font-bold"
           staggerFrom={"center"}
           initial={{ y: "100%" }}
           animate={{ y: 0 }}

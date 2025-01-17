@@ -59,7 +59,7 @@ const useHighlights = () => {
     try {
       const tsResults = await Promise.all(
         tsCodeBlocks.map((code) =>
-          highlight({ lang: "ts", value: code, meta: "" }, palette),
+          highlight({ lang: "tsx", value: code, meta: "" }, palette),
         ),
       );
 
@@ -89,15 +89,4 @@ const useHighlights = () => {
   return { infos, jsonInfos, loading };
 };
 
-const useAnimationControl = (isAnimating: boolean) => {
-  const next = (callback?: () => void) => {
-    if (!isAnimating) return;
-
-    if (callback) callback();
-  };
-
-  return { next };
-};
-
-export default useAnimationControl;
-export { useThemeDetector, useHighlights, useAnimationControl };
+export { useThemeDetector, useHighlights };

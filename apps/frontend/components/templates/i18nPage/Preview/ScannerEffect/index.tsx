@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { memo } from "react";
 
-const Scanner = () => {
+const Scanner = ({ onComplete }: { onComplete?: () => void }) => {
   return (
     <motion.div
       className="absolute top-0 z-30 m-auto h-full w-px bg-gradient-to-b from-transparent from-[5%] via-lime-500 to-transparent to-[95%]"
@@ -13,9 +13,10 @@ const Scanner = () => {
       animate={{ right: "-20%" }} // End slightly outside the right boundary
       exit={{ opacity: 0 }}
       transition={{
-        right: { type: "spring", stiffness: 80, damping: 20 }, // Smooth spring transition
+        right: { type: "spring", stiffness: 40, damping: 20 }, // Smooth spring transition
         opacity: { duration: 0, ease: "easeOut" }, // Gradual fade-out
       }}
+      onAnimationComplete={onComplete} // Callback when animation is complete
     >
       {/* Outer glow gradient */}
       <div className="absolute left-0 top-1/2 z-20 h-full w-36 -translate-y-1/2 bg-gradient-to-r from-lime-400 via-transparent to-transparent opacity-50 [mask-image:radial-gradient(100px_at_left,white,transparent)]" />

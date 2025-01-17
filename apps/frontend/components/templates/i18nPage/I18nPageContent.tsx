@@ -1,4 +1,6 @@
 import GradientBlob from "@/components/shared/GradientBlob";
+import GradientBorderBox from "@/components/shared/GradientBorderBox";
+import InfiniteSlider from "@/components/shared/InfiniteSlider";
 import LinkButton from "@/components/shared/LinkButton";
 import BookOpenLinkButton from "@/components/shared/animated-icons/BookOpenLinkButton";
 import CobeSection from "./Cobe";
@@ -58,6 +60,33 @@ export default function I18NPageSections({ data }: I18NPageProps) {
       </div>
 
       <DemoSection />
+
+      {data?.hero?.logoCarousel?.logos?.length && (
+        <div className="relative z-0">
+          <GradientBorderBox
+            extend={{
+              corners: { tr: true, br: true, bl: true, tl: true },
+              orientation: "vertical",
+              extraExtension: ["top-right", "top-left"],
+            }}
+            className="mx-auto"
+          >
+            <div className="relative mt-28 max-w-6xl py-10">
+              <div className=" flex flex-col items-center gap-10 lg:flex-row lg:gap-12 lg:pl-28">
+                <h2 className="body-s-medium w-full max-w-[222px] text-center !font-medium lg:min-w-[220px] lg:max-w-[221px] lg:text-left">
+                  {data?.hero?.logoCarousel.title}
+                </h2>
+                {data?.hero?.logoCarousel?.logos && (
+                  <InfiniteSlider
+                    direction="left"
+                    items={data?.hero?.logoCarousel?.logos}
+                  />
+                )}
+              </div>
+            </div>
+          </GradientBorderBox>
+        </div>
+      )}
       <CobeSection />
     </>
   );
