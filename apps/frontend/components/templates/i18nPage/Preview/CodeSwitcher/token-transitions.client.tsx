@@ -9,7 +9,7 @@ import {
 } from "codehike/utils/token-transitions";
 import React from "react";
 
-const MAX_TRANSITION_DURATION = 1500; // milliseconds
+const MAX_TRANSITION_DURATION = 2500; // milliseconds
 
 export class PreWithRef extends React.Component<CustomPreProps> {
   ref: React.RefObject<HTMLPreElement>;
