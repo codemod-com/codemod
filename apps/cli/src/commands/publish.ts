@@ -285,14 +285,18 @@ export const handlePublishCliCommand = async (options: {
     codemodFilePaths.map(async (path) => {
       const searchTerm = `${source}${sep}`;
 
-      return {
-        name: path
-          .slice(path.indexOf(searchTerm) + searchTerm.length)
-          .replace(/\\/g, "/"),
-        data: await fs.promises.readFile(path),
-      };
+      try {
+        return {
+          name: path
+            .slice(path.indexOf(searchTerm) + searchTerm.length)
+            .replace(/\\/g, "/"),
+          data: await fs.promises.readFile(path),
+        };
+      } catch {
+        return undefined;
+      }
     }),
-  );
+  ).then((buffers) => buffers.filter((buffer) => !!buffer));
 
   if (codemodRc.engine !== "recipe") {
     const builtExecutable = await getCodemodExecutable(
