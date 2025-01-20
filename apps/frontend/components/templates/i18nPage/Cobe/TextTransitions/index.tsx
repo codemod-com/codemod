@@ -8,7 +8,7 @@ const TextTransitions = () => {
     <LayoutGroup>
       <motion.p className="flex flex-wrap" layout>
         <motion.span
-          className="pt-0.5 sm:pt-1 md:pt-2 l-heading block"
+          className="pt-0.5 sm:pt-1 md:pt-2 l-heading block w-full"
           layout
           transition={{ type: "spring", damping: 30, stiffness: 400 }}
         >
