@@ -13,6 +13,7 @@ function SignInPage() {
       <SignIn
         forceRedirectUrl={isStudio ? "/studio" : "/registry"}
         appearance={{ elements: { footer: { display: "none" } } }}
+        withSignUp
       />
     </div>
   );

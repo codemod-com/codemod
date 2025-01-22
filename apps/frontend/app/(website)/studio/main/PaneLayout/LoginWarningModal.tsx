@@ -41,7 +41,10 @@ export const LoginWarningModal = () => {
             <Button variant="secondary">Proceed without AI</Button>
           </AlertDialogCancel>
           <AlertDialogAction asChild>
-            <SignInButton className="text-white flex gap-1 rounded-md text-sm my-0 h-10 !py-0 bg-black hover:bg-accent hover:text-black">
+            <SignInButton
+              className="text-white flex gap-1 rounded-md text-sm my-0 h-10 !py-0 bg-black hover:bg-accent hover:text-black"
+              withSignUp
+            >
               <Button variant="primary">Sign in</Button>
             </SignInButton>
           </AlertDialogAction>
