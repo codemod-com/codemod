@@ -17,7 +17,7 @@ catalog:
     "@clerk/backend": ^1.2.1
     "@clerk/clerk-react": 4.30.3
     "@clerk/fastify": 0.6.47
-    "@clerk/nextjs": 5.0.9
+    "@clerk/nextjs": 6.10.0
     "@clerk/themes": 1.7.10
     "@faker-js/faker": ^8.4.1
     "@fastify/busboy": ^2.1.1
