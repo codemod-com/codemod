@@ -62,6 +62,7 @@ const stateMapping = [
 
 export const Timeline = ({ step }: { step: number }) => {
   const currentStep = step === 0 || step === 1 ? 0 : step - 1;
+  const isAI = step < 3;
 
   return (
     <LayoutGroup>
@@ -96,12 +97,15 @@ export const Timeline = ({ step }: { step: number }) => {
                 >
                   {stateMapping[currentStep]?.description}
                 </motion.span>
-                <motion.span
-                  variants={childVariants}
-                  className="dark:bg-accent/10 dark:text-accent bg-accent/50 text-black rounded p-1 text-xs"
-                >
-                  Automated by Codemod AI
-                </motion.span>
+
+                {isAI && (
+                  <motion.span
+                    variants={childVariants}
+                    className="dark:bg-accent/10 dark:text-accent bg-accent/50 text-black rounded p-1 text-xs"
+                  >
+                    Automated by Codemod AI
+                  </motion.span>
+                )}
               </motion.div>
             </div>
           )}
