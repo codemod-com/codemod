@@ -9,22 +9,17 @@ const Scanner = ({ onComplete }: { onComplete?: () => void }) => {
         top: "0",
         zIndex: 40,
       }}
-      initial={{ right: "100%" }} // Start 100% to the right of the container
-      animate={{ right: "-1%" }} // End slightly outside the right boundary
+      initial={{ right: "100%" }}
+      animate={{ right: "-1%" }}
       exit={{ opacity: 0 }}
       transition={{
-        right: { duration: 1, ease: "easeOut" }, // Smooth spring transition
-        opacity: { duration: 0, ease: "easeOut" }, // Gradual fade-out
+        right: { duration: 1.5, ease: "easeOut" },
+        opacity: { duration: 0, ease: "easeOut" },
       }}
-      onAnimationComplete={onComplete} // Callback when animation is complete
+      onAnimationComplete={onComplete}
     >
-      {/* Outer glow gradient */}
       <div className="absolute left-0 top-1/2 z-20 h-full w-36 -translate-y-1/2 bg-gradient-to-r from-lime-400 via-transparent to-transparent opacity-50 [mask-image:radial-gradient(100px_at_left,white,transparent)]" />
-
-      {/* Inner gradient effect */}
       <div className="absolute left-0 top-1/2 z-10 h-1/2 w-10 -translate-y-1/2 bg-gradient-to-r from-lime-400 via-transparent to-transparent opacity-100 [mask-image:radial-gradient(50px_at_left,white,transparent)]" />
-
-      {/* Trail effect */}
       <div className="absolute -right-10 top-1/2 h-3/4 w-10 -translate-y-1/2 [mask-image:radial-gradient(100px_at_left,white,transparent)]" />
     </motion.div>
   );

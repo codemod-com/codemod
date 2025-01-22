@@ -71,10 +71,8 @@ export const TextGenerateEffect = ({
     Wrapper,
     {
       ref: scope,
-      className: `inline-block relative transition-opacity duration-500 ${className}`,
+      className: `inline-block relative outline transition-opacity duration-500 ${className}`,
       style: {
-        outline: "1px dashed transparent", // Start with no outline
-        outlineOffset: "4px",
         opacity: 1, // Fully visible initially
         filter: "blur(0px)", // No blur initially
       },

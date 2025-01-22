@@ -44,26 +44,26 @@ export const CODE_STEP_1 = `export function LoginPage() {
 export const CODE_STEP_2 = `export function LoginPage() {
 	return (
 		<Card>
-			{/* !className[/Create an account/] outline outline-dashed outline-red-500 */}
+			{/* !className[/Create an account/] outline !outline-red-500 */}
 			<Heading>Create an account</Heading>
-			{/* !className[/Enter your email below to create your account/] outline outline-dashed outline-green-500 */}
+			{/* !className[/Enter your email below to create your account/] outline !outline-green-500 */}
 			<SubText>Enter your email below to create your account</SubText>
 			<Form>
-				{/* !className[/Enter your email.../] outline outline-dashed outline-blue-500 */}
+				{/* !className[/Enter your email.../] outline !outline-blue-500 */}
 				<Input placeholder="Enter your email..." />
-				{/* !className[/Sign In with Email/] outline outline-dashed outline-yellow-500 */}
+				{/* !className[/Sign In with Email/] outline !outline-yellow-500 */}
 				<Button>Sign In with Email</Button>
 			</Form>
 			<Divider>
-				{/* !className[/Or continue with/] outline outline-dashed outline-purple-500 */}
+				{/* !className[/Or continue with/] outline !outline-purple-500 */}
 				<span>Or continue with</span>
 			</Divider>
-			{/* !className[/GitHub/] outline outline-dashed outline-orange-500 */}
+			{/* !className[/GitHub/] outline !outline-orange-500 */}
 			<Button icon="github">GitHub</Button>
 			<Footer>
-				{/* !className[/D.+\\}/] outline outline-dashed outline-lime-500 */}
+				{/* !className[/D.+\\}/] outline !outline-lime-500 */}
 				Don&apos;t have an account?{" "}
-				{/* !className[/<a.+a>/] outline outline-dashed outline-cyan-500 */}
+				{/* !className[/<a.+a>/] outline !outline-cyan-500 */}
 				<a href="#">Sign up</a>
 			</Footer>
 		</Card>
@@ -73,28 +73,28 @@ export const CODE_STEP_2 = `export function LoginPage() {
 export const CODE_STEP_3 = `export function LoginPage() {
 	return (
 		<Card>
-			{/* !className[/\{t\(.+\)\}/] outline outline-dashed outline-red-500 */}
+			{/* !className[/\{t\(.+\)\}/] outline !outline-red-500 */}
 			<Heading>{t('create-an-account')}</Heading>
-			{/* !className[/\{t\(.+\)\}/] outline outline-dashed outline-green-500 */}
+			{/* !className[/\{t\(.+\)\}/] outline !outline-green-500 */}
 			<SubText>{t('enter-your-email-below')}</SubText>
 			<Form>
-				{/* !className[/\{t\(.+\)\}/] outline outline-dashed outline-blue-500 */}
+				{/* !className[/\{t\(.+\)\}/] outline !outline-blue-500 */}
 				<Input placeholder={t('enter-your-email')} />
-				{/* !className[/\{t\(.+\)\}/] outline outline-dashed outline-yellow-500 */}
+				{/* !className[/\{t\(.+\)\}/] outline !outline-yellow-500 */}
 				<Button>{t('sign-in-with-email')}</Button>
 			</Form>
 			<Divider>
-				{/* !className[/\{t\(.+\)\}/] outline outline-dashed outline-purple-500 */}
+				{/* !className[/\{t\(.+\)\}/] outline !outline-purple-500 */}
 				<span>{t('or-continue-with')}</span>
 			</Divider>
-			{/* !className[/\{t\(.+\)\}/] outline outline-dashed outline-orange-500 */}
+			{/* !className[/\{t\(.+\)\}/] outline !outline-orange-500 */}
 			<Button icon="github">{t('github')}</Button>
 			<Footer>
-				{/* !className[/\\{t\\(.+/] outline outline-dashed outline-lime-500 */}
+				{/* !className[/\\{t\\(.+/] outline !outline-lime-500 */}
 				{t("sign-up-message", {
-					{/* !className[/\\s{2}link.+a>/] outline outline-dashed outline-cyan-500 */}
+					{/* !className[/\\s{2}link.+a>/] outline !outline-cyan-500 */}
 					link: <a href="#">{t("sign-up-link")}</a>
-				{/* !className[/\\S+/] outline outline-dashed outline-rose-500 */}
+				{/* !className[/\\S+/] outline !outline-rose-500 */}
 				})}
 			</Footer>
 		</Card>

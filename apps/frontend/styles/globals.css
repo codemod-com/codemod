@@ -398,5 +398,11 @@ h6[class*="heading"] a {
 }
 
 
-
+.outline {
+  outline-width: 1px;
+  outline-style: dashed;
+  outline-color: transparent;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
 

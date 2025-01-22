@@ -3,8 +3,7 @@
 import Scanner from "@/components/templates/i18nPage/Preview/ScannerEffect";
 import { Steps } from "@/components/templates/i18nPage/Preview/types";
 import { AnimatePresence, motion } from "framer-motion";
-import type React from "react";
-import { memo, useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import LoadingSpinner from "../Spinner";
 import { useHighlights } from "../hooks";
 import { CodeSwitcher } from "./Code";
@@ -16,16 +15,23 @@ interface CodeProps {
   isAnimating: boolean;
 }
 
-const Code: React.FC<CodeProps> = ({ step, setStep, isAnimating }) => {
+const DELAYS = [0, 2000, 2000];
+const Code = ({ step, setStep, isAnimating }: CodeProps) => {
   const [JSXComplete, setJSXComplete] = useState(false);
   const { infos, jsonInfos, loading } = useHighlights();
+  const stepRef = useRef(step);
+
+  useEffect(() => {
+    stepRef.current = step;
+  }, [step]);
 
   const handleNext = useCallback(() => {
     if (!isAnimating) return;
+    const step = stepRef.current;
 
     setTimeout(() => {
       setStep((prevStep) => Math.min(prevStep + 1, 3));
-    }, 2000);
+    }, DELAYS[step]);
   }, [isAnimating, setStep]);
 
   if (loading) {
@@ -53,7 +59,6 @@ const Code: React.FC<CodeProps> = ({ step, setStep, isAnimating }) => {
           }
           transition={{
             duration: 0.8,
-            delay: 1,
           }}
           className="overflow-hidden"
           onAnimationComplete={() => {
@@ -74,7 +79,6 @@ const Code: React.FC<CodeProps> = ({ step, setStep, isAnimating }) => {
             exit={{ opacity: 0, y: 20 }}
             transition={{
               duration: 0.75,
-              delay: 0.5,
             }}
           >
             {jsonInfos && (
@@ -90,4 +94,4 @@ const Code: React.FC<CodeProps> = ({ step, setStep, isAnimating }) => {
   );
 };
 
-export default memo(Code);
+export default Code;
