@@ -180,6 +180,10 @@ describe("API Client Tests", () => {
         primaryEmailAddress: null,
         primaryPhoneNumber: null,
         primaryWeb3Wallet: null,
+        locked: false,
+        createOrganizationsLimit: null,
+        deleteSelfEnabled: false,
+        legalAcceptedAt: null,
       },
     };
 
