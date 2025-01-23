@@ -37,11 +37,11 @@ const GradientBorderBox = ({
   };
   const extendToRender = { ...extendDefaults, ...extend };
   return (
-    <div className={classNames("relative max-w-fit", className)}>
+    <div className={classNames("relative max-w-[100vw]", className)}>
       {extendToRender.corners.br && (
         <div
           className={classNames(
-            "extend absolute right-0 top-full w-px origin-top  bg-gradient-to-b from-[#0b151e39] dark:from-[#ffffff34]",
+            "extend absolute right-0 top-full w-px origin-top bg-gradient-to-b from-[#0b151e39] dark:from-[#ffffff34]",
             extendToRender.extraExtension?.includes("bottom-right")
               ? "h-full"
               : "h-1/6",
@@ -54,7 +54,7 @@ const GradientBorderBox = ({
       {extendToRender.corners.tr && (
         <div
           className={classNames(
-            "extend absolute bottom-full right-0 w-px origin-bottom  bg-gradient-to-t from-[#0b151e39] dark:from-[#ffffff34]",
+            "extend absolute bottom-full right-0 w-px origin-bottom bg-gradient-to-t from-[#0b151e39] dark:from-[#ffffff34]",
             extendToRender.extraExtension?.includes("top-right")
               ? "h-full"
               : "h-1/6",
@@ -67,7 +67,7 @@ const GradientBorderBox = ({
       {extendToRender.corners.tl && (
         <div
           className={classNames(
-            "extend absolute bottom-full left-0 w-px origin-bottom  bg-gradient-to-t from-[#0b151e39] dark:from-[#ffffff34]",
+            "extend absolute bottom-full left-0 w-px origin-bottom bg-gradient-to-t from-[#0b151e39] dark:from-[#ffffff34]",
             extendToRender.extraExtension?.includes("top-left")
               ? "h-full"
               : "h-1/6",
@@ -80,7 +80,7 @@ const GradientBorderBox = ({
       {extendToRender.corners.bl && (
         <div
           className={classNames(
-            "extend absolute left-0 top-full w-px origin-top  bg-gradient-to-b from-[#0b151e39] dark:from-[#ffffff34]",
+            "extend absolute left-0 top-full w-px origin-top bg-gradient-to-b from-[#0b151e39] dark:from-[#ffffff34]",
             extendToRender.extraExtension?.includes("bottom-left")
               ? "h-full"
               : "h-1/6",
