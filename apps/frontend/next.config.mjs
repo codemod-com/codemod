@@ -1,5 +1,19 @@
 import MonacoEditorPlugin from "monaco-editor-webpack-plugin";
 
+const backendApiUrl = process.env.NEXT_PUBLIC_API_URL;
+const authApiUrl = process.env.NEXT_PUBLIC_AUTH_API_URL;
+
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' ${backendApiUrl} ${authApiUrl} https://challenges.cloudflare.com;
+  connect-src 'self' ${backendApiUrl} ${authApiUrl};
+  img-src 'self' https://img.clerk.com;
+  worker-src 'self' blob:;
+  style-src 'self' 'unsafe-inline';
+  frame-src 'self' https://challenges.cloudflare.com;
+  form-action 'self';
+`;
+
 /** @type {import('next').NextConfig} */
 const config = {
   webpack: (config, { isServer, webpack }) => {
@@ -79,6 +93,19 @@ const config = {
         source: "/automations/:slug*",
         destination: "/registry/:slug*",
         permanent: true,
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: cspHeader.replace(/\n/g, ""),
+          },
+        ],
       },
     ];
   },
