@@ -13,8 +13,8 @@ const Scanner = ({ onComplete }: { onComplete?: () => void }) => {
       animate={{ right: "-1%" }}
       exit={{ opacity: 0 }}
       transition={{
-        right: { duration: 1.5, ease: "easeOut" },
-        opacity: { duration: 0, ease: "easeOut" },
+        right: { duration: 2, ease: "easeInOut" },
+        opacity: { duration: 0, ease: "easeInOut" },
       }}
       onAnimationComplete={onComplete}
     >

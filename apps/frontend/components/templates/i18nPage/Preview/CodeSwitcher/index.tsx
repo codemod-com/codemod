@@ -2,7 +2,7 @@
 
 import Scanner from "@/components/templates/i18nPage/Preview/ScannerEffect";
 import { Steps } from "@/components/templates/i18nPage/Preview/types";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import LoadingSpinner from "../Spinner";
 import { useHighlights } from "../hooks";
@@ -15,7 +15,7 @@ interface CodeProps {
   isAnimating: boolean;
 }
 
-const DELAYS = [0, 2000, 2000];
+const DELAYS = [0, 2000, 3500];
 const Code = ({ step, setStep, isAnimating }: CodeProps) => {
   const [JSXComplete, setJSXComplete] = useState(false);
   const { infos, jsonInfos, loading } = useHighlights();
@@ -49,47 +49,54 @@ const Code = ({ step, setStep, isAnimating }: CodeProps) => {
         )}
       </AnimatePresence>
 
-      {infos && infos.length > 0 && (
-        <motion.div
-          initial={false}
-          animate={
-            step > Steps.Transforming
-              ? { height: "60%", marginBottom: "0.25rem" }
-              : { height: "100%", marginBottom: 0 }
-          }
-          transition={{
-            duration: 0.8,
-          }}
-          className="overflow-hidden"
-          onAnimationComplete={() => {
-            setJSXComplete(true);
-          }}
-        >
-          {infos[jsxIndex] && <CodeSwitcher info={infos[jsxIndex]} />}
-        </motion.div>
-      )}
-
-      <AnimatePresence mode="wait">
-        {JSXComplete && step > Steps.Transforming && (
+      <LayoutGroup>
+        {infos && infos.length > 0 && (
           <motion.div
-            key="json-highlighter"
-            className="h-[40%]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{
-              duration: 0.75,
+            layout
+            className="overflow-hidden"
+            initial={{ height: "100%" }}
+            animate={{
+              height: step > Steps.Transforming ? "60%" : "100%",
+            }}
+            exit={{ height: "100%" }}
+            transition={{ duration: 1.25, ease: "easeInOut" }}
+            onAnimationComplete={() => {
+              setJSXComplete(true);
             }}
           >
-            {jsonInfos && (
-              <JsonHighlighter
-                step={step}
-                code={jsonInfos[jsonIndex] || null}
-              />
-            )}
+            {infos[jsxIndex] && <CodeSwitcher info={infos[jsxIndex]} />}
           </motion.div>
         )}
-      </AnimatePresence>
+
+        <AnimatePresence>
+          {JSXComplete && step > Steps.Transforming && (
+            <motion.div
+              initial={{ height: "0%" }}
+              animate={{ height: "40%" }}
+              exit={{ height: "0%" }}
+              className="overflow-hidden mt-1"
+              transition={{ duration: 1.25, ease: "easeInOut" }}
+              // layout
+              // key="json-highlighter"
+              // className="h-[40%]"
+              // initial={{ opacity: 0, y: 20 }}
+              // animate={{ opacity: 1, y: 0 }}
+              // exit={{ opacity: 0, y: 20 }}
+              // transition={{
+              //   duration: 0.75,
+              //   delay: 0.25,
+              // }}
+            >
+              {jsonInfos && (
+                <JsonHighlighter
+                  step={step}
+                  code={jsonInfos[jsonIndex] || null}
+                />
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </LayoutGroup>
     </>
   );
 };

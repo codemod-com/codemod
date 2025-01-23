@@ -76,7 +76,7 @@ const Preview: React.FC<PreviewProps> = ({
     <div className="flex h-full bg-white text-black dark:bg-gray-950 dark:text-white">
       <AnimatePresence>
         {stepState >= StepState.Animated && (
-          <Cursor onCompleted={onStepComplete} animatedCursor={true} />
+          <Cursor onCompleted={onStepComplete} />
         )}
       </AnimatePresence>
       <div className="flex flex-1 flex-col justify-center p-8">
@@ -97,13 +97,13 @@ const Preview: React.FC<PreviewProps> = ({
 
           {/* Form Section */}
           <form className="space-y-3">
-            <div className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm text-zinc-900 focus:outline-none dark:border-zinc-700 dark:text-white">
+            <div className="w-full rounded border border-zinc-300 bg-transparent px-3 py-2 text-sm text-zinc-900 focus:outline-none dark:border-zinc-700 dark:text-white">
               {renderTextEffect("Enter your email...", 2, {
                 as: "div",
                 className: "opacity-35",
               })}
             </div>
-            <div className="w-full rounded-md bg-black px-3 py-2 text-center text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-500">
+            <div className="w-full rounded bg-black px-3 py-2 text-center text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-500">
               {renderTextEffect("Sign In with Email", 3, {
                 as: "div",
               })}
@@ -123,7 +123,7 @@ const Preview: React.FC<PreviewProps> = ({
           </div>
 
           {/* GitHub Button */}
-          <button className="flex w-full items-center justify-center gap-2 rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm text-zinc-900 focus:outline-none dark:border-zinc-700 dark:text-white">
+          <button className="flex w-full items-center justify-center gap-2 rounded border border-zinc-300 bg-transparent px-3 py-2 text-sm text-zinc-900 focus:outline-none dark:border-zinc-700 dark:text-white">
             <svg
               viewBox="0 0 24 24"
               className="size-4"

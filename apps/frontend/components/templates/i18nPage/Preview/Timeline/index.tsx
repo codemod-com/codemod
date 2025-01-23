@@ -1,32 +1,5 @@
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import CircularProgress from "../CircularProgress";
-
-const parentVariants = {
-  initial: {
-    opacity: 0,
-    height: 0,
-  },
-  animate: {
-    opacity: 1,
-    height: "auto",
-    transition: {
-      type: "spring",
-      damping: 30,
-      stiffness: 400,
-      when: "beforeChildren",
-      staggerChildren: 0.1,
-    },
-  },
-  exit: {
-    opacity: 0,
-    height: 0,
-    transition: {
-      type: "spring",
-      damping: 30,
-      stiffness: 400,
-    },
-  },
-};
 
 const childVariants = {
   initial: { opacity: 0, x: -20 },
@@ -55,62 +28,66 @@ const stateMapping = [
   },
   {
     label: "Translating",
-    percentage: 100,
+    percentage: 90,
     description: "Work with one of our translation partners.",
+  },
+  {
+    label: "Ready",
+    percentage: 100,
+    description:
+      "Your project is fully internationalized and ready to translate.",
   },
 ];
 
-export const Timeline = ({ step }: { step: number }) => {
-  const currentStep = step === 0 || step === 1 ? 0 : step - 1;
+export const Timeline = ({
+  step,
+  isAnimating,
+}: { step: number; isAnimating: boolean }) => {
+  const currentStep =
+    !isAnimating && step === 3
+      ? 3
+      : Math.min(step > 1 ? step - 1 : 0, stateMapping.length - 1);
   const isAI = step < 3;
 
   return (
-    <LayoutGroup>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={`timeline-container`}
-          variants={parentVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="sticky top-0 z-50 py-2 flex flex-wrap items-center gap-3 rounded bg-gradient-to-r from-white/10 to-white/0 px-3 text-sm"
-        >
-          {currentStep < stateMapping.length && (
-            <div className="flex items-center gap-3">
-              <CircularProgress
-                size={16}
-                strokeWidth={2}
-                percentage={stateMapping[currentStep]?.percentage || 0}
-              />
+    <div className="sticky top-0 z-50 py-1 flex flex-wrap items-center gap-3 rounded bg-gradient-to-r from-zinc-50 to-zinc-50/0 dark:from-white/10 dark:to-white/0 px-3 text-sm">
+      {currentStep < stateMapping.length && (
+        <div className="flex items-center gap-3">
+          <CircularProgress
+            size={16}
+            strokeWidth={2}
+            percentage={stateMapping[currentStep]?.percentage || 0}
+          />
 
-              <motion.div
-                key={`step-container-${currentStep}`}
+          <motion.div
+            key={`step-container-${currentStep}`}
+            variants={childVariants}
+            className="flex items-center gap-2"
+          >
+            <motion.span
+              variants={childVariants}
+              className="font-bold leading-7"
+            >
+              {stateMapping[currentStep]?.label}
+            </motion.span>
+            <motion.span
+              variants={childVariants}
+              className="text-zinc-600 dark:text-zinc-400 text-xs"
+            >
+              {stateMapping[currentStep]?.description}
+            </motion.span>
+
+            {isAI && (
+              <motion.span
                 variants={childVariants}
-                className="flex items-center gap-2"
+                className="dark:bg-accent/10 dark:text-accent bg-accent/50 text-black rounded p-0.5 text-xs"
               >
-                <motion.span variants={childVariants} className="font-bold">
-                  {stateMapping[currentStep]?.label}
-                </motion.span>
-                <motion.span
-                  variants={childVariants}
-                  className="text-zinc-600 dark:text-zinc-400 text-xs"
-                >
-                  {stateMapping[currentStep]?.description}
-                </motion.span>
-
-                {isAI && (
-                  <motion.span
-                    variants={childVariants}
-                    className="dark:bg-accent/10 dark:text-accent bg-accent/50 text-black rounded p-1 text-xs"
-                  >
-                    Automated by Codemod AI
-                  </motion.span>
-                )}
-              </motion.div>
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
-    </LayoutGroup>
+                Automated by Codemod AI
+              </motion.span>
+            )}
+          </motion.div>
+        </div>
+      )}
+    </div>
   );
 };

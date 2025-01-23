@@ -3,7 +3,7 @@ import Preview from "@/components/templates/i18nPage/Preview";
 import Code from "@/components/templates/i18nPage/Preview/CodeSwitcher";
 import { Play } from "@/components/templates/i18nPage/Preview/Play";
 import { Steps } from "@/components/templates/i18nPage/Preview/types";
-import { AnimatePresence, LayoutGroup, motion, useInView } from "framer-motion";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Timeline } from "./Timeline";
 
@@ -26,7 +26,7 @@ export default function DemoSection() {
     setStep(Steps.Finish);
     setTimeout(() => {
       setIsAnimating(false);
-    }, 1000);
+    }, 5000);
   };
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function DemoSection() {
       const timeout = setTimeout(() => {
         handleAnimationReset();
         setHasPlayed(true);
-      }, 1000);
+      }, 1500);
 
       return () => clearTimeout(timeout);
     }
@@ -72,31 +72,30 @@ export default function DemoSection() {
           )}
         </AnimatePresence>
 
-        <LayoutGroup>
-          {isAnimating && <Timeline key={`Timeline-${resetKey}`} step={step} />}
-          <motion.div
-            layout
-            className="flex gap-1 flex-col md:h-[500px] md:flex-row"
-          >
-            <div className="relative order-2 flex flex-col overflow-hidden rounded-l md:order-1 md:w-[40%]">
-              <Code
-                key={`Code-${resetKey}`}
-                step={step}
-                isAnimating={isAnimating}
-                setStep={setStep}
-              />
-            </div>
+        <Timeline
+          key={`Timeline-${resetKey}`}
+          step={step}
+          isAnimating={isAnimating}
+        />
+        <motion.div className="flex gap-1 flex-col md:h-[500px] md:flex-row">
+          <div className="relative order-2 flex flex-col overflow-hidden rounded-l md:order-1 md:w-[40%]">
+            <Code
+              key={`Code-${resetKey}`}
+              step={step}
+              isAnimating={isAnimating}
+              setStep={setStep}
+            />
+          </div>
 
-            <div className="pointer-events-none relative order-1 flex-1 select-none overflow-hidden rounded-r">
-              <Preview
-                key={`Preview-${resetKey}`}
-                step={step}
-                isAnimating={isAnimating}
-                onStepComplete={handleStepComplete}
-              />
-            </div>
-          </motion.div>
-        </LayoutGroup>
+          <div className="pointer-events-none relative order-1 flex-1 select-none overflow-hidden rounded-r">
+            <Preview
+              key={`Preview-${resetKey}`}
+              step={step}
+              isAnimating={isAnimating}
+              onStepComplete={handleStepComplete}
+            />
+          </div>
+        </motion.div>
       </main>
     </div>
   );
