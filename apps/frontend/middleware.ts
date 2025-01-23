@@ -48,7 +48,8 @@ export async function middleware(request: NextRequest) {
     return res;
   }
 
-  const codehikeUrl = "https://lighter.codehike.org/grammars/*";
+  const codehikeUrl =
+    "https://lighter.codehike.org/grammars/tsx.json https://lighter.codehike.org/grammars/json.json";
 
   if (
     !request.nextUrl.pathname.startsWith("/api") &&
