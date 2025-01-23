@@ -48,6 +48,8 @@ export async function middleware(request: NextRequest) {
     return res;
   }
 
+  const codehikeUrl = "https://lighter.codehike.org/grammars/*";
+
   if (
     !request.nextUrl.pathname.startsWith("/api") &&
     request.nextUrl.origin === "https://codemod.com"
@@ -59,8 +61,8 @@ export async function middleware(request: NextRequest) {
     const cspHeader = `
         default-src 'self';
         script-src 'self' 'unsafe-eval' 'unsafe-inline' https://summary-walrus-25.clerk.accounts.dev https://clerk.codemod.com https://vercel.live https://cdn.jsdelivr.net https://www.googletagmanager.com https://challenges.cloudflare.com/;
-		    frame-src https://challenges.cloudflare.com/ https://vercel.live;
-        connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io https://backend.codemod.com https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev https://*.vercel.app https://vercel.live wss://backend.codemod.com wss://*.api.sanity.io;
+		    frame-src https://challenges.cloudflare.com/ https://vercel.live ${codehikeUrl};
+        connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io https://backend.codemod.com https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev https://*.vercel.app https://vercel.live wss://backend.codemod.com wss://*.api.sanity.io ${codehikeUrl};
         style-src 'self' 'unsafe-inline' https://vercel.live;
         img-src 'self' blob: data: https://*.google-analytics.com https://*.googletagmanager.com https://img.clerk.com https://cdn.sanity.io https://image.mux.com https://vercel.com;
         font-src 'self';
