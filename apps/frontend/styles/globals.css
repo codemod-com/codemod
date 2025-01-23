@@ -56,7 +56,7 @@
     animation-play-state: paused;
   }
   .xl-heading {
-    @apply font-bold text-xlHeadingMobile lg:text-xlHeading;
+    @apply text-xlHeadingMobile lg:text-xlHeading;
   }
 
   .l-heading {
@@ -134,7 +134,7 @@ html {
 
 body {
   overflow-x: hidden;
-  font-family: var(--satoshi-regular);
+  word-spacing: 1px;
   @apply selection:bg-accent selection:text-primary-light;
 }
 
@@ -386,3 +386,23 @@ h6[class*="heading"] a {
     transform: translateX(3px);
   }
 }
+
+.scrollbar::-webkit-scrollbar {
+  @apply w-1;
+}
+.scrollbar::-webkit-scrollbar, .scrollbar::-webkit-scrollbar-thumb {
+  @apply overflow-visible rounded;
+}
+.scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-slate-500/20;
+}
+
+
+.outline {
+  outline-width: 1px;
+  outline-style: dashed;
+  outline-color: transparent;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+

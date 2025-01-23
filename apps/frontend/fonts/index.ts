@@ -1,31 +1,14 @@
 import { cx } from "cva";
-import localFont from "next/font/local";
+import { GeistMono } from "geist/font/mono";
+import { Plus_Jakarta_Sans } from "next/font/google";
 
-const satoshiRegular = localFont({
-  src: "./Satoshi-Regular.woff2",
-  display: "swap",
-  variable: "--satoshi-regular",
-  weight: "400",
+export const SansFont = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-sans",
 });
+export const geistMono = GeistMono;
 
-const satoshiMedium = localFont({
-  src: "./Satoshi-Medium.woff2",
-  display: "swap",
-  variable: "--satoshi-medium",
-  weight: "500",
-});
-
-const satoshiBold = localFont({
-  src: "./Satoshi-Bold.woff2",
-  display: "swap",
-  variable: "--satoshi-bold",
-  weight: "700",
-});
-
-const globalFontsVariables = cx(
-  satoshiRegular.variable,
-  satoshiMedium.variable,
-  satoshiBold.variable,
-);
+const globalFontsVariables = cx(SansFont.className, geistMono.variable);
 
 export default globalFontsVariables;

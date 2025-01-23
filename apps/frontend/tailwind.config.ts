@@ -214,10 +214,10 @@ export default {
     extend: {
       colors: colorPalette,
       fontFamily: {
-        regular: "var(--satoshi-regular)",
-        medium: "var(--satoshi-medium)",
-        bold: "var(--satoshi-bold)",
-        mono: ["var(--inconsolata)"],
+        regular: "var(--font-sans)",
+        medium: "var(--font-sans)",
+        bold: "var(--font-sans)",
+        mono: ["var(--font-geist-mono)"],
       },
       fontSize: {
         xlHeading: [
@@ -257,7 +257,7 @@ export default {
           {
             fontWeight: "700",
             lineHeight: "36px",
-            letterSpacing: "-1.28px",
+            letterSpacing: "-0.96px",
           },
         ],
         mdHeadingMobile: [
