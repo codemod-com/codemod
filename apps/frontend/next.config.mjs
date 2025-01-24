@@ -44,6 +44,7 @@ const config = {
       },
     };
   },
+  productionBrowserSourceMaps: true,
   images: {
     remotePatterns: [{ hostname: "cdn.sanity.io" }],
   },
