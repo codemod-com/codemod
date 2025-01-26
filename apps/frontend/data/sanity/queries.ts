@@ -45,17 +45,35 @@ const SECTIONS_FRAGMENT = groq`
         _id,
         features {
             ...,
-            bgVideo {
-              light ${MUX_VIDEO_FRAGMENT},
-              dark ${MUX_VIDEO_FRAGMENT},
+            background {
+              light {
+                type,
+                asset ${MUX_VIDEO_FRAGMENT},
+                image {
+                  ...,
+                  asset->{
+                    url,
+                    metadata
+                  }
+                }
+              },
+              dark {
+                type,
+                asset ${MUX_VIDEO_FRAGMENT},
+                image {
+                  ...,
+                  asset->{
+                    url,
+                    metadata
+                  }
+                }
+              }
             },
-
         }[]
     },
     _type == "section.fullWidthMedia" => {
         ${FULL_WIDTH_MEDIA_FRAGMENT}
     },
-
     _type == "section.registry" => {
         ...,
         "filterIconDictionary": *[_type == "filterIconDictionary"][0],

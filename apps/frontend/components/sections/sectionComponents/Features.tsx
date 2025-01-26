@@ -10,40 +10,76 @@ import { cx } from "cva";
 import { useState } from "react";
 
 export default function Features(props: FeaturesProps) {
-  const [videoReplay, setVideoReplay] = useState(
+  const [interactionState, setInteractionState] = useState(
     props.features?.reduce((o, key) => ({ ...o, [key._key!]: false }), {}) ||
       {},
   );
-  const getSides = (index: number) => {
-    return {
-      right: true,
-      left: index === 1 || index === 3 || index === 4,
-      bottom: index === 3 || index === 4 || index === 5,
-      top: index === 1 || index === 2 || index === 3,
-    };
-  };
 
-  const getMobileSides = (index: number) => {
-    return {
-      right: true,
-      left: true,
-      bottom: index === 5,
-      top: true,
-    };
-  };
+  const getSides = (index: number) => ({
+    right: true,
+    left: index === 1 || index === 3 || index === 4,
+    bottom: index === 3 || index === 4 || index === 5,
+    top: index === 1 || index === 2 || index === 3,
+  });
+
+  const getMobileSides = (index: number) => ({
+    right: true,
+    left: true,
+    bottom: index === 5,
+    top: true,
+  });
 
   function handleInteraction(_key: string) {
-    setVideoReplay((prev) => ({ ...prev, [_key]: true }));
+    setInteractionState((prev) => ({ ...prev, [_key]: true }));
     setTimeout(() => {
-      setVideoReplay((prev) => ({ ...prev, [_key]: false }));
+      setInteractionState((prev) => ({ ...prev, [_key]: false }));
     }, 1000);
   }
 
+  const renderBackground = (
+    background: any,
+    replay: boolean,
+    isDark: boolean,
+  ) => {
+    if (!background) return null;
+
+    const version = isDark ? background.dark : background.light;
+
+    if (version?.type === "video" && version.asset) {
+      return (
+        <MuxVideo
+          replay={replay}
+          playOnView
+          className={isDark ? "hidden dark:block" : "dark:hidden"}
+          video={version.asset.asset}
+        />
+      );
+    }
+
+    if (version?.type === "image" && version.image) {
+      return (
+        <img
+          className={
+            isDark
+              ? "hidden dark:block w-full aspect-[2/1] object-cover"
+              : "dark:hidden w-full aspect-[2/1] object-cover"
+          }
+          src={version.image.asset?.url}
+          alt=""
+        />
+      );
+    }
+
+    return null;
+  };
+
   return (
     <>
-      <div className="hidden w-full  px-6 py-[60px] lg:grid lg:grid-cols-2 lg:px-20 lg:py-[80px] ">
+      {/* Desktop */}
+      <div className="hidden w-full px-6 py-[60px] lg:grid lg:grid-cols-2 lg:px-20 lg:py-[80px]">
         {props?.features?.map((feature, index) => {
           const size = index === 2 ? "large" : "small";
+
           return (
             <div
               key={feature._key}
@@ -53,27 +89,21 @@ export default function Features(props: FeaturesProps) {
               )}
             >
               <div
-                className={cx("absolute  z-10", {
+                className={cx("absolute z-10", {
                   "left-0 top-0 w-full": size === "small",
                   "right-0 top-1/2 my-auto w-1/2 -translate-y-1/2 transform":
                     size !== "small",
                 })}
               >
-                {feature.bgVideo?.dark?.asset && (
-                  <MuxVideo
-                    replay={videoReplay[feature._key!]}
-                    playOnView
-                    className="hidden dark:block"
-                    video={feature.bgVideo?.dark?.asset}
-                  />
+                {renderBackground(
+                  feature.background,
+                  interactionState[feature._key!],
+                  true,
                 )}
-                {feature.bgVideo?.light?.asset && (
-                  <MuxVideo
-                    replay={videoReplay[feature._key!]}
-                    playOnView
-                    className="dark:hidden"
-                    video={feature.bgVideo?.light.asset}
-                  />
+                {renderBackground(
+                  feature.background,
+                  interactionState[feature._key!],
+                  false,
                 )}
                 <div className="absolute bottom-0 h-1/4 w-full bg-gradient-to-t from-white dark:from-background-dark" />
               </div>
@@ -84,7 +114,7 @@ export default function Features(props: FeaturesProps) {
               >
                 <div
                   className={cx(
-                    "flex h-[600px] flex-col items-start  p-l lg:p-xl",
+                    "flex h-[600px] flex-col items-start p-l lg:p-xl",
                     size === "small"
                       ? "justify-end lg:h-[586px]"
                       : "max-w-[460px] justify-center lg:h-[590px]",
@@ -127,9 +157,9 @@ export default function Features(props: FeaturesProps) {
         })}
       </div>
 
+      {/* Mobile */}
       <div className="grid w-full grid-cols-2 px-6 py-[60px] lg:hidden lg:px-20 lg:py-[80px]">
         {props?.features?.map((feature, index) => {
-          // const { cleaned: size } = vercelStegaSplit(feature?.size || "");
           return (
             <div key={feature._key} className={cx("col-span-2")}>
               <GradientBorderBox
@@ -142,21 +172,15 @@ export default function Features(props: FeaturesProps) {
                   )}
                 >
                   <div className={cx("-mt-l w-full sm:-mx-l", {})}>
-                    {feature.bgVideo?.dark?.asset && (
-                      <MuxVideo
-                        replay={videoReplay[feature._key!]}
-                        playOnView
-                        className="hidden dark:block"
-                        video={feature.bgVideo?.dark?.asset}
-                      />
+                    {renderBackground(
+                      feature.background,
+                      interactionState[feature._key!],
+                      true,
                     )}
-                    {feature.bgVideo?.light?.asset && (
-                      <MuxVideo
-                        replay={videoReplay[feature._key!]}
-                        playOnView
-                        className="dark:hidden"
-                        video={feature.bgVideo?.light.asset}
-                      />
+                    {renderBackground(
+                      feature.background,
+                      interactionState[feature._key!],
+                      false,
                     )}
                   </div>
                   {feature?.tag ? (
