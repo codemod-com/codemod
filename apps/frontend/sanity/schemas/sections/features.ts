@@ -30,19 +30,73 @@ export const features = defineSection({
           icon: BlockContentIcon,
           fields: [
             {
-              name: "bgVideo",
-              title: "Background Video",
+              name: "background",
+              title: "Background",
               type: "object",
               fields: [
                 {
                   name: "light",
                   title: "Light Version",
-                  type: "mux.video",
+                  type: "object",
+                  fields: [
+                    {
+                      name: "type",
+                      title: "Type",
+                      type: "string",
+                      options: {
+                        list: [
+                          { title: "Image", value: "image" },
+                          { title: "Video", value: "video" },
+                        ],
+                        layout: "radio",
+                      },
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: "asset",
+                      title: "Asset",
+                      type: "mux.video",
+                      hidden: ({ parent }) => parent?.type !== "video",
+                    },
+                    {
+                      name: "image",
+                      title: "Image",
+                      type: "image",
+                      hidden: ({ parent }) => parent?.type !== "image",
+                    },
+                  ],
                 },
                 {
                   name: "dark",
                   title: "Dark Version",
-                  type: "mux.video",
+                  type: "object",
+                  fields: [
+                    {
+                      name: "type",
+                      title: "Type",
+                      type: "string",
+                      options: {
+                        list: [
+                          { title: "Image", value: "image" },
+                          { title: "Video", value: "video" },
+                        ],
+                        layout: "radio",
+                      },
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: "asset",
+                      title: "Asset",
+                      type: "mux.video",
+                      hidden: ({ parent }) => parent?.type !== "video",
+                    },
+                    {
+                      name: "image",
+                      title: "Image",
+                      type: "image",
+                      hidden: ({ parent }) => parent?.type !== "image",
+                    },
+                  ],
                 },
               ],
             },
@@ -62,7 +116,6 @@ export const features = defineSection({
               name: "description",
               title: "Description",
             },
-
             {
               type: "string",
               name: "snippet",

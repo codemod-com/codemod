@@ -233,9 +233,33 @@ export type Feature = {
   snippet?: string;
   toastText?: string;
   cta?: SanityLinkType;
-  bgVideo?: {
-    light?: MuxVideo;
-    dark?: MuxVideo;
+  background?: {
+    light?: {
+      type: "image" | "video";
+      asset?: MuxVideo;
+      image?: {
+        asset: {
+          url: string;
+          metadata?: {
+            dimensions?: { width: number; height: number };
+            lqip?: string; // Low-quality image placeholder
+          };
+        };
+      };
+    };
+    dark?: {
+      type: "image" | "video";
+      asset?: MuxVideo;
+      image?: {
+        asset: {
+          url: string;
+          metadata?: {
+            dimensions?: { width: number; height: number };
+            lqip?: string; // Low-quality image placeholder
+          };
+        };
+      };
+    };
   };
 };
 
