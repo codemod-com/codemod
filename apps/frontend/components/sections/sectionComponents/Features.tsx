@@ -51,7 +51,7 @@ export default function Features(props: FeaturesProps) {
           replay={replay}
           playOnView
           className={isDark ? "hidden dark:block" : "dark:hidden"}
-          video={version.asset}
+          video={version.asset.asset}
         />
       );
     }
@@ -61,8 +61,8 @@ export default function Features(props: FeaturesProps) {
         <img
           className={
             isDark
-              ? "hidden dark:block w-full h-auto"
-              : "dark:hidden w-full h-auto"
+              ? "hidden dark:block w-full aspect-[2/1] object-cover"
+              : "dark:hidden w-full aspect-[2/1] object-cover"
           }
           src={version.image.asset?.url}
           alt=""
@@ -79,6 +79,7 @@ export default function Features(props: FeaturesProps) {
       <div className="hidden w-full px-6 py-[60px] lg:grid lg:grid-cols-2 lg:px-20 lg:py-[80px]">
         {props?.features?.map((feature, index) => {
           const size = index === 2 ? "large" : "small";
+
           return (
             <div
               key={feature._key}
