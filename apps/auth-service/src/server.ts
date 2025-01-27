@@ -18,7 +18,6 @@ import axios from "axios";
 import { environment } from "./util.js";
 
 import { Unkey } from "@unkey/api";
-import { Issuer, generators } from "openid-client";
 import { object, optional, parse, string } from "valibot";
 import type { GetScopedTokenResponse } from "../../../packages/api-types/dist/responses.js";
 import { createLoginIntent } from "./handlers/intents/create.js";
@@ -40,15 +39,11 @@ type ZitadelUserInfo = {
 const unkey = new Unkey({ rootKey: process.env.UNKEY_ROOT_KEY as string });
 const apiId = process.env.UNKEY_API_ID as string;
 
-const getUserId = async (key: string) => {
-  const response = await unkey.keys.verify({ apiId, key });
+import { Issuer, generators } from "openid-client";
 
-  if (response.error) {
-    throw new Error(response.error.message);
-  }
-
-  return response.result.identity?.externalId ?? response.result.ownerId;
-};
+const AUTH_OPENID_ISSUER =
+  process.env.AUTH_OPENID_ISSUER ?? "http://codemod-zitadel:52000";
+const CLIENT_ID = process.env.CLIENT_ID ?? "291351851578753026";
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   const { PORT: port } = environment;

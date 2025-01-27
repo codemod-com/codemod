@@ -1,21 +1,23 @@
+import { getToken as getTokenFromSession } from "@/components/auth/getToken";
 import { useRedirectWhenSigned } from "@/hooks/useRedirectWhenSigned";
 import { devToken, isDevelopment } from "@chatbot/config";
-import { useAuth as useClerk } from "@clerk/nextjs";
 import { authUrl } from "@studio/config";
 import {
   type PendingAction,
   useUserSession,
 } from "@studio/store/utils/userSession";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export const useAuth = () => {
   const router = useRouter();
   const { resetPendingActions, addPendingActionsWhenSigned } = useUserSession();
   const addRedirectAction = useRedirectWhenSigned();
-  const clerk = useClerk();
-  const getToken = isDevelopment ? () => devToken : clerk.getToken;
+  const getToken = isDevelopment ? () => devToken : getTokenFromSession;
+  const { status } = useSession();
+  const isSignedIn = status === "authenticated";
   return {
-    ...clerk,
+    isSignedIn,
     getToken,
     getSignIn:
       ({

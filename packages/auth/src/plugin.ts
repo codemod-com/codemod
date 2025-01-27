@@ -3,6 +3,19 @@ import axios from "axios";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 
+const getUserInfo = async (token: string) => {
+  const { data } = await axios.get(
+    `${process.env.ZITADEL_ISSUER}/oidc/v1/userinfo`,
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  );
+
+  return data;
+};
+
 export interface UserDataPopulatedRequest extends FastifyRequest {
   user?: User;
   organizations?: Organization[];
