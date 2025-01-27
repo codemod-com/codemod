@@ -1,6 +1,6 @@
+import { getToken } from "@/components/auth/getToken";
 import { useMirageServer } from "@/hooks/useMirageServer";
 import { apiClient } from "@/utils/apis/client";
-import { useAuth } from "@clerk/nextjs";
 import { isServer } from "@studio/config";
 
 const shouldUseMocks =
@@ -11,7 +11,6 @@ const shouldUseMocks =
 export const useAPI = <T>(endpoint: string) => {
   useMirageServer(shouldUseMocks);
 
-  const { getToken } = useAuth();
   const getHeaders = async () => {
     const token = await getToken();
     return {

@@ -1,9 +1,7 @@
-import AuthProvider from "@/app/context/AuthProvider";
-
-export default async function Layout({
+export default function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <AuthProvider>{children}</AuthProvider>;
+  return children;
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "@clerk/nextjs";
+import { getToken } from "@/components/auth/getToken";
 import { getHumanCodemodName } from "@studio/api/getHumanCodemodName";
 import { Button } from "@studio/components/ui/button";
 import {
@@ -30,7 +30,6 @@ export const DownloadZip = () => {
   const engine = snippetStore.engine;
 
   const { data: session } = useSession();
-  const { getToken } = useAuth();
 
   const allSnippets = snippetStore.getAllSnippets();
   const cases = useMemo(

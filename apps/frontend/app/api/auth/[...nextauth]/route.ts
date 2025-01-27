@@ -32,7 +32,6 @@ const handler = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user, account }) {
-      console.log(token, user, account);
       token.user ??= user;
       token.accessToken ??= account?.access_token;
       token.refreshToken ??= account?.refresh_token;
@@ -45,8 +44,7 @@ const handler = NextAuth({
 
       return token;
     },
-    async session({ session, token: { user, error: tokenError } }) {
-      console.log(session, user, tokenError);
+    async session({ session, token: { user, error: tokenError }, token }) {
       session.user = {
         // @ts-expect-error
         id: user?.id,
@@ -58,6 +56,7 @@ const handler = NextAuth({
         name: user?.name,
         // @ts-expect-error
         loginName: user?.loginName,
+        token: token.accessToken,
       };
       // @ts-expect-error
       session.clientId = process.env.ZITADEL_CLIENT_ID;

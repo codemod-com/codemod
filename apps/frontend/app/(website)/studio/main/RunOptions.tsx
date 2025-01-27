@@ -1,4 +1,4 @@
-import { useAuth, useSession } from "@clerk/nextjs";
+import { getToken } from "@/components/auth/getToken";
 import {
   buildCodemodSlug,
   getCodemodProjectFiles,
@@ -25,6 +25,7 @@ import {
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { ChevronDownIcon, ChevronUpIcon, PlayIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import * as semver from "semver";
@@ -54,8 +55,7 @@ export const RunOptions = () => {
     [] as { before: string; after: string }[],
   );
 
-  const { session } = useSession();
-  const { getToken } = useAuth();
+  const { data: session } = useSession();
 
   const handleClick = async () => {
     setIsPublishing(true);
@@ -92,7 +92,7 @@ export const RunOptions = () => {
       codemodBody: modStore.content.replace(/\n *as\n *const/g, " as const"),
       cases: cases.length ? cases : undefined,
       engine,
-      username: session.user.username ?? session.user.fullName,
+      username: session?.user?.name ?? null,
     });
 
     if (!isTypeScriptProjectFiles(files)) {
