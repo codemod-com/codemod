@@ -1,6 +1,7 @@
 import globalFontsVariables from "@/fonts";
 import { Analytics } from "@vercel/analytics/react";
 import { cx } from "cva";
+import { getServerSession } from "next-auth";
 
 import { mediaStyles } from "@/components/global/Media";
 import dynamicFavicon from "@/headScripts/dynamic_favicon";
@@ -8,12 +9,15 @@ import themeScript from "@/headScripts/theme";
 
 import "@/styles/globals.css";
 import Script from "next/script";
+import SessionProvider from "./providers/SessionProvider";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession();
+
   return (
     <html lang="en" className={cx(globalFontsVariables, "scroll-smooth light")}>
       <head>
@@ -34,8 +38,10 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        {children}
-        <Analytics />
+        <SessionProvider session={session}>
+          {children}
+          <Analytics />
+        </SessionProvider>
       </body>
     </html>
   );

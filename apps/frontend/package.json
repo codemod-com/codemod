@@ -101,6 +101,7 @@
     "match-sorter": "catalog:",
     "monaco-editor": "^0.36.1",
     "next": "catalog:",
+    "next-auth": "^4.24.11",
     "next-sanity": "catalog:",
     "node-fetch": "catalog:",
     "openid-client": "5.6.5",

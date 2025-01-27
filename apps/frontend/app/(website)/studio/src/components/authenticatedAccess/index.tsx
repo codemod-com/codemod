@@ -1,4 +1,4 @@
-import { useAuth } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 import type { ReactNode } from "react";
 
 type Props = {
@@ -13,7 +13,8 @@ const tooltipProps = {
 };
 
 const AuthenticatedAccess = ({ children }: Props) => {
-  const { isSignedIn } = useAuth();
+  const { status } = useSession();
+  const isSignedIn = status === "authenticated";
 
   if (isSignedIn) {
     return <>{children}</>;

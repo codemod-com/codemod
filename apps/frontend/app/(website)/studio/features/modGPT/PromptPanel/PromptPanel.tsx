@@ -5,9 +5,9 @@ import { insertValue } from "@chatbot/PromptPanel/utils";
 import type { useAiService } from "@chatbot/useAiService/useAiService";
 import type { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
 import { getOrderedAliasList } from "@chatbot/utils";
-import { useAuth } from "@clerk/nextjs";
 import { useGetAliases } from "@studio/store/CFS/alias";
 import type { UseChatHelpers } from "ai/react";
+import { useSession } from "next-auth/react";
 import { useRef, useState } from "react";
 import { PromptForm } from "./PromptForm";
 import { ScrollToBottomButton } from "./ScrollToBottomButton";
@@ -36,7 +36,8 @@ export function PromptPanel(props: PromptPanelProps) {
   } = props;
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [expandedHelper, setExpandedHelper] = useState(true);
-  const { isSignedIn } = useAuth();
+  const { status } = useSession();
+  const isSignedIn = status === "authenticated";
   const aliases = useGetAliases();
   const aliasList = getOrderedAliasList(aliases);
 

@@ -8,13 +8,14 @@ import {
   ACCESS_TOKEN_COMMANDS,
   ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY,
 } from "@/constants";
-import { useAuth, useUser } from "@clerk/nextjs";
 import { Dialog, DialogContent } from "@studio/components/ui/dialog";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
+import { useSession } from "next-auth/react";
 
 export const TokenBuilder = () => {
-  const { getToken } = useAuth();
-  const { isLoaded, isSignedIn } = useUser();
+  const { status } = useSession();
+  const isLoaded = status !== "loading";
+  const isSignedIn = status === "authenticated";
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -90,7 +91,7 @@ export const TokenBuilder = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isSignedIn, isLoaded, getToken, onLoginIntentPopulated]);
+  }, [isSignedIn, isLoaded, onLoginIntentPopulated]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -164,7 +165,7 @@ export const TokenBuilder = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [getToken, isSignedIn, isLoaded, router, onLoginIntentPopulated]);
+  }, [isSignedIn, isLoaded, router, onLoginIntentPopulated]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

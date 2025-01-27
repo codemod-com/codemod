@@ -1,4 +1,3 @@
-import { useUser } from "@clerk/nextjs";
 import { Dialog, DialogContent } from "@studio/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { type JSX, memo, useEffect, useRef, useState } from "react";
@@ -27,7 +26,6 @@ const messages = {
 
 export const GithubPermissions = memo(() => {
   const router = useRouter();
-  const { user, isLoaded, isSignedIn } = useUser();
 
   const [dialogContent, setDialogContent] = useState<JSX.Element>();
 
@@ -62,77 +60,6 @@ export const GithubPermissions = memo(() => {
 
     tick();
   }, [closeAfter, closeAfterSeconds, router]);
-
-  useEffect(() => {
-    if (!isLoaded) {
-      return;
-    }
-
-    const searchParams = new URLSearchParams(window.location.search);
-    const type = searchParams.get("permissions");
-
-    if (type === "github") {
-      if (!isSignedIn) {
-        setDialogContent(messages.errorNotLoggedIn);
-        return;
-      }
-
-      const scopes = searchParams.getAll("scopes");
-      if (!scopes.length) {
-        return;
-      }
-
-      const arePermissionsRequested =
-        searchParams.get("status") === "requested";
-
-      const githubAccount = user?.externalAccounts.find(
-        (account) => account.provider === "github",
-      );
-
-      if (!githubAccount) {
-        return;
-      }
-
-      if (arePermissionsRequested) {
-        const availableScopes = githubAccount.approvedScopes.split(" ");
-        const allScopesApproved = scopes.every((scope) =>
-          availableScopes.includes(scope),
-        );
-
-        if (allScopesApproved) {
-          setDialogContent(messages.successGettingPermissions);
-          startClosingTimer();
-        } else {
-          setDialogContent(messages.errorGettingPermissions);
-        }
-        return;
-      }
-
-      try {
-        githubAccount
-          .reauthorize({
-            redirectUrl: `${window.location.href}&status=requested`,
-            additionalScopes: scopes,
-          })
-          .then((res) => {
-            if (res.verification?.externalVerificationRedirectURL) {
-              setDialogContent(messages.requestingPermissions);
-              router.push(
-                res.verification.externalVerificationRedirectURL.href,
-              );
-              return;
-            }
-          })
-          .catch(() => {
-            setDialogContent(messages.requestingPermissions);
-          });
-
-        throw new Error("externalVerificationRedirectURL not found");
-      } catch (err) {
-        setDialogContent(messages.requestingPermissions);
-      }
-    }
-  }, [isLoaded]);
 
   if (!dialogContent) {
     return null;

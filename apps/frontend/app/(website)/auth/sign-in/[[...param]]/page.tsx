@@ -1,7 +1,7 @@
 "use client";
 
+import { SignIn } from "@/components/auth/SignIn";
 import "@/styles/customizeClerkComponents.css";
-import { SignIn } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
 
 function SignInPage() {
@@ -10,10 +10,7 @@ function SignInPage() {
 
   return (
     <div className="flex h-screen w-screen items-center justify-center">
-      <SignIn
-        forceRedirectUrl={isStudio ? "/studio" : "/registry"}
-        appearance={{ elements: { footer: { display: "none" } } }}
-      />
+      <SignIn forceRedirectUrl={isStudio ? "/studio" : "/registry"} />
     </div>
   );
 }

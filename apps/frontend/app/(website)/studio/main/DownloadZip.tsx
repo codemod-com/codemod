@@ -1,5 +1,5 @@
 "use client";
-import { useAuth, useSession } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import { getHumanCodemodName } from "@studio/api/getHumanCodemodName";
 import { Button } from "@studio/components/ui/button";
 import {
@@ -17,6 +17,7 @@ import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { downloadProject } from "@studio/utils/download";
 import { DownloadIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
 import { CopyTerminalCommands } from "./TerminalCommands";
 
@@ -28,7 +29,7 @@ export const DownloadZip = () => {
   const snippetStore = useSnippetsStore();
   const engine = snippetStore.engine;
 
-  const { session } = useSession();
+  const { data: session } = useSession();
   const { getToken } = useAuth();
 
   const allSnippets = snippetStore.getAllSnippets();
@@ -63,7 +64,7 @@ export const DownloadZip = () => {
       codemodBody: modStore.content,
       cases,
       engine,
-      username: session?.user.username ?? null,
+      username: session?.user?.name ?? null,
     });
 
     setIsDownloading(false);

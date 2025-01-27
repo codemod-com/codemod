@@ -1,28 +1,23 @@
+import { SignedIn } from "@/components/auth/SignedIn";
+import { SignedOut } from "@/components/auth/SignedOut";
+import { UserButton } from "@/components/auth/UserButton";
 import WButton from "@/components/shared/Button";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { SignIn as SignInIcon } from "@phosphor-icons/react";
 import { Button as SButton } from "@studio/components/ui/button";
-
-import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 const AuthButtons = ({
   variant = "studio",
   redirectUrl,
 }: { variant: "studio" | "www"; redirectUrl: string }) => {
   const isStudio = variant === "studio";
-  const router = useRouter();
-
-  const signUserIn = () => {
-    const queryParams = new URLSearchParams({ variant }).toString();
-    router.push(`/auth/sign-in?${queryParams}`);
-  };
 
   const Button = isStudio ? SButton : WButton;
   return (
     <>
       <SignedOut>
         <Button
-          onClick={signUserIn}
+          onClick={() => signIn()}
           size="sm"
           variant="outline"
           intent="inline"

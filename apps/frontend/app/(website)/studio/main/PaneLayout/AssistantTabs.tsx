@@ -1,6 +1,5 @@
 import { cn } from "@/utils";
 import type { useAiService } from "@chatbot/useAiService";
-import { useAuth } from "@clerk/nextjs";
 import Text from "@studio/components/Text";
 import {
   Tabs,
@@ -17,6 +16,7 @@ import {
 } from "@studio/main/PaneLayout/tabsData";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { TabNames, useViewStore } from "@studio/store/view";
+import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useRef } from "react";
 
 const reduceTabs = (acc: TabsWithContents, { value, name }: TabHeader) => [
@@ -41,7 +41,8 @@ export const AssistantTab = ({
   const { engine } = useSnippetsStore();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const savedScrollPositionRef = useRef<number>(0);
-  const { isSignedIn } = useAuth();
+  const { status } = useSession();
+  const isSignedIn = status === "authenticated";
 
   const { setActiveTab } = useViewStore();
 
