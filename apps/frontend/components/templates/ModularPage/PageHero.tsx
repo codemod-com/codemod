@@ -1,3 +1,4 @@
+import { BannerLink } from "@/components/shared/BannerLink";
 import GradientBlob from "@/components/shared/GradientBlob";
 import GradientBorderBox from "@/components/shared/GradientBorderBox";
 import InfiniteSlider from "@/components/shared/InfiniteSlider";
@@ -16,7 +17,8 @@ export default function PageHero(props: PageHeroProps) {
         </div>
       </div>
       <div className="relative z-20 flex flex-col items-center justify-center text-center">
-        <div className="flex flex-col items-center justify-center  gap-4 lg:gap-6">
+        <div className="flex flex-col items-center justify-center gap-4 lg:gap-6">
+          <BannerLink />
           <h1 className="xl-heading max-w-96 text-balance font-bold lg:max-w-[800px]">
             {props.title}
           </h1>
