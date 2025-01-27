@@ -184,17 +184,20 @@ export const getCodemodExecutable = async (
   source: string,
   esm?: boolean,
   engine?: string,
+  shouldCheckForExisting = true,
 ) => {
-  const existing = await glob(BUILT_SOURCE_GLOB, {
-    cwd: source,
-    absolute: true,
-  });
-
-  if (existing.length > 0) {
-    // biome-ignore lint: it exists
-    return await readFile(existing[0]!, { encoding: "utf8" }).catch(() => {
-      throw new Error(`Could not read ${existing[0]}`);
+  if (shouldCheckForExisting) {
+    const existing = await glob(BUILT_SOURCE_GLOB, {
+      cwd: source,
+      absolute: true,
     });
+
+    if (existing.length > 0) {
+      // biome-ignore lint: it exists
+      return await readFile(existing[0]!, { encoding: "utf8" }).catch(() => {
+        throw new Error(`Could not read ${existing[0]}`);
+      });
+    }
   }
 
   const { path: entryPoint } = await getEntryPath({

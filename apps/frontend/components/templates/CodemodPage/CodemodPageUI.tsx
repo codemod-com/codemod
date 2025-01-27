@@ -3,7 +3,6 @@ import Icon from "@/components/shared/Icon";
 import Section from "@/components/shared/Section";
 import Snippet from "@/components/shared/Snippet";
 import Tag from "@/components/shared/Tag";
-import { VCCodeShift } from "@/components/templates/CodemodPage/VCCodeShift";
 import { getCodemodCard } from "@/components/templates/CodemodPage/buildYourCodemodCard";
 import { getFrameworkCard } from "@/components/templates/CodemodPage/getFrameworkCard";
 import { REGISTRY_FILTER_TYPES } from "@/constants";
@@ -36,10 +35,6 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
     REGISTRY_FILTER_TYPES.framework,
     data?.filterIconDictionary,
   );
-
-  const authorHref = `/registry?${
-    REGISTRY_FILTER_TYPES.owner
-  }=${vercelStegaCleanAll(author)}`;
 
   const frameworks = getAutomationFrameworkTitles(data).map((framework) => ({
     name: framework,
@@ -76,9 +71,15 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
   const totalRunsValue = data?.totalRuns ?? 0;
 
   const totalRuns =
-    totalRunsValue < 100 ? "< 100 runs" : totalRunsValue.toLocaleString();
+    totalRunsValue < 100 ? "< 100" : totalRunsValue.toLocaleString();
 
   const sourceRepo = extractRepoPath(currentVersion?.sourceRepo || "");
+
+  const _author = {
+    title: data?.author === "Codemod" ? "codemod" : data?.author,
+    username: data?.author === "Codemod" ? "codemod-com" : data?.author,
+  };
+  const authorHref = `https://github.com/${_author.username}`;
 
   return (
     <Section className="pt-[calc(var(--header-height)+24px)]">
@@ -135,7 +136,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
           <div className="flex mb-2 flex-col justify-between gap-4 lg:flex-row lg:items-center">
             <div className="flex items-center gap-xs">
               {data?.verified && (
-                <VerifiedBadge content="Regularly tested and maintained by our engineers and codemod expert community." />
+                <VerifiedBadge content="Official codemod published by a verified account. Learn more." />
               )}
               {frameworkCards}
               {data?.useCaseCategory && (
@@ -188,9 +189,9 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                 />
               </div>
             )}
-            {currentVersion?.vsCodeLink && (
+            {/* {currentVersion?.vsCodeLink && (
               <VCCodeShift {...data} currentVersion={currentVersion} />
-            )}
+            )} */}
 
             {currentVersion?.codemodStudioExampleLink && (
               <div className="flex flex-col gap-xs">

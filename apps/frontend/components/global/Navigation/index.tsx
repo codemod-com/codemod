@@ -76,6 +76,7 @@ export default function Navigation({ data }: NavigationProps) {
 
       <div
         ref={headerRef}
+        id={"desktop-navigation"}
         className={cx(
           "left-0 top-0 z-40 w-full border-b-[1px]  transition-all duration-150 ease-out z-10000",
           isStaticHeader ? "absolute" : "fixed",

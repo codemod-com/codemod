@@ -1,6 +1,5 @@
 import { authApiClient } from "@/utils/apis/client";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
-import { POPULATE_LOGIN_INTENT } from "../constants";
 
 export const getAuthUrl = async ({
   sessionId,
@@ -19,9 +18,7 @@ export const getAuthUrl = async ({
 
   try {
     const { data } = await authApiClient.get<{ url: string }>(
-      `${POPULATE_LOGIN_INTENT}${
-        searchParams.size > 0 ? `?${searchParams.toString()}` : ""
-      }`,
+      `authUrl${searchParams.size > 0 ? `?${searchParams.toString()}` : ""}`,
       {},
     );
 

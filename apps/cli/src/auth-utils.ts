@@ -1,6 +1,6 @@
 import { backOff } from "exponential-backoff";
 import inquirer from "inquirer";
-import open from "open";
+import { open } from "./utils/open.js";
 
 import type { GetUserDataResponse } from "@codemod-com/api-types";
 import { type Printer, chalk } from "@codemod-com/printer";
@@ -80,18 +80,18 @@ export const getOrgsNames = (
   let mapFunc: (org: UserData["organizations"][number]) => string | null;
   switch (type) {
     case "slug":
-      mapFunc = (org) => org.organization.slug;
+      mapFunc = (org) => org.slug;
       break;
     case "name":
-      mapFunc = (org) => org.organization.name;
+      mapFunc = (org) => org.name;
       break;
     case "slug-and-name":
       mapFunc = (org) => {
-        if (org.organization.name === org.organization.slug) {
-          return org.organization.name;
+        if (org.name === org.slug) {
+          return org.name;
         }
 
-        return `${org.organization.name} (${org.organization.slug})`;
+        return `${org.name} (${org.slug})`;
       };
       break;
     default:
@@ -108,17 +108,10 @@ const routeUserToStudioForPermissions = ({
   printer: Printer;
   scopes: string[];
 }) => {
-  const success = open(
+  open(
     `${process.env.CODEMOD_HOME_PAGE_URL}?permissions=github&scopes=${scopes.join("&scopes=")}`,
+    printer,
   );
-
-  if (!success) {
-    printer.printOperationMessage({
-      kind: "error",
-      message:
-        "An unexpected error occurred while redirecting to the permissions page. Please submit a GitHub issue (github.com/codemod-com/codemod/issues/new) or report it to us (codemod.com/community).",
-    });
-  }
 };
 
 export const requestGithubPermissions = async (options: {

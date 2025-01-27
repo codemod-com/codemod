@@ -48,44 +48,6 @@ export const TokenBuilder = () => {
       return;
     }
 
-    console.log("isSignedIn1111", isSignedIn);
-
-    // (async () => {
-    //   const clerkToken = await getToken();
-    //   if (clerkToken === null) {
-    //     return;
-    //   }
-    //   const timestamp =
-    //     ACCESS_TOKEN_COMMANDS.find((x) => localStorage.getItem(x)) ?? null;
-
-    //   if (
-    //     timestamp === null ||
-    //     new Date().getTime() - Number.parseInt(timestamp, 10) > TWO_MINS_IN_MS
-    //   ) {
-    //     return;
-    //   }
-
-    //   if (localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)) {
-    //     const [sessionId, iv] =
-    //       localStorage
-    //         .getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)
-    //         ?.split(",") || [];
-
-    //     // Polling should pick it up
-    //     try {
-    //       await populateLoginIntent({
-    //         clerkToken,
-    //         sessionId,
-    //         iv,
-    //       });
-    //       onLoginIntentPopulated("success");
-    //     } catch (err) {
-    //       onLoginIntentPopulated("fail");
-    //     }
-    //   }
-    //   ACCESS_TOKEN_COMMANDS.forEach((key) => localStorage.removeItem(key));
-    // })();
-
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -105,8 +67,6 @@ export const TokenBuilder = () => {
       return;
     }
 
-    console.log("isSignedIn222", isSignedIn);
-
     (async () => {
       if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
         const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
@@ -117,37 +77,9 @@ export const TokenBuilder = () => {
           iv,
         });
 
-        console.log("url", url);
-
         router.push(url);
       }
     })();
-
-    // if (isSignedIn) {
-    //   (async () => {
-    //     // const clerkToken = await getToken();
-    //     // if (clerkToken === null) {
-    //     //   return;
-    //     // }
-    //     if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
-    //       const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
-    //       const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
-
-    //       // Polling should pick it up
-    //       try {
-    //         await populateLoginIntent({
-    //           clerkToken,
-    //           sessionId,
-    //           iv,
-    //         });
-    //         onLoginIntentPopulated("success");
-    //       } catch (err) {
-    //         onLoginIntentPopulated("fail");
-    //       }
-    //     }
-    //   })();
-    //   return;
-    // }
 
     if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
       const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
@@ -157,8 +89,6 @@ export const TokenBuilder = () => {
     } else {
       localStorage.setItem(command, new Date().getTime().toString());
     }
-
-    // router.push("/auth/sign-in");
 
     return () => {
       if (intervalRef.current) {

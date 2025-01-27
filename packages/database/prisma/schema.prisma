@@ -91,3 +91,19 @@ model CodeDiff {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+model Organization {
+  id        Int      @id @default(autoincrement())
+  slug      String   @db.VarChar(255)
+  name      String   @db.VarChar(255)
+  users     String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model ApiKey {
+  externalId String @db.VarChar(32)
+  uuid       String @db.VarChar(36)
+  keyId      String @db.VarChar(32)
+  @@id([uuid, keyId])
+}

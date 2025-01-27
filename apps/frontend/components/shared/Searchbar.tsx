@@ -45,16 +45,16 @@ export default function Searchbar({
   };
 
   return (
-    <div className={cx("relative w-full rounded-[1.5rem]", containerClassName)}>
+    <div className={cx("relative w-full", containerClassName)}>
       {loading ? (
         <Icon
           name="loading"
-          className="absolute left-[1rem] top-[25%] h-5 w-5 animate-spin text-secondary-light dark:text-secondary-dark"
+          className="absolute left-2 top-[25%] h-5 w-5 animate-spin text-secondary-light dark:text-secondary-dark"
         />
       ) : (
         <Icon
           name="search"
-          className="absolute left-[1rem] top-1/2 h-5 w-5 -translate-y-1/2 text-secondary-light dark:text-secondary-dark"
+          className="absolute left-2 top-1/2 h-5 w-5 -translate-y-1/2 text-secondary-light dark:text-secondary-dark"
         />
       )}
       <input
@@ -63,7 +63,7 @@ export default function Searchbar({
         type="text"
         className={cx(
           "body-m bg-white placeholder:text-secondary-light  dark:bg-primary-light dark:placeholder:text-secondary-dark",
-          "h-9  w-full appearance-none pl-11 outline-none",
+          "h-9  w-full appearance-none pl-8 outline-none",
           {
             "pr-10.5": query !== "",
           },
@@ -75,7 +75,11 @@ export default function Searchbar({
         onKeyDown={keydownHandler}
       />
       {query !== "" ? (
-        <button id={`btn-searchbar-${id}-clear`} onClick={() => setQuery("")}>
+        <button
+          className="sr-only"
+          id={`btn-searchbar-${id}-clear`}
+          onClick={() => setQuery("")}
+        >
           <Icon
             name="close"
             className="absolute right-3  top-1/2 h-5 w-5 -translate-y-1/2"

@@ -1,4 +1,4 @@
-import type { OrganizationMembership, User } from "@codemod-com/api-types";
+import type { Organization, User } from "@codemod-com/api-types";
 import axios from "axios";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
@@ -18,7 +18,7 @@ const getUserInfo = async (token: string) => {
 
 export interface UserDataPopulatedRequest extends FastifyRequest {
   user?: User;
-  organizations?: OrganizationMembership[];
+  organizations?: Organization[];
   allowedNamespaces?: string[];
 }
 
@@ -70,35 +70,44 @@ export async function getAuthPlugin(authBackendUrl: string) {
       async (
         request: FastifyRequest & {
           user?: User;
-          organizations?: OrganizationMembership[];
+          organizations?: Organization[];
           allowedNamespaces?: string[];
         },
         reply: FastifyReply,
       ) => {
         try {
           const authHeader = request.headers.authorization;
+          const apiKey = request.headers["x-api-key"] as string;
 
-          if (!authHeader) {
+          if (authHeader) {
+            const { data } = await axios.get(`${authBackendUrl}/userData`, {
+              headers: {
+                Authorization: authHeader,
+              },
+            });
+
+            const { user, organizations, allowedNamespaces } = data;
+
+            request.user = user;
+            request.organizations = organizations;
+            request.allowedNamespaces = allowedNamespaces;
+          } else if (apiKey) {
+            const { data } = await axios.get(`${authBackendUrl}/apiUserData`, {
+              headers: {
+                "x-api-key": apiKey,
+              },
+            });
+
+            const { user, organizations, allowedNamespaces } = data;
+
+            request.user = user;
+            request.organizations = organizations;
+            request.allowedNamespaces = allowedNamespaces;
+          } else {
             request.user = undefined;
             request.organizations = undefined;
             request.allowedNamespaces = undefined;
-            return;
           }
-
-          const userData = await getUserInfo(authHeader);
-          console.log(userData);
-
-          const { data } = await axios.get(`${authBackendUrl}/userData`, {
-            headers: {
-              Authorization: authHeader,
-            },
-          });
-
-          const { user, organizations, allowedNamespaces } = data;
-
-          request.user = user;
-          request.organizations = organizations;
-          request.allowedNamespaces = allowedNamespaces;
         } catch (error) {
           console.error(error);
           reply.code(401).send({ error: "Unauthorized" });

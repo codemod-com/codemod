@@ -16,7 +16,7 @@ catalog:
     "@biomejs/biome": 1.5.3
     "@clerk/backend": ^1.2.1
     "@clerk/clerk-react": 4.30.3
-    "@clerk/fastify": ^1.0.12
+    "@clerk/fastify": 0.6.47
     "@clerk/nextjs": 5.0.9
     "@clerk/themes": 1.7.10
     "@faker-js/faker": ^8.4.1
@@ -103,6 +103,7 @@ catalog:
     "@types/vscode": ^1.74.0
     "@types/vscode-webview": ^1.57.1
     "@types/yargs": ^17.0.13
+    "@unkey/api": "^0.26.2"
     "@vercel/analytics": ^1.2.2
     "@vercel/stega": ^0.1.0
     "@vitejs/plugin-react": ^4.0.0
@@ -117,7 +118,7 @@ catalog:
     ast-node-builder: ^4.2.1
     ast-types: ^0.14.2
     autoprefixer: 10.4.17
-    axios: ^1.6.8
+    axios: ^1.7.4
     axios-retry: ^4.0.0
     blessed: ^0.1.81
     boxen: ^7.1.1
@@ -161,7 +162,7 @@ catalog:
     fuzzysort: ^2.0.4
     get-youtube-id: ^1.0.1
     git-url-parse: ^14.0.0
-    glob: ^10.4.1
+    glob: ^10.4.5
     husky: ^9.0.11
     inquirer: ^9.2.16
     intro.js: ^7.2.0
@@ -176,7 +177,7 @@ catalog:
     jszip: ^3.10.1
     katex: ^0.16.10
     keytar: ^7.9.0
-    langchain: 0.0.209
+    langchain: 0.3.6
     lodash-es: ^4.17.21
     lottie-react: ^2.4.0
     lowlight: ^3.0.0
@@ -228,7 +229,7 @@ catalog:
     react-tooltip: ^5.9.0
     react-treeview: ^0.4.7
     react-tweet: ^3.2.0
-    react-use: ^17.5.0
+    react-use: ^17.5.1
     reactjs-popup: ^2.0.5
     recast: ^0.22.0
     redux-persist: ^6.0.0

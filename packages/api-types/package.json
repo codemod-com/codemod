@@ -31,6 +31,7 @@
   "dependencies": {
     "@clerk/backend": "catalog:",
     "@codemod-com/database": "workspace:*",
-    "@codemod-com/filemod": "workspace:*"
+    "@codemod-com/filemod": "workspace:*",
+    "valibot": "catalog:"
   }
 }
