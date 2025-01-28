@@ -11,6 +11,14 @@ import ShiningLines from "./Preview/ShinningLines";
 export default function I18NPageSections({ data }: I18NPageProps) {
   return (
     <>
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-PBSBXXDS"
+          height="0"
+          width="0"
+          style={{ display: "none", visibility: "hidden" }}
+        />
+      </noscript>
       {/* Hero */}
       <div className="relative overflow-x-clip lg:w-auto w-full px-xl py-[80px] pt-[calc(var(--header-height)+5rem)] lg:overflow-x-visible lg:px-[80px]">
         <div className="pointer-events-none absolute left-0 top-0 z-[1] h-full w-full">
