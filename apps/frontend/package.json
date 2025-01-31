@@ -43,6 +43,7 @@
     "@faker-js/faker": "^8.4.1",
     "@hookform/resolvers": "catalog:",
     "@monaco-editor/react": "^4.4.6",
+    "@next/third-parties": "^15.1.6",
     "@phosphor-icons/react": "catalog:",
     "@portabletext/react": "catalog:",
     "@portabletext/types": "catalog:",

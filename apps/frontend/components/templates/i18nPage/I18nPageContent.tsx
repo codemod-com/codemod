@@ -1,7 +1,7 @@
-import AnalyticsLinkButton from "@/components/shared/AnalyticsLinkButton";
 import GradientBlob from "@/components/shared/GradientBlob";
 import GradientBorderBox from "@/components/shared/GradientBorderBox";
 import InfiniteSlider from "@/components/shared/InfiniteSlider";
+import TrackedLinkButton from "@/components/shared/TrackedLinkButton";
 import BookOpenLinkButton from "@/components/shared/animated-icons/BookOpenLinkButton";
 import CobeSection from "./Cobe";
 import type { I18NPageProps } from "./Page";
@@ -43,12 +43,12 @@ export default function I18NPageSections({ data }: I18NPageProps) {
           </div>
           <div className="flex justify-between gap-4">
             {data.hero?.ctas?.[0] && (
-              <AnalyticsLinkButton
+              <TrackedLinkButton
                 key={data.hero?.ctas?.[0]._key}
                 href={data.hero?.ctas?.[0].link}
               >
                 {data.hero?.ctas?.[0].label}
-              </AnalyticsLinkButton>
+              </TrackedLinkButton>
             )}
             {data.hero?.ctas?.[1] && (
               <>
