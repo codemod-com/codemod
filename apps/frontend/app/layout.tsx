@@ -2,8 +2,7 @@ import { mediaStyles } from "@/components/global/Media";
 import globalFontsVariables from "@/fonts";
 import dynamicFavicon from "@/headScripts/dynamic_favicon";
 import themeScript from "@/headScripts/theme";
-import { GoogleTagManager } from "@next/third-parties/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import { cx } from "cva";
 
