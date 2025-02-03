@@ -19,9 +19,7 @@ export default function PageHero(props: PageHeroProps) {
       <div className="relative z-20 flex flex-col items-center justify-center text-center">
         <div className="flex flex-col items-center justify-center gap-4 lg:gap-6">
           <BannerLink />
-          <h1 className="xl-heading max-w-96 text-balance font-bold lg:max-w-[800px]">
-            {props.title}
-          </h1>
+          <h1 className="xl-heading font-bold max-w-[500px]">{props.title}</h1>
           <p className="body-l mb-10 max-w-lg lg:max-w-2xl">{props.subtitle}</p>
         </div>
         <div className="flex justify-between gap-4">
