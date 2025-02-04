@@ -3,7 +3,6 @@ import * as fs from "node:fs";
 import { join, sep } from "node:path";
 import { glob } from "glob";
 import inquirer from "inquirer";
-import * as semver from "semver";
 import * as v from "valibot";
 
 import { tmpdir } from "node:os";
@@ -154,7 +153,6 @@ export const handlePublishCliCommand = async (options: {
     }
   };
 
-  let bumpedVersion = false;
   const existingCodemod = await getCodemod(
     buildCodemodSlug(codemodRc.name),
     requestCredentials,
@@ -166,9 +164,14 @@ export const handlePublishCliCommand = async (options: {
         ({ version }) => version === codemodRc.version,
       )
     ) {
-      codemodRc.version = semver.inc(codemodRc.version, "patch") ?? "0.0.1";
-      await updateCodemodRC(codemodRc);
-      bumpedVersion = true;
+      const errorMessage = `${chalk.bold(
+        `Could not publish the "${codemodRc.name}" codemod`,
+      )}:\nVersion ${codemodRc.version} already exists.`;
+
+      return printer.printOperationMessage({
+        kind: "error",
+        message: errorMessage,
+      });
     }
   } else {
     const namespace = await getNamespace(codemodRc);
@@ -377,12 +380,6 @@ export const handlePublishCliCommand = async (options: {
     "info",
     chalk.bold.cyan(
       `Codemod was successfully published to the registry under the name "${codemodRc.name}".`,
-      bumpedVersion
-        ? chalk.yellow(
-            `\nVersion was automatically bumped to ${chalk.green(codemodRc.version)}.`,
-            "Please resort to bumping it manually during your next publish to ensure correct versioning.",
-          )
-        : "",
     ),
   );
 
