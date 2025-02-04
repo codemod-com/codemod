@@ -164,9 +164,16 @@ export const handlePublishCliCommand = async (options: {
         ({ version }) => version === codemodRc.version,
       )
     ) {
+      const latestVersion =
+        existingCodemod.versions.length > 0
+          ? existingCodemod.versions[0]?.version
+          : "unknown";
+
       const errorMessage = `${chalk.bold(
         `Could not publish the "${codemodRc.name}" codemod`,
-      )}:\nVersion ${codemodRc.version} already exists.`;
+      )}:\n${chalk.yellow(
+        `Version ${codemodRc.version} is lower than the latest published or the same as the latest published version: ${chalk.bold(latestVersion)}`,
+      )}\nPlease bump the version to a higher one.`;
 
       return printer.printOperationMessage({
         kind: "error",
