@@ -1,5 +1,11 @@
 # codemod
 
+## 0.18.0
+
+### Minor Changes
+
+- fd6ccca: Delete auto bump version in publish step
+
 ## 0.17.0
 
 ### Minor Changes
