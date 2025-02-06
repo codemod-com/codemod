@@ -27,7 +27,7 @@
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@babel/plugin-syntax-import-attributes": "^7.24.7",
+    "@babel/plugin-syntax-import-attributes": "catalog:",
     "@types/babel__traverse": "catalog:",
     "@types/js-yaml": "catalog:",
     "@types/jscodeshift": "^0.11.11",
@@ -49,7 +49,7 @@
     "@codemod-com/printer": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@codemod.com/workflow": "workspace:*",
-    "underscore": "^1.13.1",
+    "underscore": "catalog:",
     "@svgr/hast-util-to-babel-ast": "catalog:",
     "@vue/compiler-sfc": "catalog:",
     "esbuild": "^0.23.0",

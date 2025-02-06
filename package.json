@@ -65,23 +65,23 @@
     "commit": "git-cz"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.6.4",
-    "@changesets/cli": "^2.27.10",
+    "@biomejs/biome": "catalog:",
+    "@changesets/cli": "catalog:",
     "@codemod-com/tsconfig": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@total-typescript/ts-reset": "^0.4.2",
+    "@total-typescript/ts-reset": "catalog:",
     "@types/node": "^20.5.1",
-    "@vitest/coverage-v8": "^1.0.1",
-    "commitizen": "^4.3.0",
-    "concurrently": "^8.2.0",
-    "cz-conventional-changelog": "^3.3.0",
-    "husky": "^8.0.3",
-    "lint-staged": "^15.1.0",
-    "semantic-release": "^24.0.0",
+    "@vitest/coverage-v8": "catalog:",
+    "commitizen": "catalog:",
+    "concurrently": "catalog:",
+    "cz-conventional-changelog": "catalog:",
+    "husky": "catalog:",
+    "lint-staged": "catalog:",
+    "semantic-release": "catalog:",
     "tsx": "^4.2.0",
-    "turbo": "^1.10.14",
+    "turbo": "catalog:",
     "typescript": "^5.4.5",
-    "vite-tsconfig-paths": "^4.2.0",
+    "vite-tsconfig-paths": "catalog:",
     "vitest": "^2.1.9"
   },
   "lint-staged": {
@@ -104,7 +104,7 @@
     }
   },
   "dependencies": {
-    "langchain": "^0.3.6",
-    "react-use": "17.5.1"
+    "langchain": "catalog:",
+    "react-use": "catalog:"
   }
 }
