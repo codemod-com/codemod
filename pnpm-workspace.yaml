@@ -10,10 +10,14 @@ catalog:
     "@aws-sdk/client-s3": ^3.549.0
     "@aws-sdk/s3-request-presigner": ^3.549.0
     "@babel/plugin-syntax-flow": ^7.14.5
+    "@babel/plugin-syntax-import-attributes": ^7.24.7
     "@babel/plugin-transform-react-jsx": ^7.14.9
-    "@babel/preset-typescript": ^7.24.1
+    "@babel/preset-react": ^7.24.7
+    "@babel/preset-typescript": ^7.24.7
+    "@babel/standalone": ^7.24.9
     "@babel/traverse": 7.24.1
-    "@biomejs/biome": 1.5.3
+    "@biomejs/biome": ^1.6.4
+    "@changesets/cli": ^2.27.10
     "@clerk/backend": 1.23.5
     "@clerk/clerk-react": 5.22.4
     "@clerk/fastify": 2.1.13
@@ -25,7 +29,8 @@ catalog:
     "@fastify/multipart": ^8.1.0
     "@fastify/rate-limit": 9.0.1
     "@hookform/resolvers": ^3.3.2
-    "@octokit/rest": "^20.0.2"
+    "@next/third-parties": ^15.1.6
+    "@octokit/rest": ^20.0.2
     "@phosphor-icons/react": ^2.0.10
     "@portabletext/react": ^3.0.11
     "@portabletext/types": ^2.0.8
@@ -45,6 +50,7 @@ catalog:
     "@radix-ui/react-toast": ^1.1.5
     "@radix-ui/react-tooltip": ^1.0.6
     "@reduxjs/toolkit": ^1.9.5
+    "@sanity/client": ^6.21.0
     "@sanity/code-input": ^4.1.3
     "@sanity/orderable-document-list": ^1.2.1
     "@sanity/preview-url-secret": ^1.6.3
@@ -54,6 +60,7 @@ catalog:
     "@sindresorhus/slugify": ^2.2.1
     "@slack/web-api": ^7.2.0
     "@svgr/hast-util-to-babel-ast": ^7.0.0
+    "@swc/wasm-web": ^1.6.7
     "@t3-oss/env-nextjs": ^0.7.1
     "@tailwindcss/typography": 0.5.10
     "@testing-library/dom": ^9.0.0
@@ -67,8 +74,9 @@ catalog:
     "@tiptap/pm": ^2.1.8
     "@tiptap/react": ^2.1.8
     "@tiptap/starter-kit": ^2.1.8
-    "@total-typescript/ts-reset": ^0.5.1
+    "@total-typescript/ts-reset": ^0.4.2
     "@types/adm-zip": ^0.5.5
+    "@types/babel__standalone": ^7.1.7
     "@types/babel__traverse": ^7.20.1
     "@types/blessed": ^0.1.25
     "@types/chai": ^4.3.4
@@ -102,8 +110,9 @@ catalog:
     "@types/unzipper": ^0.10.9
     "@types/vscode": ^1.74.0
     "@types/vscode-webview": ^1.57.1
+    "@types/ws": ^8.5.11
     "@types/yargs": ^17.0.13
-    "@unkey/api": "^0.26.2"
+    "@unkey/api": ^0.26.2
     "@vercel/analytics": ^1.2.2
     "@vercel/stega": ^0.1.0
     "@vitejs/plugin-react": ^4.0.0
@@ -132,20 +141,26 @@ catalog:
     class-variance-authority: ^0.7.0
     cli-progress: ^3.12.0
     clsx: ^2.0.0
+    cobe: ^0.6.3
+    codehike: ^1.0.4
     colors-cli: ^1.0.33
     columnify: ^1.6.0
+    commitizen: ^4.3.0
+    concurrently: ^8.2.0
     constants-browserify: ^1.0.0
     cron: ^3.1.6
     cspell-cli: ^6.17.1
     csstype: ^3.1.1
     csv-parser: ^3.0.0
     cva: npm:class-variance-authority@^0.7.0
+    cz-conventional-changelog: ^3.3.0
     detect-indent: ^7.0.1
     detect-newline: ^4.0.1
     diff: ^5.1.0
     dotenv: ^16.4.5
     dotenv-cli: ^7.4.1
     esbuild-plugin-copy: ^2.1.1
+    esbuild-wasm: ^0.23.0
     eslint: 8.56.0
     eslint-config-next: 14.1.0
     eslint-config-prettier: ^9.1.0
@@ -160,10 +175,11 @@ catalog:
     framer-motion: ^11.0.6
     fuse.js: ^7.0.0
     fuzzysort: ^2.0.4
+    geist: ^1.3.1
     get-youtube-id: ^1.0.1
     git-url-parse: ^14.0.0
     glob: ^10.4.5
-    husky: ^9.0.11
+    husky: ^8.0.3
     inquirer: ^9.2.16
     intro.js: ^7.2.0
     intro.js-react: ^1.0.0
@@ -177,7 +193,8 @@ catalog:
     jszip: ^3.10.1
     katex: ^0.16.21
     keytar: ^7.9.0
-    langchain: 0.3.6
+    langchain: ^0.3.6
+    lint-staged: ^15.1.0
     lodash-es: ^4.17.21
     lottie-react: ^2.4.0
     lowlight: ^3.0.0
@@ -188,8 +205,10 @@ catalog:
     mdast-util-mdx: ^3.0.0
     mdast-util-to-markdown: ^2.1.0
     micromark-extension-mdxjs: ^2.0.0
+    miragejs: 0.1.48
     monaco-editor-webpack-plugin: ^7.0.1
     monocle-ts: ^2.3.13
+    motion: ^11.18.0
     ms: ^2.1.3
     newtype-ts: ^0.3.5
     next: ^14.2.3
@@ -215,10 +234,12 @@ catalog:
     prettyjson: ^1.2.5
     prism-react-renderer: ^2.3.1
     prisma: ^5.14.0
+    prisma-json-types-generator: ^3.0.4
     prop-types: ^15.8.1
     ramda: ^0.29.1
     raw-loader: ^4.0.2
     rc-progress: ^3.4.1
+    react-arborist: ^3.4.0
     react-chartjs-2: ^5.2.0
     react-hook-form: ^7.48.2
     react-hot-toast: ^2.4.0
@@ -229,7 +250,7 @@ catalog:
     react-tooltip: ^5.9.0
     react-treeview: ^0.4.7
     react-tweet: ^3.2.0
-    react-use: ^17.5.1
+    react-use: 17.5.1
     reactjs-popup: ^2.0.5
     recast: ^0.22.0
     redux-persist: ^6.0.0
@@ -242,6 +263,7 @@ catalog:
     sanity-plugin-documents-pane: ^2.2.1
     sanity-plugin-media: ^2.2.5
     sanity-plugin-mux-input: ^2.2.4
+    semantic-release: ^24.0.0
     server-only: 0.0.1
     simple-git: ^3.24.0
     sinon: ^15.0.1
@@ -263,12 +285,16 @@ catalog:
     ts-loader: ^9.4.2
     ts-node-dev: ^2.0.0
     tslib: 2.4.1
+    turbo: ^1.10.14
     umd-compat-loader: ^2.1.2
+    underscore: ^1.13.1
     unified: ^10.1.2
     unist-util-filter: ^5.0.1
     unist-util-visit: ^5.0.0
     universal-base64url: ^1.1.0
     unzipper: ^0.11.6
+    use-resize-observer: ^9.1.0
+    uuid: ^11.0.3
     valibot: ^0.34.0
     vaul: ^0.9.0
     vite: ^4.5.3
@@ -280,6 +306,7 @@ catalog:
     webpack: 5.91.0
     webpack-cli: 5.1.4
     wrap-ansi: ^9.0.0
+    ws: ^8.18.0
     yaml: ^2.4.5
     yargs: ^17.6.2
     zod: 3.22.3
