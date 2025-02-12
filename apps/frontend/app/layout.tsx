@@ -33,7 +33,7 @@ export default async function RootLayout({
           async
           src="https://cdn.promotekit.com/promotekit.js"
           data-promotekit="34692db8-7e9a-4d0a-a7ba-b84b84ffc70a"
-        ></Script>
+        />
         <Script>
           {`document.addEventListener("DOMContentLoaded", function () {
             setTimeout(function () {
