@@ -5,6 +5,7 @@ import themeScript from "@/headScripts/theme";
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import { cx } from "cva";
+import Script from "next/script";
 
 import "@/styles/globals.css";
 
@@ -28,6 +29,33 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: mediaStyles }}
           type="text/css"
         />
+        <Script
+          async
+          src="https://cdn.promotekit.com/promotekit.js"
+          data-promotekit="34692db8-7e9a-4d0a-a7ba-b84b84ffc70a"
+        ></Script>
+        <Script>
+          {`document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                document.querySelectorAll('a[href^="https://buy.stripe.com/"]').forEach(function (link) {
+                    const oldBuyUrl = link.getAttribute("href");
+                    const referralId = window.promotekit_referral;
+                    if (!oldBuyUrl.includes("client_reference_id")) {
+                        const newBuyUrl = oldBuyUrl + "?client_reference_id=" + referralId;
+                        link.setAttribute("href", newBuyUrl);
+                    }
+                });
+
+                document.querySelectorAll("[pricing-table-id]").forEach(function (element) {
+                    element.setAttribute("client-reference-id", window.promotekit_referral);
+                });
+
+                document.querySelectorAll("[buy-button-id]").forEach(function (element) {
+                    element.setAttribute("client-reference-id", window.promotekit_referral);
+                });
+            }, 1500);
+        });`}
+        </Script>
       </head>
       <body>
         {/* Google Tag Manager (noscript) */}
