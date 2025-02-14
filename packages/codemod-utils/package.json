@@ -4,7 +4,7 @@
   "imports": {
     "#*": "./src/*"
   },
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Set of utilities for jscodeshift",
   "type": "module",
   "main": "./dist/index.js",
