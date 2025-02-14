@@ -13,7 +13,7 @@
     "@types/node": "20.10.5",
     "@types/parse-github-url": "catalog:",
     "dotenv-cli": "catalog:",
-    "esbuild": "^0.19.12",
+    "esbuild": "^0.25.0",
     "fastify-plugin": "catalog:",
     "nodemon": "3.0.2",
     "ts-node": "10.9.2",
