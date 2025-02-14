@@ -1,5 +1,12 @@
 # @codemod-com/runner
 
+## 1.3.2
+
+### Patch Changes
+
+- Updated dependencies [d9873da]
+  - @codemod.com/codemod-utils@1.1.0
+
 ## 1.3.1
 
 ### Patch Changes
