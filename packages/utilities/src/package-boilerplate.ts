@@ -116,7 +116,7 @@ ${beautify(after)}
 };
 
 const vitestConfig = () => {
-  return beautify(`
+  return `${beautify(`
 	import { configDefaults, defineConfig } from 'vitest/config';
 
 	export default defineConfig({
@@ -124,7 +124,7 @@ const vitestConfig = () => {
       include: [...configDefaults.include, '**/test/*.ts'],
     },
   });
-	`);
+`)}\n`;
 };
 
 const codemodRc = ({
@@ -172,11 +172,11 @@ const codemodRc = ({
     codemodConfig.meta = { ...codemodConfig.meta, git: gitUrl };
   }
 
-  return beautify(JSON.stringify(codemodConfig, null, 2));
+  return `${beautify(JSON.stringify(codemodConfig, null, 2))}\n`;
 };
 
 const tsconfigJson = () => {
-  return beautify(`
+  return `${beautify(`
     {
       "compilerOptions": ${JSON.stringify(
         {
@@ -197,7 +197,7 @@ const tsconfigJson = () => {
         "transpileOnly": true
       }
     }
-	`);
+	`)}\n`;
 };
 
 const packageJson = ({ name, engine, username }: ProjectDownloadInput) => {
@@ -255,7 +255,7 @@ const packageJson = ({ name, engine, username }: ProjectDownloadInput) => {
     content.scripts = scripts;
   }
 
-  return beautify(JSON.stringify(content, null, 2));
+  return `${beautify(JSON.stringify(content, null, 2))}\n`;
 };
 
 const testBody = ({
@@ -267,7 +267,7 @@ const testBody = ({
   let body = "";
 
   if (engine === "jscodeshift") {
-    body = beautify(`
+    body = `${beautify(`
         import { describe, it } from 'vitest';
         import jscodeshift${vanillaJs ? "" : ", { type API }"} from 'jscodeshift';
         import transform from '../src/index.js';
@@ -293,7 +293,7 @@ const testBody = ({
         describe('${name}', () => {
           ${cases
             ?.map((_, i) => {
-              return beautify(
+              return `${beautify(
                 `it('test #${i + 1}', async () => {
                 const INPUT = await readFile(join(__dirname, '..', '__testfixtures__/fixture${
                   i + 1
@@ -318,15 +318,15 @@ const testBody = ({
               });
             `,
                 { indent_level: 4 },
-              );
+              )}`;
             })
             .join("\n\n")}
         });
-    `);
+    `)}\n`;
   }
 
   if (engine === "ts-morph" || engine === "tsmorph") {
-    body = beautify(`
+    body = `${beautify(`
         import { describe, it } from 'vitest';
         import { readFile } from 'node:fs/promises';
         import { handleSourceFile } from '../src/index.js';
@@ -360,7 +360,7 @@ const testBody = ({
 
         describe('${name}', () => {
           ${cases?.map((_, i) => {
-            return beautify(
+            return `${beautify(
               `
               it('test #${i + 1}', async () => {
                 const INPUT = await readFile('../__testfixtures__/fixture${
@@ -383,13 +383,13 @@ const testBody = ({
               });
             `,
               { indent_level: 4 },
-            );
+            )}`;
           })}
         });
-    `);
+`)}\n`;
   }
 
-  return body;
+  return `${body}\n`;
 };
 
 export function getCodemodProjectFiles(
@@ -446,9 +446,7 @@ export function getCodemodProjectFiles(input: ProjectDownloadInput) {
     ];
   }
 
-  const mainFileContent = input.codemodBody
-    ? beautify(input.codemodBody)
-    : mainFileBoilerplate;
+  const mainFileContent = `${input.codemodBody ? beautify(input.codemodBody) : mainFileBoilerplate}\n`;
 
   let files: CodemodProjectOutput;
   if (input.engine === "ast-grep") {
@@ -463,7 +461,7 @@ export function getCodemodProjectFiles(input: ProjectDownloadInput) {
       ".codemodrc.json": codemodRc(input),
       "package.json": packageJson(input),
       ".gitignore":
-        "node_modules\ncdmd_dist\npnpm-lock.yaml\npackage-lock.json",
+        "node_modules\ncdmd_dist\npnpm-lock.yaml\npackage-lock.json\n",
       "src/index.js": mainFileContent,
       "test/test.js": testBody(input),
       "vitest.config.js": vitestConfig(),
@@ -474,7 +472,7 @@ export function getCodemodProjectFiles(input: ProjectDownloadInput) {
       ".codemodrc.json": codemodRc(input),
       "package.json": packageJson(input),
       ".gitignore":
-        "node_modules\ncdmd_dist\npnpm-lock.yaml\npackage-lock.json",
+        "node_modules\ncdmd_dist\npnpm-lock.yaml\npackage-lock.json\n",
       "src/index.ts": mainFileContent,
       "test/test.ts": testBody(input),
       "vitest.config.ts": vitestConfig(),
@@ -489,24 +487,24 @@ export function getCodemodProjectFiles(input: ProjectDownloadInput) {
     if (input.vanillaJs) {
       (files as JavaScriptProjectFiles)[
         `__testfixtures__/fixture${i + 1}.input.js`
-      ] = beautify(before);
+      ] = `${beautify(before)}\n`;
       (files as JavaScriptProjectFiles)[
         `__testfixtures__/fixture${i + 1}.output.js`
-      ] = beautify(after);
+      ] = `${beautify(after)}\n`;
     } else {
       (files as TypeScriptProjectFiles)[
         `__testfixtures__/fixture${i + 1}.input.ts`
-      ] = beautify(before);
+      ] = `${beautify(before)}\n`;
       (files as TypeScriptProjectFiles)[
         `__testfixtures__/fixture${i + 1}.output.ts`
-      ] = beautify(after);
+      ] = `${beautify(after)}\n`;
     }
   }
 
   return files;
 }
 
-export const emptyJsCodeShiftBoilerplate = beautify(`
+export const emptyJsCodeShiftBoilerplate = `${beautify(`
 import type {
   API,
   ASTNode,
@@ -561,9 +559,9 @@ export default function transform(
 
   return root.toSource();
 }
-`);
+`)}\n`;
 
-export const emptyFilemodBoilerplate = beautify(`
+export const emptyFilemodBoilerplate = `${beautify(`
 export const repomod: Filemod<Dependencies, Options> = {
 	includePatterns: ["**/*.ts"],
 	excludePatterns: ["**/node_modules/**"],
@@ -586,18 +584,18 @@ export const repomod: Filemod<Dependencies, Options> = {
     return { kind: "noop" };
   }
 }
-`);
+`)}\n`;
 
-export const emptyAstGrepBoilerplate = beautify(`
+export const emptyAstGrepBoilerplate = `${beautify(`
 # To see how to write a rule, check out the documentation at: https://ast-grep.github.io/guide/rule-config.html
 id: test-ast-grep
 language: bash-exp
 rule:
   pattern: DATA_DIR=$A
 fix: DATA_DIR="/new/path/to/resources"
-`);
+`)}\n`;
 
-export const emptyTsMorphBoilerplate = beautify(`
+export const emptyTsMorphBoilerplate = `${beautify(`
 import { type SourceFile, SyntaxKind } from "ts-morph";
 
 function shouldProcessFile(sourceFile: SourceFile): boolean {
@@ -618,9 +616,9 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 
 	return sourceFile.getFullText();
 }
-`);
+`)}\n`;
 
-export const emptyWorkflowBoilerplate = beautify(`
+export const emptyWorkflowBoilerplate = `${beautify(`
 import type { Api } from "@codemod.com/workflow";
 
 export async function workflow({ files }: Api) {
@@ -629,4 +627,4 @@ export async function workflow({ files }: Api) {
     .astGrep("console.log($A)")
     .replace("console.error($A)");
 }
-`);
+`)}\n`;
