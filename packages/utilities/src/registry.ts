@@ -117,9 +117,9 @@ export const buildUnifiedFileSystem = (fileSystem: IFs) =>
   );
 
 export const buildPathAPI = (currentWorkingDirectory: string): PathAPI => ({
-  getDirname: (path) => dirname(path),
-  getBasename: (path) => basename(path),
-  joinPaths: (...paths) => join(...paths),
+  getDirname: (path: string) => dirname(path),
+  getBasename: (path: string) => basename(path),
+  joinPaths: (...paths: string[]) => join(...paths),
   currentWorkingDirectory,
 });
 
