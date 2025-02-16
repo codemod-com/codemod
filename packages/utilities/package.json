@@ -4,7 +4,7 @@
   "imports": {
     "#*": "./src/*"
   },
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "The utilities used across Codemod.com packages",
   "type": "module",
   "main": "./dist/index.js",

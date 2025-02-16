@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/run-service",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "scripts": {
     "build": "tsc && node esbuild.config.js",
     "start": "node build/index.js",

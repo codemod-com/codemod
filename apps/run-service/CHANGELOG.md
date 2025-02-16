@@ -1,5 +1,12 @@
 # @codemod-com/run-service
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [c9d982e]
+  - @codemod-com/utilities@1.2.1
+
 ## 0.0.5
 
 ### Patch Changes
