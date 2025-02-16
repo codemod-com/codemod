@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.38.36
+
+### Patch Changes
+
+- Updated dependencies [c9d982e]
+  - @codemod-com/utilities@1.2.1
+
 ## 0.38.35
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @codemod-com/utilities
 
+## 1.2.1
+
+### Patch Changes
+
+- c9d982e: fixes the end-of-line (EOL) configuration for files in the boilerplate within the utilities package.
+
 ## 1.2.0
 
 ### Minor Changes
