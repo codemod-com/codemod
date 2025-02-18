@@ -500,13 +500,22 @@ export class Runner {
         join(codemod.path, "cdmd_dist", "index.js"),
         randomMjs,
       );
-      const cliNodeModules = join(dirname(__dirname), "node_modules");
+      const cliNodeModules = module.paths.find(
+        (path) =>
+          fs.existsSync(join(path, "@codemod.com")) &&
+          fs.existsSync(join(path, "@codemod.com", "workflow")),
+      );
+
+      if (!cliNodeModules) {
+        throw new Error("Could not find cli node_modules");
+      }
+
       const symlinkedPackages: string[] = [];
       const cliNodeModulesDir = await fs.promises.readdir(cliNodeModules);
       const targetNodeModulesDir = join(process.cwd(), "node_modules");
 
       for (const dir of cliNodeModulesDir) {
-        if (fs.existsSync(join(targetNodeModulesDir, dir)) || dir === ".bin") {
+        if (fs.existsSync(join(targetNodeModulesDir, dir))) {
           continue;
         }
 
