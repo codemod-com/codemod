@@ -68,7 +68,7 @@
     "yargs": "catalog:"
   },
   "scripts": {
-    "build": "tsc && node ./build.js",
+    "build": "tsc && node ./build.js -- --prod",
     "build:local": "pnpm build -- --local",
     "build:prod": "pnpm build -- --prod",
     "build:publish": "pnpm build -- --publish",
@@ -91,10 +91,11 @@
   "dependencies": {
     "@ast-grep/cli": "catalog:",
     "@ast-grep/napi": "catalog:",
-    "keytar": "catalog:",
+    "@codemod.com/workflow": "workspace:*",
+    "@nodejs-loaders/alias": "^1.1.1",
     "@octokit/rest": "catalog:",
     "blessed": "catalog:",
-    "@codemod.com/workflow": "workspace:*",
-    "esbuild": "^0.23.0"
+    "esbuild": "^0.23.0",
+    "keytar": "catalog:"
   }
 }

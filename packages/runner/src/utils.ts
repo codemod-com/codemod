@@ -25,3 +25,11 @@ export const isTheSameData = (oldData: string, newData: string) => {
     return false;
   }
 };
+
+export const getRandomMjs = () => {
+  return `${Math.random().toString(36).substring(2, 15)}_${Math.random().toString(36).substring(2, 15)}.mjs`;
+};
+
+export const shouldRunAsChildNodeProcess = (codemodName: string) => {
+  return codemodName === "correct-ts-specifiers";
+};
