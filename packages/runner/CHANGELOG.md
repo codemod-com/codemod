@@ -1,5 +1,11 @@
 # @codemod-com/runner
 
+## 1.3.4
+
+### Patch Changes
+
+- 4b59d50: fix: add child process support for specific codemod execution
+
 ## 1.3.3
 
 ### Patch Changes
