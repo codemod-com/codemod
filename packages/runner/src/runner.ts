@@ -1,9 +1,8 @@
+import { spawn } from "node:child_process";
 import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { join as joinPosix } from "node:path/posix";
-import { glob, globStream } from "glob";
-import * as yaml from "js-yaml";
 
 import type { Filemod } from "@codemod-com/filemod";
 import { Printer, boxen, chalk, colorLongString } from "@codemod-com/printer";
@@ -21,12 +20,15 @@ import {
   isRecipeCodemod,
 } from "@codemod-com/utilities";
 import type { AuthServiceInterface } from "@codemod.com/workflow";
+import { glob, globStream } from "glob";
+import * as yaml from "js-yaml";
 import type { RunnerServiceInterface } from "#runner-service.js";
 import {
   getCodemodExecutable,
   getRunConfig,
   temporaryLoadedModules,
 } from "#source-code.js";
+import { getRandomMjs, shouldRunAsChildNodeProcess } from "#utils.js";
 import { astGrepLanguageToPatterns } from "./engines/ast-grep.js";
 import type { Dependencies } from "./engines/filemod.js";
 import { runFilemod } from "./engines/filemod.js";
@@ -490,6 +492,56 @@ export class Runner {
 
       // run onSuccess for recipe itself
       return await onSuccess?.({ codemod, output: "", commands: [] });
+    }
+
+    if (shouldRunAsChildNodeProcess(codemod.config.name)) {
+      const randomMjs = join(process.cwd(), getRandomMjs());
+      await fs.promises.copyFile(
+        join(codemod.path, "cdmd_dist", "index.js"),
+        randomMjs,
+      );
+      const cliNodeModules = join(dirname(__dirname), "node_modules");
+      const symlinkedPackages: string[] = [];
+      const cliNodeModulesDir = await fs.promises.readdir(cliNodeModules);
+      const targetNodeModulesDir = join(process.cwd(), "node_modules");
+
+      for (const dir of cliNodeModulesDir) {
+        if (fs.existsSync(join(targetNodeModulesDir, dir)) || dir === ".bin") {
+          continue;
+        }
+
+        await fs.promises.symlink(
+          join(cliNodeModules, dir),
+          join(targetNodeModulesDir, dir),
+        );
+
+        symlinkedPackages.push(dir);
+      }
+
+      return new Promise<void>((resolve, reject) => {
+        const child = spawn(process.execPath, [randomMjs], {
+          stdio: "inherit",
+          cwd: process.cwd(),
+        });
+
+        child.on("close", async (code) => {
+          await fs.promises.unlink(randomMjs);
+          for (const dir of symlinkedPackages) {
+            await fs.promises.unlink(join(targetNodeModulesDir, dir));
+          }
+
+          if (code === 0) {
+            await onSuccess?.({ codemod, output: "", commands: [] });
+            resolve();
+          } else {
+            reject(new Error(`Process exited with code ${code}`));
+          }
+        });
+
+        child.on("error", (err) => {
+          reject(err);
+        });
+      });
     }
 
     const codemodSource = await getCodemodExecutable(
