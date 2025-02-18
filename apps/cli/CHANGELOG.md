@@ -1,5 +1,11 @@
 # codemod
 
+## 0.18.2
+
+### Patch Changes
+
+- baea1b7: fix: Improve node modules resolution for node codemod symlinking step
+
 ## 0.18.1
 
 ### Patch Changes

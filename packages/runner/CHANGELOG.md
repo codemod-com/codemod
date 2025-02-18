@@ -1,5 +1,11 @@
 # @codemod-com/runner
 
+## 1.3.5
+
+### Patch Changes
+
+- baea1b7: fix: Improve node modules resolution for node codemod symlinking step
+
 ## 1.3.4
 
 ### Patch Changes
