@@ -64,7 +64,7 @@
     "terminal-link": "catalog:",
     "ts-morph": "18.0.0",
     "valibot": "catalog:",
-    "vitest": "^1.0.1",
+    "vitest": "1.6.0",
     "yargs": "catalog:"
   },
   "scripts": {
