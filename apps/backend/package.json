@@ -21,7 +21,7 @@
     "@types/supertest": "catalog:",
     "@types/ws": "catalog:",
     "dotenv-cli": "catalog:",
-    "esbuild": "^0.19.12",
+    "esbuild": "^0.25.0",
     "esbuild-plugin-copy": "catalog:",
     "fastify-plugin": "catalog:",
     "nodemon": "3.0.2",
