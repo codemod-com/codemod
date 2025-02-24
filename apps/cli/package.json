@@ -68,7 +68,7 @@
     "yargs": "catalog:"
   },
   "scripts": {
-    "build": "tsc && node ./build.js -- --prod",
+    "build": "tsc && node ./build.js",
     "build:local": "pnpm build -- --local",
     "build:prod": "pnpm build -- --prod",
     "build:publish": "pnpm build -- --publish",
