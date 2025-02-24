@@ -1,5 +1,11 @@
 # codemod
 
+## 0.18.3
+
+### Patch Changes
+
+- d1da807: fix: Fix telemetry
+
 ## 0.18.2
 
 ### Patch Changes
