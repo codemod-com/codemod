@@ -92,7 +92,7 @@
     "@ast-grep/cli": "catalog:",
     "@ast-grep/napi": "catalog:",
     "@codemod.com/workflow": "workspace:*",
-    "@nodejs-loaders/alias": "^1.1.1",
+    "@nodejs-loaders/alias": "^2.0.1",
     "@octokit/rest": "catalog:",
     "blessed": "catalog:",
     "esbuild": "^0.23.0",

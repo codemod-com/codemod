@@ -929,7 +929,7 @@ importers:
     dependencies:
       langchain:
         specifier: 'catalog:'
-        version: 0.3.6(@langchain/core@0.2.36(openai@4.76.0(zod@3.24.1)))(axios@1.7.7)(handlebars@4.7.8)(openai@4.76.0(zod@3.24.1))
+        version: 0.3.6(@langchain/core@0.2.36(openai@4.76.0))(axios@1.7.7)(handlebars@4.7.8)(openai@4.76.0)
       react-use:
         specifier: 'catalog:'
         version: 17.5.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1240,8 +1240,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/workflow
       '@nodejs-loaders/alias':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^2.0.1
+        version: 2.0.1
       '@octokit/rest':
         specifier: 'catalog:'
         version: 20.1.1
@@ -1467,7 +1467,7 @@ importers:
         version: 1.1.1(@types/react-dom@18.3.0)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@sanity/client':
         specifier: 'catalog:'
-        version: 6.21.0
+        version: 6.21.0(debug@3.2.7)
       '@sanity/code-input':
         specifier: 'catalog:'
         version: 4.1.4(@babel/runtime@7.24.7)(@codemirror/lint@6.8.1)(@codemirror/theme-one-dark@6.1.2)(@lezer/common@1.2.1)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(sanity@3.47.1(@types/node@20.14.8)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.38.1))(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
@@ -1578,7 +1578,7 @@ importers:
         version: 1.15.1
       jscodeshift:
         specifier: ^0.15.0
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.15.2(@babel/preset-env@7.24.7)
       jszip:
         specifier: 'catalog:'
         version: 3.10.1
@@ -2333,8 +2333,6 @@ importers:
         specifier: ^4.11.0
         version: 4.15.7
 
-  packages/database/generated/client: {}
-
   packages/deprecated: {}
 
   packages/filemod:
@@ -2571,7 +2569,7 @@ importers:
         version: 1.15.1
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.15.2(@babel/preset-env@7.24.7)
       ms:
         specifier: 'catalog:'
         version: 2.1.3
@@ -2683,7 +2681,7 @@ importers:
         version: 9.2.23
       jscodeshift:
         specifier: ^0.15.0
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.15.2(@babel/preset-env@7.24.7)
       lodash-es:
         specifier: 'catalog:'
         version: 4.17.21
@@ -5565,8 +5563,8 @@ packages:
       next: ^13.0.0 || ^14.0.0 || ^15.0.0
       react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
 
-  '@nodejs-loaders/alias@1.1.1':
-    resolution: {integrity: sha512-7Iq7XeacMpjUcOVetNBoFtHTx84uOazn8mhqaHXrvxBTgxCfZHlDu3g5ogRJ6/9PD5+LSvigfRMLTQWhAsSEwQ==}
+  '@nodejs-loaders/alias@2.0.1':
+    resolution: {integrity: sha512-UslTUXM/SyzQYOLYOvB1leCoTBnMLqXcr5jri4XgEXJqTFqPoM5eA//B9QUB5ZUZTtUP3yp2+5jAHg43wCX9CQ==}
     engines: {node: '>=22 || ^20.6.0 || ^18.19.0'}
 
   '@nodelib/fs.scandir@2.1.5':
@@ -16807,10 +16805,10 @@ snapshots:
       '@aws-crypto/sha1-browser': 5.2.0
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/client-sso-oidc': 3.600.0
-      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
+      '@aws-sdk/client-sso-oidc': 3.600.0(@aws-sdk/client-sts@3.600.0)
+      '@aws-sdk/client-sts': 3.600.0
       '@aws-sdk/core': 3.598.0
-      '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0))
+      '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/middleware-bucket-endpoint': 3.598.0
       '@aws-sdk/middleware-expect-continue': 3.598.0
       '@aws-sdk/middleware-flexible-checksums': 3.598.0
@@ -16865,13 +16863,13 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.600.0':
+  '@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
+      '@aws-sdk/client-sts': 3.600.0
       '@aws-sdk/core': 3.598.0
-      '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0))
+      '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/middleware-host-header': 3.598.0
       '@aws-sdk/middleware-logger': 3.598.0
       '@aws-sdk/middleware-recursion-detection': 3.598.0
@@ -16908,6 +16906,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
+      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso@3.598.0':
@@ -16953,13 +16952,13 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)':
+  '@aws-sdk/client-sts@3.600.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/client-sso-oidc': 3.600.0
+      '@aws-sdk/client-sso-oidc': 3.600.0(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/core': 3.598.0
-      '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0))
+      '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/middleware-host-header': 3.598.0
       '@aws-sdk/middleware-logger': 3.598.0
       '@aws-sdk/middleware-recursion-detection': 3.598.0
@@ -16996,7 +16995,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
-      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/core@3.598.0':
@@ -17028,14 +17026,14 @@ snapshots:
       '@smithy/util-stream': 3.0.4
       tslib: 2.8.1
 
-  '@aws-sdk/credential-provider-ini@3.598.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0))':
+  '@aws-sdk/credential-provider-ini@3.598.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
+      '@aws-sdk/client-sts': 3.600.0
       '@aws-sdk/credential-provider-env': 3.598.0
       '@aws-sdk/credential-provider-http': 3.598.0
       '@aws-sdk/credential-provider-process': 3.598.0
       '@aws-sdk/credential-provider-sso': 3.598.0(@aws-sdk/client-sso-oidc@3.600.0)
-      '@aws-sdk/credential-provider-web-identity': 3.598.0(@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0))
+      '@aws-sdk/credential-provider-web-identity': 3.598.0(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/types': 3.598.0
       '@smithy/credential-provider-imds': 3.1.2
       '@smithy/property-provider': 3.1.2
@@ -17046,14 +17044,14 @@ snapshots:
       - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
-  '@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0))':
+  '@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)':
     dependencies:
       '@aws-sdk/credential-provider-env': 3.598.0
       '@aws-sdk/credential-provider-http': 3.598.0
-      '@aws-sdk/credential-provider-ini': 3.598.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0))
+      '@aws-sdk/credential-provider-ini': 3.598.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/credential-provider-process': 3.598.0
       '@aws-sdk/credential-provider-sso': 3.598.0(@aws-sdk/client-sso-oidc@3.600.0)
-      '@aws-sdk/credential-provider-web-identity': 3.598.0(@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0))
+      '@aws-sdk/credential-provider-web-identity': 3.598.0(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/types': 3.598.0
       '@smithy/credential-provider-imds': 3.1.2
       '@smithy/property-provider': 3.1.2
@@ -17086,9 +17084,9 @@ snapshots:
       - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
-  '@aws-sdk/credential-provider-web-identity@3.598.0(@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0))':
+  '@aws-sdk/credential-provider-web-identity@3.598.0(@aws-sdk/client-sts@3.600.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
+      '@aws-sdk/client-sts': 3.600.0
       '@aws-sdk/types': 3.598.0
       '@smithy/property-provider': 3.1.2
       '@smithy/types': 3.2.0
@@ -17215,7 +17213,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.598.0(@aws-sdk/client-sso-oidc@3.600.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.600.0
+      '@aws-sdk/client-sso-oidc': 3.600.0(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/types': 3.598.0
       '@smithy/property-provider': 3.1.2
       '@smithy/shared-ini-file-loader': 3.1.2
@@ -19657,13 +19655,13 @@ snapshots:
     transitivePeerDependencies:
       - openai
 
-  '@langchain/core@0.2.36(openai@4.76.0(zod@3.24.1))':
+  '@langchain/core@0.2.36(openai@4.76.0)':
     dependencies:
       ansi-styles: 5.2.0
       camelcase: 6.3.0
       decamelize: 1.2.0
       js-tiktoken: 1.0.18
-      langsmith: 0.1.68(openai@4.76.0(zod@3.24.1))
+      langsmith: 0.1.68(openai@4.76.0)
       mustache: 4.2.0
       p-queue: 6.6.2
       p-retry: 4.6.2
@@ -19683,9 +19681,9 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@langchain/openai@0.3.14(@langchain/core@0.2.36(openai@4.76.0(zod@3.24.1)))':
+  '@langchain/openai@0.3.14(@langchain/core@0.2.36(openai@4.76.0))':
     dependencies:
-      '@langchain/core': 0.2.36(openai@4.76.0(zod@3.24.1))
+      '@langchain/core': 0.2.36(openai@4.76.0)
       js-tiktoken: 1.0.18
       openai: 4.76.0(zod@3.24.1)
       zod: 3.24.1
@@ -19698,9 +19696,9 @@ snapshots:
       '@langchain/core': 0.2.36(openai@4.23.0)
       js-tiktoken: 1.0.18
 
-  '@langchain/textsplitters@0.1.0(@langchain/core@0.2.36(openai@4.76.0(zod@3.24.1)))':
+  '@langchain/textsplitters@0.1.0(@langchain/core@0.2.36(openai@4.76.0))':
     dependencies:
-      '@langchain/core': 0.2.36(openai@4.76.0(zod@3.24.1))
+      '@langchain/core': 0.2.36(openai@4.76.0)
       js-tiktoken: 1.0.18
 
   '@lezer/common@1.2.1': {}
@@ -19918,9 +19916,9 @@ snapshots:
       react: 18.2.0
       third-party-capital: 1.0.20
 
-  '@nodejs-loaders/alias@1.1.1':
+  '@nodejs-loaders/alias@2.0.1':
     dependencies:
-      lodash.get: 4.4.2
+      json5: 2.2.3
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -20974,14 +20972,6 @@ snapshots:
       - react
       - supports-color
 
-  '@sanity/client@6.21.0':
-    dependencies:
-      '@sanity/eventsource': 5.0.2
-      get-it: 8.6.3
-      rxjs: 7.8.1
-    transitivePeerDependencies:
-      - debug
-
   '@sanity/client@6.21.0(debug@3.2.7)':
     dependencies:
       '@sanity/eventsource': 5.0.2
@@ -21066,7 +21056,7 @@ snapshots:
 
   '@sanity/core-loader@1.6.19(@sanity/client@6.21.0)':
     dependencies:
-      '@sanity/client': 6.21.0
+      '@sanity/client': 6.21.0(debug@3.2.7)
 
   '@sanity/diff-match-patch@3.1.1': {}
 
@@ -21168,7 +21158,7 @@ snapshots:
   '@sanity/insert-menu@1.0.6(@sanity/types@3.47.1(debug@4.3.5))(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
     dependencies:
       '@sanity/icons': 3.2.0(react@18.2.0)
-      '@sanity/types': 3.47.1
+      '@sanity/types': 3.47.1(debug@3.2.7)
       '@sanity/ui': 2.4.0(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       lodash.startcase: 4.4.0
       react: 18.2.0
@@ -21182,7 +21172,7 @@ snapshots:
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@sanity/ui': 2.4.0(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
-      '@sanity/util': 3.47.1
+      '@sanity/util': 3.47.1(debug@3.2.7)
       lodash: 4.17.21
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -21289,7 +21279,7 @@ snapshots:
 
   '@sanity/presentation@1.16.0(@sanity/client@6.21.0)(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
     dependencies:
-      '@sanity/client': 6.21.0
+      '@sanity/client': 6.21.0(debug@3.2.7)
       '@sanity/icons': 3.2.0(react@18.2.0)
       '@sanity/preview-url-secret': 1.6.17(@sanity/client@6.21.0)
       '@sanity/ui': 2.4.0(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
@@ -21312,12 +21302,12 @@ snapshots:
 
   '@sanity/preview-kit-compat@1.4.15(@sanity/client@6.21.0)(react@18.2.0)':
     dependencies:
-      '@sanity/client': 6.21.0
+      '@sanity/client': 6.21.0(debug@3.2.7)
       react: 18.2.0
 
   '@sanity/preview-kit@5.0.41(@sanity/client@6.21.0)(react@18.2.0)':
     dependencies:
-      '@sanity/client': 6.21.0
+      '@sanity/client': 6.21.0(debug@3.2.7)
       '@sanity/preview-kit-compat': 1.4.15(@sanity/client@6.21.0)(react@18.2.0)
       '@vercel/stega': 0.1.0
       lru-cache: 10.2.0
@@ -21334,12 +21324,12 @@ snapshots:
 
   '@sanity/preview-url-secret@1.6.17(@sanity/client@6.21.0)':
     dependencies:
-      '@sanity/client': 6.21.0
+      '@sanity/client': 6.21.0(debug@3.2.7)
       '@sanity/uuid': 3.0.2
 
   '@sanity/react-loader@1.10.3(@sanity/client@6.21.0)(react@18.2.0)':
     dependencies:
-      '@sanity/client': 6.21.0
+      '@sanity/client': 6.21.0(debug@3.2.7)
       '@sanity/core-loader': 1.6.19(@sanity/client@6.21.0)
       react: 18.2.0
 
@@ -21397,13 +21387,6 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/types@3.47.1':
-    dependencies:
-      '@sanity/client': 6.21.0
-      '@types/react': 18.2.55
-    transitivePeerDependencies:
-      - debug
-
   '@sanity/types@3.47.1(debug@3.2.7)':
     dependencies:
       '@sanity/client': 6.21.0(debug@3.2.7)
@@ -21455,16 +21438,6 @@ snapshots:
     dependencies:
       '@sanity/client': 6.21.0(debug@4.4.0)
       '@sanity/types': 3.37.2(debug@4.4.0)
-      get-random-values-esm: 1.0.2
-      moment: 2.30.1
-      rxjs: 7.8.1
-    transitivePeerDependencies:
-      - debug
-
-  '@sanity/util@3.47.1':
-    dependencies:
-      '@sanity/client': 6.21.0
-      '@sanity/types': 3.47.1
       get-random-values-esm: 1.0.2
       moment: 2.30.1
       rxjs: 7.8.1
@@ -21549,7 +21522,7 @@ snapshots:
       scroll-into-view-if-needed: 3.1.0
       valibot: 0.30.0
     optionalDependencies:
-      '@sanity/client': 6.21.0
+      '@sanity/client': 6.21.0(debug@3.2.7)
       next: 14.2.4(@babel/core@7.24.7)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       svelte: 4.2.18
 
@@ -22252,7 +22225,7 @@ snapshots:
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@sanity/presentation': 1.16.0(@sanity/client@6.21.0)(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/ui': 2.4.0(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
-      '@sanity/util': 3.47.1
+      '@sanity/util': 3.47.1(debug@3.2.7)
       '@tanstack/react-virtual': 3.7.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@tinloof/sanity-web': 0.4.1(@types/node@20.14.8)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.38.1)
       lodash: 4.17.21
@@ -25592,7 +25565,7 @@ snapshots:
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
       eslint-plugin-jsx-a11y: 6.9.0(eslint@8.56.0)
       eslint-plugin-react: 7.34.3(eslint@8.56.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.56.0)
@@ -25620,7 +25593,7 @@ snapshots:
       enhanced-resolve: 5.17.0
       eslint: 8.56.0
       eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.14.0
@@ -25642,7 +25615,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -26315,16 +26288,6 @@ snapshots:
       has-proto: 1.0.3
       has-symbols: 1.0.3
       hasown: 2.0.2
-
-  get-it@8.6.3:
-    dependencies:
-      decompress-response: 7.0.0
-      follow-redirects: 1.15.9(debug@3.2.7)
-      is-retry-allowed: 2.2.0
-      progress-stream: 2.0.0
-      tunnel-agent: 0.6.0
-    transitivePeerDependencies:
-      - debug
 
   get-it@8.6.3(debug@3.2.7):
     dependencies:
@@ -27266,7 +27229,7 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
-  jscodeshift@0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7)):
+  jscodeshift@0.15.2(@babel/preset-env@7.24.7):
     dependencies:
       '@babel/core': 7.24.7
       '@babel/parser': 7.24.7
@@ -27508,15 +27471,15 @@ snapshots:
       - encoding
       - openai
 
-  langchain@0.3.6(@langchain/core@0.2.36(openai@4.76.0(zod@3.24.1)))(axios@1.7.7)(handlebars@4.7.8)(openai@4.76.0(zod@3.24.1)):
+  langchain@0.3.6(@langchain/core@0.2.36(openai@4.76.0))(axios@1.7.7)(handlebars@4.7.8)(openai@4.76.0):
     dependencies:
-      '@langchain/core': 0.2.36(openai@4.76.0(zod@3.24.1))
-      '@langchain/openai': 0.3.14(@langchain/core@0.2.36(openai@4.76.0(zod@3.24.1)))
-      '@langchain/textsplitters': 0.1.0(@langchain/core@0.2.36(openai@4.76.0(zod@3.24.1)))
+      '@langchain/core': 0.2.36(openai@4.76.0)
+      '@langchain/openai': 0.3.14(@langchain/core@0.2.36(openai@4.76.0))
+      '@langchain/textsplitters': 0.1.0(@langchain/core@0.2.36(openai@4.76.0))
       js-tiktoken: 1.0.18
       js-yaml: 4.1.0
       jsonpointer: 5.0.1
-      langsmith: 0.2.10(openai@4.76.0(zod@3.24.1))
+      langsmith: 0.2.10(openai@4.76.0)
       openapi-types: 12.1.3
       p-retry: 4.6.2
       uuid: 10.0.0
@@ -27541,7 +27504,7 @@ snapshots:
     optionalDependencies:
       openai: 4.23.0
 
-  langsmith@0.1.68(openai@4.76.0(zod@3.24.1)):
+  langsmith@0.1.68(openai@4.76.0):
     dependencies:
       '@types/uuid': 10.0.0
       commander: 10.0.1
@@ -27563,7 +27526,7 @@ snapshots:
     optionalDependencies:
       openai: 4.23.0
 
-  langsmith@0.2.10(openai@4.76.0(zod@3.24.1)):
+  langsmith@0.2.10(openai@4.76.0):
     dependencies:
       '@types/uuid': 10.0.0
       commander: 10.0.1
@@ -28816,10 +28779,10 @@ snapshots:
   next-sanity@8.5.5(@sanity/client@6.21.0)(@sanity/icons@3.2.0(react@18.2.0))(@sanity/types@3.47.1)(@sanity/ui@2.4.0(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(next@14.2.4(@babel/core@7.24.7)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(sanity@3.47.1(@types/node@20.14.8)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.38.1))(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(svelte@4.2.18):
     dependencies:
       '@portabletext/react': 3.1.0(react@18.2.0)
-      '@sanity/client': 6.21.0
+      '@sanity/client': 6.21.0(debug@3.2.7)
       '@sanity/icons': 3.2.0(react@18.2.0)
       '@sanity/preview-kit': 5.0.41(@sanity/client@6.21.0)(react@18.2.0)
-      '@sanity/types': 3.47.1
+      '@sanity/types': 3.47.1(debug@3.2.7)
       '@sanity/ui': 2.4.0(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/visual-editing': 1.8.7(@sanity/client@6.21.0)(next@14.2.4(@babel/core@7.24.7)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(svelte@4.2.18)
       '@sanity/webhook': 4.0.2-bc
@@ -30782,7 +30745,7 @@ snapshots:
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@sanity/ui': 2.4.0(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
-      '@sanity/util': 3.47.1
+      '@sanity/util': 3.47.1(debug@3.2.7)
       '@sanity/uuid': 3.0.2
       dlv: 1.1.3
       react: 18.2.0
@@ -30915,7 +30878,7 @@ snapshots:
       '@sanity/presentation': 1.16.0(@sanity/client@6.21.0(debug@4.3.5))(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/schema': 3.47.1(debug@4.3.5)
       '@sanity/telemetry': 0.7.9(react@18.2.0)
-      '@sanity/types': 3.47.1
+      '@sanity/types': 3.47.1(debug@3.2.7)
       '@sanity/ui': 2.4.0(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/util': 3.47.1(debug@4.3.5)
       '@sanity/uuid': 3.0.2
