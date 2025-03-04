@@ -38,7 +38,6 @@ const fileExtensionToLang: Record<string, Lang> = {
   cpp: Lang.Cpp,
   hpp: Lang.Cpp,
   cs: Lang.CSharp,
-  dart: Lang.Dart,
   ex: Lang.Elixir,
   exs: Lang.Elixir,
   go: Lang.Go,
@@ -153,6 +152,7 @@ const runExternalAstGrepRule = async (rule: any, filepath: string) => {
     path.dirname(require.resolve("@ast-grep/cli/package.json")),
     binaries.sg,
   );
+  console.log(binaryPath);
   await execFile(binaryPath, [
     "scan",
     "--update-all",
