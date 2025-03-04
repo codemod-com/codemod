@@ -128,25 +128,45 @@ export const runAstGrepCodemod = async (
       ? `powershell -Command "${astCommandBase}"`
       : astCommandBase;
 
-  const { stdout } = await execPromise(astCommand);
+  const { stdout, stderr } = await execPromise(astCommand);
   const matches = JSON.parse(stdout.trim()) as AstGrepCompactOutput[];
   // Sort in reverse order to not mess up replacement offsets
   matches.sort((a, b) => b.range.byteOffset.start - a.range.byteOffset.start);
 
-  let newData = oldData;
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+  const oldDataBytes = encoder.encode(oldData);
+
+  let newDataBytes = oldDataBytes;
+
   for (const result of matches) {
     const { replacementOffsets, replacement } = result;
     if (!replacementOffsets) {
       continue;
     }
+    const replacementBytes = encoder.encode(replacement || "");
 
-    newData =
-      newData.slice(0, replacementOffsets.start) +
-      replacement +
-      newData.slice(replacementOffsets.end);
+    const startOffset = replacementOffsets.start;
+    const endOffset = replacementOffsets.end;
+    const newSize =
+      newDataBytes.length - (endOffset - startOffset) + replacementBytes.length;
+    const updatedBytes = new Uint8Array(newSize);
+
+    updatedBytes.set(newDataBytes.subarray(0, startOffset));
+
+    updatedBytes.set(replacementBytes, startOffset);
+
+    updatedBytes.set(
+      newDataBytes.subarray(endOffset),
+      startOffset + replacementBytes.length,
+    );
+
+    newDataBytes = updatedBytes;
   }
 
-  if (typeof newData !== "string" || oldData === newData) {
+  const newData = decoder.decode(newDataBytes);
+
+  if (oldData === newData) {
     return commands;
   }
 
