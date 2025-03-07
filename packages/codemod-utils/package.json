@@ -24,7 +24,8 @@
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "prepublishOnly": "turbo run build --filter @codemod.com/codemod-utils"
   },
   "keywords": [],
   "license": "Apache-2.0",
