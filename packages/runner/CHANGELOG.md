@@ -1,5 +1,12 @@
 # @codemod-com/runner
 
+## 1.3.7
+
+### Patch Changes
+
+- Updated dependencies [10486ab]
+  - @codemod.com/codemod-utils@1.1.2
+
 ## 1.3.6
 
 ### Patch Changes

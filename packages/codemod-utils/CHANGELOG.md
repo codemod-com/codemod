@@ -1,5 +1,11 @@
 # @codemod.com/codemod-utils
 
+## 1.1.2
+
+### Patch Changes
+
+- 10486ab: Add prepublishOnly script for build before release procces
+
 ## 1.1.1
 
 ### Patch Changes
