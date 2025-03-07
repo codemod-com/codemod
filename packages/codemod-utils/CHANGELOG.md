@@ -1,5 +1,11 @@
 # @codemod.com/codemod-utils
 
+## 1.1.1
+
+### Patch Changes
+
+- 0599d2a: Fix package.json exports and main option
+
 ## 1.1.0
 
 ### Minor Changes
