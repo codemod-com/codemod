@@ -56,7 +56,7 @@
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
     "@types/lodash-es": "catalog:",
-    "esbuild": "^0.17.14",
+    "esbuild": "^0.25.0",
     "typescript": "^5.2.2",
     "@types/inquirer": "catalog:",
     "simple-git": "catalog:",
