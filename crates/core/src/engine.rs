@@ -83,8 +83,9 @@ impl Engine {
 
     /// Resume a workflow run
     pub async fn resume_workflow(&self, workflow_run_id: Uuid, task_ids: Vec<Uuid>) -> Result<()> {
+        // TODO: Do we need this?
         // Get the workflow run
-        let mut workflow_run = self
+        let _workflow_run = self
             .state_adapter
             .lock()
             .await
@@ -107,10 +108,7 @@ impl Engine {
                         value: Some(serde_json::to_value(TaskStatus::Pending)?),
                     },
                 );
-                let task_diff = TaskDiff {
-                    task_id,
-                    fields,
-                };
+                let task_diff = TaskDiff { task_id, fields };
 
                 // Apply the diff
                 self.state_adapter
@@ -172,8 +170,9 @@ impl Engine {
 
     /// Trigger all awaiting tasks in a workflow run
     pub async fn trigger_all(&self, workflow_run_id: Uuid) -> Result<()> {
+        // TODO: Do we need this?
         // Get the workflow run
-        let mut workflow_run = self
+        let _workflow_run = self
             .state_adapter
             .lock()
             .await
@@ -277,7 +276,7 @@ impl Engine {
     /// Cancel a workflow run
     pub async fn cancel_workflow(&self, workflow_run_id: Uuid) -> Result<()> {
         // Get the workflow run
-        let mut workflow_run = self
+        let workflow_run = self
             .state_adapter
             .lock()
             .await
@@ -331,7 +330,7 @@ impl Engine {
                 .await
                 .apply_task_diff(&task_diff)
                 .await?;
-            
+
             info!("Canceled task {} ({})", task.id, task.node_id);
         }
 
@@ -407,7 +406,7 @@ impl Engine {
     /// Execute a workflow
     async fn execute_workflow(&self, workflow_run_id: Uuid) -> Result<()> {
         // Get the workflow run
-        let mut workflow_run = self
+        let workflow_run = self
             .state_adapter
             .lock()
             .await
@@ -560,7 +559,8 @@ impl Engine {
             // Execute runnable tasks
             for task_id in runnable_tasks {
                 let task = tasks.iter().find(|t| t.id == task_id).unwrap();
-                let node = workflow_run
+                // TODO: Do we need this variable?
+                let _node = workflow_run
                     .workflow
                     .nodes
                     .iter()
@@ -705,7 +705,7 @@ impl Engine {
     /// Execute a task
     async fn execute_task(&self, task_id: Uuid) -> Result<()> {
         // Get the task
-        let mut task = self.state_adapter.lock().await.get_task(task_id).await?;
+        let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
         // Get the workflow run
         let workflow_run = self
@@ -739,10 +739,7 @@ impl Engine {
                 value: Some(serde_json::to_value(Utc::now())?),
             },
         );
-        let task_diff = TaskDiff {
-            task_id,
-            fields,
-        };
+        let task_diff = TaskDiff { task_id, fields };
 
         // Apply the diff
         self.state_adapter
@@ -817,13 +814,13 @@ impl Engine {
                                 "error".to_string(),
                                 FieldDiff {
                                     operation: DiffOperation::Add,
-                                    value: Some(serde_json::to_value(format!("Step {} failed: {}", template_step.id, e))?),
+                                    value: Some(serde_json::to_value(format!(
+                                        "Step {} failed: {}",
+                                        template_step.id, e
+                                    ))?),
                                 },
                             );
-                            let task_diff = TaskDiff {
-                                task_id,
-                                fields,
-                            };
+                            let task_diff = TaskDiff { task_id, fields };
 
                             // Apply the diff
                             self.state_adapter
@@ -841,7 +838,9 @@ impl Engine {
                         }
                     }
                 }
-            } else if let Some(commands) = &step.commands {
+            }
+            // TODO: Do we need commands?
+            else if let Some(_commands) = &step.commands {
                 // Execute the step
                 let result = self
                     .execute_step(runner.as_ref(), step, &node, &task, &workflow_run)
@@ -868,13 +867,13 @@ impl Engine {
                         "error".to_string(),
                         FieldDiff {
                             operation: DiffOperation::Add,
-                            value: Some(serde_json::to_value(format!("Step {} failed: {}", step.id, e))?),
+                            value: Some(serde_json::to_value(format!(
+                                "Step {} failed: {}",
+                                step.id, e
+                            ))?),
                         },
                     );
-                    let task_diff = TaskDiff {
-                        task_id,
-                        fields,
-                    };
+                    let task_diff = TaskDiff { task_id, fields };
 
                     // Apply the diff
                     self.state_adapter
@@ -909,10 +908,7 @@ impl Engine {
                 value: Some(serde_json::to_value(Utc::now())?),
             },
         );
-        let task_diff = TaskDiff {
-            task_id,
-            fields,
-        };
+        let task_diff = TaskDiff { task_id, fields };
 
         // Apply the diff
         self.state_adapter
@@ -990,12 +986,16 @@ impl Engine {
 
             // Get the current task
             let mut current_task = self.state_adapter.lock().await.get_task(task.id).await?;
-            
+
             // Append to the logs
             current_task.logs.push(output.clone());
-            
+
             // Save the updated task
-            self.state_adapter.lock().await.save_task(&current_task).await?;
+            self.state_adapter
+                .lock()
+                .await
+                .save_task(&current_task)
+                .await?;
 
             debug!("Command output: {}", output);
         }
@@ -1006,7 +1006,7 @@ impl Engine {
     /// Update the status of a matrix master task
     async fn update_matrix_master_status(&self, master_task_id: Uuid) -> Result<()> {
         // Get the master task
-        let mut master_task = self
+        let master_task = self
             .state_adapter
             .lock()
             .await
@@ -1040,7 +1040,7 @@ impl Engine {
 
         // Create a task diff to update the status
         let mut fields = HashMap::new();
-        
+
         // Determine the new status
         let new_status = if any_failed {
             TaskStatus::Failed
@@ -1053,7 +1053,7 @@ impl Engine {
         } else {
             master_task.status // Keep the current status if none of the above
         };
-        
+
         fields.insert(
             "status".to_string(),
             FieldDiff {
@@ -1061,7 +1061,7 @@ impl Engine {
                 value: Some(serde_json::to_value(new_status)?),
             },
         );
-        
+
         // Add ended_at if the task is completed or failed
         if any_failed || all_completed {
             fields.insert(
@@ -1072,7 +1072,7 @@ impl Engine {
                 },
             );
         }
-        
+
         let task_diff = TaskDiff {
             task_id: master_task_id,
             fields,
