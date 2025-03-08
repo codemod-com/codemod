@@ -1,0 +1,113 @@
+version: "1"
+
+nodes:
+  - id: setup
+    name: Setup Environment
+    description: Set up the environment for the workflow
+    type: automatic
+    steps:
+      - id: check-env
+        name: Check Environment
+        commands:
+          - |
+            #!/bin/bash
+            echo "Running environment check"
+            echo "Current directory: $(pwd)"
+            echo "Files in directory:"
+            ls -la
+    env:
+      DEBUG: "true"
+      WORKSPACE: "${env.WORKSPACE}"
+
+  - id: process-data
+    name: Process Data
+    description: Process data files
+    type: automatic
+    depends_on:
+      - setup
+    strategy:
+      type: matrix
+      from_state: files
+    steps:
+      - id: validate
+        name: Validate File
+        commands:
+          - |
+            #!/bin/bash
+            echo "Validating file: $file"
+            echo "File exists: $(test -f $file && echo 'Yes' || echo 'No')"
+      
+      - id: process
+        name: Process File
+        commands:
+          - |
+            #!/bin/bash
+            echo "Processing file: $file"
+            echo "File content would be processed here"
+    env:
+      DEBUG: "true"
+
+  - id: generate-report
+    name: Generate Report
+    description: Generate a report from the processed data
+    type: automatic
+    depends_on:
+      - process-data
+    steps:
+      - id: collect-results
+        name: Collect Results
+        commands:
+          - |
+            #!/bin/bash
+            echo "Collecting results from processed files"
+            echo "Results would be collected here"
+        env:
+          SCRIPT_LANGUAGE: "bash"
+      
+      - id: create-report
+        name: Create Report
+        commands:
+          - |
+            #!/usr/bin/env python
+            import os
+            import sys
+            
+            print("Creating report")
+            print(f"Python version: {sys.version}")
+            print("Report would be created here")
+        env:
+          SCRIPT_LANGUAGE: "python"
+    env:
+      REPORT_FORMAT: "html"
+
+templates:
+  - id: checkout-repo
+    name: Checkout Repository
+    description: Standard process for checking out a repository
+    inputs:
+      - name: repo_url
+        type: string
+        required: true
+        description: "URL of the repository to checkout"
+      - name: branch
+        type: string
+        default: "main"
+        description: "Branch to checkout"
+    steps:
+      - id: clone
+        name: Clone repository
+        commands:
+          - |
+            #!/bin/bash
+            echo "Cloning repository ${inputs.repo_url} branch ${inputs.branch}"
+            echo "Repository would be cloned here"
+
+state:
+  schema:
+    - name: files
+      type: array
+      items:
+        type: object
+        properties:
+          file:
+            type: string

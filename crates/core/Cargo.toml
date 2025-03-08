@@ -1,0 +1,31 @@
+[package]
+name = "butterflow-core"
+version = "0.1.0"
+edition = "2021"
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+repository.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+butterflow-models = { path = "../models" }
+butterflow-runners = { path = "../runners" }
+butterflow-state = { path = "../state" }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+log = { workspace = true }
+async-trait = { workspace = true }
+regex = { workspace = true }
+futures = { workspace = true }
+reqwest = { workspace = true }
+
+[features]
+default = []

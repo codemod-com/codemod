@@ -1,0 +1,27 @@
+[package]
+name = "butterflow-cli"
+version = "0.1.0"
+edition = "2021"
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+repository.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+butterflow-models = { path = "../models" }
+butterflow-core = { path = "../core" }
+butterflow-state = { path = "../state" }
+butterflow-runners = { path = "../runners" }
+tokio = { workspace = true }
+clap = { version = "4.5", features = ["derive"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+anyhow = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+log = { workspace = true }
+env_logger = { workspace = true }
+dirs = "5.0"

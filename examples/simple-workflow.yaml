@@ -1,0 +1,63 @@
+version: "1"
+nodes:
+  - id: eval-codeowners
+    name: Evaluate codeowners
+    description: Shard the Codemod run into smaller chunks based on the codeowners
+    type: automatic
+    steps:
+      - id: evaluate
+        name: Evaluate Codeowners
+        commands:
+          - echo "Evaluating codeowners"
+    env:
+      REPO_URL: "${params.repo_url}"
+      BRANCH: "${params.branch}"
+      DEBUG: "${env.CI}"
+
+  - id: run-codemod-ts
+    name: I18n Codemod (TS)
+    description: "Run the i18n codemod on the TS files for ${params.repo_url}"
+    type: automatic
+    depends_on:
+      - eval-codeowners
+    strategy:
+      type: matrix
+      from_state: i18nShardsTs
+    trigger:
+      type: manual
+    steps:
+      - id: run-codemod
+        name: Run Codemod
+        commands:
+          - echo "Running TS codemod"
+      - id: verify
+        name: Verify Changes
+        commands:
+          - echo "Verifying TS changes"
+    env:
+      REPO_URL: "${params.repo_url}"
+      BRANCH: "${params.branch}"
+
+  - id: run-codemod-html
+    name: I18n Codemod (HTML)
+    description: "Run the i18n codemod on the HTML files for ${params.repo_url}"
+    type: automatic
+    depends_on:
+      - eval-codeowners
+    strategy:
+      type: matrix
+      from_state: i18nShardsHtml
+    trigger:
+      type: manual
+    steps:
+      - id: run-codemod
+        name: Run Codemod
+        commands:
+          - echo "Running HTML codemod"
+      - id: verify
+        name: Verify Changes
+        commands:
+          - echo "Verifying HTML changes"
+    env:
+      REPO_URL: "${params.repo_url}"
+      BRANCH: "${params.branch}"

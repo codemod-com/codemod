@@ -1,0 +1,23 @@
+[package]
+name = "butterflow-state"
+version = "0.1.0"
+edition = "2021"
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+repository.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+butterflow-models = { path = "../models" }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+uuid = { workspace = true }
+log = { workspace = true }
+async-trait = { workspace = true }
+reqwest = { workspace = true }
+dirs = "5.0"
+chrono = { workspace = true }

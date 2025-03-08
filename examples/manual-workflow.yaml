@@ -1,0 +1,36 @@
+version: "1"
+
+nodes:
+  - id: automatic-node
+    name: Automatic Node
+    description: This node runs automatically
+    type: automatic
+    steps:
+      - id: step1
+        name: Step 1
+        commands:
+          - echo "Running automatic node"
+
+  - id: manual-node
+    name: Manual Node
+    description: This node requires manual triggering
+    type: manual
+    depends_on:
+      - automatic-node
+    steps:
+      - id: step1
+        name: Step 1
+        commands:
+          - echo "Running manual node"
+
+  - id: final-node
+    name: Final Node
+    description: This node runs after the manual node
+    type: automatic
+    depends_on:
+      - manual-node
+    steps:
+      - id: step1
+        name: Step 1
+        commands:
+          - echo "Running final node"

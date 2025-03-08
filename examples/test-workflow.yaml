@@ -1,0 +1,24 @@
+version: "1"
+
+nodes:
+  - id: hello-world
+    name: Hello World
+    description: Print a hello world message
+    type: automatic
+    steps:
+      - id: hello
+        name: Hello
+        commands:
+          - echo "Hello, World!"
+
+  - id: current-time
+    name: Current Time
+    description: Print the current time
+    type: automatic
+    depends_on:
+      - hello-world
+    steps:
+      - id: time
+        name: Time
+        commands:
+          - date
