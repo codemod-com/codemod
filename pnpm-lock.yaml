@@ -1240,8 +1240,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/workflow
       '@nodejs-loaders/alias':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^2.0.1
+        version: 2.0.1
       '@octokit/rest':
         specifier: 'catalog:'
         version: 20.1.1
@@ -1704,7 +1704,7 @@ importers:
         version: 1.15.1
       jscodeshift:
         specifier: ^0.15.0
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.15.2(@babel/preset-env@7.24.7)
       jszip:
         specifier: 'catalog:'
         version: 3.10.1
@@ -2695,7 +2695,7 @@ importers:
         version: 1.15.1
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.15.2(@babel/preset-env@7.24.7)
       ms:
         specifier: 'catalog:'
         version: 2.1.3
@@ -2807,7 +2807,7 @@ importers:
         version: 9.2.23
       jscodeshift:
         specifier: ^0.15.0
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.15.2(@babel/preset-env@7.24.7)
       lodash-es:
         specifier: 'catalog:'
         version: 4.17.21
@@ -5692,8 +5692,8 @@ packages:
       next: ^13.0.0 || ^14.0.0 || ^15.0.0
       react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
 
-  '@nodejs-loaders/alias@1.1.1':
-    resolution: {integrity: sha512-7Iq7XeacMpjUcOVetNBoFtHTx84uOazn8mhqaHXrvxBTgxCfZHlDu3g5ogRJ6/9PD5+LSvigfRMLTQWhAsSEwQ==}
+  '@nodejs-loaders/alias@2.0.1':
+    resolution: {integrity: sha512-UslTUXM/SyzQYOLYOvB1leCoTBnMLqXcr5jri4XgEXJqTFqPoM5eA//B9QUB5ZUZTtUP3yp2+5jAHg43wCX9CQ==}
     engines: {node: '>=22 || ^20.6.0 || ^18.19.0'}
 
   '@nodelib/fs.scandir@2.1.5':
@@ -20057,9 +20057,9 @@ snapshots:
       react: 18.2.0
       third-party-capital: 1.0.20
 
-  '@nodejs-loaders/alias@1.1.1':
+  '@nodejs-loaders/alias@2.0.1':
     dependencies:
-      lodash.get: 4.4.2
+      json5: 2.2.3
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -27374,7 +27374,7 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
-  jscodeshift@0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7)):
+  jscodeshift@0.15.2(@babel/preset-env@7.24.7):
     dependencies:
       '@babel/core': 7.24.7
       '@babel/parser': 7.24.7
