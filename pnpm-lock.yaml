@@ -379,8 +379,8 @@ catalogs:
       specifier: 10.4.17
       version: 10.4.17
     axios:
-      specifier: ^1.7.4
-      version: 1.7.7
+      specifier: ^1.8.2
+      version: 1.8.2
     axios-retry:
       specifier: ^4.0.0
       version: 4.4.1
@@ -929,7 +929,7 @@ importers:
     dependencies:
       langchain:
         specifier: 'catalog:'
-        version: 0.3.6(@langchain/core@0.2.36(openai@4.76.0))(axios@1.7.7)(handlebars@4.7.8)(openai@4.76.0)
+        version: 0.3.6(@langchain/core@0.2.36(openai@4.76.0))(axios@1.8.2)(handlebars@4.7.8)(openai@4.76.0)
       react-use:
         specifier: 'catalog:'
         version: 17.5.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1020,7 +1020,7 @@ importers:
         version: 0.26.2
       axios:
         specifier: 'catalog:'
-        version: 1.7.7
+        version: 1.8.2
       dotenv:
         specifier: 'catalog:'
         version: 16.4.5
@@ -1105,7 +1105,7 @@ importers:
         version: 4.0.12(react@18.2.0)(zod@3.22.3)
       axios:
         specifier: 'catalog:'
-        version: 1.7.7
+        version: 1.8.2
       bullmq:
         specifier: 'catalog:'
         version: 5.8.2
@@ -1132,7 +1132,7 @@ importers:
         version: 5.4.1
       langchain:
         specifier: 'catalog:'
-        version: 0.3.6(@langchain/core@0.2.36(openai@4.23.0))(axios@1.7.7)(handlebars@4.7.8)(openai@4.23.0)
+        version: 0.3.6(@langchain/core@0.2.36(openai@4.23.0))(axios@1.8.2)(handlebars@4.7.8)(openai@4.23.0)
       openai:
         specifier: 'catalog:'
         version: 4.23.0
@@ -1305,7 +1305,7 @@ importers:
         version: 1.6.0(vitest@1.1.0(@types/node@18.11.9)(jsdom@23.2.0)(terser@5.38.1))
       axios:
         specifier: 'catalog:'
-        version: 1.7.7
+        version: 1.8.2
       columnify:
         specifier: 'catalog:'
         version: 1.6.0
@@ -1354,132 +1354,6 @@ importers:
       yargs:
         specifier: 'catalog:'
         version: 17.7.2
-
-  apps/cli/dist/mama:
-    devDependencies:
-      '@codemod.com/codemod-utils':
-        specifier: '*'
-        version: 1.1.0(@babel/preset-env@7.24.7)
-      '@types/jscodeshift':
-        specifier: ^0.11.10
-        version: 0.11.11
-      '@types/node':
-        specifier: 20.9.0
-        version: 20.9.0
-      jscodeshift:
-        specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
-      typescript:
-        specifier: ^5.2.2
-        version: 5.5.4
-      vitest:
-        specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.38.1)
-
-  apps/cli/dist/mamad:
-    devDependencies:
-      '@codemod.com/codemod-utils':
-        specifier: '*'
-        version: 1.1.0(@babel/preset-env@7.24.7)
-      '@types/jscodeshift':
-        specifier: ^0.11.10
-        version: 0.11.11
-      '@types/node':
-        specifier: 20.9.0
-        version: 20.9.0
-      jscodeshift:
-        specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
-      typescript:
-        specifier: ^5.2.2
-        version: 5.5.4
-      vitest:
-        specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.38.1)
-
-  apps/cli/dist/nnn:
-    devDependencies:
-      '@codemod.com/codemod-utils':
-        specifier: '*'
-        version: 1.1.0(@babel/preset-env@7.24.7)
-      '@types/jscodeshift':
-        specifier: ^0.11.10
-        version: 0.11.11
-      '@types/node':
-        specifier: 20.9.0
-        version: 20.9.0
-      jscodeshift:
-        specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
-      typescript:
-        specifier: ^5.2.2
-        version: 5.5.4
-      vitest:
-        specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.38.1)
-
-  apps/cli/dist/papa:
-    devDependencies:
-      '@codemod.com/codemod-utils':
-        specifier: '*'
-        version: 1.1.0(@babel/preset-env@7.24.7)
-      '@types/jscodeshift':
-        specifier: ^0.11.10
-        version: 0.11.11
-      '@types/node':
-        specifier: 20.9.0
-        version: 20.9.0
-      jscodeshift:
-        specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
-      typescript:
-        specifier: ^5.2.2
-        version: 5.5.4
-      vitest:
-        specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.38.1)
-
-  apps/cli/dist/rrr:
-    devDependencies:
-      '@codemod.com/codemod-utils':
-        specifier: '*'
-        version: 1.1.0(@babel/preset-env@7.24.7)
-      '@types/jscodeshift':
-        specifier: ^0.11.10
-        version: 0.11.11
-      '@types/node':
-        specifier: 20.9.0
-        version: 20.9.0
-      jscodeshift:
-        specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
-      typescript:
-        specifier: ^5.2.2
-        version: 5.5.4
-      vitest:
-        specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.38.1)
-
-  apps/cli/dist/test:
-    devDependencies:
-      '@codemod.com/codemod-utils':
-        specifier: '*'
-        version: 1.1.0(@babel/preset-env@7.24.7)
-      '@types/jscodeshift':
-        specifier: ^0.11.10
-        version: 0.11.11
-      '@types/node':
-        specifier: 20.9.0
-        version: 20.9.0
-      jscodeshift:
-        specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
-      typescript:
-        specifier: ^5.2.2
-        version: 5.5.4
-      vitest:
-        specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.38.1)
 
   apps/frontend:
     dependencies:
@@ -1650,7 +1524,7 @@ importers:
         version: 0.14.2
       axios:
         specifier: 'catalog:'
-        version: 1.7.7
+        version: 1.8.2
       change-case:
         specifier: 'catalog:'
         version: 5.4.4
@@ -1704,7 +1578,7 @@ importers:
         version: 1.15.1
       jscodeshift:
         specifier: ^0.15.0
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.15.2(@babel/preset-env@7.24.7)
       jszip:
         specifier: 'catalog:'
         version: 3.10.1
@@ -2008,7 +1882,7 @@ importers:
         version: 2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.4))
       axios:
         specifier: 'catalog:'
-        version: 1.7.7
+        version: 1.8.2
       chatgpt:
         specifier: 'catalog:'
         version: 5.2.5
@@ -2069,7 +1943,7 @@ importers:
         version: 9.0.1
       axios:
         specifier: 'catalog:'
-        version: 1.7.7
+        version: 1.8.2
       bullmq:
         specifier: 'catalog:'
         version: 5.8.2
@@ -2133,10 +2007,10 @@ importers:
         version: 2.29.0
       axios:
         specifier: 'catalog:'
-        version: 1.7.7
+        version: 1.8.2
       axios-retry:
         specifier: 'catalog:'
-        version: 4.4.1(axios@1.7.7)
+        version: 4.4.1(axios@1.8.2)
       diff:
         specifier: 'catalog:'
         version: 5.2.0
@@ -2388,7 +2262,7 @@ importers:
         version: link:../database
       axios:
         specifier: 'catalog:'
-        version: 1.7.7
+        version: 1.8.2
       fastify:
         specifier: 'catalog:'
         version: 4.28.1
@@ -2695,7 +2569,7 @@ importers:
         version: 1.15.1
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.15.2(@babel/preset-env@7.24.7)
       ms:
         specifier: 'catalog:'
         version: 2.1.3
@@ -2807,7 +2681,7 @@ importers:
         version: 9.2.23
       jscodeshift:
         specifier: ^0.15.0
-        version: 0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.15.2(@babel/preset-env@7.24.7)
       lodash-es:
         specifier: 'catalog:'
         version: 4.17.21
@@ -4163,9 +4037,6 @@ packages:
 
   '@codemirror/view@6.28.2':
     resolution: {integrity: sha512-A3DmyVfjgPsGIjiJqM/zvODUAPQdQl3ci0ghehYNnbt5x+o76xq+dL5+mMBuysDXnI3kapgOkoeJ0sbtL/3qPw==}
-
-  '@codemod.com/codemod-utils@1.1.0':
-    resolution: {integrity: sha512-mB09NUBdCblc2OaEZ1v/+1er8jopxf3zcYxpfFXwfY0llQxNP4rBD1A3cp85Tr8oTdq4yRLSPTlIJZEw7HZEfQ==}
 
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -7867,9 +7738,6 @@ packages:
   '@types/node@20.8.5':
     resolution: {integrity: sha512-SPlobFgbidfIeOYlzXiEjSYeIJiOCthv+9tSQVpvk4PAdIIc+2SmjNVzWXk9t0Y7dl73Zdf+OgXKHX9XtkqUpw==}
 
-  '@types/node@20.9.0':
-    resolution: {integrity: sha512-nekiGu2NDb1BcVofVcEKMIwzlx4NjHlcjhoxxKBNLtz15Y1z7MYf549DFvkHSId02Ax6kGwWntIBPC3l/JZcmw==}
-
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
 
@@ -8755,6 +8623,9 @@ packages:
 
   axios@1.7.7:
     resolution: {integrity: sha512-S4kL7XrjgBmvdGut0sN3yJxqYzrDOnivkBiN0OFs6hLiUam3UPvswUo0kqGyhqUZGEOytHyumEdXsAkgCOUf3Q==}
+
+  axios@1.8.2:
+    resolution: {integrity: sha512-ls4GYBm5aig9vWx8AWDSGLpnpDQRtWAfrjU+EuytuODrFBkqesN2RkOQCBzrA1RQNHw1SmRMSDDDSwzNAYQ6Rg==}
 
   axobject-query@3.1.1:
     resolution: {integrity: sha512-goKlv8DZrK9hUh975fnHzhNIO4jUnFCfv/dszV5VwUGDFjI6vQ2VwoyjYjYNEbBE8AH87TduWP5uyDR1D+Iteg==}
@@ -16937,8 +16808,8 @@ snapshots:
       '@aws-crypto/sha1-browser': 5.2.0
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/client-sso-oidc': 3.600.0(@aws-sdk/client-sts@3.600.0)
-      '@aws-sdk/client-sts': 3.600.0
+      '@aws-sdk/client-sso-oidc': 3.600.0
+      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
       '@aws-sdk/core': 3.598.0
       '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/middleware-bucket-endpoint': 3.598.0
@@ -16995,11 +16866,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0)':
+  '@aws-sdk/client-sso-oidc@3.600.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/client-sts': 3.600.0
+      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
       '@aws-sdk/core': 3.598.0
       '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/middleware-host-header': 3.598.0
@@ -17038,7 +16909,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
-      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso@3.598.0':
@@ -17084,11 +16954,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.600.0':
+  '@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/client-sso-oidc': 3.600.0(@aws-sdk/client-sts@3.600.0)
+      '@aws-sdk/client-sso-oidc': 3.600.0
       '@aws-sdk/core': 3.598.0
       '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/middleware-host-header': 3.598.0
@@ -17127,6 +16997,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
+      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/core@3.598.0':
@@ -17160,7 +17031,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.598.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.600.0
+      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
       '@aws-sdk/credential-provider-env': 3.598.0
       '@aws-sdk/credential-provider-http': 3.598.0
       '@aws-sdk/credential-provider-process': 3.598.0
@@ -17218,7 +17089,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.598.0(@aws-sdk/client-sts@3.600.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.600.0
+      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
       '@aws-sdk/types': 3.598.0
       '@smithy/property-provider': 3.1.2
       '@smithy/types': 3.2.0
@@ -17345,7 +17216,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.598.0(@aws-sdk/client-sso-oidc@3.600.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.600.0(@aws-sdk/client-sts@3.600.0)
+      '@aws-sdk/client-sso-oidc': 3.600.0
       '@aws-sdk/types': 3.598.0
       '@smithy/property-provider': 3.1.2
       '@smithy/shared-ini-file-loader': 3.1.2
@@ -18797,15 +18668,6 @@ snapshots:
       '@codemirror/state': 6.4.1
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
-
-  '@codemod.com/codemod-utils@1.1.0(@babel/preset-env@7.24.7)':
-    dependencies:
-      '@babel/parser': 7.24.7
-      '@types/jscodeshift': 0.11.11
-      jscodeshift: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
-    transitivePeerDependencies:
-      - '@babel/preset-env'
-      - supports-color
 
   '@colors/colors@1.5.0':
     optional: true
@@ -21831,7 +21693,7 @@ snapshots:
       '@slack/types': 2.12.0
       '@types/node': 20.14.8
       '@types/retry': 0.12.0
-      axios: 1.7.7
+      axios: 1.8.2
       eventemitter3: 5.0.1
       form-data: 4.0.0
       is-electron: 2.2.2
@@ -22823,10 +22685,6 @@ snapshots:
   '@types/node@20.8.5':
     dependencies:
       undici-types: 5.25.3
-
-  '@types/node@20.9.0':
-    dependencies:
-      undici-types: 5.26.5
 
   '@types/normalize-package-data@2.4.4': {}
 
@@ -23977,12 +23835,20 @@ snapshots:
 
   axe-core@4.9.1: {}
 
-  axios-retry@4.4.1(axios@1.7.7):
+  axios-retry@4.4.1(axios@1.8.2):
     dependencies:
-      axios: 1.7.7
+      axios: 1.8.2
       is-retry-allowed: 2.2.0
 
   axios@1.7.7:
+    dependencies:
+      follow-redirects: 1.15.9(debug@3.2.7)
+      form-data: 4.0.1
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.8.2:
     dependencies:
       follow-redirects: 1.15.9(debug@3.2.7)
       form-data: 4.0.1
@@ -25710,7 +25576,7 @@ snapshots:
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       eslint-plugin-jsx-a11y: 6.9.0(eslint@8.56.0)
       eslint-plugin-react: 7.34.3(eslint@8.56.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.56.0)
@@ -25738,7 +25604,7 @@ snapshots:
       enhanced-resolve: 5.17.0
       eslint: 8.56.0
       eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.14.0
@@ -25760,7 +25626,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -27374,7 +27240,7 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
-  jscodeshift@0.15.2(@babel/preset-env@7.24.7(@babel/core@7.24.7)):
+  jscodeshift@0.15.2(@babel/preset-env@7.24.7):
     dependencies:
       '@babel/core': 7.24.7
       '@babel/parser': 7.24.7
@@ -27594,7 +27460,7 @@ snapshots:
 
   kolorist@1.8.0: {}
 
-  langchain@0.3.6(@langchain/core@0.2.36(openai@4.23.0))(axios@1.7.7)(handlebars@4.7.8)(openai@4.23.0):
+  langchain@0.3.6(@langchain/core@0.2.36(openai@4.23.0))(axios@1.8.2)(handlebars@4.7.8)(openai@4.23.0):
     dependencies:
       '@langchain/core': 0.2.36(openai@4.23.0)
       '@langchain/openai': 0.3.14(@langchain/core@0.2.36(openai@4.23.0))
@@ -27610,13 +27476,13 @@ snapshots:
       zod: 3.24.1
       zod-to-json-schema: 3.24.1(zod@3.24.1)
     optionalDependencies:
-      axios: 1.7.7
+      axios: 1.8.2
       handlebars: 4.7.8
     transitivePeerDependencies:
       - encoding
       - openai
 
-  langchain@0.3.6(@langchain/core@0.2.36(openai@4.76.0))(axios@1.7.7)(handlebars@4.7.8)(openai@4.76.0):
+  langchain@0.3.6(@langchain/core@0.2.36(openai@4.76.0))(axios@1.8.2)(handlebars@4.7.8)(openai@4.76.0):
     dependencies:
       '@langchain/core': 0.2.36(openai@4.76.0)
       '@langchain/openai': 0.3.14(@langchain/core@0.2.36(openai@4.76.0))
@@ -27632,7 +27498,7 @@ snapshots:
       zod: 3.24.1
       zod-to-json-schema: 3.24.1(zod@3.24.1)
     optionalDependencies:
-      axios: 1.7.7
+      axios: 1.8.2
       handlebars: 4.7.8
     transitivePeerDependencies:
       - encoding
@@ -32899,24 +32765,6 @@ snapshots:
       - supports-color
       - terser
 
-  vite-node@1.1.0(@types/node@20.9.0)(terser@5.38.1):
-    dependencies:
-      cac: 6.7.14
-      debug: 4.4.0
-      pathe: 1.1.2
-      picocolors: 1.1.1
-      vite: 5.4.14(@types/node@20.9.0)(terser@5.38.1)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
   vite-node@2.1.9(@types/node@20.14.8)(terser@5.38.1):
     dependencies:
       cac: 6.7.14
@@ -33037,16 +32885,6 @@ snapshots:
       rollup: 4.34.4
     optionalDependencies:
       '@types/node': 20.8.5
-      fsevents: 2.3.3
-      terser: 5.38.1
-
-  vite@5.4.14(@types/node@20.9.0)(terser@5.38.1):
-    dependencies:
-      esbuild: 0.21.5
-      postcss: 8.4.35
-      rollup: 4.34.4
-    optionalDependencies:
-      '@types/node': 20.9.0
       fsevents: 2.3.3
       terser: 5.38.1
 
@@ -33219,42 +33057,6 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 20.8.5
-      jsdom: 23.2.0
-    transitivePeerDependencies:
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
-  vitest@1.1.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.38.1):
-    dependencies:
-      '@vitest/expect': 1.1.0
-      '@vitest/runner': 1.1.0
-      '@vitest/snapshot': 1.1.0
-      '@vitest/spy': 1.1.0
-      '@vitest/utils': 1.1.0
-      acorn-walk: 8.3.3
-      cac: 6.7.14
-      chai: 4.4.1
-      debug: 4.4.0
-      execa: 8.0.1
-      local-pkg: 0.5.1
-      magic-string: 0.30.17
-      pathe: 1.1.2
-      picocolors: 1.1.1
-      std-env: 3.8.0
-      strip-literal: 1.3.0
-      tinybench: 2.9.0
-      tinypool: 0.8.4
-      vite: 5.4.14(@types/node@20.9.0)(terser@5.38.1)
-      vite-node: 1.1.0(@types/node@20.9.0)(terser@5.38.1)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 20.9.0
       jsdom: 23.2.0
     transitivePeerDependencies:
       - less
