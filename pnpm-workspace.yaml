@@ -127,7 +127,7 @@ catalog:
     ast-node-builder: ^4.2.1
     ast-types: ^0.14.2
     autoprefixer: 10.4.17
-    axios: ^1.7.4
+    axios: ^1.8.2
     axios-retry: ^4.0.0
     blessed: ^0.1.81
     boxen: ^7.1.1
