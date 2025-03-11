@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@types/node": "20.10.5",
-    "esbuild": "^0.21.1",
+    "esbuild": "^0.25.0",
     "fastify-plugin": "catalog:",
     "nodemon": "^3.1.7"
   }
