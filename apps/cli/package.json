@@ -94,7 +94,7 @@
     "@codemod.com/workflow": "workspace:*",
     "@octokit/rest": "catalog:",
     "blessed": "catalog:",
-    "esbuild": "^0.23.0",
+    "esbuild": "^0.25.0",
     "keytar": "catalog:"
   }
 }
