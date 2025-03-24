@@ -67,6 +67,18 @@ const config = {
     return [
       {
         source: "/studio",
+        has: [
+          {
+            type: "query",
+            key: "c",
+          },
+        ],
+        destination: "/studio-jscodeshift",
+        permanent: true,
+      },
+
+      {
+        source: "/studio",
         destination: "https://app.codemod.com/studio",
         permanent: true,
       },
