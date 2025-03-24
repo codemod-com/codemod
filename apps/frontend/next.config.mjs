@@ -80,7 +80,7 @@ const config = {
       {
         source: "/studio",
         destination: "https://app.codemod.com/studio",
-        permanent: true,
+        permanent: false,
       },
       {
         source: "/automations/eslint-to-biome-migrate-rules/",
