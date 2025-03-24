@@ -9,7 +9,7 @@ import { loadGlobalData } from "@/data/sanity";
 import { GLOBAL_QUERY } from "@/data/sanity/queries";
 import { getOgImages } from "@/data/sanity/resolveSanityRouteMetadata";
 import { mergeDeepRight } from "ramda";
-import { metadata } from "./studio/studioMetadata";
+import { metadata } from "./studio-jscodeshift/studioMetadata";
 
 const LiveVisualEditing = dynamic(
   () => import("@/components/LiveVisualEditing"),

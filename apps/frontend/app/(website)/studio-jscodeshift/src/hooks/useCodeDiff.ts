@@ -1,4 +1,4 @@
-import { useCodemodOutputUpdate } from "@/app/(website)/studio/features/codemod-apply/useCodemodOutputUpdate";
+import { useCodemodOutputUpdate } from "@/app/(website)/studio-jscodeshift/features/codemod-apply/useCodemodOutputUpdate";
 import { useSnippet } from "@studio/components/Snippet/SnippetUI";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import { useModStore } from "@studio/store/mod";

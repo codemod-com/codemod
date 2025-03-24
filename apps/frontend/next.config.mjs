@@ -66,6 +66,11 @@ const config = {
   async redirects() {
     return [
       {
+        source: "/studio",
+        destination: "https://app.codemod.com/studio",
+        permanent: true,
+      },
+      {
         source: "/automations/eslint-to-biome-migrate-rules/",
         destination: "/registry/biome-migrate-rules",
         permanent: false,

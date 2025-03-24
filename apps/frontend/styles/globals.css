@@ -1,4 +1,4 @@
-@import '../app/(website)/studio/src/index.css';
+@import '../app/(website)/studio-jscodeshift/src/index.css';
 
 @tailwind base;
 @tailwind components;

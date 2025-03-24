@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@studio/components/ui/select";
-import { useCFSStore } from "app/(website)/studio/src/store/CFS";
+import { useCFSStore } from "app/(website)/studio-jscodeshift/src/store/CFS";
 
 export const EngineSelector = () => {
   const {

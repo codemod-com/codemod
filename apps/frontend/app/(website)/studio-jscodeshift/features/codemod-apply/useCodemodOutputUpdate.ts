@@ -1,4 +1,4 @@
-import { useWebWorker } from "@/app/(website)/studio/features/codemod-apply/useWebWorker";
+import { useWebWorker } from "@/app/(website)/studio-jscodeshift/features/codemod-apply/useWebWorker";
 import { useLogStore } from "@studio/store/log";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
