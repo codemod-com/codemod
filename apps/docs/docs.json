@@ -135,10 +135,6 @@
             "pages": ["guides/introduction"]
           },
           {
-            "group": "Building Codemods",
-            "pages": ["guides/first-codemod"]
-          },
-          {
             "group": "Migrations",
             "pages": [
               "guides/migrations/react-18-19",
