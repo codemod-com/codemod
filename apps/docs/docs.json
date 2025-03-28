@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "palm",
+  "theme": "maple",
   "name": "Codemod.com",
   "colors": {
     "primary": "#005a06",
@@ -12,9 +12,11 @@
     "eyebrows": "breadcrumbs"
   },
   "navigation": {
-    "tabs": [
+    "dropdowns": [
       {
-        "tab": "Documentation",
+        "dropdown": "Getting Started",
+        "icon": "book",
+        "description": "Get started with Codemod",
         "groups": [
           {
             "group": "Codemod Platform",
@@ -124,7 +126,9 @@
         ]
       },
       {
-        "tab": "Guides",
+        "dropdown": "Guides",
+        "icon": "chalkboard",
+        "description": "Learn more with hands-on guides.",
         "groups": [
           {
             "group": "Guides & Examples",
@@ -148,14 +152,6 @@
             ]
           }
         ]
-      },
-      {
-        "tab": "Blog",
-        "href": "https://codemod.com/blog"
-      },
-      {
-        "tab": "Join Community",
-        "href": "https://codemod.com/community"
       }
     ]
   },
@@ -165,9 +161,16 @@
     "href": "https://codemod.com"
   },
   "navbar": {
+    "links": [
+      {
+        "label": "Community",
+        "href": "https://go.codemod.com/community"
+      }
+    ],
     "primary": {
-      "type": "github",
-      "href": "https://github.com/codemod-com/codemod"
+      "label": "Dashboard",
+      "type": "button",
+      "href": "https://app.codemod.com"
     }
   },
   "footer": {
@@ -190,5 +193,8 @@
       "source": "/more-resources/legal/terms-and-conditions",
       "destination": "https://codemod.com/terms-and-conditions"
     }
-  ]
+  ],
+  "contextual": {
+    "options": ["copy", "view", "chatgpt", "claude"]
+  }
 }
