@@ -1,5 +1,11 @@
 # @codemod.com/codemod-utils
 
+## 1.1.3
+
+### Patch Changes
+
+- 3caf902: Move types export from ts file into cts file
+
 ## 1.1.2
 
 ### Patch Changes
