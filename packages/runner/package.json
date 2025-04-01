@@ -52,7 +52,7 @@
     "underscore": "catalog:",
     "@svgr/hast-util-to-babel-ast": "catalog:",
     "@vue/compiler-sfc": "catalog:",
-    "esbuild": "^0.23.0",
+    "esbuild": "^0.25.0",
     "glob": "catalog:",
     "js-yaml": "catalog:",
     "jscodeshift": "^0.16.1",
