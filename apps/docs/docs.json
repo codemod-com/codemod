@@ -19,7 +19,7 @@
         "description": "Get started with Codemod",
         "groups": [
           {
-            "group": "Codemod Platform",
+            "group": "Quickstart",
             "pages": [
               "introduction",
               "platform/build",
@@ -28,19 +28,15 @@
             ]
           },
           {
-            "group": "CLI",
-            "pages": ["deploying-codemods/cli"]
+            "group": "Codemod Platform",
+            "pages": [
+              "migrations",
+              "codemod-studio",
+              "codemod-registry/introduction"
+            ]
           },
           {
-            "group": "Codemod Studio",
-            "pages": ["codemod-studio"]
-          },
-          {
-            "group": "Codemod Registry",
-            "pages": ["codemod-registry/introduction"]
-          },
-          {
-            "group": "Core Concepts",
+            "group": "Legacy Guides",
             "pages": [
               {
                 "group": "Building codemods",
@@ -61,11 +57,13 @@
               }
             ]
           },
+
           {
             "group": "Quick Links",
             "pages": [
-              "external-links/codemod-registry",
-              "external-links/codemod-studio"
+              "external-links/codemod-platform",
+              "external-links/codemod-studio",
+              "external-links/codemod-registry"
             ]
           },
           {

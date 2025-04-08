@@ -1,143 +1,27 @@
 ---
-title: 'Changelog'
+title: 'Product updates'
 description: 'Latest releases for Codemod platform.'
 icon: 'scroll'
+mode: "center"
 ---
 
-## v1.0.3
+<Update label="2025-4-4">
+    We're excited to announce the launch of the first version of Codemod Studio powered by ast-grep! The new Codemod Studio makes transforming your code faster, more precise, and scalable.
 
-### Bugs fixes & improvements
+    <Frame>
+    ![title](/images/product-updates/new-codemod-studio-announcement-banner.jpg)
+    </Frame>
 
-- [Frontend] merged website into monorepo
-- [VSCode Extension] Fetch Codemods immediately after the latest version of Codemod CLI is detected
-- [VSCode Extension] Ensure that the user has the latest version of Codemod CLI before displaying Codemod Registry
-- [VSCode Extension] Show codemods even if a workplaces is not selected
-- [VSCode Extension] Text is not showing up when codemods load up initially
-- [Docs] update running codemods and studio docs images
-- [Docs] added studio readme
-- [CLI] Fix incorrect `--version` output
-- [CLI] Fix missing dependencies
-- [CLI] Fix codemod cache
-- [Telemetry] Fix duplicated events
-- [Telemetry] Allow tracking from multiple clients
-- [Registry] Fix adding imports in case of ‘use client’
-- [Registry] fix invalid codemod readme content
-- [Registry] Published React/19/Ref To Arrow Function codemod
-- [Registry] Published React Native 74 codemods
-- [Backend] Create codemod runn*er `task-manager` instance*
-- [Backend] Create `/codemodRun`  API endpoint
-- [Backend] Create `/codemodRun/status/:jobId` API endpoint
-- [Backend] Create full GitHub integration for codemod runn*er `task-manager`*
-- [Backend] Deploy codemod runn*er `task-manager`*
-- [Backend] Minor codemod registry API fixes and improvements
+    What's new:
 
-### What’s next? 🏃
+    - **Codemod AI**: Simply describe the transformation you need, and our AI builds YAML ast-grep rule for you, making it easier than ever to get started. For better results, break down complex patterns into smaller ones.
+    - **Multi-language Support**: Create codemods for a variety of languages with ease.
+    - **Enhanced Testing**: Add multiple test cases to boost coverage and accuracy. Plus, Codemod AI now suggests test cases based on your transform.
+    - **GitHub Dry-Runs**: Connect your GitHub repos and run dry-tests instantly, without leaving the studio.
+    - **Project Management**: Save, share, work on multiple codemod projects simultaneously.
 
-- [AI] Added a Python service in monorepo that uses the algorithm designed and implemented by our AI experts. We have two way connection (WS), UI in place. It is not yet production ready, so now hidden behind a feature flag
-- Codemod Studio styling improvements
-- Improved `codemod publish` experience
-- Frontend styling fixes
-- Web registry improvements
-    - Improved search and filtering experience
-    - Working codemod run analytics
-    - and more
+    [Try Codemod Studio now →](https://app.codemod.com/studio)
 
----
+    As we continue to roll out even more features, your feedback (via email or [Slack](https://go.codemod.com/community)) helps us improve your experience. Thank you for being a valued part of our community!
+</Update>
 
-## v1.0.2
-
-### New features
-
-- [web] New Codemod [website](https://codemod.com) and [registry](https://codemod.com/registry) 🎉
-- [studio] Github Runs Feature
-- [registry] Github Runs Feature
-
-### Bugs fixes & improvements
-
-- [VSCE] Sync with changes introduced to Codemod CLI
-- [VSCE] Codemod Entry must not be created if Codemod doesn't affect any file
-- [VSCE] fix bucket link for piranha support
-- [docs] Automate writing Changelog
-- [Telemetry] Improved telemetry
-- [DevOps] Created `staging` backend server
-- [DevOps] Prepared infrastructure related to task-manager (codemod runner, github integration)
-- [DevOps, SOC] Fixed all `Vanta` security issues
-- [Backend] Created new filter for `useCaseCategory` since it was removed from main `Codemod` schema
-- [Backend] Refactored `codemods/filters` to make them dynamic depending on selected filters
-- [Backend] Made `/codemods` and `/codemods/filters` as one endpoint
-- [Backend] Seeded `Tag` database with `frameworks` and corresponding aliases
-- [Backend] Seeded `Tag` database with `useCaseCategory`  and corresponding aliases
-- [Backend, DevOps] Fixed server crashes
-- [Backend] Removed unoptimizied database queries from `codemods/list`
-- [Backend] Make some optimizations for the API, refactor the code into separate handlers
-- [Backend] Add additional filters for `Codemod` search
-- [Backend] Add support for multiple filters
-- [Backend] Add arguments field to `Codemod` model
-- [Backend] Excluded nullable `useCaseCategory` from filters
-- [Backend] Added necessary fields to `Codemod` model for proper filtering
-- [CLI, Backend] Added organization support (allows groupping users and publishing codmeods using org name)
-- [CLI] Post-install script for installing `esbuild` to allow running `codemod build`
-- [CLI, Security] System keychain capabilities integration for storing user access tokens
-- [Codemods] React v19 codemod `useFormState` → `useActionState`
-- [CLI] Allow running recipes from local machine and use local paths as codemod names
-- [Studio, VSCE] Replaced link generation to use `[dub.co](http://dub.co)` services
-- [CLI, Studio] Fix `codemod learn` throwing HTTP 414 when codemod diff is too long
-- [Monorepo] Integrated `utilities` package into every app
-- [CLI] Perform fallback build during `codemod publish` if built file not found before throwing
-- [CLI, Studio] Added boilerplates for `ts-morph` and `filemod` engines to allow generating codemod packages using `codemod init` not limiting to `jscodeshift`
-- [Backend] Removed `useCaseCategory` field from configuration file
-- [CLI, Backend] `codemod unpublish`
-- [CLI] Fixed broken progress logs and empty lines that occured randomly due to hardcoded worker thread timeout
-- [CLI] Integrated `ora` package for showing loaders during time-consuming operations
-- [Monorepo] Updated biome to v1.6.3
-- [CLI] Fixed prettier not running due to wrong default configuration supplied
-- [Monorepo] Replaced all validation to use `valibot`
-- [Studio] After panel can now be hidden
-- [Studio] After/output panels behaving as two separate panels
-- [Studio] Panels resize behavior changed - output panel is fixed with codemod panel
-- [Studio] Ast moved to a separate tab
-
----
-
-## v1.0.1
-
-### New features
-
-- [Studio]: updates package that is downloaded from studio to include test fixtures and remove custom build script and esbuild from downloaded packages as we now allow building using codemod build
-- [Registry]: removes s3 github action for publishing the codemods, leaving codemod publish as the only flow to let codemods into the registry
-- [Registry]: allows publishing piranha, ast-grep and recipes besides regular js codemods
-- [Registry]: sets sane defaults for file formats that get affected by the codemods. allows user to override them using --include option or include property in .codemodrc.json
-- [Registry]: adds DB layer in before publishing codemod to s3, which ensures that our source of truth is synced with S3 and allows other apps in our ecosystem to use this layer to get the latest data
-- [CLI]: codemod build feature which if global esbuild installation is found, allows to build a codemod package
-- [CLI]: codemod list and codemod search behaving similarly, allowing to fuzzy-find codemods in the registry
-- [CLI]: deprecates codemod sync feature. cache still works and is used when the codemod is first run. cache gets invalidated within fixed time period, and there is a --no-cache command to disable it manually
-- [CLI]: more user-friendly messages were added when something goes wrong
-- [CLI]: renames our apps in git repository to cli , backend , etc…
-- [Backend]: Migrated from the SequelizeORM to PrismaORM.
-- [Backend]: Migrated from ncc bundler to esbuild bundler.
-- [Backend]: Created Codemod and CodemoVersion tables with required schemas related to Registry and CLI functionality.
-- [Backend]: Created codemods API endpoints related to Registry and CLI functionality.
-- [Backend]: Refactored existing DB repositories with corresponding Prisma functionality.
-- [Backend]: Updated current token endpoints with corresponding Prisma functionality.
-- [Backend]: Refactored unit tests and created test DB for testing purposes.
-- [Backend]: Refactored Dockerfile and docker compose files related to our CI/CD strategy.
-- [Backend]: Created CI/CD workflow via Github Actions.
-
-### New Contributors
-
-- @alexbit-codemod made their first contribution in #83
-- @mirai2k made their first contribution in #141
-- @grzim made their first contribution in #205
-- @ppashakhanloo made their first contribution in #217
-
----
-
-## v1.0.0
-
-### Release highlights
-
-- Rebranded to [Codemod.com](https://codemod.com) ([brand guidelines](https://brand.codemod.com))
-- Moved to Monorepo structure.
-- Codemod Studio is now [open source](https://github.com/codemod-com/codemod/tree/main/apps/studio) (#49, #58). 
-- Revamped [docs](https://github.com/codemod-com/codemod/tree/main/apps/docs) with Mintlify (#28).
-- Bug fixes & improvements.
