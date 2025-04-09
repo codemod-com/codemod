@@ -17,8 +17,6 @@
   ],
   "scripts": {
     "build": "tsc && node ./build.js",
-    "test": "vitest run",
-    "coverage": "vitest run --coverage",
     "prepublish": "cp package.json package.json.bak && jq 'del(.devDependencies)' package.json.bak > package.json",
     "postpublish": "rm package.json && mv package.json.bak package.json"
   },
