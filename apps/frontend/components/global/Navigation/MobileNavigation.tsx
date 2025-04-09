@@ -4,12 +4,12 @@ import { TechLogo } from "@/components/shared/Icon";
 import LinkButton from "@/components/shared/LinkButton";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, type Variants, motion } from "framer-motion";
+import { Languages, Layers, Terminal } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import HeaderDropdown from "./HeaderNavigation";
 import NavigationLink from "./NavigationLink";
-import PlatformButtonWithDropdown from "./PlatformButtonWithDropdown";
-import SolutionButtonWithDropdown from "./SolutionButtonWithDropdown";
 
 type MobileNavigationProps = {
   items: SanityLinkType[];
@@ -29,7 +29,7 @@ export function MobileDropdown({
   const isDarkMode = currentTheme === "dark";
   const pathname = usePathname();
 
-  const animationVariants = {
+  const animationVariants: Variants = {
     initial: {
       opacity: 0,
       y: -4,
@@ -62,8 +62,58 @@ export function MobileDropdown({
       <AnimatePresence>
         {visible && (
           <>
-            <PlatformButtonWithDropdown animationVariants={animationVariants} />
-            <SolutionButtonWithDropdown animationVariants={animationVariants} />
+            <HeaderDropdown
+              label="Platform"
+              animationVariants={animationVariants}
+              items={[
+                {
+                  href: "/registry",
+                  icon: (
+                    <Layers className="size-5 transition-colors group-hover:text-black" />
+                  ),
+                  label: "Insights",
+                  description:
+                    "Customizable visualizations powered by codemods",
+                },
+                {
+                  href: "/studio",
+                  icon: (
+                    <Layers className="size-5 transition-colors group-hover:text-black" />
+                  ),
+                  label: "Studio",
+                  description: "Codemod AI and GitHub repo dry-run",
+                },
+                {
+                  href: "/contact",
+                  icon: (
+                    <Layers className="size-5 transition-colors group-hover:text-black" />
+                  ),
+                  label: "Campaign - Contact us",
+                  description: "PR batching",
+                },
+                {
+                  href: "https://go.codemod.com/cli-docs",
+                  icon: (
+                    <Terminal className="size-5 transition-colors group-hover:text-black" />
+                  ),
+                  label: "CLI",
+                },
+              ]}
+            />
+            <HeaderDropdown
+              label="Solution"
+              animationVariants={animationVariants}
+              items={[
+                {
+                  href: "/i18n",
+                  icon: (
+                    <Languages className="size-5 transition-colors group-hover:text-black" />
+                  ),
+                  label: "Localization",
+                  description: "Replace hard-coded strings with i18n keys",
+                },
+              ]}
+            />
             {items?.map((item, index) => (
               <MobileDropdownItem
                 key={item.href}
