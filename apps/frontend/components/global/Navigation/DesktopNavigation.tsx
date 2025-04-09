@@ -9,7 +9,7 @@ import Icon from "@/components/shared/Icon";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import AuthButtons from "@auth/AuthButtons";
 import { cx } from "cva";
-import { Grid, Languages, Mail, Terminal } from "lucide-react";
+import { AreaChart, FolderKanban, Languages, Terminal } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import HeaderDropdown from "./HeaderNavigation";
@@ -87,15 +87,16 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
         label="Platform"
         items={[
           {
-            href: "/registry",
+            category: "Plan",
+            href: "https://app.codemod.com/insights",
             icon: (
-              <Grid className="size-5 transition-colors group-hover:text-black" />
+              <AreaChart className="size-5 transition-colors group-hover:text-black" />
             ),
             label: "Insights",
-            description: "Visualize codemod impact",
           },
           {
-            href: "/studio",
+            category: "Automate",
+            href: "https://app.codemod.com/studio",
             icon: (
               <Icon
                 name="codemod-studio"
@@ -103,23 +104,22 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
               />
             ),
             label: "Studio",
-            description: "Dry-run GitHub codemods",
           },
           {
-            href: "/contact",
-            icon: (
-              <Mail className="size-5 transition-colors group-hover:text-black" />
-            ),
-            label: "Orchestrate",
-            description: "Suggests batching, automated task execution",
-          },
-          {
+            category: "Automate",
             href: "https://go.codemod.com/cli-docs",
             icon: (
               <Terminal className="size-5 transition-colors group-hover:text-black" />
             ),
             label: "CLI",
-            description: "Deploy codemods at scale",
+          },
+          {
+            category: "Orchestrate",
+            href: "https://app.codemod.com/projects",
+            icon: (
+              <FolderKanban className="size-5 transition-colors group-hover:text-black" />
+            ),
+            label: "Campaigns",
           },
         ]}
       />

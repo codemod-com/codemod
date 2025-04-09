@@ -1,11 +1,11 @@
 "use client";
 
-import { TechLogo } from "@/components/shared/Icon";
+import Icon, { TechLogo } from "@/components/shared/Icon";
 import LinkButton from "@/components/shared/LinkButton";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, type Variants, motion } from "framer-motion";
-import { Languages, Layers, Terminal } from "lucide-react";
+import { AreaChart, FolderKanban, Languages, Terminal } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import HeaderDropdown from "./HeaderNavigation";
@@ -64,45 +64,46 @@ export function MobileDropdown({
           <>
             <HeaderDropdown
               label="Platform"
-              animationVariants={animationVariants}
               items={[
                 {
-                  href: "/registry",
+                  category: "Plan",
+                  href: "https://app.codemod.com/insights",
                   icon: (
-                    <Layers className="size-5 transition-colors group-hover:text-black" />
+                    <AreaChart className="size-5 transition-colors group-hover:text-black" />
                   ),
                   label: "Insights",
-                  description:
-                    "Customizable visualizations powered by codemods",
                 },
                 {
-                  href: "/studio",
+                  category: "Automate",
+                  href: "https://app.codemod.com/studio",
                   icon: (
-                    <Layers className="size-5 transition-colors group-hover:text-black" />
+                    <Icon
+                      name="codemod-studio"
+                      className="size-5 transition-colors group-hover:text-black"
+                    />
                   ),
                   label: "Studio",
-                  description: "Codemod AI and GitHub repo dry-run",
                 },
                 {
-                  href: "/contact",
-                  icon: (
-                    <Layers className="size-5 transition-colors group-hover:text-black" />
-                  ),
-                  label: "Campaign - Contact us",
-                  description: "PR batching",
-                },
-                {
+                  category: "Automate",
                   href: "https://go.codemod.com/cli-docs",
                   icon: (
                     <Terminal className="size-5 transition-colors group-hover:text-black" />
                   ),
                   label: "CLI",
                 },
+                {
+                  category: "Orchestrate",
+                  href: "https://app.codemod.com/projects",
+                  icon: (
+                    <FolderKanban className="size-5 transition-colors group-hover:text-black" />
+                  ),
+                  label: "Campaigns",
+                },
               ]}
             />
             <HeaderDropdown
               label="Solution"
-              animationVariants={animationVariants}
               items={[
                 {
                   href: "/i18n",

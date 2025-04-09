@@ -15,6 +15,7 @@ export type DropdownProps = {
     icon: JSX.Element;
     label: string;
     description?: string;
+    category?: string;
   }[];
 };
 
@@ -29,6 +30,16 @@ export default function HeaderDropdown({
   useEffect(() => {
     router.prefetch("/");
   }, [pathname]);
+
+  const groupedItems = items.reduce<Record<string, DropdownProps["items"]>>(
+    (acc, item) => {
+      const category = item.category || "__none";
+      acc[category] = acc[category] || [];
+      acc[category].push(item);
+      return acc;
+    },
+    {},
+  );
 
   return (
     <NavigationDropdown
@@ -61,38 +72,47 @@ export default function HeaderDropdown({
       )}
     >
       <AnimatePresence mode="popLayout">
-        <DropdownMenu.Group className="flex flex-col space-y-4">
-          {items.map((item) => (
-            <motion.div
-              key={item.label}
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.2 }}
-            >
-              <DropdownMenu.Item asChild>
-                <Link
-                  href={item.href}
-                  prefetch
-                  className="body-s-medium flex items-center gap-3 group rounded-[8px] font-medium text-primary-light focus:outline-none dark:text-primary-dark"
-                >
-                  <div className="p-2 transition-colors group-hover:bg-accent border border-border-light dark:border-border-dark rounded-[6px]">
-                    {item.icon}
-                  </div>
-                  <div className="group flex flex-col">
-                    <span className="font-medium">
-                      {item.label}
-                      <HoverArrow className="ml-2" />
-                    </span>
-                    <span className="body-xs opacity-50 group-hover:opacity-100 transition-opacity">
-                      {item.description}
-                    </span>
-                  </div>
-                </Link>
-              </DropdownMenu.Item>
-            </motion.div>
-          ))}
-        </DropdownMenu.Group>
+        {Object.entries(groupedItems).map(([category, group]) => (
+          <DropdownMenu.Group key={category} className="flex flex-col">
+            {category !== "__none" && (
+              <div className="body-s-medium font-medium text-secondary-light my-1.5 dark:text-secondary-dark">
+                {category}
+              </div>
+            )}
+            {group.map((item) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <DropdownMenu.Item asChild>
+                  <Link
+                    href={item.href}
+                    prefetch
+                    className="body-s-medium my-1 flex items-center gap-3 group rounded-[8px] font-medium text-primary-light focus:outline-none dark:text-primary-dark"
+                  >
+                    <div className="p-2 transition-colors group-hover:bg-accent border border-border-light dark:border-border-dark rounded-[6px]">
+                      {item.icon}
+                    </div>
+                    <div className="group flex flex-1 flex-col">
+                      <span className="flex w-full items-center justify-between font-medium">
+                        {item.label}
+                        <HoverArrow className="ml-2" />
+                      </span>
+                      {item.description && (
+                        <span className="body-xs opacity-50 group-hover:opacity-100 transition-opacity">
+                          {item.description}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                </DropdownMenu.Item>
+              </motion.div>
+            ))}
+          </DropdownMenu.Group>
+        ))}
       </AnimatePresence>
     </NavigationDropdown>
   );
