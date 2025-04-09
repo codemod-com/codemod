@@ -1,6 +1,6 @@
-import Icon from "@/components/shared/Icon";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, type Variants, motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -44,14 +44,11 @@ export default function HeaderDropdown({
   return (
     <NavigationDropdown
       align="center"
-      trigger={(open: boolean) => (
-        <div className="cursor-pointer">
+      trigger={() => (
+        <div className="cursor-pointer group select-none">
           <div className="lg:flex hidden items-center gap-2">
             <span className="font-medium body-s-medium">{label}</span>
-            <Icon
-              name="chevron-down"
-              className={`w-3 transform transition-transform duration-200 ${open ? "rotate-180" : "rotate-0"}`}
-            />
+            <ChevronDown className="size-4 transform transition-transform duration-200 group-hover:rotate-180" />
           </div>
 
           {/* Mobile */}
@@ -63,10 +60,7 @@ export default function HeaderDropdown({
             className="lg:hidden flex justify-between items-center bg-primary-dark rounded-[8px] p-s dark:bg-primary-light transition-colors hover:bg-primary-light/5 dark:hover:bg-primary-dark/5"
           >
             <span className="font-medium body-s-medium">{label}</span>
-            <Icon
-              name="chevron-down"
-              className={`w-4 transform transition-transform duration-200 ${open ? "rotate-180" : "rotate-0"}`}
-            />
+            <ChevronDown className="size-4 transform transition-transform duration-200 group-hover:rotate-180" />
           </motion.div>
         </div>
       )}

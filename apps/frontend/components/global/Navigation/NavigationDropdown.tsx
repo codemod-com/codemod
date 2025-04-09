@@ -62,6 +62,10 @@ export const NavigationDropdown: React.FC<NavigationDropdownProps> = ({
     >
       <DropdownMenu.Trigger
         asChild
+        onClick={(event) => {
+          event.preventDefault();
+          setOpen(true);
+        }}
         onMouseEnter={(event) => {
           event.preventDefault();
           setOpen(true);

@@ -9,7 +9,7 @@ import Icon from "@/components/shared/Icon";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import AuthButtons from "@auth/AuthButtons";
 import { cx } from "cva";
-import { AreaChart, FolderKanban, Languages, Terminal } from "lucide-react";
+import { AreaChart, FolderKanban, Languages } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import HeaderDropdown from "./HeaderNavigation";
@@ -87,7 +87,7 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
         label="Platform"
         items={[
           {
-            category: "Plan",
+            category: "Track",
             href: "https://app.codemod.com/insights",
             icon: (
               <AreaChart className="size-5 transition-colors group-hover:text-black" />
@@ -105,16 +105,9 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
             ),
             label: "Studio",
           },
+
           {
-            category: "Automate",
-            href: "https://go.codemod.com/cli-docs",
-            icon: (
-              <Terminal className="size-5 transition-colors group-hover:text-black" />
-            ),
-            label: "CLI",
-          },
-          {
-            category: "Orchestrate",
+            category: "Orchestration",
             href: "https://app.codemod.com/projects",
             icon: (
               <FolderKanban className="size-5 transition-colors group-hover:text-black" />

@@ -5,7 +5,7 @@ import LinkButton from "@/components/shared/LinkButton";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, type Variants, motion } from "framer-motion";
-import { AreaChart, FolderKanban, Languages, Terminal } from "lucide-react";
+import { AreaChart, FolderKanban, Languages } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import HeaderDropdown from "./HeaderNavigation";
@@ -66,7 +66,7 @@ export function MobileDropdown({
               label="Platform"
               items={[
                 {
-                  category: "Plan",
+                  category: "Track",
                   href: "https://app.codemod.com/insights",
                   icon: (
                     <AreaChart className="size-5 transition-colors group-hover:text-black" />
@@ -84,16 +84,9 @@ export function MobileDropdown({
                   ),
                   label: "Studio",
                 },
+
                 {
-                  category: "Automate",
-                  href: "https://go.codemod.com/cli-docs",
-                  icon: (
-                    <Terminal className="size-5 transition-colors group-hover:text-black" />
-                  ),
-                  label: "CLI",
-                },
-                {
-                  category: "Orchestrate",
+                  category: "Orchestration",
                   href: "https://app.codemod.com/projects",
                   icon: (
                     <FolderKanban className="size-5 transition-colors group-hover:text-black" />
