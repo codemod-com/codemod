@@ -29,7 +29,11 @@
           },
           {
             "group": "Codemod Platform",
-            "pages": ["codemod-studio", "codemod-registry/introduction"]
+            "pages": [
+              "scanner",
+              "codemod-studio",
+              "codemod-registry/introduction"
+            ]
           },
           {
             "group": "Legacy Guides",
