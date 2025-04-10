@@ -62,6 +62,10 @@ export const NavigationDropdown: React.FC<NavigationDropdownProps> = ({
     >
       <DropdownMenu.Trigger
         asChild
+        onClick={(event) => {
+          event.preventDefault();
+          setOpen(true);
+        }}
         onMouseEnter={(event) => {
           event.preventDefault();
           setOpen(true);
@@ -90,7 +94,7 @@ export const NavigationDropdown: React.FC<NavigationDropdownProps> = ({
           onCloseAutoFocus={(event) => event.preventDefault()}
           onEscapeKeyDown={() => setOpen(false)}
           onPointerDownOutside={() => setOpen(false)}
-          className="z-[99] min-w-[250px] animate-slideDownAndFade select-none rounded-[8px] border-[1px] border-border-light bg-primary-dark/80 backdrop-blur-lg p-s shadow-sm dark:border-border-dark dark:bg-primary-light/90 dark:shadow-none"
+          className="z-[99] min-w-[250px] animate-slideDownAndFade select-none rounded-[8px] border-[1px] border-border-light bg-primary-dark/80 backdrop-blur-lg py-2 px-4 shadow-sm dark:border-border-dark dark:bg-primary-light/90 dark:shadow-none"
         >
           {children}
         </DropdownMenu.Content>

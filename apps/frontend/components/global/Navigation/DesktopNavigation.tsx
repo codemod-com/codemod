@@ -5,14 +5,15 @@ import { GithubPermissions } from "@/components/GithubPermissions";
 import { TokenBuilder } from "@/components/TokenBuilder";
 import Button from "@/components/shared/Button";
 import { TechLogo } from "@/components/shared/Icon";
+import Icon from "@/components/shared/Icon";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import AuthButtons from "@auth/AuthButtons";
 import { cx } from "cva";
+import { AreaChart, FolderKanban, Languages } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import HeaderDropdown from "./HeaderNavigation";
 import NavigationLink from "./NavigationLink";
-import PlatformButtonWithDropdown from "./PlatformButtonWithDropdown";
-import SolutionButtonWithDropdown from "./SolutionButtonWithDropdown";
 
 type DesktopNavigationProps = {
   items: (SanityLinkType & { isCurrent?: boolean })[];
@@ -82,8 +83,52 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
           className="shadow-dot absolute -bottom-2 left-0 h-px bg-black/10 opacity-0 transition-all duration-150 ease-in-out group-hover/nav:scale-100 group-hover/nav:opacity-100 dark:bg-white/10"
         />
       }
-      <PlatformButtonWithDropdown />
-      <SolutionButtonWithDropdown />
+      <HeaderDropdown
+        label="Platform"
+        items={[
+          {
+            category: "Track",
+            href: "https://app.codemod.com/insights",
+            icon: (
+              <AreaChart className="size-5 transition-colors group-hover:text-black" />
+            ),
+            label: "Insights",
+          },
+          {
+            category: "Automate",
+            href: "https://app.codemod.com/studio",
+            icon: (
+              <Icon
+                name="codemod-studio"
+                className="size-5 transition-colors group-hover:text-black"
+              />
+            ),
+            label: "Studio",
+          },
+
+          {
+            category: "Orchestration",
+            href: "https://app.codemod.com/projects",
+            icon: (
+              <FolderKanban className="size-5 transition-colors group-hover:text-black" />
+            ),
+            label: "Campaigns",
+          },
+        ]}
+      />
+      <HeaderDropdown
+        label="Solution"
+        items={[
+          {
+            href: "/i18n",
+            icon: (
+              <Languages className="size-5 transition-colors group-hover:text-black" />
+            ),
+            label: "Localization",
+            description: "Replace hard-coded strings with i18n keys",
+          },
+        ]}
+      />
 
       {items?.map((item, index) => (
         <NavigationLink className={cx()} key={item.href} href={item.href}>

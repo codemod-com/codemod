@@ -1,15 +1,15 @@
 "use client";
 
-import { TechLogo } from "@/components/shared/Icon";
+import Icon, { TechLogo } from "@/components/shared/Icon";
 import LinkButton from "@/components/shared/LinkButton";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, type Variants, motion } from "framer-motion";
+import { AreaChart, FolderKanban, Languages } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import HeaderDropdown from "./HeaderNavigation";
 import NavigationLink from "./NavigationLink";
-import PlatformButtonWithDropdown from "./PlatformButtonWithDropdown";
-import SolutionButtonWithDropdown from "./SolutionButtonWithDropdown";
 
 type MobileNavigationProps = {
   items: SanityLinkType[];
@@ -29,7 +29,7 @@ export function MobileDropdown({
   const isDarkMode = currentTheme === "dark";
   const pathname = usePathname();
 
-  const animationVariants = {
+  const animationVariants: Variants = {
     initial: {
       opacity: 0,
       y: -4,
@@ -62,8 +62,52 @@ export function MobileDropdown({
       <AnimatePresence>
         {visible && (
           <>
-            <PlatformButtonWithDropdown animationVariants={animationVariants} />
-            <SolutionButtonWithDropdown animationVariants={animationVariants} />
+            <HeaderDropdown
+              label="Platform"
+              items={[
+                {
+                  category: "Track",
+                  href: "https://app.codemod.com/insights",
+                  icon: (
+                    <AreaChart className="size-5 transition-colors group-hover:text-black" />
+                  ),
+                  label: "Insights",
+                },
+                {
+                  category: "Automate",
+                  href: "https://app.codemod.com/studio",
+                  icon: (
+                    <Icon
+                      name="codemod-studio"
+                      className="size-5 transition-colors group-hover:text-black"
+                    />
+                  ),
+                  label: "Studio",
+                },
+
+                {
+                  category: "Orchestration",
+                  href: "https://app.codemod.com/projects",
+                  icon: (
+                    <FolderKanban className="size-5 transition-colors group-hover:text-black" />
+                  ),
+                  label: "Campaigns",
+                },
+              ]}
+            />
+            <HeaderDropdown
+              label="Solution"
+              items={[
+                {
+                  href: "/i18n",
+                  icon: (
+                    <Languages className="size-5 transition-colors group-hover:text-black" />
+                  ),
+                  label: "Localization",
+                  description: "Replace hard-coded strings with i18n keys",
+                },
+              ]}
+            />
             {items?.map((item, index) => (
               <MobileDropdownItem
                 key={item.href}
