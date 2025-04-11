@@ -22,21 +22,18 @@
             "group": "Quickstart",
             "pages": [
               "introduction",
-              "platform/build",
-              "platform/share",
-              "platform/run"
+              "platform/plan",
+              "platform/automate",
+              "platform/orchestrate",
+              "platform/track"
             ]
           },
           {
             "group": "Codemod Platform",
-            "pages": [
-              "scanner",
-              "codemod-studio",
-              "codemod-registry/introduction"
-            ]
+            "pages": ["scanner", "insights", "codemod-studio"]
           },
           {
-            "group": "Legacy Guides",
+            "group": "OSS & Community",
             "pages": [
               {
                 "group": "Building codemods",
@@ -53,7 +50,10 @@
               },
               {
                 "group": "Sharing codemods",
-                "pages": ["sharing/publishing-codemods"]
+                "pages": [
+                  "codemod-registry/introduction",
+                  "sharing/publishing-codemods"
+                ]
               }
             ]
           },
