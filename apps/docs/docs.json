@@ -30,7 +30,7 @@
           },
           {
             "group": "Codemod Platform",
-            "pages": ["scanner", "insights", "codemod-studio"]
+            "pages": ["scanner", "migrations", "insights", "codemod-studio"]
           },
           {
             "group": "OSS & Community",
