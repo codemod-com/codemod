@@ -179,16 +179,18 @@ export function DesktopNavigationRight(props: {
 
   return (
     <div className="hidden gap-3 lg:flex lg:items-center lg:justify-center">
-      {props.items?.map((item, index) => (
-        <NavigationLink hideExternalIcon key={item._key} href={item?.href}>
-          <Button
-            glow={index === 0}
-            intent={index === 0 ? "secondary" : "inline"}
-          >
-            {item?.label}
-          </Button>
-        </NavigationLink>
-      ))}
+      <div className="hidden">
+        {props.items?.map((item, index) => (
+          <NavigationLink hideExternalIcon key={item._key} href={item?.href}>
+            <Button
+              glow={index === 0}
+              intent={index === 0 ? "secondary" : "inline"}
+            >
+              {item?.label}
+            </Button>
+          </NavigationLink>
+        ))}
+      </div>
 
       {shouldRenderAuth && (
         <AuthProvider>
