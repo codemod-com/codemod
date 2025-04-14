@@ -1,8 +1,9 @@
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// Represents a step in a node
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Step {
     /// Unique identifier for the step
     pub id: String,
@@ -28,7 +29,7 @@ pub struct Step {
 }
 
 /// Represents a template use in a step
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct TemplateUse {
     /// Template ID to use
     pub template: String,

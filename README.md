@@ -1242,3 +1242,8 @@ Workflow execution aborted
 ```
 
 This ensures that only valid workflows are executed, preventing potential runtime issues.
+
+### Schema Validation
+
+A workflow JSON schema is provided in the `schemas` directory for, e.g., LSP
+checks.

@@ -1,3 +1,4 @@
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -7,7 +8,7 @@ use crate::strategy::Strategy;
 use crate::trigger::Trigger;
 
 /// Type of node
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "lowercase")]
 pub enum NodeType {
     /// Automatic node (runs when dependencies are satisfied)
@@ -18,7 +19,7 @@ pub enum NodeType {
 }
 
 /// Represents a node in a workflow
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Node {
     /// Unique identifier for the node
     pub id: String,

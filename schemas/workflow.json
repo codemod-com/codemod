@@ -1,0 +1,696 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Workflow",
+  "description": "Represents a workflow definition",
+  "type": "object",
+  "required": [
+    "nodes",
+    "version"
+  ],
+  "properties": {
+    "nodes": {
+      "description": "Nodes in the workflow",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Node"
+      }
+    },
+    "state": {
+      "description": "State schema definition",
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "#/definitions/WorkflowState"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "templates": {
+      "description": "Templates for reusable components",
+      "default": [],
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Template"
+      }
+    },
+    "version": {
+      "description": "Version of the workflow format",
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "Node": {
+      "description": "Represents a node in a workflow",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "steps"
+      ],
+      "properties": {
+        "depends_on": {
+          "description": "IDs of nodes that must complete before this node can run",
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Detailed description of what the node does",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "env": {
+          "description": "Environment variables to inject into the container",
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "description": "Unique identifier for the node",
+          "type": "string"
+        },
+        "name": {
+          "description": "Human-readable name",
+          "type": "string"
+        },
+        "runtime": {
+          "description": "Container runtime configuration",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Runtime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "steps": {
+          "description": "Steps to execute within the node",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Step"
+          }
+        },
+        "strategy": {
+          "description": "Configuration for running multiple instances of this node",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Strategy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trigger": {
+          "description": "Configuration for how the node is triggered",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Trigger"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "description": "Type of node (automatic or manual)",
+          "default": "automatic",
+          "allOf": [
+            {
+              "$ref": "#/definitions/NodeType"
+            }
+          ]
+        }
+      }
+    },
+    "NodeType": {
+      "description": "Type of node",
+      "oneOf": [
+        {
+          "description": "Automatic node (runs when dependencies are satisfied)",
+          "type": "string",
+          "enum": [
+            "automatic"
+          ]
+        },
+        {
+          "description": "Manual node (requires explicit triggering)",
+          "type": "string",
+          "enum": [
+            "manual"
+          ]
+        }
+      ]
+    },
+    "Runtime": {
+      "description": "Represents a runtime configuration",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "image": {
+          "description": "Container image (for Docker and Podman)",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "network": {
+          "description": "Network mode for the container",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "options": {
+          "description": "Additional container options",
+          "default": null,
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "description": "Type of runtime",
+          "allOf": [
+            {
+              "$ref": "#/definitions/RuntimeType"
+            }
+          ]
+        },
+        "user": {
+          "description": "User to run as inside the container",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "working_dir": {
+          "description": "Working directory inside the container",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "RuntimeType": {
+      "description": "Type of runtime",
+      "oneOf": [
+        {
+          "description": "Direct execution on the host",
+          "type": "string",
+          "enum": [
+            "direct"
+          ]
+        },
+        {
+          "description": "Docker container execution",
+          "type": "string",
+          "enum": [
+            "docker"
+          ]
+        },
+        {
+          "description": "Podman container execution",
+          "type": "string",
+          "enum": [
+            "podman"
+          ]
+        }
+      ]
+    },
+    "StateSchema": {
+      "description": "Represents a state schema definition",
+      "type": "object",
+      "required": [
+        "name",
+        "type"
+      ],
+      "properties": {
+        "description": {
+          "description": "Description of the state schema",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "items": {
+          "description": "For array types, the schema of the items",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/StateSchemaItems"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name": {
+          "description": "Name of the state schema",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of the state schema",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StateSchemaType"
+            }
+          ]
+        }
+      }
+    },
+    "StateSchemaItems": {
+      "description": "Represents the schema for items in an array",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "properties": {
+          "description": "For object types, the properties of the object",
+          "default": null,
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "$ref": "#/definitions/StateSchemaProperty"
+          }
+        },
+        "type": {
+          "description": "Type of the items",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StateSchemaType"
+            }
+          ]
+        }
+      }
+    },
+    "StateSchemaProperty": {
+      "description": "Represents a state schema property",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "description": {
+          "description": "Description of the property",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type": {
+          "description": "Type of the property",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StateSchemaType"
+            }
+          ]
+        }
+      }
+    },
+    "StateSchemaType": {
+      "description": "Type of state schema property",
+      "oneOf": [
+        {
+          "description": "Array type",
+          "type": "string",
+          "enum": [
+            "array"
+          ]
+        },
+        {
+          "description": "Object type",
+          "type": "string",
+          "enum": [
+            "object"
+          ]
+        },
+        {
+          "description": "String type",
+          "type": "string",
+          "enum": [
+            "string"
+          ]
+        },
+        {
+          "description": "Number type",
+          "type": "string",
+          "enum": [
+            "number"
+          ]
+        },
+        {
+          "description": "Boolean type",
+          "type": "string",
+          "enum": [
+            "boolean"
+          ]
+        }
+      ]
+    },
+    "Step": {
+      "description": "Represents a step in a node",
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "commands": {
+          "description": "Commands to run",
+          "default": null,
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Detailed description of what the step does",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "env": {
+          "description": "Environment variables specific to this step",
+          "default": null,
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "description": "Unique identifier for the step",
+          "type": "string"
+        },
+        "name": {
+          "description": "Human-readable name",
+          "type": "string"
+        },
+        "uses": {
+          "description": "Template to use for this step",
+          "default": null,
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/TemplateUse"
+          }
+        }
+      }
+    },
+    "Strategy": {
+      "description": "Represents a strategy configuration",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "from_state": {
+          "description": "State key to get matrix values from (for matrix strategy)",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type": {
+          "description": "Type of strategy",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StrategyType"
+            }
+          ]
+        },
+        "values": {
+          "description": "Matrix values (for matrix strategy)",
+          "default": null,
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "StrategyType": {
+      "description": "Type of strategy",
+      "oneOf": [
+        {
+          "description": "Matrix strategy (run multiple instances with different inputs)",
+          "type": "string",
+          "enum": [
+            "matrix"
+          ]
+        }
+      ]
+    },
+    "Template": {
+      "description": "Represents a reusable template",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "steps"
+      ],
+      "properties": {
+        "description": {
+          "description": "Detailed description of what the template does",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "env": {
+          "description": "Environment variables to inject into the container",
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "description": "Unique identifier for the template",
+          "type": "string"
+        },
+        "inputs": {
+          "description": "Inputs for the template",
+          "default": [],
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TemplateInput"
+          }
+        },
+        "name": {
+          "description": "Human-readable name",
+          "type": "string"
+        },
+        "outputs": {
+          "description": "Outputs from the template",
+          "default": [],
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TemplateOutput"
+          }
+        },
+        "runtime": {
+          "description": "Container runtime configuration",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Runtime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "steps": {
+          "description": "Steps to execute within the template",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Step"
+          }
+        }
+      }
+    },
+    "TemplateInput": {
+      "description": "Represents a template input",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "default": {
+          "description": "Default value for the input",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "description": "Description of the input",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "description": "Name of the input",
+          "type": "string"
+        },
+        "required": {
+          "description": "Whether the input is required",
+          "default": false,
+          "type": "boolean"
+        },
+        "type": {
+          "description": "Type of the input (string, number, boolean)",
+          "default": "string",
+          "type": "string"
+        }
+      }
+    },
+    "TemplateOutput": {
+      "description": "Represents a template output",
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "description": {
+          "description": "Description of the output",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "description": "Name of the output",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value of the output",
+          "type": "string"
+        }
+      }
+    },
+    "TemplateUse": {
+      "description": "Represents a template use in a step",
+      "type": "object",
+      "required": [
+        "template"
+      ],
+      "properties": {
+        "inputs": {
+          "description": "Inputs to pass to the template",
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "template": {
+          "description": "Template ID to use",
+          "type": "string"
+        }
+      }
+    },
+    "Trigger": {
+      "description": "Represents a trigger configuration",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "description": "Type of trigger",
+          "allOf": [
+            {
+              "$ref": "#/definitions/TriggerType"
+            }
+          ]
+        }
+      }
+    },
+    "TriggerType": {
+      "description": "Type of trigger",
+      "oneOf": [
+        {
+          "description": "Automatic trigger (runs when dependencies are satisfied)",
+          "type": "string",
+          "enum": [
+            "automatic"
+          ]
+        },
+        {
+          "description": "Manual trigger (requires explicit triggering)",
+          "type": "string",
+          "enum": [
+            "manual"
+          ]
+        }
+      ]
+    },
+    "WorkflowState": {
+      "description": "Represents the state schema for a workflow",
+      "type": "object",
+      "properties": {
+        "schema": {
+          "description": "Schema definitions",
+          "default": [],
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StateSchema"
+          }
+        }
+      }
+    }
+  }
+}

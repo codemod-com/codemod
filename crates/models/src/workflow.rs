@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use uuid::Uuid;
@@ -8,7 +9,7 @@ use crate::state::StateSchema;
 use crate::template::Template;
 
 /// Represents a workflow definition
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Workflow {
     /// Version of the workflow format
     pub version: String,
@@ -26,7 +27,7 @@ pub struct Workflow {
 }
 
 /// Represents the state schema for a workflow
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, JsonSchema)]
 pub struct WorkflowState {
     /// Schema definitions
     #[serde(default)]

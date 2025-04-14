@@ -1,3 +1,4 @@
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -5,7 +6,7 @@ use crate::runtime::Runtime;
 use crate::step::Step;
 
 /// Represents a template input
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct TemplateInput {
     /// Name of the input
     pub name: String,
@@ -28,7 +29,7 @@ pub struct TemplateInput {
 }
 
 /// Represents a template output
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct TemplateOutput {
     /// Name of the output
     pub name: String,
@@ -42,7 +43,7 @@ pub struct TemplateOutput {
 }
 
 /// Represents a reusable template
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Template {
     /// Unique identifier for the template
     pub id: String,

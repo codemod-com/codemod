@@ -18,3 +18,4 @@ uuid = { workspace = true }
 chrono = { workspace = true }
 regex = { workspace = true }
 reqwest = { workspace = true }
+schemars = "0.8.22"
