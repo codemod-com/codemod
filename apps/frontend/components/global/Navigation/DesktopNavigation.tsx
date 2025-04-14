@@ -87,7 +87,7 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
         label="Platform"
         items={[
           {
-            category: "Track",
+            category: "Plan",
             href: "https://app.codemod.com/insights",
             icon: (
               <AreaChart className="size-5 transition-colors group-hover:text-black" />
@@ -107,7 +107,7 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
           },
 
           {
-            category: "Orchestration",
+            category: "Orchestrate",
             href: "https://app.codemod.com/projects",
             icon: (
               <FolderKanban className="size-5 transition-colors group-hover:text-black" />
@@ -179,22 +179,23 @@ export function DesktopNavigationRight(props: {
 
   return (
     <div className="hidden gap-3 lg:flex lg:items-center lg:justify-center">
-      <div className="hidden">
-        {props.items?.map((item, index) => (
-          <NavigationLink hideExternalIcon key={item._key} href={item?.href}>
-            <Button
-              glow={index === 0}
-              intent={index === 0 ? "secondary" : "inline"}
-            >
-              {item?.label}
-            </Button>
-          </NavigationLink>
-        ))}
-      </div>
+      {props.items?.map((item, index) => (
+        <NavigationLink hideExternalIcon key={item._key} href={item?.href}>
+          <Button
+            glow={index === 0}
+            intent={index === 0 ? "secondary" : "inline"}
+          >
+            {item?.label}
+          </Button>
+        </NavigationLink>
+      ))}
 
       {shouldRenderAuth && (
         <AuthProvider>
-          <AuthButtons variant="www" redirectUrl={pathname} />
+          <div className="hidden">
+            <AuthButtons variant="www" redirectUrl={pathname} />
+          </div>
+
           <TokenBuilder />
           <GithubPermissions />
         </AuthProvider>

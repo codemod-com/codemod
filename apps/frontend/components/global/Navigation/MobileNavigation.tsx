@@ -66,7 +66,7 @@ export function MobileDropdown({
               label="Platform"
               items={[
                 {
-                  category: "Track",
+                  category: "Plan",
                   href: "https://app.codemod.com/insights",
                   icon: (
                     <AreaChart className="size-5 transition-colors group-hover:text-black" />
@@ -86,7 +86,7 @@ export function MobileDropdown({
                 },
 
                 {
-                  category: "Orchestration",
+                  category: "Orchestrate",
                   href: "https://app.codemod.com/projects",
                   icon: (
                     <FolderKanban className="size-5 transition-colors group-hover:text-black" />

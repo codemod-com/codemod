@@ -1,3 +1,4 @@
+import { cn } from "@/utils";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, type Variants, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
@@ -43,12 +44,18 @@ export default function HeaderDropdown({
 
   return (
     <NavigationDropdown
+      sideOffset={0}
       align="center"
-      trigger={() => (
-        <div className="cursor-pointer group select-none">
+      trigger={(open) => (
+        <div className="cursor-pointer group select-none lg:py-2">
           <div className="lg:flex hidden items-center gap-2">
             <span className="font-medium body-s-medium">{label}</span>
-            <ChevronDown className="size-4 transform transition-transform duration-200 group-hover:rotate-180" />
+            <ChevronDown
+              className={cn(
+                "size-4 transform transition-transform duration-200 group-hover:rotate-180",
+                { "rotate-180": open },
+              )}
+            />
           </div>
 
           {/* Mobile */}
@@ -60,7 +67,12 @@ export default function HeaderDropdown({
             className="lg:hidden flex justify-between items-center bg-primary-dark rounded-[8px] p-s dark:bg-primary-light transition-colors hover:bg-primary-light/5 dark:hover:bg-primary-dark/5"
           >
             <span className="font-medium body-s-medium">{label}</span>
-            <ChevronDown className="size-4 transform transition-transform duration-200 group-hover:rotate-180" />
+            <ChevronDown
+              className={cn(
+                "size-4 transform transition-transform duration-200 group-hover:rotate-180",
+                { "rotate-180": open },
+              )}
+            />
           </motion.div>
         </div>
       )}
