@@ -1,0 +1,43 @@
+name: CI
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@1.82.0
+        id: toolchain
+        with:
+          components: clippy
+      - run: cargo clippy --tests --no-deps -- -D warnings
+
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@1.82.0
+        id: toolchain
+        with:
+          components: rustfmt
+      - run: cargo fmt --check
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@1.82.0
+        id: toolchain
+      - run: cargo test

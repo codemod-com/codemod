@@ -6,7 +6,9 @@ use async_trait::async_trait;
 use serde_json::Value;
 use uuid::Uuid;
 
-use butterflow_models::{DiffOperation, Error, Result, StateDiff, Task, TaskDiff, WorkflowRun, WorkflowRunDiff};
+use butterflow_models::{
+    DiffOperation, Error, Result, StateDiff, Task, TaskDiff, WorkflowRun, WorkflowRunDiff,
+};
 
 /// State adapter trait for persisting workflow state
 #[async_trait]
@@ -59,6 +61,12 @@ pub struct LocalStateAdapter {
 
     /// Tasks
     tasks: HashMap<Uuid, Task>,
+}
+
+impl Default for LocalStateAdapter {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl LocalStateAdapter {
@@ -470,7 +478,7 @@ impl StateAdapter for ApiStateAdapter {
         // Send to API
         let client = reqwest::Client::new();
         let res = client
-            .post(&format!("{}/workflow_runs", self.endpoint))
+            .post(format!("{}/workflow_runs", self.endpoint))
             .header("Authorization", format!("Bearer {}", self.auth_token))
             .json(workflow_run)
             .send()
@@ -496,7 +504,7 @@ impl StateAdapter for ApiStateAdapter {
         // Try to get from API
         let client = reqwest::Client::new();
         let res = client
-            .get(&format!(
+            .get(format!(
                 "{}/workflow_runs/{}",
                 self.endpoint, workflow_run_id
             ))
@@ -526,7 +534,7 @@ impl StateAdapter for ApiStateAdapter {
         // Try to get from API
         let client = reqwest::Client::new();
         let res = client
-            .get(&format!("{}/workflow_runs?limit={}", self.endpoint, limit))
+            .get(format!("{}/workflow_runs?limit={}", self.endpoint, limit))
             .header("Authorization", format!("Bearer {}", self.auth_token))
             .send()
             .await;
@@ -556,7 +564,7 @@ impl StateAdapter for ApiStateAdapter {
         // Send to API
         let client = reqwest::Client::new();
         let res = client
-            .post(&format!("{}/tasks", self.endpoint))
+            .post(format!("{}/tasks", self.endpoint))
             .header("Authorization", format!("Bearer {}", self.auth_token))
             .json(task)
             .send()
@@ -582,7 +590,7 @@ impl StateAdapter for ApiStateAdapter {
         // Try to get from API
         let client = reqwest::Client::new();
         let res = client
-            .get(&format!("{}/tasks/{}", self.endpoint, task_id))
+            .get(format!("{}/tasks/{}", self.endpoint, task_id))
             .header("Authorization", format!("Bearer {}", self.auth_token))
             .send()
             .await;
@@ -609,7 +617,7 @@ impl StateAdapter for ApiStateAdapter {
         // Try to get from API
         let client = reqwest::Client::new();
         let res = client
-            .get(&format!(
+            .get(format!(
                 "{}/workflow_runs/{}/tasks",
                 self.endpoint, workflow_run_id
             ))
@@ -648,7 +656,7 @@ impl StateAdapter for ApiStateAdapter {
         // Send to API
         let client = reqwest::Client::new();
         let res = client
-            .post(&format!(
+            .post(format!(
                 "{}/workflow_runs/{}/state",
                 self.endpoint, workflow_run_id
             ))
@@ -680,7 +688,10 @@ impl StateAdapter for ApiStateAdapter {
         // Send to API
         let client = reqwest::Client::new();
         let res = client
-            .patch(&format!("{}/workflow_runs/{}/diff", self.endpoint, diff.workflow_run_id))
+            .patch(format!(
+                "{}/workflow_runs/{}/diff",
+                self.endpoint, diff.workflow_run_id
+            ))
             .header("Authorization", format!("Bearer {}", self.auth_token))
             .json(diff)
             .send()
@@ -709,7 +720,7 @@ impl StateAdapter for ApiStateAdapter {
         // Send to API
         let client = reqwest::Client::new();
         let res = client
-            .patch(&format!("{}/tasks/{}/diff", self.endpoint, diff.task_id))
+            .patch(format!("{}/tasks/{}/diff", self.endpoint, diff.task_id))
             .header("Authorization", format!("Bearer {}", self.auth_token))
             .json(diff)
             .send()
@@ -738,7 +749,10 @@ impl StateAdapter for ApiStateAdapter {
         // Send to API
         let client = reqwest::Client::new();
         let res = client
-            .patch(&format!("{}/workflow_runs/{}/state/diff", self.endpoint, diff.workflow_run_id))
+            .patch(format!(
+                "{}/workflow_runs/{}/state/diff",
+                self.endpoint, diff.workflow_run_id
+            ))
             .header("Authorization", format!("Bearer {}", self.auth_token))
             .json(diff)
             .send()
@@ -764,7 +778,7 @@ impl StateAdapter for ApiStateAdapter {
         // Try to get from API
         let client = reqwest::Client::new();
         let res = client
-            .get(&format!(
+            .get(format!(
                 "{}/workflow_runs/{}/state",
                 self.endpoint, workflow_run_id
             ))

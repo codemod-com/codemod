@@ -4,15 +4,17 @@ use std::fs;
 
 use butterflow_core::utils;
 use butterflow_core::NodeType;
-use butterflow_models::{Error, Node, Step, Template, TemplateUse, Workflow, Strategy, TemplateOutput};
 use butterflow_models::strategy::StrategyType;
+use butterflow_models::{
+    Error, Node, Step, Strategy, Template, TemplateOutput, TemplateUse, Workflow,
+};
 
 #[test]
 fn test_parse_workflow_file_yaml() {
     // Create a temporary YAML workflow file
     let temp_dir = tempfile::tempdir().unwrap();
     let file_path = temp_dir.path().join("workflow.yaml");
-    
+
     let yaml_content = r#"
 version: "1"
 nodes:
@@ -24,12 +26,12 @@ nodes:
         commands:
           - echo "Hello, World!"
 "#;
-    
+
     fs::write(&file_path, yaml_content).unwrap();
-    
+
     // Parse the workflow file
     let workflow = utils::parse_workflow_file(&file_path).unwrap();
-    
+
     // Verify the parsed workflow
     assert_eq!(workflow.version, "1");
     assert_eq!(workflow.nodes.len(), 1);
@@ -38,7 +40,10 @@ nodes:
     assert_eq!(workflow.nodes[0].steps.len(), 1);
     assert_eq!(workflow.nodes[0].steps[0].id, "step1");
     assert_eq!(workflow.nodes[0].steps[0].name, "Step 1");
-    assert_eq!(workflow.nodes[0].steps[0].commands.as_ref().unwrap()[0], "echo \"Hello, World!\"");
+    assert_eq!(
+        workflow.nodes[0].steps[0].commands.as_ref().unwrap()[0],
+        "echo \"Hello, World!\""
+    );
 }
 
 #[test]
@@ -46,7 +51,7 @@ fn test_parse_workflow_file_json() {
     // Create a temporary JSON workflow file
     let temp_dir = tempfile::tempdir().unwrap();
     let file_path = temp_dir.path().join("workflow.json");
-    
+
     let json_content = r#"
 {
   "version": "1",
@@ -65,12 +70,12 @@ fn test_parse_workflow_file_json() {
   ]
 }
 "#;
-    
+
     fs::write(&file_path, json_content).unwrap();
-    
+
     // Parse the workflow file
     let workflow = utils::parse_workflow_file(&file_path).unwrap();
-    
+
     // Verify the parsed workflow
     assert_eq!(workflow.version, "1");
     assert_eq!(workflow.nodes.len(), 1);
@@ -79,7 +84,10 @@ fn test_parse_workflow_file_json() {
     assert_eq!(workflow.nodes[0].steps.len(), 1);
     assert_eq!(workflow.nodes[0].steps[0].id, "step1");
     assert_eq!(workflow.nodes[0].steps[0].name, "Step 1");
-    assert_eq!(workflow.nodes[0].steps[0].commands.as_ref().unwrap()[0], "echo \"Hello, World!\"");
+    assert_eq!(
+        workflow.nodes[0].steps[0].commands.as_ref().unwrap()[0],
+        "echo \"Hello, World!\""
+    );
 }
 
 #[test]
@@ -87,14 +95,14 @@ fn test_parse_workflow_file_invalid() {
     // Create a temporary invalid workflow file
     let temp_dir = tempfile::tempdir().unwrap();
     let file_path = temp_dir.path().join("workflow.yaml");
-    
+
     let invalid_content = "This is not a valid YAML or JSON file";
-    
+
     fs::write(&file_path, invalid_content).unwrap();
-    
+
     // Parse the workflow file
     let result = utils::parse_workflow_file(&file_path);
-    
+
     // Verify that parsing fails
     assert!(result.is_err());
     match result {
@@ -139,10 +147,10 @@ fn test_validate_workflow_valid() {
             },
         ],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation succeeds
     assert!(result.is_ok());
 }
@@ -181,10 +189,10 @@ fn test_validate_workflow_duplicate_node_id() {
             },
         ],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation fails
     assert!(result.is_err());
     match result {
@@ -202,25 +210,23 @@ fn test_validate_workflow_nonexistent_dependency() {
         version: "1".to_string(),
         state: None,
         templates: vec![],
-        nodes: vec![
-            Node {
-                id: "node1".to_string(),
-                name: "Node 1".to_string(),
-                description: None,
-                r#type: NodeType::Automatic,
-                depends_on: vec!["nonexistent".to_string()], // Non-existent dependency
-                trigger: None,
-                strategy: None,
-                runtime: None,
-                steps: vec![],
-                env: HashMap::new(),
-            },
-        ],
+        nodes: vec![Node {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            description: None,
+            r#type: NodeType::Automatic,
+            depends_on: vec!["nonexistent".to_string()], // Non-existent dependency
+            trigger: None,
+            strategy: None,
+            runtime: None,
+            steps: vec![],
+            env: HashMap::new(),
+        }],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation fails
     assert!(result.is_err());
     match result {
@@ -265,10 +271,10 @@ fn test_validate_workflow_cyclic_dependency() {
             },
         ],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation fails
     assert!(result.is_err());
     match result {
@@ -287,9 +293,9 @@ fn test_parse_params() {
         "key2=value2".to_string(),
         "key3=value with spaces".to_string(),
     ];
-    
+
     let result = utils::parse_params(&params).unwrap();
-    
+
     // Verify the parsed parameters
     assert_eq!(result.len(), 3);
     assert_eq!(result.get("key1"), Some(&"value1".to_string()));
@@ -304,9 +310,9 @@ fn test_parse_params_invalid() {
         "key1=value1".to_string(),
         "invalid_param".to_string(), // Missing '='
     ];
-    
+
     let result = utils::parse_params(&params);
-    
+
     // Verify that parsing fails
     assert!(result.is_err());
     match result {
@@ -327,7 +333,15 @@ fn test_format_duration() {
     assert_eq!(utils::format_duration(3661), "01:01:01");
     assert_eq!(utils::format_duration(86400), "24:00:00");
     assert_eq!(utils::format_duration(90061), "25:01:01"); // Over 24 hours
-    assert_eq!(utils::format_duration(u64::MAX), format!("{:02}:{:02}:{:02}", u64::MAX / 3600, (u64::MAX % 3600) / 60, u64::MAX % 60)); // Edge case: maximum u64 value
+    assert_eq!(
+        utils::format_duration(u64::MAX),
+        format!(
+            "{:02}:{:02}:{:02}",
+            u64::MAX / 3600,
+            (u64::MAX % 3600) / 60,
+            u64::MAX % 60
+        )
+    ); // Edge case: maximum u64 value
 }
 
 #[test]
@@ -360,10 +374,10 @@ fn test_validate_workflow_duplicate_template_id() {
         ],
         nodes: vec![],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation fails
     assert!(result.is_err());
     match result {
@@ -380,51 +394,43 @@ fn test_validate_workflow_nonexistent_template_reference() {
     let workflow = Workflow {
         version: "1".to_string(),
         state: None,
-        templates: vec![
-            Template {
-                id: "template1".to_string(),
-                name: "Template 1".to_string(),
+        templates: vec![Template {
+            id: "template1".to_string(),
+            name: "Template 1".to_string(),
+            description: None,
+            inputs: vec![],
+            runtime: None,
+            steps: vec![],
+            outputs: vec![],
+            env: HashMap::new(),
+        }],
+        nodes: vec![Node {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            description: None,
+            r#type: NodeType::Automatic,
+            depends_on: vec![],
+            trigger: None,
+            strategy: None,
+            runtime: None,
+            steps: vec![Step {
+                id: "step1".to_string(),
+                name: "Step 1".to_string(),
                 description: None,
-                inputs: vec![],
-                runtime: None,
-                steps: vec![],
-                outputs: vec![],
-                env: HashMap::new(),
-            },
-        ],
-        nodes: vec![
-            Node {
-                id: "node1".to_string(),
-                name: "Node 1".to_string(),
-                description: None,
-                r#type: NodeType::Automatic,
-                depends_on: vec![],
-                trigger: None,
-                strategy: None,
-                runtime: None,
-                steps: vec![
-                    Step {
-                        id: "step1".to_string(),
-                        name: "Step 1".to_string(),
-                        description: None,
-                        uses: Some(vec![
-                            TemplateUse {
-                                template: "nonexistent".to_string(), // Non-existent template
-                                inputs: HashMap::new(),
-                            },
-                        ]),
-                        commands: None,
-                        env: None,
-                    },
-                ],
-                env: HashMap::new(),
-            },
-        ],
+                uses: Some(vec![TemplateUse {
+                    template: "nonexistent".to_string(), // Non-existent template
+                    inputs: HashMap::new(),
+                }]),
+                commands: None,
+                env: None,
+            }],
+            env: HashMap::new(),
+        }],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation fails
     assert!(result.is_err());
     match result {
@@ -442,29 +448,27 @@ fn test_validate_workflow_invalid_matrix_strategy() {
         version: "1".to_string(),
         state: None,
         templates: vec![],
-        nodes: vec![
-            Node {
-                id: "node1".to_string(),
-                name: "Node 1".to_string(),
-                description: None,
-                r#type: NodeType::Automatic,
-                depends_on: vec![],
-                trigger: None,
-                strategy: Some(Strategy {
-                    r#type: StrategyType::Matrix,
-                    values: None,
-                    from_state: None,
-                }),
-                runtime: None,
-                steps: vec![],
-                env: HashMap::new(),
-            },
-        ],
+        nodes: vec![Node {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            description: None,
+            r#type: NodeType::Automatic,
+            depends_on: vec![],
+            trigger: None,
+            strategy: Some(Strategy {
+                r#type: StrategyType::Matrix,
+                values: None,
+                from_state: None,
+            }),
+            runtime: None,
+            steps: vec![],
+            env: HashMap::new(),
+        }],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation fails
     assert!(result.is_err());
     match result {
@@ -522,10 +526,10 @@ fn test_validate_workflow_complex_cyclic_dependency() {
             },
         ],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation fails
     assert!(result.is_err());
     match result {
@@ -543,13 +547,16 @@ fn test_validate_workflow_complex_cyclic_dependency() {
 fn test_get_env_vars() {
     // Set a test environment variable
     env::set_var("BUTTERFLOW_TEST_VAR", "test_value");
-    
+
     // Get environment variables
     let env_vars = utils::get_env_vars();
-    
+
     // Verify that our test variable is included
-    assert_eq!(env_vars.get("BUTTERFLOW_TEST_VAR"), Some(&"test_value".to_string()));
-    
+    assert_eq!(
+        env_vars.get("BUTTERFLOW_TEST_VAR"),
+        Some(&"test_value".to_string())
+    );
+
     // Clean up
     env::remove_var("BUTTERFLOW_TEST_VAR");
 }
@@ -558,7 +565,7 @@ fn test_get_env_vars() {
 fn test_parse_workflow_file_nonexistent() {
     // Try to parse a non-existent file
     let result = utils::parse_workflow_file("nonexistent_file.yaml");
-    
+
     // Verify that parsing fails
     assert!(result.is_err());
     // The exact error type might vary by platform, so we don't check it specifically
@@ -569,12 +576,12 @@ fn test_parse_workflow_file_empty() {
     // Create a temporary empty file
     let temp_dir = tempfile::tempdir().unwrap();
     let file_path = temp_dir.path().join("empty.yaml");
-    
+
     fs::write(&file_path, "").unwrap();
-    
+
     // Parse the workflow file
     let result = utils::parse_workflow_file(&file_path);
-    
+
     // Verify that parsing fails
     assert!(result.is_err());
 }
@@ -583,9 +590,9 @@ fn test_parse_workflow_file_empty() {
 fn test_parse_params_empty() {
     // Test parsing empty parameters
     let params: Vec<String> = vec![];
-    
+
     let result = utils::parse_params(&params).unwrap();
-    
+
     // Verify the parsed parameters
     assert_eq!(result.len(), 0);
 }
@@ -593,13 +600,10 @@ fn test_parse_params_empty() {
 #[test]
 fn test_parse_params_with_empty_value() {
     // Test parsing parameters with empty values
-    let params = vec![
-        "key1=".to_string(),
-        "key2=value2".to_string(),
-    ];
-    
+    let params = vec!["key1=".to_string(), "key2=value2".to_string()];
+
     let result = utils::parse_params(&params).unwrap();
-    
+
     // Verify the parsed parameters
     assert_eq!(result.len(), 2);
     assert_eq!(result.get("key1"), Some(&"".to_string()));
@@ -609,13 +613,10 @@ fn test_parse_params_with_empty_value() {
 #[test]
 fn test_parse_params_with_multiple_equals() {
     // Test parsing parameters with multiple equals signs
-    let params = vec![
-        "key1=value1=extra".to_string(),
-        "key2=value2".to_string(),
-    ];
-    
+    let params = vec!["key1=value1=extra".to_string(), "key2=value2".to_string()];
+
     let result = utils::parse_params(&params).unwrap();
-    
+
     // Verify the parsed parameters
     assert_eq!(result.len(), 2);
     assert_eq!(result.get("key1"), Some(&"value1=extra".to_string()));
@@ -629,25 +630,23 @@ fn test_validate_workflow_self_dependency() {
         version: "1".to_string(),
         state: None,
         templates: vec![],
-        nodes: vec![
-            Node {
-                id: "node1".to_string(),
-                name: "Node 1".to_string(),
-                description: None,
-                r#type: NodeType::Automatic,
-                depends_on: vec!["node1".to_string()], // Self-dependency
-                trigger: None,
-                strategy: None,
-                runtime: None,
-                steps: vec![],
-                env: HashMap::new(),
-            },
-        ],
+        nodes: vec![Node {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            description: None,
+            r#type: NodeType::Automatic,
+            depends_on: vec!["node1".to_string()], // Self-dependency
+            trigger: None,
+            strategy: None,
+            runtime: None,
+            steps: vec![],
+            env: HashMap::new(),
+        }],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation fails
     assert!(result.is_err());
     match result {
@@ -669,34 +668,32 @@ fn test_validate_workflow_valid_matrix_strategy_with_values() {
     value2.insert("region".to_string(), "us-west".to_string());
     values.push(value1);
     values.push(value2);
-    
+
     let workflow = Workflow {
         version: "1".to_string(),
         state: None,
         templates: vec![],
-        nodes: vec![
-            Node {
-                id: "node1".to_string(),
-                name: "Node 1".to_string(),
-                description: None,
-                r#type: NodeType::Automatic,
-                depends_on: vec![],
-                trigger: None,
-                strategy: Some(Strategy {
-                    r#type: StrategyType::Matrix,
-                    values: Some(values),
-                    from_state: None,
-                }),
-                runtime: None,
-                steps: vec![],
-                env: HashMap::new(),
-            },
-        ],
+        nodes: vec![Node {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            description: None,
+            r#type: NodeType::Automatic,
+            depends_on: vec![],
+            trigger: None,
+            strategy: Some(Strategy {
+                r#type: StrategyType::Matrix,
+                values: Some(values),
+                from_state: None,
+            }),
+            runtime: None,
+            steps: vec![],
+            env: HashMap::new(),
+        }],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation succeeds
     assert!(result.is_ok());
 }
@@ -708,29 +705,27 @@ fn test_validate_workflow_valid_matrix_strategy_with_from_state() {
         version: "1".to_string(),
         state: None,
         templates: vec![],
-        nodes: vec![
-            Node {
-                id: "node1".to_string(),
-                name: "Node 1".to_string(),
-                description: None,
-                r#type: NodeType::Automatic,
-                depends_on: vec![],
-                trigger: None,
-                strategy: Some(Strategy {
-                    r#type: StrategyType::Matrix,
-                    values: None,
-                    from_state: Some("testState".to_string()),
-                }),
-                runtime: None,
-                steps: vec![],
-                env: HashMap::new(),
-            },
-        ],
+        nodes: vec![Node {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            description: None,
+            r#type: NodeType::Automatic,
+            depends_on: vec![],
+            trigger: None,
+            strategy: Some(Strategy {
+                r#type: StrategyType::Matrix,
+                values: None,
+                from_state: Some("testState".to_string()),
+            }),
+            runtime: None,
+            steps: vec![],
+            env: HashMap::new(),
+        }],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation succeeds
     assert!(result.is_ok());
 }
@@ -741,30 +736,26 @@ fn test_validate_workflow_with_template_outputs() {
     let workflow = Workflow {
         version: "1".to_string(),
         state: None,
-        templates: vec![
-            Template {
-                id: "template1".to_string(),
-                name: "Template 1".to_string(),
+        templates: vec![Template {
+            id: "template1".to_string(),
+            name: "Template 1".to_string(),
+            description: None,
+            inputs: vec![],
+            runtime: None,
+            steps: vec![],
+            outputs: vec![TemplateOutput {
+                name: "output1".to_string(),
+                value: "${result}".to_string(),
                 description: None,
-                inputs: vec![],
-                runtime: None,
-                steps: vec![],
-                outputs: vec![
-                    TemplateOutput {
-                        name: "output1".to_string(),
-                        value: "${result}".to_string(),
-                        description: None,
-                    },
-                ],
-                env: HashMap::new(),
-            },
-        ],
+            }],
+            env: HashMap::new(),
+        }],
         nodes: vec![],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation succeeds
     assert!(result.is_ok());
 }
@@ -774,39 +765,35 @@ fn test_validate_workflow_with_step_env_vars() {
     // Create a workflow with a step that has environment variables
     let mut step_env = HashMap::new();
     step_env.insert("STEP_VAR".to_string(), "step_value".to_string());
-    
+
     let workflow = Workflow {
         version: "1".to_string(),
         state: None,
         templates: vec![],
-        nodes: vec![
-            Node {
-                id: "node1".to_string(),
-                name: "Node 1".to_string(),
+        nodes: vec![Node {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            description: None,
+            r#type: NodeType::Automatic,
+            depends_on: vec![],
+            trigger: None,
+            strategy: None,
+            runtime: None,
+            steps: vec![Step {
+                id: "step1".to_string(),
+                name: "Step 1".to_string(),
                 description: None,
-                r#type: NodeType::Automatic,
-                depends_on: vec![],
-                trigger: None,
-                strategy: None,
-                runtime: None,
-                steps: vec![
-                    Step {
-                        id: "step1".to_string(),
-                        name: "Step 1".to_string(),
-                        description: None,
-                        uses: None,
-                        commands: Some(vec!["echo $STEP_VAR".to_string()]),
-                        env: Some(step_env),
-                    },
-                ],
-                env: HashMap::new(),
-            },
-        ],
+                uses: None,
+                commands: Some(vec!["echo $STEP_VAR".to_string()]),
+                env: Some(step_env),
+            }],
+            env: HashMap::new(),
+        }],
     };
-    
+
     // Validate the workflow
     let result = utils::validate_workflow(&workflow);
-    
+
     // Verify that validation succeeds
     assert!(result.is_ok());
 }
@@ -816,7 +803,7 @@ fn test_parse_workflow_file_complex() {
     // Create a temporary YAML workflow file with complex structure
     let temp_dir = tempfile::tempdir().unwrap();
     let file_path = temp_dir.path().join("complex.yaml");
-    
+
     let yaml_content = r#"
 version: "1"
 state:
@@ -867,30 +854,30 @@ nodes:
         commands:
           - echo "Processing region"
 "#;
-    
+
     fs::write(&file_path, yaml_content).unwrap();
-    
+
     // Parse the workflow file
     let workflow = utils::parse_workflow_file(&file_path).unwrap();
-    
+
     // Verify the parsed workflow
     assert_eq!(workflow.version, "1");
     assert_eq!(workflow.nodes.len(), 2);
     assert_eq!(workflow.templates.len(), 1);
-    
+
     // Check first node
     assert_eq!(workflow.nodes[0].id, "node1");
     assert_eq!(workflow.nodes[0].name, "Node 1");
     assert_eq!(workflow.nodes[0].r#type, NodeType::Automatic);
     assert_eq!(workflow.nodes[0].steps.len(), 2);
-    
+
     // Check second node
     assert_eq!(workflow.nodes[1].id, "node2");
     assert_eq!(workflow.nodes[1].name, "Node 2");
     assert_eq!(workflow.nodes[1].r#type, NodeType::Manual);
     assert_eq!(workflow.nodes[1].depends_on, vec!["node1"]);
     assert!(workflow.nodes[1].strategy.is_some());
-    
+
     // Check template
     assert_eq!(workflow.templates[0].id, "template1");
     assert_eq!(workflow.templates[0].name, "Template 1");

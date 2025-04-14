@@ -23,6 +23,12 @@ impl DirectRunner {
     }
 }
 
+impl Default for DirectRunner {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[async_trait]
 impl Runner for DirectRunner {
     async fn run_command(&self, command: &str, env: &HashMap<String, String>) -> Result<String> {
@@ -135,6 +141,12 @@ impl DockerRunner {
     }
 }
 
+impl Default for DockerRunner {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[async_trait]
 impl Runner for DockerRunner {
     async fn run_command(&self, command: &str, env: &HashMap<String, String>) -> Result<String> {
@@ -187,6 +199,12 @@ impl PodmanRunner {
     /// Create a new Podman runner
     pub fn new() -> Self {
         Self
+    }
+}
+
+impl Default for PodmanRunner {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

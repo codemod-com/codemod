@@ -26,6 +26,12 @@ pub struct Engine {
     state_adapter: Arc<Mutex<Box<dyn StateAdapter>>>,
 }
 
+impl Default for Engine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Engine {
     /// Create a new engine with a local state adapter
     pub fn new() -> Self {
@@ -787,7 +793,7 @@ impl Engine {
                             .execute_step(
                                 runner.as_ref(),
                                 template_step,
-                                &node,
+                                node,
                                 &task,
                                 &workflow_run,
                             )
@@ -843,7 +849,7 @@ impl Engine {
             else if let Some(_commands) = &step.commands {
                 // Execute the step
                 let result = self
-                    .execute_step(runner.as_ref(), step, &node, &task, &workflow_run)
+                    .execute_step(runner.as_ref(), step, node, &task, &workflow_run)
                     .await;
 
                 if let Err(e) = result {

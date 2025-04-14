@@ -26,7 +26,7 @@ pub struct Workflow {
 }
 
 /// Represents the state schema for a workflow
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct WorkflowState {
     /// Schema definitions
     #[serde(default)]
@@ -81,10 +81,4 @@ pub enum WorkflowStatus {
 
     /// Workflow has been canceled
     Canceled,
-}
-
-impl Default for WorkflowState {
-    fn default() -> Self {
-        Self { schema: Vec::new() }
-    }
 }

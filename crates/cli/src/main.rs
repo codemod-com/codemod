@@ -156,26 +156,26 @@ fn create_engine(config_path: &Option<PathBuf>) -> Result<Engine> {
     if let Some(state_management) = state_management {
         // Get backend type
         let backend = state_management
-            .get(&serde_yaml::Value::String("backend".to_string()))
+            .get(serde_yaml::Value::String("backend".to_string()))
             .and_then(|v| v.as_str());
 
         match backend {
             Some("api") => {
                 // Get API configuration
                 let api_config = state_management
-                    .get(&serde_yaml::Value::String("apiConfig".to_string()))
+                    .get(serde_yaml::Value::String("apiConfig".to_string()))
                     .and_then(|v| v.as_mapping());
 
                 if let Some(api_config) = api_config {
                     // Get endpoint
                     let endpoint = api_config
-                        .get(&serde_yaml::Value::String("endpoint".to_string()))
+                        .get(serde_yaml::Value::String("endpoint".to_string()))
                         .and_then(|v| v.as_str())
                         .unwrap_or("http://localhost:8080");
 
                     // Get auth token
                     let auth_token = api_config
-                        .get(&serde_yaml::Value::String("authToken".to_string()))
+                        .get(serde_yaml::Value::String("authToken".to_string()))
                         .and_then(|v| v.as_str())
                         .unwrap_or("");
 
@@ -462,7 +462,7 @@ async fn show_status(engine: &Engine, workflow_run_id: Uuid) -> Result<()> {
     for task in &tasks {
         tasks_by_node
             .entry(task.node_id.clone())
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(task);
     }
 

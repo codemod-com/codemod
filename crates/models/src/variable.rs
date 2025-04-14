@@ -36,27 +36,27 @@ impl VariableReference {
         let inner = captures.get(1).unwrap().as_str();
 
         // Parse the variable type and name
-        if inner.starts_with("params.") {
+        if let Some(stripped) = inner.strip_prefix("params.") {
             Ok(Self {
                 full_reference: reference.to_string(),
                 var_type: "params".to_string(),
-                name: inner["params.".len()..].to_string(),
+                name: stripped.to_string(),
                 task_id: None,
                 output_name: None,
             })
-        } else if inner.starts_with("env.") {
+        } else if let Some(stripped) = inner.strip_prefix("env.") {
             Ok(Self {
                 full_reference: reference.to_string(),
                 var_type: "env".to_string(),
-                name: inner["env.".len()..].to_string(),
+                name: stripped.to_string(),
                 task_id: None,
                 output_name: None,
             })
-        } else if inner.starts_with("state.") {
+        } else if let Some(stripped) = inner.strip_prefix("state.") {
             Ok(Self {
                 full_reference: reference.to_string(),
                 var_type: "state".to_string(),
-                name: inner["state.".len()..].to_string(),
+                name: stripped.to_string(),
                 task_id: None,
                 output_name: None,
             })
@@ -106,18 +106,15 @@ pub fn resolve_variables(
             // First check if it's a direct matrix value
             if matrix_values.contains_key(inner) {
                 matrix_values.get(inner).unwrap().clone()
-            } else if inner.starts_with("params.") {
-                let name = &inner["params.".len()..];
+            } else if let Some(name) = inner.strip_prefix("params.") {
                 params.get(name).cloned().ok_or_else(|| {
                     Error::VariableResolution(format!("Parameter not found: {}", name))
                 })?
-            } else if inner.starts_with("env.") {
-                let name = &inner["env.".len()..];
+            } else if let Some(name) = inner.strip_prefix("env.") {
                 env.get(name).cloned().ok_or_else(|| {
                     Error::VariableResolution(format!("Environment variable not found: {}", name))
                 })?
-            } else if inner.starts_with("state.") {
-                let name = &inner["state.".len()..];
+            } else if let Some(name) = inner.strip_prefix("state.") {
                 let value = state.get(name).ok_or_else(|| {
                     Error::VariableResolution(format!("State value not found: {}", name))
                 })?;
@@ -154,18 +151,15 @@ pub fn resolve_variables(
             }
         } else {
             // No matrix values, resolve normally
-            if inner.starts_with("params.") {
-                let name = &inner["params.".len()..];
+            if let Some(name) = inner.strip_prefix("params.") {
                 params.get(name).cloned().ok_or_else(|| {
                     Error::VariableResolution(format!("Parameter not found: {}", name))
                 })?
-            } else if inner.starts_with("env.") {
-                let name = &inner["env.".len()..];
+            } else if let Some(name) = inner.strip_prefix("env.") {
                 env.get(name).cloned().ok_or_else(|| {
                     Error::VariableResolution(format!("Environment variable not found: {}", name))
                 })?
-            } else if inner.starts_with("state.") {
-                let name = &inner["state.".len()..];
+            } else if let Some(name) = inner.strip_prefix("state.") {
                 let value = state.get(name).ok_or_else(|| {
                     Error::VariableResolution(format!("State value not found: {}", name))
                 })?;
