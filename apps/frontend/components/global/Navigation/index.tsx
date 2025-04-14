@@ -8,7 +8,10 @@ import { Toaster } from "sonner";
 
 import { useExitAnimation } from "@/hooks/UseExitAnimation";
 
-import { DesktopNavigationItems } from "@/components/global/Navigation/DesktopNavigation";
+import {
+  DesktopNavigationItems,
+  DesktopNavigationRight,
+} from "@/components/global/Navigation/DesktopNavigation";
 import LogoWithContextMenu from "@/components/global/Navigation/LogoWithContextMenu";
 import { MobileDropdown } from "@/components/global/Navigation/MobileNavigation";
 import Burger from "@/components/shared/Burger";
@@ -112,7 +115,7 @@ export default function Navigation({ data }: NavigationProps) {
                 isCurrent: item?.href === pathname,
               }))}
             />
-            {/* <DesktopNavigationRight items={data?.navigationCtas} /> */}
+            <DesktopNavigationRight items={data?.navigationCtas} />
             {/* Mobile */}
             <div className="flex items-center gap-3 lg:hidden">
               <DropdownMenu.Root
