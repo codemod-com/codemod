@@ -111,21 +111,4 @@ impl Task {
             logs: Vec::new(),
         }
     }
-
-    /// Create a new master task for a matrix
-    pub fn new_matrix_master(workflow_run_id: Uuid, node_id: String) -> Self {
-        Self {
-            id: Uuid::new_v4(),
-            workflow_run_id,
-            node_id,
-            status: TaskStatus::Pending,
-            master_task_id: None,
-            matrix_values: None,
-            started_at: None,
-            ended_at: None,
-            error: None,
-            outputs: HashMap::new(),
-            logs: Vec::new(),
-        }
-    }
 }

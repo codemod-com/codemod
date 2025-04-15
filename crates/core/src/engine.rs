@@ -596,7 +596,7 @@ impl Engine {
             // Check if the node has a matrix strategy
             if let Some(strategy) = &node.strategy {
                 // Create a master task for the matrix
-                let master_task = Task::new_matrix_master(workflow_run.id, node.id.clone());
+                let master_task = Task::new(workflow_run.id, node.id.clone());
                 self.state_adapter
                     .lock()
                     .await

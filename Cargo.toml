@@ -29,6 +29,3 @@ futures = "0.3"
 futures-util = { version = "0.3", features = ["stream"] }
 clap = { version = "4.5", features = ["derive"] }
 butterflow-models = { path = "crates/models", version = "0.1.0" }
-
-[alias]
-xtask = "run --package xtask --"
