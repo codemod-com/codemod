@@ -19,9 +19,9 @@ pub struct Step {
     #[serde(default)]
     pub uses: Option<Vec<TemplateUse>>,
 
-    /// Commands to run
+    /// Script to run
     #[serde(default)]
-    pub commands: Option<Vec<String>>,
+    pub run: Option<String>,
 
     /// Environment variables specific to this step
     #[serde(default)]

@@ -8,12 +8,11 @@ nodes:
     steps:
       - id: ls
         name: List Files
-        commands:
-          - ls -la
+        run: ls -la
     env:
-      REPO_URL: "${params.repo_url}"
-      BRANCH: "${params.branch}"
-      DEBUG: "${env.DEBUG}"
+      REPO_URL: "${{params.repo_url}}"
+      BRANCH: "${{params.branch}}"
+      DEBUG: "${{env.DEBUG}}"
 
   - id: echo-message
     name: Echo Message
@@ -24,14 +23,14 @@ nodes:
     steps:
       - id: echo
         name: Echo Message
-        commands:
-          - echo "Working with repository $REPO_URL on branch $BRANCH"
-          - echo "Debug mode is $DEBUG"
-          - echo "Working directory is $WORKSPACE"
+        run: |
+          echo "Working with repository $REPO_URL on branch $BRANCH"
+          echo "Debug mode is $DEBUG"
+          echo "Working directory is $WORKSPACE"
     env:
-      REPO_URL: "${params.repo_url}"
-      BRANCH: "${params.branch}"
-      DEBUG: "${env.DEBUG}"
+      REPO_URL: "${{params.repo_url}}"
+      BRANCH: "${{params.branch}}"
+      DEBUG: "${{env.DEBUG}}"
 
   - id: process-files
     name: Process Files
@@ -45,8 +44,8 @@ nodes:
     steps:
       - id: process
         name: Process File
-        commands:
-          - echo "Processing file $file"
-          - echo "File content would be processed here"
+        run: |
+          echo "Processing file $file"
+          echo "File content would be processed here"
     env:
-      DEBUG: "${env.DEBUG}"
+      DEBUG: "${{env.DEBUG}}"

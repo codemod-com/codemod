@@ -8,8 +8,7 @@ nodes:
     steps:
       - id: step1
         name: Step 1
-        commands:
-          - echo "Running automatic node"
+        run: echo "Running automatic node"
 
   - id: manual-node
     name: Manual Node
@@ -20,8 +19,7 @@ nodes:
     steps:
       - id: step1
         name: Step 1
-        commands:
-          - echo "Running manual node"
+        run: echo "Running manual node"
 
   - id: final-node
     name: Final Node
@@ -32,5 +30,4 @@ nodes:
     steps:
       - id: step1
         name: Step 1
-        commands:
-          - echo "Running final node"
+        run: echo "Running final node"

@@ -23,8 +23,7 @@ nodes:
     steps:
       - id: step1
         name: Step 1
-        commands:
-          - echo "Hello, World!"
+        run: echo "Hello, World!"
 "#;
 
     fs::write(&file_path, yaml_content).unwrap();
@@ -41,7 +40,7 @@ nodes:
     assert_eq!(workflow.nodes[0].steps[0].id, "step1");
     assert_eq!(workflow.nodes[0].steps[0].name, "Step 1");
     assert_eq!(
-        workflow.nodes[0].steps[0].commands.as_ref().unwrap()[0],
+        workflow.nodes[0].steps[0].run.as_ref().unwrap(),
         "echo \"Hello, World!\""
     );
 }
@@ -63,7 +62,7 @@ fn test_parse_workflow_file_json() {
         {
           "id": "step1",
           "name": "Step 1",
-          "commands": ["echo \"Hello, World!\""]
+          "run": "echo \"Hello, World!\""
         }
       ]
     }
@@ -85,7 +84,7 @@ fn test_parse_workflow_file_json() {
     assert_eq!(workflow.nodes[0].steps[0].id, "step1");
     assert_eq!(workflow.nodes[0].steps[0].name, "Step 1");
     assert_eq!(
-        workflow.nodes[0].steps[0].commands.as_ref().unwrap()[0],
+        workflow.nodes[0].steps[0].run.as_ref().unwrap(),
         "echo \"Hello, World!\""
     );
 }
@@ -421,7 +420,7 @@ fn test_validate_workflow_nonexistent_template_reference() {
                     template: "nonexistent".to_string(), // Non-existent template
                     inputs: HashMap::new(),
                 }]),
-                commands: None,
+                run: None,
                 env: None,
             }],
             env: HashMap::new(),
@@ -784,7 +783,7 @@ fn test_validate_workflow_with_step_env_vars() {
                 name: "Step 1".to_string(),
                 description: None,
                 uses: None,
-                commands: Some(vec!["echo $STEP_VAR".to_string()]),
+                run: Some("echo $STEP_VAR".to_string()),
                 env: Some(step_env),
             }],
             env: HashMap::new(),
@@ -821,8 +820,7 @@ templates:
     steps:
       - id: step1
         name: Step 1
-        commands:
-          - echo "Template step"
+        run: echo "Template step"
 nodes:
   - id: node1
     name: Node 1
@@ -830,8 +828,7 @@ nodes:
     steps:
       - id: step1
         name: Step 1
-        commands:
-          - echo "Hello, World!"
+        run: echo "Hello, World!"
       - id: step2
         name: Step 2
         uses:
@@ -851,8 +848,7 @@ nodes:
     steps:
       - id: step1
         name: Step 1
-        commands:
-          - echo "Processing region"
+        run: echo "Processing region"
 "#;
 
     fs::write(&file_path, yaml_content).unwrap();

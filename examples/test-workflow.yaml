@@ -8,8 +8,7 @@ nodes:
     steps:
       - id: hello
         name: Hello
-        commands:
-          - echo "Hello, World!"
+        run: echo "Hello, World!"
 
   - id: current-time
     name: Current Time
@@ -20,5 +19,4 @@ nodes:
     steps:
       - id: time
         name: Time
-        commands:
-          - date
+        run: date

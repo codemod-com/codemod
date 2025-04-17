@@ -57,9 +57,6 @@ pub struct WorkflowRun {
 
     /// End time of the workflow run (if completed or failed)
     pub ended_at: Option<DateTime<Utc>>,
-
-    /// State data for this workflow run
-    pub state: HashMap<String, serde_json::Value>,
 }
 
 /// Status of a workflow run

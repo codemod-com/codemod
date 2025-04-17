@@ -22,7 +22,7 @@ pub use strategy::{Strategy, StrategyType};
 pub use task::{Task, TaskStatus};
 pub use template::{Template, TemplateInput, TemplateOutput};
 pub use trigger::{Trigger, TriggerType};
-pub use variable::{resolve_variables, VariableReference};
+pub use variable::resolve_variables;
 pub use workflow::{Workflow, WorkflowRun, WorkflowState, WorkflowStatus};
 
 pub type Result<T> = std::result::Result<T, Error>;

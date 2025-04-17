@@ -7,16 +7,15 @@ nodes:
     steps:
       - id: evaluate
         name: Evaluate Codeowners
-        commands:
-          - echo "Evaluating codeowners"
+        run: echo "Evaluating codeowners"
     env:
-      REPO_URL: "${params.repo_url}"
-      BRANCH: "${params.branch}"
-      DEBUG: "${env.CI}"
+      REPO_URL: "${{params.repo_url}}"
+      BRANCH: "${{params.branch}}"
+      DEBUG: "${{env.CI}}"
 
   - id: run-codemod-ts
     name: I18n Codemod (TS)
-    description: "Run the i18n codemod on the TS files for ${params.repo_url}"
+    description: "Run the i18n codemod on the TS files for ${{params.repo_url}}"
     type: automatic
     depends_on:
       - eval-codeowners
@@ -28,19 +27,17 @@ nodes:
     steps:
       - id: run-codemod
         name: Run Codemod
-        commands:
-          - echo "Running TS codemod"
+        run: echo "Running TS codemod"
       - id: verify
         name: Verify Changes
-        commands:
-          - echo "Verifying TS changes"
+        run: echo "Verifying TS changes"
     env:
-      REPO_URL: "${params.repo_url}"
-      BRANCH: "${params.branch}"
+      REPO_URL: "${{params.repo_url}}"
+      BRANCH: "${{params.branch}}"
 
   - id: run-codemod-html
     name: I18n Codemod (HTML)
-    description: "Run the i18n codemod on the HTML files for ${params.repo_url}"
+    description: "Run the i18n codemod on the HTML files for ${{params.repo_url}}"
     type: automatic
     depends_on:
       - eval-codeowners
@@ -52,12 +49,10 @@ nodes:
     steps:
       - id: run-codemod
         name: Run Codemod
-        commands:
-          - echo "Running HTML codemod"
+        run: echo "Running HTML codemod"
       - id: verify
         name: Verify Changes
-        commands:
-          - echo "Verifying HTML changes"
+        run: echo "Verifying HTML changes"
     env:
-      REPO_URL: "${params.repo_url}"
-      BRANCH: "${params.branch}"
+      REPO_URL: "${{params.repo_url}}"
+      BRANCH: "${{params.branch}}"

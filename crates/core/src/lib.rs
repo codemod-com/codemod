@@ -3,7 +3,7 @@ pub mod utils;
 
 pub use butterflow_models::{
     Error, Node, Result, StateSchema, StateSchemaItems, StateSchemaProperty, StateSchemaType, Task,
-    TaskStatus, VariableReference, Workflow, WorkflowRun, WorkflowStatus,
+    TaskStatus, Workflow, WorkflowRun, WorkflowStatus,
 };
 
 pub use butterflow_models::node::NodeType;

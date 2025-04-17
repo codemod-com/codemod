@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schemas/workflow.json
 version: "1"
 
 nodes:
@@ -8,16 +9,15 @@ nodes:
     steps:
       - id: check-env
         name: Check Environment
-        commands:
-          - |
-            #!/bin/bash
-            echo "Running environment check"
-            echo "Current directory: $(pwd)"
-            echo "Files in directory:"
-            ls -la
+        run: |
+          #!/usr/bin/env bash
+          echo "Running environment check"
+          echo "Current directory: $(pwd)"
+          echo "Files in directory:"
+          ls -la
     env:
       DEBUG: "true"
-      WORKSPACE: "${env.WORKSPACE}"
+      WORKSPACE: "${{env.WORKSPACE}}"
 
   - id: process-data
     name: Process Data
@@ -31,19 +31,17 @@ nodes:
     steps:
       - id: validate
         name: Validate File
-        commands:
-          - |
-            #!/bin/bash
-            echo "Validating file: $file"
-            echo "File exists: $(test -f $file && echo 'Yes' || echo 'No')"
+        run: |
+          #!/usr/bin/env bash
+          echo "Validating file: $file"
+          echo "File exists: $(test -f $file && echo 'Yes' || echo 'No')"
       
       - id: process
         name: Process File
-        commands:
-          - |
-            #!/bin/bash
-            echo "Processing file: $file"
-            echo "File content would be processed here"
+        run: |
+          #!/usr/bin/env bash
+          echo "Processing file: $file"
+          echo "File content would be processed here"
     env:
       DEBUG: "true"
 
@@ -56,25 +54,21 @@ nodes:
     steps:
       - id: collect-results
         name: Collect Results
-        commands:
-          - |
-            #!/bin/bash
-            echo "Collecting results from processed files"
-            echo "Results would be collected here"
-        env:
-          SCRIPT_LANGUAGE: "bash"
+        uses:
+        - template: checkout-repo
+          inputs:
+            repo_url: https://github.com/neovim/neovim
       
       - id: create-report
         name: Create Report
-        commands:
-          - |
-            #!/usr/bin/env python
-            import os
-            import sys
-            
-            print("Creating report")
-            print(f"Python version: {sys.version}")
-            print("Report would be created here")
+        run: |
+          #!/usr/bin/env python
+          import os
+          import sys
+
+          print("Creating report")
+          print(f"Python version: {sys.version}")
+          print("Report would be created here")
         env:
           SCRIPT_LANGUAGE: "python"
     env:
@@ -96,11 +90,10 @@ templates:
     steps:
       - id: clone
         name: Clone repository
-        commands:
-          - |
-            #!/bin/bash
-            echo "Cloning repository ${inputs.repo_url} branch ${inputs.branch}"
-            echo "Repository would be cloned here"
+        run: |
+          #!/usr/bin/env bash
+          echo "Cloning repository ${{params.repo_url}} branch ${{params.branch}}"
+          echo "Repository would be cloned here"
 
 state:
   schema:

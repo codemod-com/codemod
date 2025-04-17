@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schemas/workflow.json
 version: "1"
 
 state:
@@ -33,25 +34,23 @@ templates:
         type: string
         required: true
         description: "URL of the repository to checkout"
-        default: ${params.repo_url}
+        default: ${{params.repo_url}}
       - name: branch
         type: string
         default: "main"
         description: "Branch to checkout"
-        default: ${params.branch}
       - name: depth
         type: integer
-        default: 1
+        default: "1"
         description: "Git clone depth"
-        default: ${params.depth}
     steps:
       - id: clone
         name: Clone repository
-        commands:
-          - git clone --depth ${inputs.depth} ${inputs.repo_url} repo
-          - cd repo
-          - git checkout ${inputs.branch}
-          - git pull origin ${inputs.branch}
+        run: |
+          git clone --depth ${{inputs.depth}} ${{inputs.repo_url}} repo
+          cd repo
+          git checkout ${{inputs.branch}}
+          git pull origin ${{inputs.branch}}
 
 nodes:
   - id: evaluate-codeowners
@@ -68,9 +67,9 @@ nodes:
         uses:
           - template: checkout-repo
             inputs:
-              repo_url: ${params.repo_url}
-              branch: ${params.branch}
-              depth: ${params.depth}
+              repo_url: ${{params.repo_url}}
+              branch: ${{params.branch}}
+              depth: ${{params.depth}}
       - id: evaluate-codeowners
         name: Evaluate codeowners
         description: Shard the Codemod run into smaller chunks based on the codeowners
@@ -100,19 +99,10 @@ nodes:
       - id: run-codemod
         name: Run codemod
         description: Run the i18n codemod on the TS files
-        commands:
-          - node /scripts/run-codemod.js --type=ts --path=${SHARD_PATH}
+        run: node /scripts/run-codemod.js --type=ts --path=${SHARD_PATH}
     env:
       REPO_PATH: /workspace
       OUTPUT_PATH: /data/results-ts-${SHARD_ID}.json
-
-  - id: run-manual-check
-    name: Run manual check
-    description: Ask the teams to review the results
-    # Manual nodes are not automatic and require user's manual approval to continue
-    type: manual
-    depends_on:
-      - run-codemod-ts
 
   - id: run-codemod-html
     name: I18n Codemod (HTML)
@@ -124,7 +114,7 @@ nodes:
       type: matrix
       from_state: i18nShardsHtml
     depends_on:
-      - run-manual-check
+      - run-codemod-ts
     runtime:
       type: docker
       image: node:18-alpine
@@ -137,10 +127,8 @@ nodes:
       - id: run-codemod
         name: Run codemod
         description: Run the i18n codemod on the HTML files
-        commands:
-          - node /scripts/run-codemod.js --type=html --path=${SHARD_PATH}
+        run: node /scripts/run-codemod.js --type=html --path=${SHARD_PATH}
       - id: pull-request
         name: Pull request
         description: Create a pull request with the changes
-        commands:
-          - codemodctl pr create
+        run: codemodctl pr create

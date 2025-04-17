@@ -15,6 +15,7 @@ use uuid::Uuid;
 struct MockStateAdapter {
     workflow_runs: HashMap<Uuid, WorkflowRun>,
     tasks: HashMap<Uuid, Task>,
+    state: HashMap<String, serde_json::Value>,
 }
 
 impl MockStateAdapter {
@@ -22,6 +23,7 @@ impl MockStateAdapter {
         Self {
             workflow_runs: HashMap::new(),
             tasks: HashMap::new(),
+            state: HashMap::new(),
         }
     }
 }
@@ -134,12 +136,11 @@ impl StateAdapter for MockStateAdapter {
 
     async fn update_state(
         &mut self,
-        workflow_run_id: Uuid,
+        _workflow_run_id: Uuid,
         state: HashMap<String, serde_json::Value>,
     ) -> Result<()> {
-        let mut workflow_run = self.get_workflow_run(workflow_run_id).await?;
-        workflow_run.state = state;
-        self.save_workflow_run(&workflow_run).await
+        self.state = state;
+        Ok(())
     }
 
     async fn apply_state_diff(&mut self, diff: &butterflow_models::StateDiff) -> Result<()> {
@@ -162,9 +163,11 @@ impl StateAdapter for MockStateAdapter {
         self.update_state(diff.workflow_run_id, state).await
     }
 
-    async fn get_state(&self, workflow_run_id: Uuid) -> Result<HashMap<String, serde_json::Value>> {
-        let workflow_run = self.get_workflow_run(workflow_run_id).await?;
-        Ok(workflow_run.state.clone())
+    async fn get_state(
+        &self,
+        _workflow_run_id: Uuid,
+    ) -> Result<HashMap<String, serde_json::Value>> {
+        Ok(self.state.clone())
     }
 }
 
@@ -195,7 +198,7 @@ fn create_test_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Hello, World!'".to_string()]),
+                    run: Some("echo 'Hello, World!'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -221,7 +224,7 @@ fn create_test_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Node 2 executed'".to_string()]),
+                    run: Some("echo 'Node 2 executed'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -258,7 +261,7 @@ fn create_manual_trigger_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Hello, World!'".to_string()]),
+                    run: Some("echo 'Hello, World!'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -286,7 +289,7 @@ fn create_manual_trigger_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Node 2 executed'".to_string()]),
+                    run: Some("echo 'Node 2 executed'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -323,7 +326,7 @@ fn create_manual_node_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Hello, World!'".to_string()]),
+                    run: Some("echo 'Hello, World!'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -349,7 +352,7 @@ fn create_manual_node_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Node 2 executed'".to_string()]),
+                    run: Some("echo 'Node 2 executed'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -386,7 +389,7 @@ fn create_matrix_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Hello, World!'".to_string()]),
+                    run: Some("echo 'Hello, World!'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -420,7 +423,7 @@ fn create_matrix_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Processing region ${region}'".to_string()]),
+                    run: Some("echo 'Processing region ${region}'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -464,9 +467,9 @@ fn create_template_workflow() -> Workflow {
             id: "clone".to_string(),
             name: "Clone repository".to_string(),
             description: None,
-            commands: Some(vec![
+            run: Some(
                 "echo 'Cloning repository ${inputs.repo_url} branch ${inputs.branch}'".to_string(),
-            ]),
+            ),
             uses: None,
             env: None,
         }],
@@ -508,7 +511,7 @@ fn create_template_workflow() -> Workflow {
                         ("branch".to_string(), "feature/test".to_string()),
                     ]),
                 }]),
-                commands: None,
+                run: None,
                 env: None,
             }],
             env: HashMap::new(),
@@ -559,7 +562,7 @@ fn create_matrix_from_state_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Setting up state'".to_string()]),
+                    run: Some("echo 'Setting up state'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -589,7 +592,7 @@ fn create_matrix_from_state_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Processing file ${file}'".to_string()]),
+                    run: Some("echo 'Processing file ${file}'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -944,7 +947,7 @@ fn create_env_var_workflow() -> Workflow {
                 id: "step1".to_string(),
                 name: "Step 1".to_string(),
                 description: None,
-                commands: Some(vec!["echo 'Using env var: $TEST_ENV_VAR'".to_string()]),
+                run: Some("echo 'Using env var: $TEST_ENV_VAR'".to_string()),
                 uses: None,
                 env: Some(HashMap::from([(
                     "STEP_SPECIFIC_VAR".to_string(),
@@ -985,10 +988,10 @@ fn create_variable_resolution_workflow() -> Workflow {
                 id: "step1".to_string(),
                 name: "Step 1".to_string(),
                 description: None,
-                commands: Some(vec![
+                run: Some(
                     "echo 'Processing repo: ${params.repo_name} on branch: ${params.branch}'"
                         .to_string(),
-                ]),
+                ),
                 uses: None,
                 env: None,
             }],
@@ -1189,7 +1192,7 @@ async fn test_cyclic_dependency_workflow() {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Hello, World!'".to_string()]),
+                    run: Some("echo 'Hello, World!'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -1215,7 +1218,7 @@ async fn test_cyclic_dependency_workflow() {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    commands: Some(vec!["echo 'Node 2 executed'".to_string()]),
+                    run: Some("echo 'Node 2 executed'".to_string()),
                     uses: None,
                     env: None,
                 }],
@@ -1267,7 +1270,7 @@ async fn test_invalid_template_reference() {
                     template: "non-existent-template".to_string(), // This template doesn't exist
                     inputs: HashMap::new(),
                 }]),
-                commands: None,
+                run: None,
                 env: None,
             }],
             env: HashMap::new(),

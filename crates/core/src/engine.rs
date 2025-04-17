@@ -1,9 +1,11 @@
 use std::collections::HashMap;
+use std::fs::File;
 use std::sync::Arc;
 use std::time::Duration;
 
 use chrono::Utc;
 use log::{debug, error, info, warn};
+use tokio::fs::read_to_string;
 use tokio::sync::Mutex;
 use tokio::time;
 use uuid::Uuid;
@@ -11,11 +13,10 @@ use uuid::Uuid;
 use crate::utils;
 use butterflow_models::node::NodeType;
 use butterflow_models::runtime::RuntimeType;
-use butterflow_models::step::Step;
 use butterflow_models::trigger::TriggerType;
 use butterflow_models::{
-    resolve_variables, DiffOperation, Error, FieldDiff, Node, Result, Task, TaskDiff, TaskStatus,
-    Workflow, WorkflowRun, WorkflowRunDiff, WorkflowStatus,
+    resolve_variables, DiffOperation, Error, FieldDiff, Node, Result, StateDiff, Task, TaskDiff,
+    TaskStatus, Workflow, WorkflowRun, WorkflowRunDiff, WorkflowStatus,
 };
 use butterflow_runners::{DirectRunner, DockerRunner, PodmanRunner, Runner};
 use butterflow_state::{LocalStateAdapter, StateAdapter};
@@ -66,7 +67,6 @@ impl Engine {
             tasks: Vec::new(),
             started_at: Utc::now(),
             ended_at: None,
-            state: HashMap::new(),
         };
 
         // Save the initial workflow run state
@@ -710,10 +710,8 @@ impl Engine {
 
     /// Execute a task
     async fn execute_task(&self, task_id: Uuid) -> Result<()> {
-        // Get the task
         let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
-        // Get the workflow run
         let workflow_run = self
             .state_adapter
             .lock()
@@ -721,7 +719,13 @@ impl Engine {
             .get_workflow_run(task.workflow_run_id)
             .await?;
 
-        // Get the node for this task
+        let state = self
+            .state_adapter
+            .lock()
+            .await
+            .get_state(workflow_run.id)
+            .await?;
+
         let node = workflow_run
             .workflow
             .nodes
@@ -792,109 +796,146 @@ impl Engine {
                         let result = self
                             .execute_step(
                                 runner.as_ref(),
-                                template_step,
+                                template_step
+                                    .run
+                                    .as_ref()
+                                    .expect("Template cannot (yet) rely on other templates"),
+                                &template_step.env,
                                 node,
                                 &task,
                                 &workflow_run,
+                                &state,
                             )
                             .await;
 
-                        if let Err(e) = result {
-                            // Create a task diff to update the status
-                            let mut fields = HashMap::new();
-                            fields.insert(
-                                "status".to_string(),
-                                FieldDiff {
-                                    operation: DiffOperation::Update,
-                                    value: Some(serde_json::to_value(TaskStatus::Failed)?),
-                                },
-                            );
-                            fields.insert(
-                                "ended_at".to_string(),
-                                FieldDiff {
-                                    operation: DiffOperation::Update,
-                                    value: Some(serde_json::to_value(Utc::now())?),
-                                },
-                            );
-                            fields.insert(
-                                "error".to_string(),
-                                FieldDiff {
-                                    operation: DiffOperation::Add,
-                                    value: Some(serde_json::to_value(format!(
-                                        "Step {} failed: {}",
-                                        template_step.id, e
-                                    ))?),
-                                },
-                            );
-                            let task_diff = TaskDiff { task_id, fields };
+                        match result {
+                            Ok(_) => {}
+                            Err(e) => {
+                                // Create a task diff to update the status
+                                let mut fields = HashMap::new();
+                                fields.insert(
+                                    "status".to_string(),
+                                    FieldDiff {
+                                        operation: DiffOperation::Update,
+                                        value: Some(serde_json::to_value(TaskStatus::Failed)?),
+                                    },
+                                );
+                                fields.insert(
+                                    "ended_at".to_string(),
+                                    FieldDiff {
+                                        operation: DiffOperation::Update,
+                                        value: Some(serde_json::to_value(Utc::now())?),
+                                    },
+                                );
+                                fields.insert(
+                                    "error".to_string(),
+                                    FieldDiff {
+                                        operation: DiffOperation::Add,
+                                        value: Some(serde_json::to_value(format!(
+                                            "Step {} failed: {}",
+                                            template_step.id, e
+                                        ))?),
+                                    },
+                                );
+                                let task_diff = TaskDiff { task_id, fields };
 
-                            // Apply the diff
-                            self.state_adapter
-                                .lock()
-                                .await
-                                .apply_task_diff(&task_diff)
-                                .await?;
+                                // Apply the diff
+                                self.state_adapter
+                                    .lock()
+                                    .await
+                                    .apply_task_diff(&task_diff)
+                                    .await?;
 
-                            error!(
-                                "Task {} ({}) step {} failed: {}",
-                                task_id, node.id, template_step.id, e
-                            );
+                                error!(
+                                    "Task {} ({}) step {} failed: {}",
+                                    task_id, node.id, template_step.id, e
+                                );
 
-                            return Err(e);
+                                return Err(e);
+                            }
                         }
                     }
                 }
-            }
-            // TODO: Do we need commands?
-            else if let Some(_commands) = &step.commands {
+            } else if let Some(run) = &step.run {
                 // Execute the step
                 let result = self
-                    .execute_step(runner.as_ref(), step, node, &task, &workflow_run)
+                    .execute_step(
+                        runner.as_ref(),
+                        run,
+                        &step.env,
+                        node,
+                        &task,
+                        &workflow_run,
+                        &state,
+                    )
                     .await;
 
-                if let Err(e) = result {
-                    // Create a task diff to update the status
-                    let mut fields = HashMap::new();
-                    fields.insert(
-                        "status".to_string(),
-                        FieldDiff {
-                            operation: DiffOperation::Update,
-                            value: Some(serde_json::to_value(TaskStatus::Failed)?),
-                        },
-                    );
-                    fields.insert(
-                        "ended_at".to_string(),
-                        FieldDiff {
-                            operation: DiffOperation::Update,
-                            value: Some(serde_json::to_value(Utc::now())?),
-                        },
-                    );
-                    fields.insert(
-                        "error".to_string(),
-                        FieldDiff {
-                            operation: DiffOperation::Add,
-                            value: Some(serde_json::to_value(format!(
-                                "Step {} failed: {}",
-                                step.id, e
-                            ))?),
-                        },
-                    );
-                    let task_diff = TaskDiff { task_id, fields };
+                match result {
+                    Ok(_) => {}
+                    Err(e) => {
+                        // Create a task diff to update the status
+                        let mut fields = HashMap::new();
+                        fields.insert(
+                            "status".to_string(),
+                            FieldDiff {
+                                operation: DiffOperation::Update,
+                                value: Some(serde_json::to_value(TaskStatus::Failed)?),
+                            },
+                        );
+                        fields.insert(
+                            "ended_at".to_string(),
+                            FieldDiff {
+                                operation: DiffOperation::Update,
+                                value: Some(serde_json::to_value(Utc::now())?),
+                            },
+                        );
+                        fields.insert(
+                            "error".to_string(),
+                            FieldDiff {
+                                operation: DiffOperation::Add,
+                                value: Some(serde_json::to_value(format!(
+                                    "Step {} failed: {}",
+                                    step.id, e
+                                ))?),
+                            },
+                        );
+                        let task_diff = TaskDiff { task_id, fields };
 
-                    // Apply the diff
-                    self.state_adapter
-                        .lock()
-                        .await
-                        .apply_task_diff(&task_diff)
-                        .await?;
+                        // Apply the diff
+                        self.state_adapter
+                            .lock()
+                            .await
+                            .apply_task_diff(&task_diff)
+                            .await?;
 
-                    error!(
-                        "Task {} ({}) step {} failed: {}",
-                        task_id, node.id, step.id, e
-                    );
+                        error!(
+                            "Task {} ({}) step {} failed: {}",
+                            task_id, node.id, step.id, e
+                        );
 
-                    return Err(e);
+                        return Err(e);
+                    }
                 }
+            }
+        }
+
+        // Prepare environment variables
+        let mut env = HashMap::new();
+
+        // Add workflow parameters
+        for (key, value) in &workflow_run.params {
+            env.insert(format!("PARAM_{}", key.to_uppercase()), value.clone());
+        }
+
+        // Add node environment variables
+        for (key, value) in &node.env {
+            env.insert(key.clone(), value.clone());
+        }
+
+        // Add matrix values
+        if let Some(matrix_values) = &task.matrix_values {
+            for (key, value) in matrix_values {
+                env.insert(key.clone(), value.clone());
             }
         }
 
@@ -933,21 +974,18 @@ impl Engine {
         Ok(())
     }
 
-    /// Execute a step
+    /// Execute a step, returning its outputs
+    #[allow(clippy::too_many_arguments)]
     async fn execute_step(
         &self,
         runner: &dyn Runner,
-        step: &Step,
+        run: &str,
+        step_env: &Option<HashMap<String, String>>,
         node: &Node,
         task: &Task,
         workflow_run: &WorkflowRun,
+        state: &HashMap<String, serde_json::Value>,
     ) -> Result<()> {
-        // Get the commands for this step
-        let commands = match &step.commands {
-            Some(commands) => commands,
-            None => return Ok(()), // No commands to execute
-        };
-
         // Prepare environment variables
         let mut env = HashMap::new();
 
@@ -962,7 +1000,7 @@ impl Engine {
         }
 
         // Add step environment variables
-        if let Some(step_env) = &step.env {
+        if let Some(step_env) = step_env {
             for (key, value) in step_env {
                 env.insert(key.clone(), value.clone());
             }
@@ -975,37 +1013,74 @@ impl Engine {
             }
         }
 
-        // Execute each command
-        for command in commands {
-            // Resolve variables in the command
-            let resolved_command = resolve_variables(
-                command,
-                &workflow_run.params,
-                &env,
-                &workflow_run.state,
-                &HashMap::new(), // TODO: Implement task outputs
-                task.matrix_values.as_ref(),
-            )?;
+        // Add temp file var for step outputs
+        let temp_dir = std::env::temp_dir();
+        let step_outputs_path = temp_dir.join(task.id.to_string());
+        File::create(&step_outputs_path)?;
 
-            // Execute the command
-            let output = runner.run_command(&resolved_command, &env).await?;
+        env.insert(
+            String::from("STATE_OUTPUTS"),
+            step_outputs_path
+                .canonicalize()?
+                .to_str()
+                .expect("File path should be valid UTF-8")
+                .to_string(),
+        );
 
-            // Get the current task
-            let mut current_task = self.state_adapter.lock().await.get_task(task.id).await?;
+        // Resolve variables
+        let resolved_command = resolve_variables(
+            run,
+            &workflow_run.params,
+            state,
+            task.matrix_values.as_ref(),
+        )?;
 
-            // Append to the logs
-            current_task.logs.push(output.clone());
+        // Execute the command
+        let output = runner.run_command(&resolved_command, &env).await?;
 
-            // Save the updated task
-            self.state_adapter
-                .lock()
-                .await
-                .save_task(&current_task)
-                .await?;
+        // Get the current task
+        let mut current_task = self.state_adapter.lock().await.get_task(task.id).await?;
 
-            debug!("Command output: {}", output);
-        }
+        // Append to the logs
+        current_task.logs.push(output.clone());
 
+        // Save the updated task
+        self.state_adapter
+            .lock()
+            .await
+            .save_task(&current_task)
+            .await?;
+
+        debug!("Command output: {}", output);
+
+        let outputs = read_to_string(&step_outputs_path).await?;
+
+        // Clean up the temporary file
+        std::fs::remove_file(&step_outputs_path).ok();
+
+        // Update state
+        let state_diff = HashMap::from_iter(outputs.lines().map(|line| {
+            let (k, v) = line
+                .split_once('=')
+                .expect("Improper output format: expected `<key>=<value>`");
+            (
+                k.to_string(),
+                FieldDiff {
+                    operation: DiffOperation::Update,
+                    value: Some(serde_json::to_value(v).unwrap_or_else(|_| {
+                        panic!("Expected value for `{}` to be serializable", k)
+                    })),
+                },
+            )
+        }));
+        self.state_adapter
+            .lock()
+            .await
+            .apply_state_diff(&StateDiff {
+                workflow_run_id: workflow_run.id,
+                fields: state_diff,
+            })
+            .await?;
         Ok(())
     }
 

@@ -8,17 +8,16 @@ nodes:
     steps:
       - id: run-bash
         name: Run Bash Script
-        commands:
-          - |
-            #!/bin/bash
-            echo "Running bash script"
-            echo "Current directory: $(pwd)"
-            echo "Files in directory:"
-            ls -la
+        run: |
+          #!/bin/bash
+          echo "Running bash script"
+          echo "Current directory: $(pwd)"
+          echo "Files in directory:"
+          ls -la
     env:
       SCRIPT_LANGUAGE: "bash"
-      REPO_URL: "${params.repo_url}"
-      BRANCH: "${params.branch}"
+      REPO_URL: "${{params.repo_url}}"
+      BRANCH: "${{params.branch}}"
 
   - id: python-script
     name: Python Script
@@ -29,17 +28,16 @@ nodes:
     steps:
       - id: run-python
         name: Run Python Script
-        commands:
-          - |
-            #!/bin/bash
-            echo "Running Python script (simulated)"
-            echo "Environment variables:"
-            echo "  REPO_URL: $REPO_URL"
-            echo "  BRANCH: $BRANCH"
+        run: |
+          #!/bin/bash
+          echo "Running Python script (simulated)"
+          echo "Environment variables:"
+          echo "  REPO_URL: $REPO_URL"
+          echo "  BRANCH: $BRANCH"
     env:
       SCRIPT_LANGUAGE: "python"
-      REPO_URL: "${params.repo_url}"
-      BRANCH: "${params.branch}"
+      REPO_URL: "${{params.repo_url}}"
+      BRANCH: "${{params.branch}}"
 
   - id: process-files
     name: Process Files
@@ -53,10 +51,9 @@ nodes:
     steps:
       - id: process
         name: Process File
-        commands:
-          - |
-            #!/bin/bash
-            echo "Processing file: $file"
-            echo "File would be processed here: $file"
+        run: |
+          #!/bin/bash
+          echo "Processing file: $file"
+          echo "File would be processed here: $file"
     env:
       SCRIPT_LANGUAGE: "bash"

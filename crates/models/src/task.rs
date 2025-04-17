@@ -63,10 +63,6 @@ pub struct Task {
     #[serde(default)]
     pub error: Option<String>,
 
-    /// Outputs from the task
-    #[serde(default)]
-    pub outputs: HashMap<String, serde_json::Value>,
-
     /// Logs from the task
     #[serde(default)]
     pub logs: Vec<String>,
@@ -85,7 +81,6 @@ impl Task {
             started_at: None,
             ended_at: None,
             error: None,
-            outputs: HashMap::new(),
             logs: Vec::new(),
         }
     }
@@ -107,7 +102,6 @@ impl Task {
             started_at: None,
             ended_at: None,
             error: None,
-            outputs: HashMap::new(),
             logs: Vec::new(),
         }
     }

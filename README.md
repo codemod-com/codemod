@@ -32,8 +32,7 @@ nodes:
     steps:
       - id: hello
         name: Say Hello
-        commands:
-          - echo "Hello, World!"
+        run: echo "Hello, World!"
 ```
 
 2. Run the workflow:
@@ -102,12 +101,11 @@ templates:
         type: string
         required: true
         description: "URL of the repository to checkout"
-        default: ${params.repo_url}
+        default: ${{params.repo_url}}
     steps:
       - id: clone
         name: Clone repository
-        commands:
-          - git clone ${inputs.repo_url} repo
+        run: git clone ${{inputs.repo_url}} repo
 
 nodes:
   - id: evaluate-codeowners
@@ -123,7 +121,7 @@ nodes:
         uses:
           - template: checkout-repo
             inputs:
-              repo_url: ${params.repo_url}
+              repo_url: ${{params.repo_url}}
 
   - id: run-codemod-ts
     name: I18n Codemod (TS)
@@ -177,9 +175,12 @@ templates:
     steps:
       - id: step-id
         name: Step name
-        commands:
-          - command1
-          - command2
+        run: |
+          command1
+      - id: step-id-two
+        name: Second step name
+        run: |
+          command2
     outputs:
       - name: output_name
         value: "output_value"
@@ -214,9 +215,7 @@ nodes:
               input_name: value
       - id: another-step
         name: Another step
-        commands:
-          - command1
-          - command2
+        run: command1
     env:
       ENV_VAR: value
 ```
@@ -248,7 +247,7 @@ Steps within a node can have the following properties:
 | `name`        | Human-readable name                        |
 | `description` | Detailed description of what the step does |
 | `uses`        | Template to use for this step              |
-| `commands`    | Array of commands to run                   |
+| `run`         | Command to run                             |
 
 ## Node vs Task
 
@@ -342,14 +341,14 @@ This state is tied specifically to the workflow run UUID, not to the workflow de
 
 ## Variable Resolution
 
-Butterflow supports a powerful variable resolution system using the `${...}` syntax. This allows you to reference parameters, environment variables, and state values throughout your workflow definition.
+Butterflow supports a powerful variable resolution system using the `${{...}}` syntax. This allows you to reference parameters, environment variables, and state values throughout your workflow definition.
 
 ### Variable Types
 
-- **Parameters**: Accessed with `${params.name}` - values passed when starting the workflow
-- **Environment Variables**: Accessed with `${env.NAME}` - environment variables from the execution environment
-- **State Values**: Accessed with `${state.name}` - values stored in the workflow state
-- **Task Outputs**: Accessed with `${tasks.node_id.outputs.name}` - outputs from previous tasks
+- **Parameters** (*TODO*): Accessed with `${{params.name}}` - values passed when starting the workflow
+- **Environment Variables**: Accessed with `${{env.NAME}}` - environment variables from the execution environment
+- **State Values**: Accessed with `${{state.name}}` - values stored in the workflow state
+- **Task Outputs**: Accessed with `${{tasks.node_id.outputs.name}}` - outputs from previous tasks
 - **Matrix Values**: In matrix tasks, matrix values are directly accessible as variables
 
 ### Variable Resolution Examples
@@ -357,17 +356,16 @@ Butterflow supports a powerful variable resolution system using the `${...}` syn
 ```yaml
 nodes:
   - id: example-node
-    name: "Processing ${params.repo_name}"
-    description: "Running on branch ${params.branch}"
+    name: "Processing ${{params.repo_name}}"
+    description: "Running on branch ${{params.branch}}"
     env:
-      REPO_URL: "${params.repo_url}"
-      DEBUG: "${env.CI}"
-      PREVIOUS_RESULT: "${tasks.previous-node.outputs.result}"
+      REPO_URL: "${{params.repo_url}}"
+      DEBUG: "${{env.CI}}"
+      PREVIOUS_RESULT: "${{tasks.previous-node.outputs.result}}"
     steps:
       - id: process
         name: Process Data
-        commands:
-          - echo "Processing data for ${params.repo_name}"
+        run: echo "Processing data for ${{params.repo_name}}"
 ```
 
 In matrix nodes, the matrix values are directly accessible in commands:
@@ -384,8 +382,7 @@ nodes:
           zone: zone-2
     steps:
       - id: process
-        commands:
-          - echo "Processing region $region in zone $zone"
+        run: echo "Processing region $region in zone $zone"
 ```
 
 ### Variable Resolution Order
@@ -566,7 +563,7 @@ stateManagement:
   backend: "api" # Options: "local", "database", "api"
   apiConfig:
     endpoint: "https://api.example.com/workflow-state"
-    authToken: "${ENV_AUTH_TOKEN}"
+    authToken: "${{ENV_AUTH_TOKEN}}"
   retryConfig:
     maxRetries: 3
     backoffFactor: 1.5
@@ -815,18 +812,15 @@ nodes:
     steps:
       - id: validate
         name: Validate Data
-        commands:
-          - echo "Validating data"
+        run: echo "Validating data"
       
       - id: transform
         name: Transform Data
-        commands:
-          - echo "Transforming data"
+        run: echo "Transforming data"
           
       - id: save
         name: Save Results
-        commands:
-          - echo "Saving results"
+        run: echo "Saving results"
 ```
 
 Each step is executed in order, and if any step fails, the entire node is marked as failed.
@@ -839,13 +833,12 @@ Commands can include multi-line scripts with shebang lines to specify the interp
 steps:
   - id: run-script
     name: Run Script
-    commands:
-      - |
-        #!/bin/bash
-        echo "Running bash script"
-        echo "Current directory: $(pwd)"
-        echo "Files in directory:"
-        ls -la
+    run: |
+      #!/bin/bash
+      echo "Running bash script"
+      echo "Current directory: $(pwd)"
+      echo "Files in directory:"
+      ls -la
 ```
 
 For Python scripts:
@@ -854,16 +847,15 @@ For Python scripts:
 steps:
   - id: run-python
     name: Run Python Script
-    commands:
-      - |
-        #!/usr/bin/env python
-        import os
-        import sys
-        
-        print("Running Python script")
-        print(f"Python version: {sys.version}")
-        print(f"Environment variables:")
-        print(f"  REPO_URL: {os.environ.get('REPO_URL')}")
+    run: |
+      #!/usr/bin/env python
+      import os
+      import sys
+
+      print("Running Python script")
+      print(f"Python version: {sys.version}")
+      print(f"Environment variables:")
+      print(f"  REPO_URL: {os.environ.get('REPO_URL')}")
 ```
 
 The engine automatically detects the script type based on the shebang line and executes it with the appropriate interpreter.
@@ -880,15 +872,13 @@ nodes:
     steps:
       - id: collect-results
         name: Collect Results
-        commands:
-          - echo "Collecting results"
+        run: echo "Collecting results"
         env:
           SCRIPT_LANGUAGE: "bash"
       
       - id: create-report
         name: Create Report
-        commands:
-          - echo "Creating report"
+        run: echo "Creating report"
         env:
           SCRIPT_LANGUAGE: "python"
     env:
@@ -912,7 +902,7 @@ nodes:
         uses:
           - template: checkout-repo
             inputs:
-              repo_url: ${params.repo_url}
+              repo_url: ${{params.repo_url}}
               branch: "feature/new-feature"
               depth: 1
 ```
@@ -937,8 +927,7 @@ nodes:
     steps:
       - id: process
         name: Process Region
-        commands:
-          - echo "Processing region $region"
+        run: echo "Processing region $region"
 ```
 
 This creates a separate task for each value in the matrix.
@@ -958,8 +947,7 @@ nodes:
     steps:
       - id: process
         name: Process File
-        commands:
-          - echo "Processing file $file"
+        run: echo "Processing file $file"
 ```
 
 This creates a task for each item in the `files` state array.
@@ -975,8 +963,7 @@ nodes:
     type: automatic
     steps:
       - id: step1
-        commands:
-          - echo "Running automatically"
+        run: echo "Running automatically"
           
   - id: manual-node
     name: Manual Node
@@ -985,8 +972,7 @@ nodes:
       - automatic-node
     steps:
       - id: step1
-        commands:
-          - echo "Running after manual approval"
+        run: echo "Running after manual approval"
 ```
 
 Automatic nodes run as soon as their dependencies are satisfied, while manual nodes require explicit triggering even if all dependencies are met.
@@ -1004,8 +990,7 @@ nodes:
       type: manual
     steps:
       - id: step1
-        commands:
-          - echo "Running after manual approval"
+        run: echo "Running after manual approval"
 ```
 
 This is useful for creating approval gates in otherwise automatic workflows.
@@ -1024,8 +1009,7 @@ nodes:
     type: automatic
     steps:
       - id: hello
-        commands:
-          - echo "Hello, World!"
+        run: echo "Hello, World!"
 
   - id: current-time
     name: Current Time
@@ -1034,8 +1018,7 @@ nodes:
       - hello-world
     steps:
       - id: time
-        commands:
-          - date
+        run: date
 ```
 
 ### Matrix Workflow
@@ -1050,8 +1033,7 @@ nodes:
     type: automatic
     steps:
       - id: step1
-        commands:
-          - echo "Setting up environment"
+        run: echo "Setting up environment"
 
   - id: process-regions
     name: Process Regions
@@ -1066,8 +1048,7 @@ nodes:
         - region: eu-central
     steps:
       - id: process
-        commands:
-          - echo "Processing region $region"
+        run: echo "Processing region $region"
 
   - id: finalize
     name: Finalize
@@ -1076,8 +1057,7 @@ nodes:
       - process-regions
     steps:
       - id: step1
-        commands:
-          - echo "Finalizing processing"
+        run: echo "Finalizing processing"
 ```
 
 ### Complex Workflow with Templates and Manual Approval
@@ -1110,9 +1090,9 @@ templates:
         default: "main"
     steps:
       - id: clone
-        commands:
-          - git clone ${inputs.repo_url} repo
-          - cd repo && git checkout ${inputs.branch}
+        run: git clone ${{inputs.repo_url}} repo
+      - id: checkout
+        run: cd repo && git checkout ${{inputs.branch}}
 
 nodes:
   - id: evaluate-codeowners
@@ -1123,11 +1103,10 @@ nodes:
         uses:
           - template: checkout-repo
             inputs:
-              repo_url: ${params.repo_url}
-              branch: ${params.branch}
+              repo_url: ${{params.repo_url}}
+              branch: ${{params.branch}}
       - id: evaluate
-        commands:
-          - echo "Evaluating codeowners"
+        run: echo "Evaluating codeowners"
 
   - id: run-codemod-ts
     name: I18n Codemod (TS)
@@ -1141,8 +1120,7 @@ nodes:
       from_state: i18nShardsTs
     steps:
       - id: run-codemod
-        commands:
-          - echo "Running TS codemod for team ${team}"
+        run: echo "Running TS codemod for team ${{team}}"
 ```
 
 These examples demonstrate the flexibility and power of Butterflow for defining complex workflow processes.

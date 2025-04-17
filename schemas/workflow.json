@@ -82,6 +82,14 @@
           "description": "Human-readable name",
           "type": "string"
         },
+        "outputs": {
+          "description": "Outputs to yield from this task",
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "runtime": {
           "description": "Container runtime configuration",
           "default": null,
@@ -384,17 +392,6 @@
         "name"
       ],
       "properties": {
-        "commands": {
-          "description": "Commands to run",
-          "default": null,
-          "type": [
-            "array",
-            "null"
-          ],
-          "items": {
-            "type": "string"
-          }
-        },
         "description": {
           "description": "Detailed description of what the step does",
           "default": null,
@@ -421,6 +418,14 @@
         "name": {
           "description": "Human-readable name",
           "type": "string"
+        },
+        "run": {
+          "description": "Script to run",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "uses": {
           "description": "Template to use for this step",

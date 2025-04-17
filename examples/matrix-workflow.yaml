@@ -8,8 +8,7 @@ nodes:
     steps:
       - id: step1
         name: Setup Step
-        commands:
-          - echo "Setting up environment"
+        run: echo "Setting up environment"
 
   - id: process-regions
     name: Process Regions
@@ -28,8 +27,7 @@ nodes:
     steps:
       - id: process
         name: Process Region
-        commands:
-          - echo "Processing region $region"
+        run: echo "Processing region $region"
 
   - id: finalize
     name: Finalize
@@ -40,5 +38,4 @@ nodes:
     steps:
       - id: step1
         name: Finalize Step
-        commands:
-          - echo "Finalizing processing"
+        run: echo "Finalizing processing"
