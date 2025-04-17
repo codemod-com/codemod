@@ -6,6 +6,7 @@ use butterflow_core::{
     WorkflowStatus,
 };
 use butterflow_models::node::NodeType;
+use butterflow_models::step::StepAction;
 use butterflow_models::strategy::Strategy;
 use butterflow_models::trigger::TriggerType;
 use butterflow_state::{LocalStateAdapter, StateAdapter};
@@ -198,8 +199,7 @@ fn create_test_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Hello, World!'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Hello, World!'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -224,8 +224,7 @@ fn create_test_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Node 2 executed'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Node 2 executed'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -261,8 +260,7 @@ fn create_manual_trigger_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Hello, World!'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Hello, World!'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -289,8 +287,7 @@ fn create_manual_trigger_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Node 2 executed'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Node 2 executed'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -326,8 +323,7 @@ fn create_manual_node_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Hello, World!'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Hello, World!'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -352,8 +348,7 @@ fn create_manual_node_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Node 2 executed'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Node 2 executed'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -389,8 +384,7 @@ fn create_matrix_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Hello, World!'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Hello, World!'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -423,8 +417,7 @@ fn create_matrix_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Processing region ${region}'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Processing region ${region}'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -467,10 +460,9 @@ fn create_template_workflow() -> Workflow {
             id: "clone".to_string(),
             name: "Clone repository".to_string(),
             description: None,
-            run: Some(
+            action: StepAction::RunScript(
                 "echo 'Cloning repository ${inputs.repo_url} branch ${inputs.branch}'".to_string(),
             ),
-            uses: None,
             env: None,
         }],
         outputs: vec![],
@@ -501,7 +493,7 @@ fn create_template_workflow() -> Workflow {
                 id: "step1".to_string(),
                 name: "Step 1".to_string(),
                 description: None,
-                uses: Some(vec![butterflow_models::step::TemplateUse {
+                action: StepAction::UseTemplates(vec![butterflow_models::step::TemplateUse {
                     template: "checkout-repo".to_string(),
                     inputs: HashMap::from([
                         (
@@ -511,7 +503,6 @@ fn create_template_workflow() -> Workflow {
                         ("branch".to_string(), "feature/test".to_string()),
                     ]),
                 }]),
-                run: None,
                 env: None,
             }],
             env: HashMap::new(),
@@ -562,8 +553,7 @@ fn create_matrix_from_state_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Setting up state'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Setting up state'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -592,8 +582,7 @@ fn create_matrix_from_state_workflow() -> Workflow {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Processing file ${file}'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Processing file ${file}'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -947,8 +936,7 @@ fn create_env_var_workflow() -> Workflow {
                 id: "step1".to_string(),
                 name: "Step 1".to_string(),
                 description: None,
-                run: Some("echo 'Using env var: $TEST_ENV_VAR'".to_string()),
-                uses: None,
+                action: StepAction::RunScript("echo 'Using env var: $TEST_ENV_VAR'".to_string()),
                 env: Some(HashMap::from([(
                     "STEP_SPECIFIC_VAR".to_string(),
                     "step-value".to_string(),
@@ -988,11 +976,10 @@ fn create_variable_resolution_workflow() -> Workflow {
                 id: "step1".to_string(),
                 name: "Step 1".to_string(),
                 description: None,
-                run: Some(
+                action: StepAction::RunScript(
                     "echo 'Processing repo: ${params.repo_name} on branch: ${params.branch}'"
                         .to_string(),
                 ),
-                uses: None,
                 env: None,
             }],
             env: HashMap::from([
@@ -1192,8 +1179,7 @@ async fn test_cyclic_dependency_workflow() {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Hello, World!'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Hello, World!'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -1218,8 +1204,7 @@ async fn test_cyclic_dependency_workflow() {
                     id: "step1".to_string(),
                     name: "Step 1".to_string(),
                     description: None,
-                    run: Some("echo 'Node 2 executed'".to_string()),
-                    uses: None,
+                    action: StepAction::RunScript("echo 'Node 2 executed'".to_string()),
                     env: None,
                 }],
                 env: HashMap::new(),
@@ -1266,11 +1251,10 @@ async fn test_invalid_template_reference() {
                 id: "step1".to_string(),
                 name: "Step 1".to_string(),
                 description: None,
-                uses: Some(vec![butterflow_models::step::TemplateUse {
+                action: StepAction::UseTemplates(vec![butterflow_models::step::TemplateUse {
                     template: "non-existent-template".to_string(), // This template doesn't exist
                     inputs: HashMap::new(),
                 }]),
-                run: None,
                 env: None,
             }],
             env: HashMap::new(),

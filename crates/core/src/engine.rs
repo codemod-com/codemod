@@ -3,6 +3,7 @@ use std::fs::File;
 use std::sync::Arc;
 use std::time::Duration;
 
+use butterflow_models::step::StepAction;
 use chrono::Utc;
 use log::{debug, error, info, warn};
 use tokio::fs::read_to_string;
@@ -774,150 +775,63 @@ impl Engine {
                 .get_state(workflow_run.id)
                 .await?;
 
-            // Check if the step uses a template
-            if let Some(uses) = &step.uses {
-                for template_use in uses {
-                    // Find the template
-                    let template = workflow_run
-                        .workflow
-                        .templates
-                        .iter()
-                        .find(|t| t.id == template_use.template)
-                        .ok_or_else(|| {
-                            Error::Template(format!(
-                                "Template not found: {}",
-                                template_use.template
-                            ))
-                        })?;
-                    let template_params = template_use.inputs.clone();
-                    let mut workflow_params = workflow_run.params.clone();
-                    workflow_params.extend(template_params);
+            let result = self
+                .execute_step_action(
+                    runner.as_ref(),
+                    &step.action,
+                    &step.env,
+                    node,
+                    &task,
+                    &workflow_run.params,
+                    &state,
+                    &workflow_run.workflow,
+                )
+                .await;
 
-                    // Execute the template steps
-                    for template_step in &template.steps {
-                        // Execute the step
-                        let result = self
-                            .execute_step(
-                                runner.as_ref(),
-                                template_step
-                                    .run
-                                    .as_ref()
-                                    .expect("Template cannot (yet) rely on other templates"),
-                                &template_step.env,
-                                node,
-                                &task,
-                                &workflow_params,
-                                &state,
-                            )
-                            .await;
+            match result {
+                Ok(_) => {}
+                Err(e) => {
+                    // Create a task diff to update the status
+                    let mut fields = HashMap::new();
+                    fields.insert(
+                        "status".to_string(),
+                        FieldDiff {
+                            operation: DiffOperation::Update,
+                            value: Some(serde_json::to_value(TaskStatus::Failed)?),
+                        },
+                    );
+                    fields.insert(
+                        "ended_at".to_string(),
+                        FieldDiff {
+                            operation: DiffOperation::Update,
+                            value: Some(serde_json::to_value(Utc::now())?),
+                        },
+                    );
+                    fields.insert(
+                        "error".to_string(),
+                        FieldDiff {
+                            operation: DiffOperation::Add,
+                            value: Some(serde_json::to_value(format!(
+                                "Step {} failed: {}",
+                                step.id, e
+                            ))?),
+                        },
+                    );
+                    let task_diff = TaskDiff { task_id, fields };
 
-                        match result {
-                            Ok(_) => {}
-                            Err(e) => {
-                                // Create a task diff to update the status
-                                let mut fields = HashMap::new();
-                                fields.insert(
-                                    "status".to_string(),
-                                    FieldDiff {
-                                        operation: DiffOperation::Update,
-                                        value: Some(serde_json::to_value(TaskStatus::Failed)?),
-                                    },
-                                );
-                                fields.insert(
-                                    "ended_at".to_string(),
-                                    FieldDiff {
-                                        operation: DiffOperation::Update,
-                                        value: Some(serde_json::to_value(Utc::now())?),
-                                    },
-                                );
-                                fields.insert(
-                                    "error".to_string(),
-                                    FieldDiff {
-                                        operation: DiffOperation::Add,
-                                        value: Some(serde_json::to_value(format!(
-                                            "Step {} failed: {}",
-                                            template_step.id, e
-                                        ))?),
-                                    },
-                                );
-                                let task_diff = TaskDiff { task_id, fields };
+                    // Apply the diff
+                    self.state_adapter
+                        .lock()
+                        .await
+                        .apply_task_diff(&task_diff)
+                        .await?;
 
-                                // Apply the diff
-                                self.state_adapter
-                                    .lock()
-                                    .await
-                                    .apply_task_diff(&task_diff)
-                                    .await?;
+                    error!(
+                        "Task {} ({}) step {} failed: {}",
+                        task_id, node.id, step.id, e
+                    );
 
-                                error!(
-                                    "Task {} ({}) step {} failed: {}",
-                                    task_id, node.id, template_step.id, e
-                                );
-
-                                return Err(e);
-                            }
-                        }
-                    }
-                }
-            } else if let Some(run) = &step.run {
-                // Execute the step
-                let result = self
-                    .execute_step(
-                        runner.as_ref(),
-                        run,
-                        &step.env,
-                        node,
-                        &task,
-                        &workflow_run.params,
-                        &state,
-                    )
-                    .await;
-
-                match result {
-                    Ok(_) => {}
-                    Err(e) => {
-                        // Create a task diff to update the status
-                        let mut fields = HashMap::new();
-                        fields.insert(
-                            "status".to_string(),
-                            FieldDiff {
-                                operation: DiffOperation::Update,
-                                value: Some(serde_json::to_value(TaskStatus::Failed)?),
-                            },
-                        );
-                        fields.insert(
-                            "ended_at".to_string(),
-                            FieldDiff {
-                                operation: DiffOperation::Update,
-                                value: Some(serde_json::to_value(Utc::now())?),
-                            },
-                        );
-                        fields.insert(
-                            "error".to_string(),
-                            FieldDiff {
-                                operation: DiffOperation::Add,
-                                value: Some(serde_json::to_value(format!(
-                                    "Step {} failed: {}",
-                                    step.id, e
-                                ))?),
-                            },
-                        );
-                        let task_diff = TaskDiff { task_id, fields };
-
-                        // Apply the diff
-                        self.state_adapter
-                            .lock()
-                            .await
-                            .apply_task_diff(&task_diff)
-                            .await?;
-
-                        error!(
-                            "Task {} ({}) step {} failed: {}",
-                            task_id, node.id, step.id, e
-                        );
-
-                        return Err(e);
-                    }
+                    return Err(e);
                 }
             }
         }
@@ -977,9 +891,64 @@ impl Engine {
         Ok(())
     }
 
-    /// Execute a step, returning its outputs
+    /// Execute a specific step action (either RunScript or UseTemplates recursively)
     #[allow(clippy::too_many_arguments)]
-    async fn execute_step(
+    async fn execute_step_action(
+        &self,
+        runner: &dyn Runner,
+        action: &StepAction,
+        step_env: &Option<HashMap<String, String>>,
+        node: &Node,
+        task: &Task,
+        params: &HashMap<String, String>,
+        state: &HashMap<String, serde_json::Value>,
+        workflow: &Workflow,
+    ) -> Result<()> {
+        match action {
+            StepAction::RunScript(run) => {
+                self.execute_run_script_step(runner, run, step_env, node, task, params, state)
+                    .await
+            }
+            StepAction::UseTemplates(uses) => {
+                for template_use in uses {
+                    // Find the template using the passed workflow reference
+                    let template = workflow
+                        .templates
+                        .iter()
+                        .find(|t| t.id == template_use.template)
+                        .ok_or_else(|| {
+                            Error::Template(format!(
+                                "Template not found: {}",
+                                template_use.template
+                            ))
+                        })?;
+
+                    // Combine workflow params with template-specific inputs
+                    let mut combined_params = params.clone();
+                    combined_params.extend(template_use.inputs.clone());
+
+                    for template_step in &template.steps {
+                        Box::pin(self.execute_step_action(
+                            runner,
+                            &template_step.action,
+                            &template_step.env,
+                            node,
+                            task,
+                            &combined_params,
+                            state,
+                            workflow,
+                        ))
+                        .await?;
+                    }
+                }
+                Ok(())
+            }
+        }
+    }
+
+    /// Execute a single RunScript step
+    #[allow(clippy::too_many_arguments)]
+    async fn execute_run_script_step(
         &self,
         runner: &dyn Runner,
         run: &str,

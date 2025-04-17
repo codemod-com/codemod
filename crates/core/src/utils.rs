@@ -2,6 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::Path;
 
+use butterflow_models::step::StepAction;
 use serde_yaml;
 
 use butterflow_models::{Error, Node, Result, Workflow};
@@ -71,7 +72,7 @@ pub fn validate_workflow(workflow: &Workflow) -> Result<()> {
     // Check that all template references are valid
     for node in &workflow.nodes {
         for step in &node.steps {
-            if let Some(uses) = &step.uses {
+            if let StepAction::UseTemplates(uses) = &step.action {
                 for template_use in uses {
                     if !template_ids.contains(&template_use.template) {
                         return Err(Error::WorkflowValidation(format!(

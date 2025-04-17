@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use butterflow_models::step::StepAction;
 use clap::{Parser, Subcommand};
 use log::{error, info};
 use std::collections::HashMap;
@@ -388,7 +389,12 @@ fn validate_workflow(workflow_path: &Path) -> Result<()> {
             .nodes
             .iter()
             .flat_map(|n| n.steps.iter())
-            .filter_map(|s| s.uses.as_ref())
+            .filter_map(|s| {
+                match &s.action {
+                    StepAction::UseTemplates(uses) => Some(uses),
+                    _ => None,
+                }
+            })
             .flat_map(|u| u.iter())
             .count()
     );

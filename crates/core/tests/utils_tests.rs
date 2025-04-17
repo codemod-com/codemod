@@ -4,10 +4,9 @@ use std::fs;
 
 use butterflow_core::utils;
 use butterflow_core::NodeType;
+use butterflow_models::step::StepAction;
 use butterflow_models::strategy::StrategyType;
-use butterflow_models::{
-    Error, Node, Step, Strategy, Template, TemplateOutput, TemplateUse, Workflow,
-};
+use butterflow_models::{Error, Node, Step, Strategy, Template, TemplateOutput, Workflow};
 
 #[test]
 fn test_parse_workflow_file_yaml() {
@@ -39,10 +38,11 @@ nodes:
     assert_eq!(workflow.nodes[0].steps.len(), 1);
     assert_eq!(workflow.nodes[0].steps[0].id, "step1");
     assert_eq!(workflow.nodes[0].steps[0].name, "Step 1");
-    assert_eq!(
-        workflow.nodes[0].steps[0].run.as_ref().unwrap(),
-        "echo \"Hello, World!\""
-    );
+    if let StepAction::RunScript(script) = &workflow.nodes[0].steps[0].action {
+        assert_eq!(script, "echo \"Hello, World!\"");
+    } else {
+        panic!("Expected StepAction::RunScript with a script");
+    }
 }
 
 #[test]
@@ -83,10 +83,11 @@ fn test_parse_workflow_file_json() {
     assert_eq!(workflow.nodes[0].steps.len(), 1);
     assert_eq!(workflow.nodes[0].steps[0].id, "step1");
     assert_eq!(workflow.nodes[0].steps[0].name, "Step 1");
-    assert_eq!(
-        workflow.nodes[0].steps[0].run.as_ref().unwrap(),
-        "echo \"Hello, World!\""
-    );
+    if let StepAction::RunScript(script) = &workflow.nodes[0].steps[0].action {
+        assert_eq!(script, "echo \"Hello, World!\"");
+    } else {
+        panic!("Expected StepAction::RunScript with a script");
+    }
 }
 
 #[test]
@@ -416,11 +417,10 @@ fn test_validate_workflow_nonexistent_template_reference() {
                 id: "step1".to_string(),
                 name: "Step 1".to_string(),
                 description: None,
-                uses: Some(vec![TemplateUse {
+                action: StepAction::UseTemplates(vec![butterflow_models::step::TemplateUse {
                     template: "nonexistent".to_string(), // Non-existent template
                     inputs: HashMap::new(),
                 }]),
-                run: None,
                 env: None,
             }],
             env: HashMap::new(),
@@ -782,8 +782,7 @@ fn test_validate_workflow_with_step_env_vars() {
                 id: "step1".to_string(),
                 name: "Step 1".to_string(),
                 description: None,
-                uses: None,
-                run: Some("echo $STEP_VAR".to_string()),
+                action: StepAction::RunScript("echo $STEP_VAR".to_string()),
                 env: Some(step_env),
             }],
             env: HashMap::new(),

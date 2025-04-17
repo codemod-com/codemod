@@ -15,17 +15,26 @@ pub struct Step {
     #[serde(default)]
     pub description: Option<String>,
 
-    /// Template to use for this step
-    #[serde(default)]
-    pub uses: Option<Vec<TemplateUse>>,
-
-    /// Script to run
-    #[serde(default)]
-    pub run: Option<String>,
+    /// Action to perform - either using a template or running a script
+    #[serde(flatten)]
+    pub action: StepAction,
 
     /// Environment variables specific to this step
     #[serde(default)]
     pub env: Option<HashMap<String, String>>,
+}
+
+/// Represents the action a step can take - either using templates or running a script
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum StepAction {
+    /// Template to use for this step
+    #[serde(rename = "uses")]
+    UseTemplates(Vec<TemplateUse>),
+
+    /// Script to run
+    #[serde(rename = "run")]
+    RunScript(String),
 }
 
 /// Represents a template use in a step
