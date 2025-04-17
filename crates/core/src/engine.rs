@@ -719,13 +719,6 @@ impl Engine {
             .get_workflow_run(task.workflow_run_id)
             .await?;
 
-        let state = self
-            .state_adapter
-            .lock()
-            .await
-            .get_state(workflow_run.id)
-            .await?;
-
         let node = workflow_run
             .workflow
             .nodes
@@ -774,6 +767,13 @@ impl Engine {
 
         // Execute each step in the node
         for step in &node.steps {
+            let state = self
+                .state_adapter
+                .lock()
+                .await
+                .get_state(workflow_run.id)
+                .await?;
+
             // Check if the step uses a template
             if let Some(uses) = &step.uses {
                 for template_use in uses {
