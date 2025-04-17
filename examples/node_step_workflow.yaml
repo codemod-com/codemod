@@ -1,6 +1,8 @@
 # yaml-language-server: $schema=../schemas/workflow.json
 version: "1"
-
+# Run with: butterflow-cli run -w examples/node_step_workflow.yaml --param test=1234 --param branch=begin
+# Observe that the initial params are printed, and that the template gets its
+# correct params (which can shadow the main workflow params)
 nodes:
   - id: setup
     name: Setup Environment
@@ -14,6 +16,7 @@ nodes:
           echo "Running environment check"
           echo "Current directory: $(pwd)"
           echo "Files in directory:"
+          echo 'Initial params: ${{params.test}}, ${{params.branch}}'
           ls -la
     env:
       DEBUG: "true"
@@ -35,7 +38,7 @@ nodes:
           #!/usr/bin/env bash
           echo "Validating file: $file"
           echo "File exists: $(test -f $file && echo 'Yes' || echo 'No')"
-      
+
       - id: process
         name: Process File
         run: |
@@ -58,7 +61,8 @@ nodes:
         - template: checkout-repo
           inputs:
             repo_url: https://github.com/neovim/neovim
-      
+            branch: master
+
       - id: create-report
         name: Create Report
         run: |

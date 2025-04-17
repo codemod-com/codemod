@@ -789,6 +789,9 @@ impl Engine {
                                 template_use.template
                             ))
                         })?;
+                    let template_params = template_use.inputs.clone();
+                    let mut workflow_params = workflow_run.params.clone();
+                    workflow_params.extend(template_params);
 
                     // Execute the template steps
                     for template_step in &template.steps {
@@ -803,7 +806,7 @@ impl Engine {
                                 &template_step.env,
                                 node,
                                 &task,
-                                &workflow_run,
+                                &workflow_params,
                                 &state,
                             )
                             .await;
@@ -865,7 +868,7 @@ impl Engine {
                         &step.env,
                         node,
                         &task,
-                        &workflow_run,
+                        &workflow_run.params,
                         &state,
                     )
                     .await;
@@ -983,16 +986,11 @@ impl Engine {
         step_env: &Option<HashMap<String, String>>,
         node: &Node,
         task: &Task,
-        workflow_run: &WorkflowRun,
+        params: &HashMap<String, String>,
         state: &HashMap<String, serde_json::Value>,
     ) -> Result<()> {
         // Prepare environment variables
         let mut env = HashMap::new();
-
-        // Add workflow parameters
-        for (key, value) in &workflow_run.params {
-            env.insert(format!("PARAM_{}", key.to_uppercase()), value.clone());
-        }
 
         // Add node environment variables
         for (key, value) in &node.env {
@@ -1028,12 +1026,7 @@ impl Engine {
         );
 
         // Resolve variables
-        let resolved_command = resolve_variables(
-            run,
-            &workflow_run.params,
-            state,
-            task.matrix_values.as_ref(),
-        )?;
+        let resolved_command = resolve_variables(run, params, state, task.matrix_values.as_ref())?;
 
         // Execute the command
         let output = runner.run_command(&resolved_command, &env).await?;
@@ -1077,7 +1070,7 @@ impl Engine {
             .lock()
             .await
             .apply_state_diff(&StateDiff {
-                workflow_run_id: workflow_run.id,
+                workflow_run_id: task.workflow_run_id,
                 fields: state_diff,
             })
             .await?;
