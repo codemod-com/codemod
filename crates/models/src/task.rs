@@ -43,6 +43,9 @@ pub struct Task {
     /// Current status of the task
     pub status: TaskStatus,
 
+    /// Whether or not this task is a master task for other matrix tasks.
+    pub is_master: bool,
+
     /// For matrix tasks, the master task ID
     #[serde(default)]
     pub master_task_id: Option<Uuid>,
@@ -70,11 +73,12 @@ pub struct Task {
 
 impl Task {
     /// Create a new task
-    pub fn new(workflow_run_id: Uuid, node_id: String) -> Self {
+    pub fn new(workflow_run_id: Uuid, node_id: String, is_master: bool) -> Self {
         Self {
             id: Uuid::new_v4(),
             workflow_run_id,
             node_id,
+            is_master,
             status: TaskStatus::Pending,
             master_task_id: None,
             matrix_values: None,
@@ -103,6 +107,7 @@ impl Task {
             ended_at: None,
             error: None,
             logs: Vec::new(),
+            is_master: false,
         }
     }
 }

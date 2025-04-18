@@ -16,8 +16,9 @@ use butterflow_models::node::NodeType;
 use butterflow_models::runtime::RuntimeType;
 use butterflow_models::trigger::TriggerType;
 use butterflow_models::{
-    resolve_variables, DiffOperation, Error, FieldDiff, Node, Result, StateDiff, Task, TaskDiff,
-    TaskStatus, Workflow, WorkflowRun, WorkflowRunDiff, WorkflowStatus,
+    resolve_variables, DiffOperation, Error, FieldDiff, Node, Result, StateDiff, Strategy,
+    StrategyType, Task, TaskDiff, TaskStatus, Workflow, WorkflowRun, WorkflowRunDiff,
+    WorkflowStatus,
 };
 use butterflow_runners::{DirectRunner, DockerRunner, PodmanRunner, Runner};
 use butterflow_state::{LocalStateAdapter, StateAdapter};
@@ -595,9 +596,14 @@ impl Engine {
     async fn create_initial_tasks(&self, workflow_run: &WorkflowRun) -> Result<()> {
         for node in &workflow_run.workflow.nodes {
             // Check if the node has a matrix strategy
-            if let Some(strategy) = &node.strategy {
+            if let Some(Strategy {
+                r#type: StrategyType::Matrix,
+                values,
+                from_state: _,
+            }) = &node.strategy
+            {
                 // Create a master task for the matrix
-                let master_task = Task::new(workflow_run.id, node.id.clone());
+                let master_task = Task::new(workflow_run.id, node.id.clone(), true);
                 self.state_adapter
                     .lock()
                     .await
@@ -605,7 +611,7 @@ impl Engine {
                     .await?;
 
                 // If the matrix uses values, create tasks for each value
-                if let Some(values) = &strategy.values {
+                if let Some(values) = values {
                     for value in values {
                         let task = Task::new_matrix(
                             workflow_run.id,
@@ -619,7 +625,7 @@ impl Engine {
                 // If the matrix uses state, we'll create tasks when the state is available
             } else {
                 // Create a single task for the node
-                let task = Task::new(workflow_run.id, node.id.clone());
+                let task = Task::new(workflow_run.id, node.id.clone(), false);
                 self.state_adapter.lock().await.save_task(&task).await?;
             }
         }
@@ -636,8 +642,8 @@ impl Engine {
         let mut runnable_tasks = Vec::new();
 
         for task in tasks {
-            // Only consider pending tasks
-            if task.status != TaskStatus::Pending {
+            // Only consider pending tasks and non-master tasks
+            if task.status != TaskStatus::Pending || task.is_master {
                 continue;
             }
 

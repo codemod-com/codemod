@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schemas/workflow.json
 version: "1"
 
 nodes:
@@ -14,8 +15,6 @@ nodes:
     name: Process Regions
     description: Process different regions
     type: automatic
-    trigger:
-      type: manual
     depends_on:
       - setup
     strategy:
@@ -27,7 +26,7 @@ nodes:
     steps:
       - id: process
         name: Process Region
-        run: echo "Processing region $region"
+        run: echo "Processing region ${{region}}"
 
   - id: finalize
     name: Finalize
