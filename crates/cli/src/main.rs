@@ -391,11 +391,10 @@ fn validate_workflow(workflow_path: &Path) -> Result<()> {
             .flat_map(|n| n.steps.iter())
             .filter_map(|s| {
                 match &s.action {
-                    StepAction::UseTemplates(uses) => Some(uses),
+                    StepAction::UseTemplate(template_use) => Some(template_use),
                     _ => None,
                 }
             })
-            .flat_map(|u| u.iter())
             .count()
     );
 

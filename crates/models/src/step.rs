@@ -29,8 +29,8 @@ pub struct Step {
 #[serde(rename_all = "snake_case")]
 pub enum StepAction {
     /// Template to use for this step
-    #[serde(rename = "uses")]
-    UseTemplates(Vec<TemplateUse>),
+    #[serde(rename = "use")]
+    UseTemplate(TemplateUse),
 
     /// Script to run
     #[serde(rename = "run")]

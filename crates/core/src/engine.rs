@@ -909,37 +909,32 @@ impl Engine {
                 self.execute_run_script_step(runner, run, step_env, node, task, params, state)
                     .await
             }
-            StepAction::UseTemplates(uses) => {
-                for template_use in uses {
-                    // Find the template using the passed workflow reference
-                    let template = workflow
-                        .templates
-                        .iter()
-                        .find(|t| t.id == template_use.template)
-                        .ok_or_else(|| {
-                            Error::Template(format!(
-                                "Template not found: {}",
-                                template_use.template
-                            ))
-                        })?;
+            StepAction::UseTemplate(template_use) => {
+                // Find the template using the passed workflow reference
+                let template = workflow
+                    .templates
+                    .iter()
+                    .find(|t| t.id == template_use.template)
+                    .ok_or_else(|| {
+                        Error::Template(format!("Template not found: {}", template_use.template))
+                    })?;
 
-                    // Combine workflow params with template-specific inputs
-                    let mut combined_params = params.clone();
-                    combined_params.extend(template_use.inputs.clone());
+                // Combine workflow params with template-specific inputs
+                let mut combined_params = params.clone();
+                combined_params.extend(template_use.inputs.clone());
 
-                    for template_step in &template.steps {
-                        Box::pin(self.execute_step_action(
-                            runner,
-                            &template_step.action,
-                            &template_step.env,
-                            node,
-                            task,
-                            &combined_params,
-                            state,
-                            workflow,
-                        ))
-                        .await?;
-                    }
+                for template_step in &template.steps {
+                    Box::pin(self.execute_step_action(
+                        runner,
+                        &template_step.action,
+                        &template_step.env,
+                        node,
+                        task,
+                        &combined_params,
+                        state,
+                        workflow,
+                    ))
+                    .await?;
                 }
                 Ok(())
             }

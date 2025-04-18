@@ -493,7 +493,7 @@ fn create_template_workflow() -> Workflow {
                 id: "step1".to_string(),
                 name: "Step 1".to_string(),
                 description: None,
-                action: StepAction::UseTemplates(vec![butterflow_models::step::TemplateUse {
+                action: StepAction::UseTemplate(butterflow_models::step::TemplateUse {
                     template: "checkout-repo".to_string(),
                     inputs: HashMap::from([
                         (
@@ -502,7 +502,7 @@ fn create_template_workflow() -> Workflow {
                         ),
                         ("branch".to_string(), "feature/test".to_string()),
                     ]),
-                }]),
+                }),
                 env: None,
             }],
             env: HashMap::new(),
@@ -1251,10 +1251,10 @@ async fn test_invalid_template_reference() {
                 id: "step1".to_string(),
                 name: "Step 1".to_string(),
                 description: None,
-                action: StepAction::UseTemplates(vec![butterflow_models::step::TemplateUse {
+                action: StepAction::UseTemplate(butterflow_models::step::TemplateUse {
                     template: "non-existent-template".to_string(), // This template doesn't exist
                     inputs: HashMap::new(),
-                }]),
+                }),
                 env: None,
             }],
             env: HashMap::new(),

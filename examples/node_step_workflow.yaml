@@ -57,8 +57,8 @@ nodes:
     steps:
       - id: collect-results
         name: Collect Results
-        uses:
-        - template: checkout-repo
+        use:
+          template: checkout-repo
           inputs:
             repo_url: https://github.com/neovim/neovim
             branch: master

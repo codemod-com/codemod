@@ -373,15 +373,12 @@
           "description": "Template to use for this step",
           "type": "object",
           "properties": {
-            "uses": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/TemplateUse"
-              }
+            "use": {
+              "$ref": "#/$defs/TemplateUse"
             }
           },
           "required": [
-            "uses"
+            "use"
           ]
         },
         {

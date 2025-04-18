@@ -417,10 +417,10 @@ fn test_validate_workflow_nonexistent_template_reference() {
                 id: "step1".to_string(),
                 name: "Step 1".to_string(),
                 description: None,
-                action: StepAction::UseTemplates(vec![butterflow_models::step::TemplateUse {
+                action: StepAction::UseTemplate(butterflow_models::step::TemplateUse {
                     template: "nonexistent".to_string(), // Non-existent template
                     inputs: HashMap::new(),
-                }]),
+                }),
                 env: None,
             }],
             env: HashMap::new(),
@@ -830,10 +830,10 @@ nodes:
         run: echo "Hello, World!"
       - id: step2
         name: Step 2
-        uses:
-          - template: template1
-            inputs:
-              param1: value1
+        use:
+          template: template1
+          inputs:
+            param1: value1
   - id: node2
     name: Node 2
     type: manual

@@ -64,17 +64,17 @@ nodes:
       - id: checkout-repo
         name: Checkout repo
         description: Checkout the repo
-        uses:
-          - template: checkout-repo
-            inputs:
-              repo_url: ${{params.repo_url}}
-              branch: ${{params.branch}}
-              depth: ${{params.depth}}
+        use:
+          template: checkout-repo
+          inputs:
+            repo_url: ${{params.repo_url}}
+            branch: ${{params.branch}}
+            depth: ${{params.depth}}
       - id: evaluate-codeowners
         name: Evaluate codeowners
         description: Shard the Codemod run into smaller chunks based on the codeowners
-        uses:
-          - template: evaluate-codeowners
+        use:
+          template: evaluate-codeowners
 
   - id: run-codemod-ts
     name: I18n Codemod (TS)
@@ -94,8 +94,8 @@ nodes:
       - id: checkout-repo
         name: Checkout repo
         description: Checkout the repo
-        uses:
-          - template: checkout-repo
+        use:
+          template: checkout-repo
       - id: run-codemod
         name: Run codemod
         description: Run the i18n codemod on the TS files
@@ -122,8 +122,8 @@ nodes:
       - id: checkout-repo
         name: Checkout repo
         description: Checkout the repo
-        uses:
-          - template: checkout-repo
+        use:
+          template: checkout-repo
       - id: run-codemod
         name: Run codemod
         description: Run the i18n codemod on the HTML files

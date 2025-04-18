@@ -72,14 +72,12 @@ pub fn validate_workflow(workflow: &Workflow) -> Result<()> {
     // Check that all template references are valid
     for node in &workflow.nodes {
         for step in &node.steps {
-            if let StepAction::UseTemplates(uses) = &step.action {
-                for template_use in uses {
-                    if !template_ids.contains(&template_use.template) {
-                        return Err(Error::WorkflowValidation(format!(
-                            "Step {} in node {} uses non-existent template: {}",
-                            step.id, node.id, template_use.template
-                        )));
-                    }
+            if let StepAction::UseTemplate(template_use) = &step.action {
+                if !template_ids.contains(&template_use.template) {
+                    return Err(Error::WorkflowValidation(format!(
+                        "Step {} in node {} uses non-existent template: {}",
+                        step.id, node.id, template_use.template
+                    )));
                 }
             }
         }

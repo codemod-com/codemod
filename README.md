@@ -118,10 +118,10 @@ nodes:
     steps:
       - id: checkout-repo
         name: Checkout repo
-        uses:
-          - template: checkout-repo
-            inputs:
-              repo_url: ${{params.repo_url}}
+        use:
+          template: checkout-repo
+          inputs:
+            repo_url: ${{params.repo_url}}
 
   - id: run-codemod-ts
     name: I18n Codemod (TS)
@@ -209,10 +209,10 @@ nodes:
     steps:
       - id: step-id
         name: Step name
-        uses:
-          - template: template-id
-            inputs:
-              input_name: value
+        use:
+          template: template-id
+          inputs:
+            input_name: value
       - id: another-step
         name: Another step
         run: command1
@@ -899,12 +899,12 @@ nodes:
     steps:
       - id: checkout
         name: Checkout Repository
-        uses:
-          - template: checkout-repo
-            inputs:
-              repo_url: ${{params.repo_url}}
-              branch: "feature/new-feature"
-              depth: 1
+        use:
+          template: checkout-repo
+          inputs:
+            repo_url: ${{params.repo_url}}
+            branch: "feature/new-feature"
+            depth: 1
 ```
 
 This allows for reusing common functionality with different parameters across multiple nodes.
@@ -1100,11 +1100,11 @@ nodes:
     type: automatic
     steps:
       - id: checkout-repo
-        uses:
-          - template: checkout-repo
-            inputs:
-              repo_url: ${{params.repo_url}}
-              branch: ${{params.branch}}
+        use:
+          template: checkout-repo
+          inputs:
+            repo_url: ${{params.repo_url}}
+            branch: ${{params.branch}}
       - id: evaluate
         run: echo "Evaluating codeowners"
 
