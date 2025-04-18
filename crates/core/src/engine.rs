@@ -14,7 +14,6 @@ use uuid::Uuid;
 use crate::utils;
 use butterflow_models::node::NodeType;
 use butterflow_models::runtime::RuntimeType;
-use butterflow_models::trigger::TriggerType;
 use butterflow_models::{
     resolve_variables, DiffOperation, Error, FieldDiff, Node, Result, StateDiff, Task, TaskDiff,
     TaskStatus, Workflow, WorkflowRun, WorkflowRunDiff, WorkflowStatus,
@@ -650,13 +649,7 @@ impl Engine {
                 .ok_or_else(|| Error::NodeNotFound(task.node_id.clone()))?;
 
             // Check if the node has a manual trigger
-            if node.r#type == NodeType::Manual
-                || node
-                    .trigger
-                    .as_ref()
-                    .map(|t| t.r#type == TriggerType::Manual)
-                    .unwrap_or(false)
-            {
+            if node.r#type == NodeType::Manual {
                 // Create a task diff to update the status
                 let mut fields = HashMap::new();
                 fields.insert(

@@ -112,18 +112,6 @@
             }
           ],
           "default": null
-        },
-        "trigger": {
-          "description": "Configuration for how the node is triggered",
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Trigger"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null
         }
       },
       "required": [
@@ -601,34 +589,6 @@
       },
       "required": [
         "template"
-      ]
-    },
-    "Trigger": {
-      "description": "Represents a trigger configuration",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Type of trigger",
-          "$ref": "#/$defs/TriggerType"
-        }
-      },
-      "required": [
-        "type"
-      ]
-    },
-    "TriggerType": {
-      "description": "Type of trigger",
-      "oneOf": [
-        {
-          "description": "Automatic trigger (runs when dependencies are satisfied)",
-          "type": "string",
-          "const": "automatic"
-        },
-        {
-          "description": "Manual trigger (requires explicit triggering)",
-          "type": "string",
-          "const": "manual"
-        }
       ]
     },
     "WorkflowState": {

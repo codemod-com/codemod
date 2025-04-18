@@ -127,8 +127,6 @@ nodes:
     name: I18n Codemod (TS)
     description: Run the i18n codemod on the TS files
     type: automatic
-    trigger:
-      type: manual
     depends_on:
       - evaluate-codeowners
     strategy:
@@ -196,8 +194,6 @@ nodes:
     name: Node Name
     description: Node description
     type: automatic|manual
-    trigger:
-      type: manual|automatic
     depends_on:
       - other-node-id
     runtime:
@@ -417,9 +413,7 @@ Consider a node with a matrix strategy that generates 3 tasks, and requires manu
 nodes:
   - id: process-regions
     name: Process Regions
-    type: automatic
-    trigger:
-      type: manual
+    type: manual
     strategy:
       type: matrix
       values:
@@ -476,7 +470,7 @@ Butterflow supports two types of manual intervention in workflows:
 
 1. **Manual node type**: When a node is defined with `type: manual`, it will always pause execution and wait for a manual trigger, even if all dependencies are satisfied. Manual nodes allow you to insert human verification or decision points in your workflow.
 
-2. **Manual trigger**: Nodes defined with `trigger: { type: manual }` will pause execution until explicitly triggered, even if they're automatic nodes. This is useful for creating approval gates or scheduling specific parts of a workflow.
+2. **Manual trigger**: Nodes defined with `type: manual` will pause execution until explicitly triggered, even if they're automatic nodes. This is useful for creating approval gates or scheduling specific parts of a workflow.
 
 When a workflow encounters a manual node or a node with a manual trigger, it:
 
@@ -985,9 +979,7 @@ Automatic nodes can be configured to require manual triggering:
 nodes:
   - id: approval-gate
     name: Approval Gate
-    type: automatic
-    trigger:
-      type: manual
+    type: manual
     steps:
       - id: step1
         run: echo "Running after manual approval"
@@ -1110,9 +1102,7 @@ nodes:
 
   - id: run-codemod-ts
     name: I18n Codemod (TS)
-    type: automatic
-    trigger:
-      type: manual
+    type: manual
     depends_on:
       - evaluate-codeowners
     strategy:

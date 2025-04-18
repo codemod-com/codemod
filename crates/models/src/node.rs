@@ -5,7 +5,6 @@ use std::collections::HashMap;
 use crate::runtime::Runtime;
 use crate::step::Step;
 use crate::strategy::Strategy;
-use crate::trigger::Trigger;
 
 /// Type of node
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
@@ -38,10 +37,6 @@ pub struct Node {
     /// IDs of nodes that must complete before this node can run
     #[serde(default)]
     pub depends_on: Vec<String>,
-
-    /// Configuration for how the node is triggered
-    #[serde(default)]
-    pub trigger: Option<Trigger>,
 
     /// Configuration for running multiple instances of this node
     #[serde(default)]
