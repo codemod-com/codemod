@@ -7,6 +7,7 @@ pub mod step;
 pub mod strategy;
 pub mod task;
 pub mod template;
+pub mod trigger;
 pub mod variable;
 pub mod workflow;
 
@@ -20,6 +21,7 @@ pub use step::{Step, TemplateUse};
 pub use strategy::{Strategy, StrategyType};
 pub use task::{Task, TaskStatus};
 pub use template::{Template, TemplateInput, TemplateOutput};
+pub use trigger::{Trigger, TriggerType};
 pub use variable::resolve_variables;
 pub use workflow::{Workflow, WorkflowRun, WorkflowState, WorkflowStatus};
 

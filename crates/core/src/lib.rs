@@ -13,3 +13,5 @@ pub use butterflow_models::step::Step;
 pub use butterflow_models::strategy::Strategy;
 pub use butterflow_models::strategy::StrategyType;
 pub use butterflow_models::template::Template;
+pub use butterflow_models::trigger::Trigger;
+pub use butterflow_models::trigger::TriggerType;

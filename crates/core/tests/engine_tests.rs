@@ -8,6 +8,7 @@ use butterflow_core::{
 use butterflow_models::node::NodeType;
 use butterflow_models::step::StepAction;
 use butterflow_models::strategy::Strategy;
+use butterflow_models::trigger::TriggerType;
 use butterflow_state::{LocalStateAdapter, StateAdapter};
 use uuid::Uuid;
 
@@ -184,6 +185,7 @@ fn create_test_workflow() -> Workflow {
                 description: Some("Test node 1".to_string()),
                 r#type: NodeType::Automatic,
                 depends_on: vec![],
+                trigger: None,
                 strategy: None,
                 runtime: Some(Runtime {
                     r#type: RuntimeType::Direct,
@@ -208,6 +210,7 @@ fn create_test_workflow() -> Workflow {
                 description: Some("Test node 2".to_string()),
                 r#type: NodeType::Automatic,
                 depends_on: vec!["node1".to_string()],
+                trigger: None,
                 strategy: None,
                 runtime: Some(Runtime {
                     r#type: RuntimeType::Direct,
@@ -243,6 +246,7 @@ fn create_manual_trigger_workflow() -> Workflow {
                 description: Some("Test node 1".to_string()),
                 r#type: NodeType::Automatic,
                 depends_on: vec![],
+                trigger: None,
                 strategy: None,
                 runtime: Some(Runtime {
                     r#type: RuntimeType::Direct,
@@ -265,8 +269,11 @@ fn create_manual_trigger_workflow() -> Workflow {
                 id: "node2".to_string(),
                 name: "Node 2".to_string(),
                 description: Some("Test node 2".to_string()),
-                r#type: NodeType::Manual,
+                r#type: NodeType::Automatic,
                 depends_on: vec!["node1".to_string()],
+                trigger: Some(butterflow_models::trigger::Trigger {
+                    r#type: TriggerType::Manual,
+                }),
                 strategy: None,
                 runtime: Some(Runtime {
                     r#type: RuntimeType::Direct,
@@ -302,6 +309,7 @@ fn create_manual_node_workflow() -> Workflow {
                 description: Some("Test node 1".to_string()),
                 r#type: NodeType::Automatic,
                 depends_on: vec![],
+                trigger: None,
                 strategy: None,
                 runtime: Some(Runtime {
                     r#type: RuntimeType::Direct,
@@ -326,6 +334,7 @@ fn create_manual_node_workflow() -> Workflow {
                 description: Some("Test node 2".to_string()),
                 r#type: NodeType::Manual,
                 depends_on: vec!["node1".to_string()],
+                trigger: None,
                 strategy: None,
                 runtime: Some(Runtime {
                     r#type: RuntimeType::Direct,
@@ -361,6 +370,7 @@ fn create_matrix_workflow() -> Workflow {
                 description: Some("Test node 1".to_string()),
                 r#type: NodeType::Automatic,
                 depends_on: vec![],
+                trigger: None,
                 strategy: None,
                 runtime: Some(Runtime {
                     r#type: RuntimeType::Direct,
@@ -385,6 +395,7 @@ fn create_matrix_workflow() -> Workflow {
                 description: Some("Test node 2".to_string()),
                 r#type: NodeType::Automatic,
                 depends_on: vec!["node1".to_string()],
+                trigger: None,
                 strategy: Some(Strategy {
                     r#type: butterflow_models::strategy::StrategyType::Matrix,
                     values: Some(vec![
@@ -468,6 +479,7 @@ fn create_template_workflow() -> Workflow {
             description: Some("Test node 1".to_string()),
             r#type: NodeType::Automatic,
             depends_on: vec![],
+            trigger: None,
             strategy: None,
             runtime: Some(Runtime {
                 r#type: RuntimeType::Direct,
@@ -527,6 +539,7 @@ fn create_matrix_from_state_workflow() -> Workflow {
                 description: Some("Test node 1".to_string()),
                 r#type: NodeType::Automatic,
                 depends_on: vec![],
+                trigger: None,
                 strategy: None,
                 runtime: Some(Runtime {
                     r#type: RuntimeType::Direct,
@@ -551,6 +564,7 @@ fn create_matrix_from_state_workflow() -> Workflow {
                 description: Some("Test node 2".to_string()),
                 r#type: NodeType::Automatic,
                 depends_on: vec!["node1".to_string()],
+                trigger: None,
                 strategy: Some(Strategy {
                     r#type: butterflow_models::strategy::StrategyType::Matrix,
                     values: None,
@@ -908,6 +922,7 @@ fn create_env_var_workflow() -> Workflow {
             description: Some("Test node 1".to_string()),
             r#type: NodeType::Automatic,
             depends_on: vec![],
+            trigger: None,
             strategy: None,
             runtime: Some(Runtime {
                 r#type: RuntimeType::Direct,
@@ -947,6 +962,7 @@ fn create_variable_resolution_workflow() -> Workflow {
             description: Some("Processing ${params.branch}".to_string()),
             r#type: NodeType::Automatic,
             depends_on: vec![],
+            trigger: None,
             strategy: None,
             runtime: Some(Runtime {
                 r#type: RuntimeType::Direct,
@@ -1149,6 +1165,7 @@ async fn test_cyclic_dependency_workflow() {
                 description: Some("Test node 1".to_string()),
                 r#type: NodeType::Automatic,
                 depends_on: vec!["node2".to_string()], // Depends on node2
+                trigger: None,
                 strategy: None,
                 runtime: Some(Runtime {
                     r#type: RuntimeType::Direct,
@@ -1173,6 +1190,7 @@ async fn test_cyclic_dependency_workflow() {
                 description: Some("Test node 2".to_string()),
                 r#type: NodeType::Automatic,
                 depends_on: vec!["node1".to_string()], // Depends on node1, creating a cycle
+                trigger: None,
                 strategy: None,
                 runtime: Some(Runtime {
                     r#type: RuntimeType::Direct,
@@ -1219,6 +1237,7 @@ async fn test_invalid_template_reference() {
             description: Some("Test node 1".to_string()),
             r#type: NodeType::Automatic,
             depends_on: vec![],
+            trigger: None,
             strategy: None,
             runtime: Some(Runtime {
                 r#type: RuntimeType::Direct,
