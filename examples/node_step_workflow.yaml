@@ -9,8 +9,7 @@ nodes:
     description: Set up the environment for the workflow
     type: automatic
     steps:
-      - id: check-env
-        name: Check Environment
+      - name: Check Environment
         run: |
           #!/usr/bin/env bash
           echo "Running environment check"
@@ -32,15 +31,13 @@ nodes:
       type: matrix
       from_state: files
     steps:
-      - id: validate
-        name: Validate File
+      - name: Validate File
         run: |
           #!/usr/bin/env bash
           echo "Validating file: $file"
           echo "File exists: $(test -f $file && echo 'Yes' || echo 'No')"
 
-      - id: process
-        name: Process File
+      - name: Process File
         run: |
           #!/usr/bin/env bash
           echo "Processing file: $file"
@@ -55,16 +52,14 @@ nodes:
     depends_on:
       - process-data
     steps:
-      - id: collect-results
-        name: Collect Results
+      - name: Collect Results
         use:
           template: checkout-repo
           inputs:
             repo_url: https://github.com/neovim/neovim
             branch: master
 
-      - id: create-report
-        name: Create Report
+      - name: Create Report
         run: |
           #!/usr/bin/env python
           import os
@@ -92,8 +87,7 @@ templates:
         default: "main"
         description: "Branch to checkout"
     steps:
-      - id: clone
-        name: Clone repository
+      - name: Clone repository
         run: |
           #!/usr/bin/env bash
           echo "Cloning repository ${{params.repo_url}} branch ${{params.branch}}"

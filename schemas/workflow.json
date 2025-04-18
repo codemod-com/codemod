@@ -340,14 +340,6 @@
       "description": "Represents a step in a node",
       "type": "object",
       "properties": {
-        "description": {
-          "description": "Detailed description of what the step does",
-          "type": [
-            "string",
-            "null"
-          ],
-          "default": null
-        },
         "env": {
           "description": "Environment variables specific to this step",
           "type": [
@@ -358,10 +350,6 @@
             "type": "string"
           },
           "default": null
-        },
-        "id": {
-          "description": "Unique identifier for the step",
-          "type": "string"
         },
         "name": {
           "description": "Human-readable name",
@@ -395,7 +383,6 @@
         }
       ],
       "required": [
-        "id",
         "name"
       ]
     },

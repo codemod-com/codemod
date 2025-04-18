@@ -30,8 +30,7 @@ nodes:
     runtime:
       type: direct
     steps:
-      - id: hello
-        name: Say Hello
+      - name: Say Hello
         run: echo "Hello, World!"
 ```
 
@@ -103,8 +102,7 @@ templates:
         description: "URL of the repository to checkout"
         default: ${{params.repo_url}}
     steps:
-      - id: clone
-        name: Clone repository
+      - name: Clone repository
         run: git clone ${{inputs.repo_url}} repo
 
 nodes:
@@ -116,8 +114,7 @@ nodes:
       type: docker
       image: node:18-alpine
     steps:
-      - id: checkout-repo
-        name: Checkout repo
+      - name: Checkout repo
         use:
           template: checkout-repo
           inputs:
@@ -173,12 +170,10 @@ templates:
         description: "Input description"
         default: default_value
     steps:
-      - id: step-id
-        name: Step name
+      - name: Step name
         run: |
           command1
-      - id: step-id-two
-        name: Second step name
+      - name: Second step name
         run: |
           command2
     outputs:
@@ -207,14 +202,12 @@ nodes:
       type: matrix
       from_state: stateName
     steps:
-      - id: step-id
-        name: Step name
+      - name: Step name
         use:
           template: template-id
           inputs:
             input_name: value
-      - id: another-step
-        name: Another step
+      - name: Another step
         run: command1
     env:
       ENV_VAR: value
@@ -363,8 +356,7 @@ nodes:
       DEBUG: "${{env.CI}}"
       PREVIOUS_RESULT: "${{tasks.previous-node.outputs.result}}"
     steps:
-      - id: process
-        name: Process Data
+      - name: Process Data
         run: echo "Processing data for ${{params.repo_name}}"
 ```
 
@@ -381,8 +373,7 @@ nodes:
         - region: us-west
           zone: zone-2
     steps:
-      - id: process
-        run: echo "Processing region $region in zone $zone"
+      - run: echo "Processing region $region in zone $zone"
 ```
 
 ### Variable Resolution Order
@@ -810,16 +801,13 @@ nodes:
     name: Process Data
     type: automatic
     steps:
-      - id: validate
-        name: Validate Data
+      - name: Validate Data
         run: echo "Validating data"
       
-      - id: transform
-        name: Transform Data
+      - name: Transform Data
         run: echo "Transforming data"
           
-      - id: save
-        name: Save Results
+      - name: Save Results
         run: echo "Saving results"
 ```
 
@@ -831,8 +819,7 @@ Commands can include multi-line scripts with shebang lines to specify the interp
 
 ```yaml
 steps:
-  - id: run-script
-    name: Run Script
+  - name: Run Script
     run: |
       #!/bin/bash
       echo "Running bash script"
@@ -845,8 +832,7 @@ For Python scripts:
 
 ```yaml
 steps:
-  - id: run-python
-    name: Run Python Script
+  - name: Run Python Script
     run: |
       #!/usr/bin/env python
       import os
@@ -870,14 +856,12 @@ nodes:
     name: Generate Report
     type: automatic
     steps:
-      - id: collect-results
-        name: Collect Results
+      - name: Collect Results
         run: echo "Collecting results"
         env:
           SCRIPT_LANGUAGE: "bash"
       
-      - id: create-report
-        name: Create Report
+      - name: Create Report
         run: echo "Creating report"
         env:
           SCRIPT_LANGUAGE: "python"
@@ -897,8 +881,7 @@ nodes:
     name: Checkout Code
     type: automatic
     steps:
-      - id: checkout
-        name: Checkout Repository
+      - name: Checkout Repository
         use:
           template: checkout-repo
           inputs:
@@ -925,8 +908,7 @@ nodes:
         - region: us-west
         - region: eu-central
     steps:
-      - id: process
-        name: Process Region
+      - name: Process Region
         run: echo "Processing region $region"
 ```
 
@@ -945,8 +927,7 @@ nodes:
       type: matrix
       from_state: files
     steps:
-      - id: process
-        name: Process File
+      - name: Process File
         run: echo "Processing file $file"
 ```
 
@@ -962,8 +943,7 @@ nodes:
     name: Automatic Node
     type: automatic
     steps:
-      - id: step1
-        run: echo "Running automatically"
+      - run: echo "Running automatically"
           
   - id: manual-node
     name: Manual Node
@@ -971,8 +951,7 @@ nodes:
     depends_on:
       - automatic-node
     steps:
-      - id: step1
-        run: echo "Running after manual approval"
+      - run: echo "Running after manual approval"
 ```
 
 Automatic nodes run as soon as their dependencies are satisfied, while manual nodes require explicit triggering even if all dependencies are met.
@@ -989,8 +968,7 @@ nodes:
     trigger:
       type: manual
     steps:
-      - id: step1
-        run: echo "Running after manual approval"
+      - run: echo "Running after manual approval"
 ```
 
 This is useful for creating approval gates in otherwise automatic workflows.
@@ -1008,8 +986,7 @@ nodes:
     name: Hello World
     type: automatic
     steps:
-      - id: hello
-        run: echo "Hello, World!"
+      - run: echo "Hello, World!"
 
   - id: current-time
     name: Current Time
@@ -1017,8 +994,7 @@ nodes:
     depends_on:
       - hello-world
     steps:
-      - id: time
-        run: date
+      - run: date
 ```
 
 ### Matrix Workflow
@@ -1032,8 +1008,7 @@ nodes:
     name: Setup
     type: automatic
     steps:
-      - id: step1
-        run: echo "Setting up environment"
+      - run: echo "Setting up environment"
 
   - id: process-regions
     name: Process Regions
@@ -1047,8 +1022,7 @@ nodes:
         - region: us-west
         - region: eu-central
     steps:
-      - id: process
-        run: echo "Processing region $region"
+      - run: echo "Processing region $region"
 
   - id: finalize
     name: Finalize
@@ -1056,8 +1030,7 @@ nodes:
     depends_on:
       - process-regions
     steps:
-      - id: step1
-        run: echo "Finalizing processing"
+      - run: echo "Finalizing processing"
 ```
 
 ### Complex Workflow with Templates and Manual Approval
@@ -1089,24 +1062,20 @@ templates:
         type: string
         default: "main"
     steps:
-      - id: clone
-        run: git clone ${{inputs.repo_url}} repo
-      - id: checkout
-        run: cd repo && git checkout ${{inputs.branch}}
+      - run: git clone ${{inputs.repo_url}} repo
+      - run: cd repo && git checkout ${{inputs.branch}}
 
 nodes:
   - id: evaluate-codeowners
     name: Evaluate codeowners
     type: automatic
     steps:
-      - id: checkout-repo
-        use:
+      - use:
           template: checkout-repo
           inputs:
             repo_url: ${{params.repo_url}}
             branch: ${{params.branch}}
-      - id: evaluate
-        run: echo "Evaluating codeowners"
+      - run: echo "Evaluating codeowners"
 
   - id: run-codemod-ts
     name: I18n Codemod (TS)
@@ -1119,8 +1088,7 @@ nodes:
       type: matrix
       from_state: i18nShardsTs
     steps:
-      - id: run-codemod
-        run: echo "Running TS codemod for team ${{team}}"
+      - run: echo "Running TS codemod for team ${{team}}"
 ```
 
 These examples demonstrate the flexibility and power of Butterflow for defining complex workflow processes.

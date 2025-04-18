@@ -36,7 +36,6 @@ nodes:
     assert_eq!(workflow.nodes[0].id, "node1");
     assert_eq!(workflow.nodes[0].name, "Node 1");
     assert_eq!(workflow.nodes[0].steps.len(), 1);
-    assert_eq!(workflow.nodes[0].steps[0].id, "step1");
     assert_eq!(workflow.nodes[0].steps[0].name, "Step 1");
     if let StepAction::RunScript(script) = &workflow.nodes[0].steps[0].action {
         assert_eq!(script, "echo \"Hello, World!\"");
@@ -81,7 +80,6 @@ fn test_parse_workflow_file_json() {
     assert_eq!(workflow.nodes[0].id, "node1");
     assert_eq!(workflow.nodes[0].name, "Node 1");
     assert_eq!(workflow.nodes[0].steps.len(), 1);
-    assert_eq!(workflow.nodes[0].steps[0].id, "step1");
     assert_eq!(workflow.nodes[0].steps[0].name, "Step 1");
     if let StepAction::RunScript(script) = &workflow.nodes[0].steps[0].action {
         assert_eq!(script, "echo \"Hello, World!\"");
@@ -414,9 +412,7 @@ fn test_validate_workflow_nonexistent_template_reference() {
             strategy: None,
             runtime: None,
             steps: vec![Step {
-                id: "step1".to_string(),
                 name: "Step 1".to_string(),
-                description: None,
                 action: StepAction::UseTemplate(butterflow_models::step::TemplateUse {
                     template: "nonexistent".to_string(), // Non-existent template
                     inputs: HashMap::new(),
@@ -779,9 +775,7 @@ fn test_validate_workflow_with_step_env_vars() {
             strategy: None,
             runtime: None,
             steps: vec![Step {
-                id: "step1".to_string(),
                 name: "Step 1".to_string(),
-                description: None,
                 action: StepAction::RunScript("echo $STEP_VAR".to_string()),
                 env: Some(step_env),
             }],

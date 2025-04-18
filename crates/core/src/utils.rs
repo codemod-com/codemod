@@ -76,7 +76,7 @@ pub fn validate_workflow(workflow: &Workflow) -> Result<()> {
                 if !template_ids.contains(&template_use.template) {
                     return Err(Error::WorkflowValidation(format!(
                         "Step {} in node {} uses non-existent template: {}",
-                        step.id, node.id, template_use.template
+                        step.name, node.id, template_use.template
                     )));
                 }
             }

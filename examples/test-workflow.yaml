@@ -6,8 +6,7 @@ nodes:
     description: Print a hello world message
     type: automatic
     steps:
-      - id: hello
-        name: Hello
+      - name: Hello
         run: echo "Hello, World!"
 
   - id: current-time
@@ -17,6 +16,5 @@ nodes:
     depends_on:
       - hello-world
     steps:
-      - id: time
-        name: Time
+      - name: Time
         run: date

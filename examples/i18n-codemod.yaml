@@ -44,8 +44,7 @@ templates:
         default: "1"
         description: "Git clone depth"
     steps:
-      - id: clone
-        name: Clone repository
+      - name: Clone repository
         run: |
           git clone --depth ${{inputs.depth}} ${{inputs.repo_url}} repo
           cd repo
@@ -61,18 +60,14 @@ nodes:
       type: docker
       image: node:18-alpine
     steps:
-      - id: checkout-repo
-        name: Checkout repo
-        description: Checkout the repo
+      - name: Checkout repo
         use:
           template: checkout-repo
           inputs:
             repo_url: ${{params.repo_url}}
             branch: ${{params.branch}}
             depth: ${{params.depth}}
-      - id: evaluate-codeowners
-        name: Evaluate codeowners
-        description: Shard the Codemod run into smaller chunks based on the codeowners
+      - name: Evaluate codeowners
         use:
           template: evaluate-codeowners
 
@@ -91,14 +86,10 @@ nodes:
       type: matrix
       from_state: i18nShardsTs
     steps:
-      - id: checkout-repo
-        name: Checkout repo
-        description: Checkout the repo
+      - name: Checkout repo
         use:
           template: checkout-repo
-      - id: run-codemod
-        name: Run codemod
-        description: Run the i18n codemod on the TS files
+      - name: Run codemod
         run: node /scripts/run-codemod.js --type=ts --path=${SHARD_PATH}
     env:
       REPO_PATH: /workspace
@@ -119,16 +110,10 @@ nodes:
       type: docker
       image: node:18-alpine
     steps:
-      - id: checkout-repo
-        name: Checkout repo
-        description: Checkout the repo
+      - name: Checkout repo
         use:
           template: checkout-repo
-      - id: run-codemod
-        name: Run codemod
-        description: Run the i18n codemod on the HTML files
+      - name: Run codemod
         run: node /scripts/run-codemod.js --type=html --path=${SHARD_PATH}
-      - id: pull-request
-        name: Pull request
-        description: Create a pull request with the changes
+      - name: Pull request
         run: codemodctl pr create

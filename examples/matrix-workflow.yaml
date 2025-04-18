@@ -7,8 +7,7 @@ nodes:
     description: Initial setup
     type: automatic
     steps:
-      - id: step1
-        name: Setup Step
+      - name: Setup Step
         run: echo "Setting up environment"
 
   - id: process-regions
@@ -24,8 +23,7 @@ nodes:
         - region: us-west
         - region: eu-central
     steps:
-      - id: process
-        name: Process Region
+      - name: Process Region
         run: echo "Processing region ${{region}}"
 
   - id: finalize
@@ -35,6 +33,5 @@ nodes:
     depends_on:
       - process-regions
     steps:
-      - id: step1
-        name: Finalize Step
+      - name: Finalize Step
         run: echo "Finalizing processing"

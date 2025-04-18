@@ -6,8 +6,7 @@ nodes:
     description: This node runs automatically
     type: automatic
     steps:
-      - id: step1
-        name: Step 1
+      - name: Step 1
         run: echo "Running automatic node"
 
   - id: manual-node
@@ -17,8 +16,7 @@ nodes:
     depends_on:
       - automatic-node
     steps:
-      - id: step1
-        name: Step 1
+      - name: Step 1
         run: echo "Running manual node"
 
   - id: final-node
@@ -28,6 +26,5 @@ nodes:
     depends_on:
       - manual-node
     steps:
-      - id: step1
-        name: Step 1
+      - name: Step 1
         run: echo "Running final node"

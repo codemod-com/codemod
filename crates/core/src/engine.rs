@@ -819,7 +819,7 @@ impl Engine {
                             operation: DiffOperation::Add,
                             value: Some(serde_json::to_value(format!(
                                 "Step {} failed: {}",
-                                step.id, e
+                                step.name, e
                             ))?),
                         },
                     );
@@ -834,7 +834,7 @@ impl Engine {
 
                     error!(
                         "Task {} ({}) step {} failed: {}",
-                        task_id, node.id, step.id, e
+                        task_id, node.id, step.name, e
                     );
 
                     return Err(e);

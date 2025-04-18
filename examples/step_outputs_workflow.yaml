@@ -7,22 +7,19 @@ nodes:
     description: Set up the environment for the workflow
     type: automatic
     steps:
-      - id: check-env
-        name: Check Environment
+      - name: Check Environment
         run: |
           #!/usr/bin/env bash
           echo "env=123" >> $STATE_OUTPUTS
           echo "asdf=Hello=there" >> $STATE_OUTPUTS
-      - id: read-env
-        name: Read Environment
+      - name: Read Environment
         run: |
           #!/usr/bin/env bash
           # Quotes are added to values automatically
           echo '${{state.env}}'
           echo ${{state.asdf}}
           echo ${{state.asdf}} >> $STATE_OUTPUTS
-      - id: extra
-        name: Extra step
+      - name: Extra step
         run: |
           #!/usr/bin/env bash
           echo '${{state.Hello}}'
@@ -33,8 +30,7 @@ nodes:
     depends_on:
       - setup
     steps:
-      - id: check-env
-        name: Check Environment
+      - name: Check Environment
         run: |
           #!/usr/bin/env bash
           echo 'Should be: "there"'

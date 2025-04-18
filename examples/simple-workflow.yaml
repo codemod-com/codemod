@@ -5,8 +5,7 @@ nodes:
     description: Shard the Codemod run into smaller chunks based on the codeowners
     type: automatic
     steps:
-      - id: evaluate
-        name: Evaluate Codeowners
+      - name: Evaluate Codeowners
         run: echo "Evaluating codeowners"
     env:
       REPO_URL: "${{params.repo_url}}"
@@ -25,11 +24,9 @@ nodes:
     trigger:
       type: manual
     steps:
-      - id: run-codemod
-        name: Run Codemod
+      - name: Run Codemod
         run: echo "Running TS codemod"
-      - id: verify
-        name: Verify Changes
+      - name: Verify Changes
         run: echo "Verifying TS changes"
     env:
       REPO_URL: "${{params.repo_url}}"
@@ -47,11 +44,9 @@ nodes:
     trigger:
       type: manual
     steps:
-      - id: run-codemod
-        name: Run Codemod
+      - name: Run Codemod
         run: echo "Running HTML codemod"
-      - id: verify
-        name: Verify Changes
+      - name: Verify Changes
         run: echo "Verifying HTML changes"
     env:
       REPO_URL: "${{params.repo_url}}"

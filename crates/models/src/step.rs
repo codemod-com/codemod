@@ -5,15 +5,8 @@ use std::collections::HashMap;
 /// Represents a step in a node
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Step {
-    /// Unique identifier for the step
-    pub id: String,
-
     /// Human-readable name
     pub name: String,
-
-    /// Detailed description of what the step does
-    #[serde(default)]
-    pub description: Option<String>,
 
     /// Action to perform - either using a template or running a script
     #[serde(flatten)]

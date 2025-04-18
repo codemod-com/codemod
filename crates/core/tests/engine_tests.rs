@@ -196,9 +196,7 @@ fn create_test_workflow() -> Workflow {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Hello, World!'".to_string()),
                     env: None,
                 }],
@@ -221,9 +219,7 @@ fn create_test_workflow() -> Workflow {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Node 2 executed'".to_string()),
                     env: None,
                 }],
@@ -257,9 +253,7 @@ fn create_manual_trigger_workflow() -> Workflow {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Hello, World!'".to_string()),
                     env: None,
                 }],
@@ -284,9 +278,7 @@ fn create_manual_trigger_workflow() -> Workflow {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Node 2 executed'".to_string()),
                     env: None,
                 }],
@@ -320,9 +312,7 @@ fn create_manual_node_workflow() -> Workflow {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Hello, World!'".to_string()),
                     env: None,
                 }],
@@ -345,9 +335,7 @@ fn create_manual_node_workflow() -> Workflow {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Node 2 executed'".to_string()),
                     env: None,
                 }],
@@ -381,9 +369,7 @@ fn create_matrix_workflow() -> Workflow {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Hello, World!'".to_string()),
                     env: None,
                 }],
@@ -414,9 +400,7 @@ fn create_matrix_workflow() -> Workflow {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Processing region ${region}'".to_string()),
                     env: None,
                 }],
@@ -457,9 +441,7 @@ fn create_template_workflow() -> Workflow {
             options: None,
         }),
         steps: vec![Step {
-            id: "clone".to_string(),
             name: "Clone repository".to_string(),
-            description: None,
             action: StepAction::RunScript(
                 "echo 'Cloning repository ${inputs.repo_url} branch ${inputs.branch}'".to_string(),
             ),
@@ -490,9 +472,7 @@ fn create_template_workflow() -> Workflow {
                 options: None,
             }),
             steps: vec![Step {
-                id: "step1".to_string(),
                 name: "Step 1".to_string(),
-                description: None,
                 action: StepAction::UseTemplate(butterflow_models::step::TemplateUse {
                     template: "checkout-repo".to_string(),
                     inputs: HashMap::from([
@@ -550,9 +530,7 @@ fn create_matrix_from_state_workflow() -> Workflow {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Setting up state'".to_string()),
                     env: None,
                 }],
@@ -579,9 +557,7 @@ fn create_matrix_from_state_workflow() -> Workflow {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Processing file ${file}'".to_string()),
                     env: None,
                 }],
@@ -933,9 +909,7 @@ fn create_env_var_workflow() -> Workflow {
                 options: None,
             }),
             steps: vec![Step {
-                id: "step1".to_string(),
                 name: "Step 1".to_string(),
-                description: None,
                 action: StepAction::RunScript("echo 'Using env var: $TEST_ENV_VAR'".to_string()),
                 env: Some(HashMap::from([(
                     "STEP_SPECIFIC_VAR".to_string(),
@@ -973,9 +947,7 @@ fn create_variable_resolution_workflow() -> Workflow {
                 options: None,
             }),
             steps: vec![Step {
-                id: "step1".to_string(),
                 name: "Step 1".to_string(),
-                description: None,
                 action: StepAction::RunScript(
                     "echo 'Processing repo: ${params.repo_name} on branch: ${params.branch}'"
                         .to_string(),
@@ -1176,9 +1148,7 @@ async fn test_cyclic_dependency_workflow() {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Hello, World!'".to_string()),
                     env: None,
                 }],
@@ -1201,9 +1171,7 @@ async fn test_cyclic_dependency_workflow() {
                     options: None,
                 }),
                 steps: vec![Step {
-                    id: "step1".to_string(),
                     name: "Step 1".to_string(),
-                    description: None,
                     action: StepAction::RunScript("echo 'Node 2 executed'".to_string()),
                     env: None,
                 }],
@@ -1248,9 +1216,7 @@ async fn test_invalid_template_reference() {
                 options: None,
             }),
             steps: vec![Step {
-                id: "step1".to_string(),
                 name: "Step 1".to_string(),
-                description: None,
                 action: StepAction::UseTemplate(butterflow_models::step::TemplateUse {
                     template: "non-existent-template".to_string(), // This template doesn't exist
                     inputs: HashMap::new(),
