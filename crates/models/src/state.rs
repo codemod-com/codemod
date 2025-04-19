@@ -1,9 +1,9 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-
+use ts_rs::TS;
 /// Type of state schema property
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema, TS)]
 #[serde(rename_all = "lowercase")]
 pub enum StateSchemaType {
     /// Array type
@@ -23,7 +23,7 @@ pub enum StateSchemaType {
 }
 
 /// Represents a state schema property
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 pub struct StateSchemaProperty {
     /// Type of the property
     pub r#type: StateSchemaType,
@@ -34,7 +34,7 @@ pub struct StateSchemaProperty {
 }
 
 /// Represents a state schema definition
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 pub struct StateSchema {
     /// Name of the state schema
     pub name: String,
@@ -52,7 +52,7 @@ pub struct StateSchema {
 }
 
 /// Represents the schema for items in an array
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 pub struct StateSchemaItems {
     /// Type of the items
     pub r#type: StateSchemaType,

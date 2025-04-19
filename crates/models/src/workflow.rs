@@ -7,9 +7,10 @@ use uuid::Uuid;
 use crate::node::Node;
 use crate::state::StateSchema;
 use crate::template::Template;
+use ts_rs::TS;
 
 /// Represents a workflow definition
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 pub struct Workflow {
     /// Version of the workflow format
     pub version: String,
@@ -27,7 +28,7 @@ pub struct Workflow {
 }
 
 /// Represents the state schema for a workflow
-#[derive(Debug, Clone, Serialize, Deserialize, Default, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, JsonSchema, TS)]
 pub struct WorkflowState {
     /// Schema definitions
     #[serde(default)]

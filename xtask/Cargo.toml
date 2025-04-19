@@ -14,3 +14,4 @@ clap.workspace = true
 butterflow-models.workspace = true
 schemars = "1.0.0-alpha.17"
 serde_json.workspace = true
+ts-rs = "10.1.0"

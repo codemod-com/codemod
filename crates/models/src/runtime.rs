@@ -1,8 +1,8 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-
+use ts_rs::TS;
 /// Type of runtime
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema, TS)]
 #[serde(rename_all = "lowercase")]
 pub enum RuntimeType {
     /// Direct execution on the host
@@ -16,7 +16,7 @@ pub enum RuntimeType {
 }
 
 /// Represents a runtime configuration
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 pub struct Runtime {
     /// Type of runtime
     pub r#type: RuntimeType,

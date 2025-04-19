@@ -1,12 +1,13 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use ts_rs::TS;
 
 use crate::runtime::Runtime;
 use crate::step::Step;
 
 /// Represents a template input
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 pub struct TemplateInput {
     /// Name of the input
     pub name: String,
@@ -29,7 +30,7 @@ pub struct TemplateInput {
 }
 
 /// Represents a template output
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 pub struct TemplateOutput {
     /// Name of the output
     pub name: String,
@@ -43,7 +44,7 @@ pub struct TemplateOutput {
 }
 
 /// Represents a reusable template
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 pub struct Template {
     /// Unique identifier for the template
     pub id: String,
@@ -72,6 +73,7 @@ pub struct Template {
 
     /// Environment variables to inject into the container
     #[serde(default)]
+    #[ts(type = "Record<string, string>")]
     pub env: HashMap<String, String>,
 }
 

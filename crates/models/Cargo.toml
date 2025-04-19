@@ -19,3 +19,4 @@ chrono = { workspace = true }
 regex = { workspace = true }
 reqwest = { workspace = true }
 schemars = "1.0.0-alpha.17"
+ts-rs = "10.1.0"
