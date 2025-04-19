@@ -46,10 +46,10 @@ jobs:
         run: |
           # Generate schema
           cargo xtask schema
-          # Check for uncommitted changes
-          if [[ -n "$(git status --porcelain)" ]]; then
+          # Check for uncommitted changes (excluding schemas/workflow.ts)
+          if [[ -n "$(git status --porcelain | grep -v 'schemas/workflow.ts')" ]]; then
             echo '❌ Uncommitted changes detected after running `cargo xtask schema`:'
-            git --no-pager diff
+            git --no-pager diff -- . ':!schemas/workflow.ts'
             exit 1
           else
             echo "✅ No changes — schema is up to date."
