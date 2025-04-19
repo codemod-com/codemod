@@ -4,6 +4,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use butterflow_models::step::StepAction;
+use butterflow_state::local_adapter::LocalStateAdapter;
 use chrono::Utc;
 use log::{debug, error, info, warn};
 use tokio::fs::read_to_string;
@@ -21,7 +22,7 @@ use butterflow_models::{
     WorkflowStatus,
 };
 use butterflow_runners::{DirectRunner, DockerRunner, PodmanRunner, Runner};
-use butterflow_state::{LocalStateAdapter, StateAdapter};
+use butterflow_state::StateAdapter;
 
 /// Workflow engine
 pub struct Engine {

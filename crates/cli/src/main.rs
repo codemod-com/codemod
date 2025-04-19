@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 use butterflow_models::step::StepAction;
+use butterflow_state::cloud_adapter::ApiStateAdapter;
 use clap::{Parser, Subcommand};
 use log::{error, info};
 use std::collections::HashMap;
@@ -10,7 +11,6 @@ use uuid::Uuid;
 use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
-use butterflow_state::ApiStateAdapter;
 
 #[derive(Parser)]
 #[command(name = "butterflow")]

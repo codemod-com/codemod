@@ -9,7 +9,8 @@ use butterflow_models::node::NodeType;
 use butterflow_models::step::StepAction;
 use butterflow_models::strategy::Strategy;
 use butterflow_models::trigger::TriggerType;
-use butterflow_state::{LocalStateAdapter, StateAdapter};
+use butterflow_state::local_adapter::LocalStateAdapter;
+use butterflow_state::StateAdapter;
 use uuid::Uuid;
 
 // Mock state adapter for testing
