@@ -1,8 +1,9 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 /// Type of trigger
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema, TS)]
 #[serde(rename_all = "lowercase")]
 pub enum TriggerType {
     /// Automatic trigger (runs when dependencies are satisfied)
@@ -13,7 +14,7 @@ pub enum TriggerType {
 }
 
 /// Represents a trigger configuration
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 pub struct Trigger {
     /// Type of trigger
     pub r#type: TriggerType,

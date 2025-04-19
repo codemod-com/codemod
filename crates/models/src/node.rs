@@ -1,14 +1,14 @@
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-
 use crate::runtime::Runtime;
 use crate::step::Step;
 use crate::strategy::Strategy;
 use crate::trigger::Trigger;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use ts_rs::TS;
 
 /// Type of node
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema, TS)]
 #[serde(rename_all = "lowercase")]
 pub enum NodeType {
     /// Automatic node (runs when dependencies are satisfied)
@@ -19,7 +19,7 @@ pub enum NodeType {
 }
 
 /// Represents a node in a workflow
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 pub struct Node {
     /// Unique identifier for the node
     pub id: String,
@@ -56,6 +56,7 @@ pub struct Node {
 
     /// Environment variables to inject into the container
     #[serde(default)]
+    #[ts(type = "Record<string, string>")]
     pub env: HashMap<String, String>,
 }
 

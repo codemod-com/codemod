@@ -1,8 +1,11 @@
-use std::{fs::File, path::Path};
+use std::{collections::HashMap, fs::File, io::Write, path::Path};
 
 use butterflow_models::Workflow;
 use clap::{Parser, Subcommand};
 use serde_json::to_writer_pretty;
+use ts_export::export_recursive;
+
+mod ts_export;
 
 #[derive(Parser)]
 #[command(author, version, about)]
@@ -26,14 +29,25 @@ fn main() {
             let Ok(xtask_path) = std::env::var("CARGO_MANIFEST_DIR") else {
                 panic!("Cannot find CARGO_MANIFEST_DIR");
             };
-            let rule_path = Path::new(&xtask_path)
-                .parent()
-                .unwrap()
-                .join("schemas/workflow.json");
-            let Ok(mut file) = File::create(&rule_path) else {
-                panic!("Cannot create file: {:?}", rule_path);
+            let schema_out_dir = Path::new(&xtask_path).parent().unwrap().join("schemas");
+
+            let json_schema_path = schema_out_dir.join("workflow.json");
+            let Ok(mut json_file) = File::create(&json_schema_path) else {
+                panic!("Cannot create file: {:?}", json_schema_path);
             };
-            to_writer_pretty(&mut file, &schema).unwrap();
+            to_writer_pretty(&mut json_file, &schema).unwrap();
+
+            let ts_schema_path = schema_out_dir.join("workflow.ts");
+            let mut ts_file = File::create(&ts_schema_path).unwrap();
+            let mut type_hash_map = HashMap::new();
+            export_recursive::<Workflow>(&mut type_hash_map);
+            // sort by key
+            let mut type_hash_map = type_hash_map.into_iter().collect::<Vec<_>>();
+            type_hash_map.sort_by_key(|(k, _)| *k);
+            for (_, ts_def) in type_hash_map {
+                ts_file.write_all(ts_def.as_bytes()).unwrap();
+                ts_file.write_all(b"\n").unwrap();
+            }
         }
     }
 }
