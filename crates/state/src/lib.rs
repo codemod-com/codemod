@@ -8,6 +8,7 @@ use butterflow_models::{Result, StateDiff, Task, TaskDiff, WorkflowRun, Workflow
 
 pub mod cloud_adapter;
 pub mod local_adapter;
+pub mod mock_adapter;
 
 /// State adapter trait for persisting workflow state
 #[async_trait]

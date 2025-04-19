@@ -171,7 +171,7 @@ impl StateAdapter for LocalStateAdapter {
         // Apply the diff
         for (field, field_diff) in &diff.fields {
             match field_diff.operation {
-                DiffOperation::Add | DiffOperation::Update => {
+                DiffOperation::Add | DiffOperation::Update | DiffOperation::Append => {
                     if let Some(value) = &field_diff.value {
                         // Convert the workflow run to a JSON value
                         let mut workflow_run_value = serde_json::to_value(&workflow_run)?;
@@ -347,7 +347,7 @@ impl StateAdapter for LocalStateAdapter {
         // Apply the diff
         for (field, field_diff) in &diff.fields {
             match field_diff.operation {
-                DiffOperation::Add | DiffOperation::Update => {
+                DiffOperation::Add | DiffOperation::Update | DiffOperation::Append => {
                     if let Some(value) = &field_diff.value {
                         // Convert the task to a JSON value
                         let mut task_value = serde_json::to_value(&task)?;
@@ -394,6 +394,28 @@ impl StateAdapter for LocalStateAdapter {
                 }
                 DiffOperation::Remove => {
                     state.remove(field);
+                }
+                DiffOperation::Append => {
+                    // TODO: We may want reconsider this when we add state validation
+                    if let Some(new_value) = &field_diff.value {
+                        if let Some(existing) = state.get_mut(field) {
+                            // If the existing value is an array, append to it
+                            if let serde_json::Value::Array(arr) = existing {
+                                arr.push(new_value.clone());
+                            } else {
+                                // If the existing value is not an array, replace it with a new array containing both values
+                                let old_value = existing.clone();
+                                *existing =
+                                    serde_json::Value::Array(vec![old_value, new_value.clone()]);
+                            }
+                        } else {
+                            // Field doesn't exist yet, create a new array with just this value
+                            state.insert(
+                                field.clone(),
+                                serde_json::Value::Array(vec![new_value.clone()]),
+                            );
+                        }
+                    }
                 }
             }
         }

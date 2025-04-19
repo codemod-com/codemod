@@ -11,6 +11,8 @@ pub enum DiffOperation {
     Update,
     /// Remove an existing value
     Remove,
+    /// Append to an array
+    Append,
 }
 
 /// Represents a diff for a single field

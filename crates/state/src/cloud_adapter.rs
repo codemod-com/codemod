@@ -10,9 +10,11 @@ use crate::StateAdapter;
 
 /// API state adapter (sends state updates to an API)
 pub struct ApiStateAdapter {
+    #[allow(dead_code)]
     /// API endpoint
     endpoint: String,
 
+    #[allow(dead_code)]
     /// Authentication token
     auth_token: String,
 }

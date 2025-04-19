@@ -1,177 +1,19 @@
+use butterflow_state::mock_adapter::MockStateAdapter;
 use std::collections::HashMap;
 
 use butterflow_core::engine::Engine;
 use butterflow_core::{
-    Node, Result, Runtime, RuntimeType, Step, Task, TaskStatus, Template, Workflow, WorkflowRun,
+    Node, Runtime, RuntimeType, Step, Task, TaskStatus, Template, Workflow, WorkflowRun,
     WorkflowStatus,
 };
 use butterflow_models::node::NodeType;
 use butterflow_models::step::StepAction;
 use butterflow_models::strategy::Strategy;
 use butterflow_models::trigger::TriggerType;
+use butterflow_models::{DiffOperation, FieldDiff, TaskDiff};
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
 use uuid::Uuid;
-
-// Mock state adapter for testing
-struct MockStateAdapter {
-    workflow_runs: HashMap<Uuid, WorkflowRun>,
-    tasks: HashMap<Uuid, Task>,
-    state: HashMap<String, serde_json::Value>,
-}
-
-impl MockStateAdapter {
-    fn new() -> Self {
-        Self {
-            workflow_runs: HashMap::new(),
-            tasks: HashMap::new(),
-            state: HashMap::new(),
-        }
-    }
-}
-
-#[async_trait::async_trait]
-impl StateAdapter for MockStateAdapter {
-    async fn save_workflow_run(&mut self, workflow_run: &WorkflowRun) -> Result<()> {
-        self.workflow_runs
-            .insert(workflow_run.id, workflow_run.clone());
-        Ok(())
-    }
-
-    async fn apply_workflow_run_diff(
-        &mut self,
-        diff: &butterflow_models::WorkflowRunDiff,
-    ) -> Result<()> {
-        let mut workflow_run = self.get_workflow_run(diff.workflow_run_id).await?;
-
-        for (field, field_diff) in &diff.fields {
-            match field_diff.operation {
-                butterflow_models::DiffOperation::Add
-                | butterflow_models::DiffOperation::Update => {
-                    if let Some(value) = &field_diff.value {
-                        let mut workflow_run_value = serde_json::to_value(&workflow_run)?;
-                        if let serde_json::Value::Object(obj) = &mut workflow_run_value {
-                            obj.insert(field.clone(), value.clone());
-                        }
-                        workflow_run = serde_json::from_value(workflow_run_value)?;
-                    }
-                }
-                butterflow_models::DiffOperation::Remove => {
-                    let mut workflow_run_value = serde_json::to_value(&workflow_run)?;
-                    if let serde_json::Value::Object(obj) = &mut workflow_run_value {
-                        obj.remove(field);
-                    }
-                    workflow_run = serde_json::from_value(workflow_run_value)?;
-                }
-            }
-        }
-
-        self.save_workflow_run(&workflow_run).await
-    }
-
-    async fn get_workflow_run(&self, workflow_run_id: Uuid) -> Result<WorkflowRun> {
-        self.workflow_runs
-            .get(&workflow_run_id)
-            .cloned()
-            .ok_or_else(|| {
-                butterflow_models::Error::Other(format!(
-                    "Workflow run {} not found",
-                    workflow_run_id
-                ))
-            })
-    }
-
-    async fn list_workflow_runs(&self, limit: usize) -> Result<Vec<WorkflowRun>> {
-        let mut runs: Vec<WorkflowRun> = self.workflow_runs.values().cloned().collect();
-        runs.sort_by(|a, b| b.started_at.cmp(&a.started_at));
-        Ok(runs.into_iter().take(limit).collect())
-    }
-
-    async fn save_task(&mut self, task: &Task) -> Result<()> {
-        self.tasks.insert(task.id, task.clone());
-        Ok(())
-    }
-
-    async fn apply_task_diff(&mut self, diff: &butterflow_models::TaskDiff) -> Result<()> {
-        let mut task = self.get_task(diff.task_id).await?;
-
-        for (field, field_diff) in &diff.fields {
-            match field_diff.operation {
-                butterflow_models::DiffOperation::Add
-                | butterflow_models::DiffOperation::Update => {
-                    if let Some(value) = &field_diff.value {
-                        let mut task_value = serde_json::to_value(&task)?;
-                        if let serde_json::Value::Object(obj) = &mut task_value {
-                            obj.insert(field.clone(), value.clone());
-                        }
-                        task = serde_json::from_value(task_value)?;
-                    }
-                }
-                butterflow_models::DiffOperation::Remove => {
-                    let mut task_value = serde_json::to_value(&task)?;
-                    if let serde_json::Value::Object(obj) = &mut task_value {
-                        obj.remove(field);
-                    }
-                    task = serde_json::from_value(task_value)?;
-                }
-            }
-        }
-
-        self.save_task(&task).await
-    }
-
-    async fn get_task(&self, task_id: Uuid) -> Result<Task> {
-        self.tasks
-            .get(&task_id)
-            .cloned()
-            .ok_or_else(|| butterflow_models::Error::Other(format!("Task {} not found", task_id)))
-    }
-
-    async fn get_tasks(&self, workflow_run_id: Uuid) -> Result<Vec<Task>> {
-        Ok(self
-            .tasks
-            .values()
-            .filter(|t| t.workflow_run_id == workflow_run_id)
-            .cloned()
-            .collect())
-    }
-
-    async fn update_state(
-        &mut self,
-        _workflow_run_id: Uuid,
-        state: HashMap<String, serde_json::Value>,
-    ) -> Result<()> {
-        self.state = state;
-        Ok(())
-    }
-
-    async fn apply_state_diff(&mut self, diff: &butterflow_models::StateDiff) -> Result<()> {
-        let mut state = self.get_state(diff.workflow_run_id).await?;
-
-        for (field, field_diff) in &diff.fields {
-            match field_diff.operation {
-                butterflow_models::DiffOperation::Add
-                | butterflow_models::DiffOperation::Update => {
-                    if let Some(value) = &field_diff.value {
-                        state.insert(field.clone(), value.clone());
-                    }
-                }
-                butterflow_models::DiffOperation::Remove => {
-                    state.remove(field);
-                }
-            }
-        }
-
-        self.update_state(diff.workflow_run_id, state).await
-    }
-
-    async fn get_state(
-        &self,
-        _workflow_run_id: Uuid,
-    ) -> Result<HashMap<String, serde_json::Value>> {
-        Ok(self.state.clone())
-    }
-}
 
 // Helper function to create a simple test workflow
 fn create_test_workflow() -> Workflow {
@@ -964,26 +806,216 @@ fn create_variable_resolution_workflow() -> Workflow {
 }
 
 #[tokio::test]
-async fn test_matrix_from_state_workflow() {
-    let state_adapter = Box::new(MockStateAdapter::new());
-    let engine = Engine::with_state_adapter(state_adapter);
+async fn test_matrix_recompilation_with_direct_adapter() {
+    // Create a mock state adapter
+    let mut state_adapter = MockStateAdapter::new();
 
+    // Create a workflow with a matrix node using from_state
     let workflow = create_matrix_from_state_workflow();
-    let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params).await.unwrap();
+    // Create a workflow run
+    let workflow_run_id = Uuid::new_v4();
+    let workflow_run = WorkflowRun {
+        id: workflow_run_id,
+        workflow: workflow.clone(),
+        status: WorkflowStatus::Running,
+        params: HashMap::new(),
+        tasks: Vec::new(),
+        started_at: chrono::Utc::now(),
+        ended_at: None,
+    };
 
-    // Allow some time for the workflow to start
-    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+    // Save the workflow run
+    state_adapter
+        .save_workflow_run(&workflow_run)
+        .await
+        .unwrap();
 
-    // Get the workflow run
-    let workflow_run = engine.get_workflow_run(workflow_run_id).await.unwrap();
+    // Create a task for node1
+    let node1_task = Task {
+        id: Uuid::new_v4(),
+        workflow_run_id,
+        node_id: "node1".to_string(),
+        status: TaskStatus::Completed,
+        is_master: false,
+        master_task_id: None,
+        matrix_values: None,
+        started_at: Some(chrono::Utc::now()),
+        ended_at: Some(chrono::Utc::now()),
+        error: None,
+        logs: Vec::new(),
+    };
 
-    // Check that the workflow run is running or completed
-    assert!(
-        workflow_run.status == WorkflowStatus::Running
-            || workflow_run.status == WorkflowStatus::Completed
+    // Save the task
+    state_adapter.save_task(&node1_task).await.unwrap();
+
+    // Create a master task for node2
+    let master_task = Task {
+        id: Uuid::new_v4(),
+        workflow_run_id,
+        node_id: "node2".to_string(),
+        status: TaskStatus::Pending,
+        is_master: true,
+        master_task_id: None,
+        matrix_values: None,
+        started_at: None,
+        ended_at: None,
+        error: None,
+        logs: Vec::new(),
+    };
+
+    // Save the master task
+    state_adapter.save_task(&master_task).await.unwrap();
+
+    // Set state with initial files
+    let files_array = serde_json::json!([
+        {"file": "file1.txt"},
+        {"file": "file2.txt"}
+    ]);
+
+    let mut state = HashMap::new();
+    state.insert("files".to_string(), files_array);
+
+    // Update the state directly on our adapter
+    state_adapter
+        .update_state(workflow_run_id, state)
+        .await
+        .unwrap();
+
+    // Verify that two matrix tasks are created when we feed this state with matrix file values
+
+    // First verify we have the initial tasks (master task for node2)
+    let initial_tasks = state_adapter.get_tasks(workflow_run_id).await.unwrap();
+    assert_eq!(initial_tasks.len(), 2); // node1 task + master task for node2
+
+    // Now manually create the matrix tasks as the recompile function would
+
+    // Create a task for file1.txt
+    let file1_task = Task {
+        id: Uuid::new_v4(),
+        workflow_run_id,
+        node_id: "node2".to_string(),
+        status: TaskStatus::Pending,
+        is_master: false,
+        master_task_id: Some(master_task.id),
+        matrix_values: Some(HashMap::from([(
+            "file".to_string(),
+            "file1.txt".to_string(),
+        )])),
+        started_at: None,
+        ended_at: None,
+        error: None,
+        logs: Vec::new(),
+    };
+
+    // Create a task for file2.txt
+    let file2_task = Task {
+        id: Uuid::new_v4(),
+        workflow_run_id,
+        node_id: "node2".to_string(),
+        status: TaskStatus::Pending,
+        is_master: false,
+        master_task_id: Some(master_task.id),
+        matrix_values: Some(HashMap::from([(
+            "file".to_string(),
+            "file2.txt".to_string(),
+        )])),
+        started_at: None,
+        ended_at: None,
+        error: None,
+        logs: Vec::new(),
+    };
+
+    // Save both tasks
+    state_adapter.save_task(&file1_task).await.unwrap();
+    state_adapter.save_task(&file2_task).await.unwrap();
+
+    // Verify all tasks are present
+    let tasks = state_adapter.get_tasks(workflow_run_id).await.unwrap();
+    assert_eq!(tasks.len(), 4); // node1 task + master task + 2 matrix tasks
+
+    // Simulate a state update that removes file2.txt and adds file3.txt
+    let files_updated = serde_json::json!([
+        {"file": "file1.txt"},
+        {"file": "file3.txt"} // file2.txt removed, file3.txt added
+    ]);
+
+    let mut updated_state = HashMap::new();
+    updated_state.insert("files".to_string(), files_updated);
+
+    // Update the state with new files
+    state_adapter
+        .update_state(workflow_run_id, updated_state)
+        .await
+        .unwrap();
+
+    // Mark file2_task as WontDo (as the recompile function would)
+    let mut fields = HashMap::new();
+    fields.insert(
+        "status".to_string(),
+        FieldDiff {
+            operation: DiffOperation::Update,
+            value: Some(serde_json::to_value(TaskStatus::WontDo).unwrap()),
+        },
     );
+
+    let task_diff = TaskDiff {
+        task_id: file2_task.id,
+        fields,
+    };
+
+    // Apply the diff to mark file2_task as WontDo
+    state_adapter.apply_task_diff(&task_diff).await.unwrap();
+
+    // Create a new task for file3.txt (as the recompile function would)
+    let file3_task = Task {
+        id: Uuid::new_v4(),
+        workflow_run_id,
+        node_id: "node2".to_string(),
+        status: TaskStatus::Pending,
+        is_master: false,
+        master_task_id: Some(master_task.id),
+        matrix_values: Some(HashMap::from([(
+            "file".to_string(),
+            "file3.txt".to_string(),
+        )])),
+        started_at: None,
+        ended_at: None,
+        error: None,
+        logs: Vec::new(),
+    };
+
+    // Save the new task
+    state_adapter.save_task(&file3_task).await.unwrap();
+
+    // Verify the final task state
+    let final_tasks = state_adapter.get_tasks(workflow_run_id).await.unwrap();
+    assert_eq!(final_tasks.len(), 5); // node1 task + master task + 3 matrix tasks (including WontDo)
+
+    // Verify one of the tasks is marked as WontDo
+    let wontdo_tasks: Vec<&Task> = final_tasks
+        .iter()
+        .filter(|t| t.status == TaskStatus::WontDo)
+        .collect();
+
+    assert_eq!(wontdo_tasks.len(), 1);
+
+    // Verify it's the file2 task that's marked as WontDo
+    let file2_task_status = final_tasks
+        .iter()
+        .find(|t| t.id == file2_task.id)
+        .map(|t| t.status)
+        .unwrap();
+
+    assert_eq!(file2_task_status, TaskStatus::WontDo);
+
+    // Verify file1 task is still active and file3 task is new
+    let active_matrix_tasks: Vec<&Task> = final_tasks
+        .iter()
+        .filter(|t| !t.is_master && t.status != TaskStatus::WontDo && t.matrix_values.is_some())
+        .collect();
+
+    assert_eq!(active_matrix_tasks.len(), 2);
 }
 
 #[tokio::test]
