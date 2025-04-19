@@ -13,6 +13,7 @@ rust-version.workspace = true
 butterflow-models = { path = "../models" }
 butterflow-runners = { path = "../runners" }
 butterflow-state = { path = "../state" }
+butterflow-scheduler = { path = "../scheduler" }
 tokio = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
