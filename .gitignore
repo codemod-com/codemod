@@ -23,3 +23,6 @@ Thumbs.db
 # Execution artifacts
 butterflow-state/
 butterflow-workdir/
+
+node_modules/
+/crates/scheduler/npm/pkg

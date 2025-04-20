@@ -9,14 +9,24 @@ repository.workspace = true
 license.workspace = true
 rust-version.workspace = true
 
+[lib]
+crate-type = ["lib", "cdylib"]
+
 [dependencies]
 butterflow-models = { path = "../models" }
-tokio = { workspace = true }
+serde = { workspace = true }
 serde_json = { workspace = true }
-uuid = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
 log = { workspace = true }
+wasm-bindgen = "0.2.100"
+serde-wasm-bindgen = "0.6.5"
+wasm-bindgen-futures = "0.4.43"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+uuid = { workspace = true, features = ["v4", "js"] }
 
 [dev-dependencies]
+tokio = { workspace = true }
 async-trait = "0.1"
 chrono = "0.4"
 

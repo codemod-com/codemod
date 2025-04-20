@@ -1,39 +1,186 @@
 use std::collections::{HashMap, HashSet};
 
 use log::{debug, warn};
+use serde::Serialize;
+use serde_wasm_bindgen::{from_value, to_value};
 use uuid::Uuid;
+use wasm_bindgen::prelude::*;
 
 use butterflow_models::node::NodeType;
 use butterflow_models::trigger::TriggerType;
 use butterflow_models::{Error, Result, Strategy, StrategyType, Task, TaskStatus, WorkflowRun};
 
+#[wasm_bindgen(typescript_custom_section)]
+const MATRIX_TASK_CHANGES: &'static str = r#"
+type Uuid = string;
+
+type Task = import("../types").Task;
+type WorkflowRun = import("../types").WorkflowRun;
+type State = Record<string, unknown>;
+
+interface MatrixTaskChanges {
+    new_tasks: Task[];
+    tasks_to_mark_wont_do: Uuid[];
+    master_tasks_to_update: Uuid[];
+}
+
+interface RunnableTaskChanges {
+    tasks_to_await_trigger: Uuid[];
+    runnable_tasks: Uuid[];
+}
+"#;
+
 /// Struct to hold the result of matrix task recompilation calculations
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct MatrixTaskChanges {
     pub new_tasks: Vec<Task>,
     pub tasks_to_mark_wont_do: Vec<Uuid>,
     pub master_tasks_to_update: Vec<Uuid>,
 }
 
+/// Struct to hold the result of finding runnable tasks
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct RunnableTaskChanges {
     pub tasks_to_await_trigger: Vec<Uuid>,
     pub runnable_tasks: Vec<Uuid>,
 }
 
+#[wasm_bindgen]
 pub struct Scheduler {}
 
+#[cfg(not(target_arch = "wasm32"))]
 impl Default for Scheduler {
     fn default() -> Self {
         Self::new()
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 impl Scheduler {
+    /// Calculate initial tasks for all nodes in a workflow (Rust API)
+    pub async fn calculate_initial_tasks(&self, workflow_run: &WorkflowRun) -> Result<Vec<Task>> {
+        self.calculate_initial_tasks_internal(workflow_run).await
+    }
+
+    /// Calculate changes needed for matrix tasks based on current state (Rust API)
+    pub async fn calculate_matrix_task_changes(
+        &self,
+        workflow_run_id: Uuid,
+        workflow_run: &WorkflowRun,
+        tasks: &[Task],
+        state: &HashMap<String, serde_json::Value>,
+    ) -> Result<MatrixTaskChanges> {
+        self.calculate_matrix_task_changes_internal(workflow_run_id, workflow_run, tasks, state)
+            .await
+    }
+
+    /// Find tasks that can be executed (Rust API)
+    pub async fn find_runnable_tasks(
+        &self,
+        workflow_run: &WorkflowRun,
+        tasks: &[Task],
+    ) -> Result<RunnableTaskChanges> {
+        self.find_runnable_tasks_internal(workflow_run, tasks).await
+    }
+}
+
+#[wasm_bindgen]
+impl Scheduler {
+    // Expose constructor to WASM
+    #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         Self {}
     }
 
-    /// Calculate initial tasks for all nodes in a workflow
-    pub async fn calculate_initial_tasks(&self, workflow_run: &WorkflowRun) -> Result<Vec<Task>> {
+    // --- WASM Exposed Methods ---
+
+    /// Calculate initial tasks for a workflow run (WASM API).
+    #[wasm_bindgen(js_name = calculateInitialTasks, unchecked_return_type = "Task[]")]
+    pub async fn calculate_initial_tasks_wasm(
+        &self,
+        #[wasm_bindgen(unchecked_param_type = "WorkflowRun")] workflow_run_js: JsValue,
+    ) -> std::result::Result<JsValue, JsValue> {
+        let workflow_run: WorkflowRun = from_value(workflow_run_js)
+            .map_err(|e| JsValue::from_str(&format!("Failed to deserialize WorkflowRun: {}", e)))?;
+        let serializer = serde_wasm_bindgen::Serializer::json_compatible()
+            .serialize_maps_as_objects(true)
+            .serialize_missing_as_null(true);
+
+        let result = self.calculate_initial_tasks_internal(&workflow_run).await;
+
+        match result {
+            Ok(tasks) => tasks
+                .serialize(&serializer)
+                .map_err(|e| JsValue::from_str(&format!("Failed to serialize tasks: {}", e))),
+            Err(e) => Err(JsValue::from_str(&e.to_string())),
+        }
+    }
+
+    /// Calculate changes needed for matrix tasks based on current state (WASM API).
+    #[wasm_bindgen(js_name = calculateMatrixTaskChanges, unchecked_return_type = "MatrixTaskChanges")]
+    pub async fn calculate_matrix_task_changes_wasm(
+        &self,
+        #[wasm_bindgen(unchecked_param_type = "Uuid")] workflow_run_id_js: JsValue, // Expect Uuid as string
+        #[wasm_bindgen(unchecked_param_type = "WorkflowRun")] workflow_run_js: JsValue,
+        #[wasm_bindgen(unchecked_param_type = "Task[]")] tasks_js: JsValue,
+        #[wasm_bindgen(unchecked_param_type = "State")] state_js: JsValue, // Expect JSON object
+    ) -> std::result::Result<JsValue, JsValue> {
+        let workflow_run_id_str: String = from_value(workflow_run_id_js).map_err(|e| {
+            JsValue::from_str(&format!("Failed to deserialize workflow_run_id: {}", e))
+        })?;
+        let workflow_run_id = Uuid::parse_str(&workflow_run_id_str).map_err(|e| {
+            JsValue::from_str(&format!("Invalid UUID format for workflow_run_id: {}", e))
+        })?;
+
+        let workflow_run: WorkflowRun = from_value(workflow_run_js)
+            .map_err(|e| JsValue::from_str(&format!("Failed to deserialize WorkflowRun: {}", e)))?;
+        let tasks: Vec<Task> = from_value(tasks_js)
+            .map_err(|e| JsValue::from_str(&format!("Failed to deserialize tasks: {}", e)))?;
+        let state: HashMap<String, serde_json::Value> = from_value(state_js)
+            .map_err(|e| JsValue::from_str(&format!("Failed to deserialize state: {}", e)))?;
+
+        let result = self
+            .calculate_matrix_task_changes_internal(workflow_run_id, &workflow_run, &tasks, &state)
+            .await;
+
+        match result {
+            Ok(changes) => to_value(&changes).map_err(|e| {
+                JsValue::from_str(&format!("Failed to serialize MatrixTaskChanges: {}", e))
+            }),
+            Err(e) => Err(JsValue::from_str(&e.to_string())),
+        }
+    }
+
+    /// Find tasks that can be executed (WASM API).
+    #[wasm_bindgen(js_name = findRunnableTasks, unchecked_return_type = "RunnableTaskChanges")]
+    pub async fn find_runnable_tasks_wasm(
+        &self,
+        #[wasm_bindgen(unchecked_param_type = "WorkflowRun")] workflow_run_js: JsValue,
+        #[wasm_bindgen(unchecked_param_type = "Task[]")] tasks_js: JsValue,
+    ) -> std::result::Result<JsValue, JsValue> {
+        let workflow_run: WorkflowRun = from_value(workflow_run_js)
+            .map_err(|e| JsValue::from_str(&format!("Failed to deserialize WorkflowRun: {}", e)))?;
+        let tasks: Vec<Task> = from_value(tasks_js)
+            .map_err(|e| JsValue::from_str(&format!("Failed to deserialize tasks: {}", e)))?;
+
+        let result = self
+            .find_runnable_tasks_internal(&workflow_run, &tasks)
+            .await;
+
+        match result {
+            Ok(changes) => to_value(&changes).map_err(|e| {
+                JsValue::from_str(&format!("Failed to serialize RunnableTaskChanges: {}", e))
+            }),
+            Err(e) => Err(JsValue::from_str(&e.to_string())),
+        }
+    }
+}
+
+impl Scheduler {
+    async fn calculate_initial_tasks_internal(
+        &self,
+        workflow_run: &WorkflowRun,
+    ) -> Result<Vec<Task>> {
         let mut tasks = Vec::new();
 
         for node in &workflow_run.workflow.nodes {
@@ -41,7 +188,7 @@ impl Scheduler {
             if let Some(Strategy {
                 r#type: StrategyType::Matrix,
                 values,
-                from_state: _,
+                from_state: _, // Corrected variable name
             }) = &node.strategy
             {
                 // Create a master task for the matrix
@@ -73,7 +220,7 @@ impl Scheduler {
     }
 
     /// Calculate changes needed for matrix tasks based on current state
-    pub async fn calculate_matrix_task_changes(
+    async fn calculate_matrix_task_changes_internal(
         &self,
         workflow_run_id: Uuid,
         workflow_run: &WorkflowRun,
@@ -88,7 +235,7 @@ impl Scheduler {
             if let Some(Strategy {
                 r#type: StrategyType::Matrix,
                 from_state: Some(state_key), // Only process matrix nodes using from_state
-                ..
+                .. // Use .. to ignore other fields like `values`
             }) = &node.strategy
             {
                 debug!(
@@ -225,7 +372,7 @@ impl Scheduler {
     }
 
     /// Find tasks that can be executed
-    pub async fn find_runnable_tasks(
+    async fn find_runnable_tasks_internal(
         &self,
         workflow_run: &WorkflowRun,
         tasks: &[Task],

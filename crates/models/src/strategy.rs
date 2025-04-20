@@ -18,10 +18,11 @@ pub struct Strategy {
 
     /// Matrix values (for matrix strategy)
     #[serde(default)]
-    #[ts(type = "Record<string, string>[] | null")]
+    #[ts(type = "Record<string, string>[] | null", optional=nullable)]
     pub values: Option<Vec<HashMap<String, String>>>,
 
     /// State key to get matrix values from (for matrix strategy)
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub from_state: Option<String>,
 }
