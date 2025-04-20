@@ -30,6 +30,7 @@ pub struct StateSchemaProperty {
 
     /// Description of the property
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub description: Option<String>,
 }
 
@@ -44,10 +45,12 @@ pub struct StateSchema {
 
     /// For array types, the schema of the items
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub items: Option<Box<StateSchemaItems>>,
 
     /// Description of the state schema
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub description: Option<String>,
 }
 
@@ -59,5 +62,6 @@ pub struct StateSchemaItems {
 
     /// For object types, the properties of the object
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub properties: Option<HashMap<String, StateSchemaProperty>>,
 }

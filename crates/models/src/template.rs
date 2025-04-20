@@ -54,10 +54,12 @@ pub struct Template {
 
     /// Detailed description of what the template does
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub description: Option<String>,
 
     /// Container runtime configuration
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub runtime: Option<Runtime>,
 
     /// Inputs for the template

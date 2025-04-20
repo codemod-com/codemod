@@ -14,7 +14,7 @@ pub struct Step {
 
     /// Environment variables specific to this step
     #[serde(default)]
-    #[ts(type = "Record<string, string> | null")]
+    #[ts(type = "Record<string, string> | null", optional=nullable)]
     pub env: Option<HashMap<String, String>>,
 }
 

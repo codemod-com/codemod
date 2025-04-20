@@ -17,6 +17,7 @@ pub struct Workflow {
 
     /// State schema definition
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub state: Option<WorkflowState>,
 
     /// Templates for reusable components
@@ -36,7 +37,7 @@ pub struct WorkflowState {
 }
 
 /// Represents a workflow run
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 pub struct WorkflowRun {
     /// Unique identifier for the workflow run
     pub id: Uuid,
@@ -57,11 +58,13 @@ pub struct WorkflowRun {
     pub started_at: DateTime<Utc>,
 
     /// End time of the workflow run (if completed or failed)
+    #[serde(default)]
+    #[ts(optional=nullable)]
     pub ended_at: Option<DateTime<Utc>>,
 }
 
 /// Status of a workflow run
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS)]
 pub enum WorkflowStatus {
     /// Workflow is pending execution
     Pending,

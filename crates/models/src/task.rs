@@ -1,10 +1,11 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use ts_rs::TS;
 use uuid::Uuid;
 
 /// Status of a task
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS)]
 pub enum TaskStatus {
     /// Task hasn't started execution yet
     Pending,
@@ -29,7 +30,7 @@ pub enum TaskStatus {
 }
 
 /// Represents a task (runtime instance of a node)
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 pub struct Task {
     /// Unique identifier for the task
     pub id: Uuid,
@@ -48,22 +49,27 @@ pub struct Task {
 
     /// For matrix tasks, the master task ID
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub master_task_id: Option<Uuid>,
 
     /// For matrix tasks, the matrix values
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub matrix_values: Option<HashMap<String, String>>,
 
     /// Start time of the task
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub started_at: Option<DateTime<Utc>>,
 
     /// End time of the task (if completed or failed)
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub ended_at: Option<DateTime<Utc>>,
 
     /// Error message (if failed)
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub error: Option<String>,
 
     /// Logs from the task

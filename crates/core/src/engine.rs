@@ -1,9 +1,10 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::fs::File;
 use std::sync::Arc;
 use std::time::Duration;
 
 use butterflow_models::step::StepAction;
+use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use chrono::Utc;
 use log::{debug, error, info, warn};
@@ -13,13 +14,10 @@ use tokio::time;
 use uuid::Uuid;
 
 use crate::utils;
-use butterflow_models::node::NodeType;
 use butterflow_models::runtime::RuntimeType;
-use butterflow_models::trigger::TriggerType;
 use butterflow_models::{
-    resolve_variables, DiffOperation, Error, FieldDiff, Node, Result, StateDiff, Strategy,
-    StrategyType, Task, TaskDiff, TaskStatus, Workflow, WorkflowRun, WorkflowRunDiff,
-    WorkflowStatus,
+    resolve_variables, DiffOperation, Error, FieldDiff, Node, Result, StateDiff, Task, TaskDiff,
+    TaskStatus, Workflow, WorkflowRun, WorkflowRunDiff, WorkflowStatus,
 };
 use butterflow_runners::{DirectRunner, DockerRunner, PodmanRunner, Runner};
 use butterflow_state::StateAdapter;
@@ -28,6 +26,8 @@ use butterflow_state::StateAdapter;
 pub struct Engine {
     /// State adapter for persisting workflow state
     state_adapter: Arc<Mutex<Box<dyn StateAdapter>>>,
+
+    scheduler: Scheduler,
 }
 
 impl Default for Engine {
@@ -39,15 +39,40 @@ impl Default for Engine {
 impl Engine {
     /// Create a new engine with a local state adapter
     pub fn new() -> Self {
+        let state_adapter: Arc<Mutex<Box<dyn StateAdapter>>> =
+            Arc::new(Mutex::new(Box::new(LocalStateAdapter::new())));
+
         Self {
-            state_adapter: Arc::new(Mutex::new(Box::new(LocalStateAdapter::new()))),
+            state_adapter: Arc::clone(&state_adapter),
+            scheduler: Scheduler::new(),
         }
+    }
+
+    /// Create initial tasks for all nodes
+    async fn create_initial_tasks(&self, workflow_run: &WorkflowRun) -> Result<()> {
+        // Use scheduler to calculate initial tasks
+        let tasks = self.scheduler.calculate_initial_tasks(workflow_run).await?;
+
+        // Save all tasks to state adapter
+        for task in tasks {
+            self.state_adapter.lock().await.save_task(&task).await?;
+
+            // Update matrix master status if this is a master task
+            if task.is_master {
+                self.update_matrix_master_status(task.id).await?;
+            }
+        }
+
+        Ok(())
     }
 
     /// Create a new engine with a custom state adapter
     pub fn with_state_adapter(state_adapter: Box<dyn StateAdapter>) -> Self {
+        let state_adapter: Arc<Mutex<Box<dyn StateAdapter>>> = Arc::new(Mutex::new(state_adapter));
+
         Self {
-            state_adapter: Arc::new(Mutex::new(state_adapter)),
+            state_adapter: Arc::clone(&state_adapter),
+            scheduler: Scheduler::new(),
         }
     }
 
@@ -552,9 +577,33 @@ impl Engine {
             }
 
             // Find runnable tasks based on the potentially updated task list
-            let runnable_tasks = self
+            let runnable_tasks_result = self
+                .scheduler
                 .find_runnable_tasks(&current_workflow_run, &tasks_after_recompilation)
                 .await?;
+
+            let tasks_to_await_trigger = runnable_tasks_result.tasks_to_await_trigger;
+            for task_id in tasks_to_await_trigger {
+                // Create a task diff to update the status
+                let mut fields = HashMap::new();
+                fields.insert(
+                    "status".to_string(),
+                    FieldDiff {
+                        operation: DiffOperation::Update,
+                        value: Some(serde_json::to_value(TaskStatus::AwaitingTrigger)?),
+                    },
+                );
+                let task_diff = TaskDiff { task_id, fields };
+
+                // Apply the diff
+                self.state_adapter
+                    .lock()
+                    .await
+                    .apply_task_diff(&task_diff)
+                    .await?;
+            }
+
+            let runnable_tasks = runnable_tasks_result.runnable_tasks;
 
             // Check if any tasks are awaiting trigger
             let awaiting_trigger = tasks_after_recompilation
@@ -624,50 +673,6 @@ impl Engine {
         Ok(())
     }
 
-    /// Create initial tasks for all nodes
-    async fn create_initial_tasks(&self, workflow_run: &WorkflowRun) -> Result<()> {
-        for node in &workflow_run.workflow.nodes {
-            // Check if the node has a matrix strategy
-            if let Some(Strategy {
-                r#type: StrategyType::Matrix,
-                values,
-                from_state: _,
-            }) = &node.strategy
-            {
-                // Create a master task for the matrix
-                let master_task = Task::new(workflow_run.id, node.id.clone(), true);
-                self.state_adapter
-                    .lock()
-                    .await
-                    .save_task(&master_task)
-                    .await?;
-
-                // If the matrix uses values, create tasks for each value
-                if let Some(values) = values {
-                    for value in values {
-                        // TODO: Assume Task::new_matrix calculates and stores matrix_hash
-                        let task = Task::new_matrix(
-                            workflow_run.id,
-                            node.id.clone(),
-                            master_task.id,
-                            value.clone(),
-                        );
-                        self.state_adapter.lock().await.save_task(&task).await?;
-                    }
-                    // Update master task status after creating initial children
-                    self.update_matrix_master_status(master_task.id).await?;
-                }
-                // If the matrix uses state, tasks will be created during recompilation
-            } else {
-                // Create a single task for the node
-                let task = Task::new(workflow_run.id, node.id.clone(), false);
-                self.state_adapter.lock().await.save_task(&task).await?;
-            }
-        }
-
-        Ok(())
-    }
-
     /// Recompile matrix tasks based on the current state.
     /// Creates new tasks for added matrix items and marks tasks for removed items as WontDo.
     async fn recompile_matrix_tasks(
@@ -680,6 +685,7 @@ impl Engine {
             "Starting matrix task recompilation for run {}",
             workflow_run_id
         );
+
         let state = self
             .state_adapter
             .lock()
@@ -687,283 +693,48 @@ impl Engine {
             .get_state(workflow_run_id)
             .await?;
 
-        for node in &workflow_run.workflow.nodes {
-            if let Some(Strategy {
-                r#type: StrategyType::Matrix,
-                from_state: Some(state_key), // Only process matrix nodes using from_state
-                ..
-            }) = &node.strategy
-            {
-                debug!(
-                    "Recompiling matrix node '{}' using state key '{}'",
-                    node.id, state_key
-                );
+        // Use scheduler to calculate matrix task changes
+        let changes = self
+            .scheduler
+            .calculate_matrix_task_changes(workflow_run_id, workflow_run, tasks, &state)
+            .await?;
 
-                // Find the master task for this node
-                // If the master task doesn't exist yet (e.g., state was initially empty), create it.
-                let master_task_id =
-                    match tasks.iter().find(|t| t.node_id == node.id && t.is_master) {
-                        Some(master) => master.id,
-                        None => {
-                            warn!(
-                                "Master task for matrix node '{}' not found, creating.",
-                                node.id
-                            );
-                            let new_master_task = Task::new(workflow_run_id, node.id.clone(), true);
-                            self.state_adapter
-                                .lock()
-                                .await
-                                .save_task(&new_master_task)
-                                .await?;
-                            // Initialize status correctly
-                            self.update_matrix_master_status(new_master_task.id).await?;
-                            new_master_task.id
-                        }
-                    };
-
-                // Get the current value from the state
-                let state_value = state.get(state_key);
-
-                // --- Calculate Hashes for Current State Items ---
-                let mut current_item_hashes = HashSet::new();
-                let mut items_to_create: Vec<(u64, serde_json::Value)> = Vec::new();
-
-                match state_value {
-                    Some(serde_json::Value::Array(items)) => {
-                        for item in items {
-                            // TODO: Assume utils::calculate_value_hash exists and is stable
-                            // let hash = utils::calculate_value_hash(item);
-                            // For now, use a placeholder hash or rely on value comparison
-                            let hash = 0; // Placeholder hash
-                            current_item_hashes.insert(hash); // Using placeholder hash
-                            items_to_create.push((hash, item.clone()));
-                        }
-                        debug!("Found {} items in state array '{}'", items.len(), state_key);
-                    }
-                    Some(serde_json::Value::Object(_obj)) => {
-                        // TODO: Handle matrix from_state for object key '{}' is not yet supported
-                        // Requires defining how object mapping works (e.g., key=X, value=Y)
-                        // For now, we focus on arrays
-                        warn!("Matrix from_state for object key '{}' is not yet fully supported, skipping recompilation.", state_key);
-                        continue; // Skip recompilation for this node
-                    }
-                    _ => {
-                        // State key not found, is null, or not an array/object
-                        debug!("State key '{}' for matrix node '{}' is missing or not an array/object. No tasks will be generated/kept.", state_key, node.id);
-                        // Treat as empty - any existing tasks will be marked WontDo below.
-                    }
-                }
-
-                // --- Compare with Existing Tasks ---
-                // Store existing tasks keyed by their matrix_values for comparison
-                let existing_child_tasks_by_value: HashMap<serde_json::Value, &Task> = tasks
-                    .iter()
-                    .filter(|t| {
-                        t.master_task_id == Some(master_task_id) && t.matrix_values.is_some()
-                    })
-                    .filter_map(|t| {
-                        // Convert matrix_values (HashMap<String,String>) back to serde_json::Value for comparison
-                        serde_json::to_value(t.matrix_values.as_ref().unwrap())
-                            .ok()
-                            .map(|v| (v, t))
-                    })
-                    .collect();
-
-                let existing_child_values: HashSet<serde_json::Value> =
-                    existing_child_tasks_by_value.keys().cloned().collect();
-
-                debug!(
-                    "Found {} existing child tasks for node '{}'",
-                    existing_child_tasks_by_value.len(),
-                    node.id
-                );
-
-                // --- Identify and Create New Tasks ---
-                let mut created_count = 0;
-                // Collect the values *before* the loop consumes items_to_create
-                let current_item_values_set: HashSet<_> =
-                    items_to_create.iter().map(|(_, v)| v.clone()).collect();
-
-                for (_hash, item_value) in items_to_create {
-                    // This loop moves item_value
-                    // Compare item_value directly instead of hash
-                    if !existing_child_values.contains(&item_value) {
-                        // Task for this value doesn't exist, create it
-
-                        // Convert item_value (serde_json::Value) to HashMap<String, String>
-                        // This assumes item_value is a JSON object with string values.
-                        let matrix_data = match item_value.as_object() {
-                            Some(obj) => obj
-                                .iter()
-                                .filter_map(|(k, v)| v.as_str().map(|s| (k.clone(), s.to_string())))
-                                .collect::<HashMap<_, _>>(),
-                            None => {
-                                warn!(
-                                    "Matrix item for node '{}' is not a JSON object, skipping task creation: {:?}",
-                                    node.id,
-                                    item_value
-                                );
-                                continue; // Skip creating task for this item
-                            }
-                        };
-
-                        let new_task = Task::new_matrix(
-                            workflow_run_id,
-                            node.id.clone(),
-                            master_task_id,
-                            matrix_data, // Pass the converted HashMap
-                        );
-                        debug!(
-                            "Creating new matrix task for node '{}', value: {:?}",
-                            node.id, item_value
-                        );
-                        self.state_adapter.lock().await.save_task(&new_task).await?;
-                        created_count += 1;
-                    }
-                }
-                if created_count > 0 {
-                    debug!("Created {} new tasks for node '{}'", created_count, node.id);
-                }
-
-                // --- Identify and Mark Obsolete Tasks as WontDo ---
-                let mut wont_do_count = 0;
-                // We already have current_item_values_set from above
-                // let current_item_values_set: HashSet<_> = items_to_create.iter().map(|(_, v)| v).collect();
-
-                for (task_value, task) in existing_child_tasks_by_value {
-                    if !current_item_values_set.contains(&task_value) {
-                        // Compare values directly
-                        // This task's value is no longer in the current state
-                        // Mark as WontDo only if it's not already in a terminal state
-                        if !matches!(
-                            task.status,
-                            TaskStatus::Completed | TaskStatus::Failed | TaskStatus::WontDo
-                        ) {
-                            debug!(
-                                "Marking obsolete task {} (value {:?}) for node '{}' as WontDo",
-                                task.id, task_value, node.id
-                            );
-                            let mut fields = HashMap::new();
-                            fields.insert(
-                                "status".to_string(),
-                                FieldDiff {
-                                    operation: DiffOperation::Update,
-                                    value: Some(serde_json::to_value(TaskStatus::WontDo)?),
-                                },
-                            );
-                            let task_diff = TaskDiff {
-                                task_id: task.id,
-                                fields,
-                            };
-                            self.state_adapter
-                                .lock()
-                                .await
-                                .apply_task_diff(&task_diff)
-                                .await?;
-                            wont_do_count += 1;
-                        }
-                    }
-                }
-                if wont_do_count > 0 {
-                    debug!(
-                        "Marked {} tasks as WontDo for node '{}'",
-                        wont_do_count, node.id
-                    );
-                }
-
-                // --- Update Master Task Status ---
-                // Always update the master status after potential changes to children
-                self.update_matrix_master_status(master_task_id).await?;
-                debug!("Updated master task status for node '{}'", node.id);
-            }
+        // Create new tasks
+        for task in changes.new_tasks {
+            debug!("Creating new matrix task for node '{}'", task.node_id);
+            self.state_adapter.lock().await.save_task(&task).await?;
         }
+
+        // Mark tasks as WontDo
+        for task_id in changes.tasks_to_mark_wont_do {
+            debug!("Marking task {} as WontDo", task_id);
+            let mut fields = HashMap::new();
+            fields.insert(
+                "status".to_string(),
+                FieldDiff {
+                    operation: DiffOperation::Update,
+                    value: Some(serde_json::to_value(TaskStatus::WontDo)?),
+                },
+            );
+            let task_diff = TaskDiff { task_id, fields };
+            self.state_adapter
+                .lock()
+                .await
+                .apply_task_diff(&task_diff)
+                .await?;
+        }
+
+        // Update master task status
+        for master_task_id in changes.master_tasks_to_update {
+            debug!("Updating master task {} status", master_task_id);
+            self.update_matrix_master_status(master_task_id).await?;
+        }
+
         debug!(
             "Finished matrix task recompilation for run {}",
             workflow_run_id
         );
         Ok(())
-    }
-
-    /// Find tasks that can be executed
-    async fn find_runnable_tasks(
-        &self,
-        workflow_run: &WorkflowRun,
-        tasks: &[Task],
-    ) -> Result<Vec<Uuid>> {
-        let mut runnable_tasks = Vec::new();
-
-        for task in tasks {
-            // Only consider pending tasks and non-master tasks
-            if task.status != TaskStatus::Pending || task.is_master {
-                continue;
-            }
-
-            // Get the node for this task
-            let node = workflow_run
-                .workflow
-                .nodes
-                .iter()
-                .find(|n| n.id == task.node_id)
-                .ok_or_else(|| Error::NodeNotFound(task.node_id.clone()))?;
-
-            // Check if the node has a manual trigger
-            if node.r#type == NodeType::Manual
-                || node
-                    .trigger
-                    .as_ref()
-                    .map(|t| t.r#type == TriggerType::Manual)
-                    .unwrap_or(false)
-            {
-                // Create a task diff to update the status
-                let mut fields = HashMap::new();
-                fields.insert(
-                    "status".to_string(),
-                    FieldDiff {
-                        operation: DiffOperation::Update,
-                        value: Some(serde_json::to_value(TaskStatus::AwaitingTrigger)?),
-                    },
-                );
-                let task_diff = TaskDiff {
-                    task_id: task.id,
-                    fields,
-                };
-
-                // Apply the diff
-                self.state_adapter
-                    .lock()
-                    .await
-                    .apply_task_diff(&task_diff)
-                    .await?;
-                continue;
-            }
-
-            // Check if all dependencies are satisfied
-            let mut dependencies_satisfied = true;
-            for dep_id in &node.depends_on {
-                // Find all tasks for this dependency
-                let dep_tasks: Vec<&Task> = tasks.iter().filter(|t| t.node_id == *dep_id).collect();
-
-                // If there are no tasks for this dependency, it's not satisfied
-                if dep_tasks.is_empty() {
-                    dependencies_satisfied = false;
-                    break;
-                }
-
-                // Check if all tasks for this dependency are completed
-                let all_completed = dep_tasks.iter().all(|t| t.status == TaskStatus::Completed);
-
-                if !all_completed {
-                    dependencies_satisfied = false;
-                    break;
-                }
-            }
-
-            if dependencies_satisfied {
-                runnable_tasks.push(task.id);
-            }
-        }
-
-        Ok(runnable_tasks)
     }
 
     /// Execute a task
@@ -1525,6 +1296,7 @@ impl Clone for Engine {
     fn clone(&self) -> Self {
         Self {
             state_adapter: Arc::clone(&self.state_adapter),
+            scheduler: Scheduler::new(),
         }
     }
 }

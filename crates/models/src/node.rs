@@ -29,6 +29,7 @@ pub struct Node {
 
     /// Detailed description of what the node does
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub description: Option<String>,
 
     /// Type of node (automatic or manual)
@@ -37,18 +38,22 @@ pub struct Node {
 
     /// IDs of nodes that must complete before this node can run
     #[serde(default)]
+    #[ts(type = "string[]")]
     pub depends_on: Vec<String>,
 
     /// Configuration for how the node is triggered
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub trigger: Option<Trigger>,
 
     /// Configuration for running multiple instances of this node
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub strategy: Option<Strategy>,
 
     /// Container runtime configuration
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub runtime: Option<Runtime>,
 
     /// Steps to execute within the node
