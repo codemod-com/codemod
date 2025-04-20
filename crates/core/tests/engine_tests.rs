@@ -228,9 +228,9 @@ fn create_matrix_workflow() -> Workflow {
                 strategy: Some(Strategy {
                     r#type: butterflow_models::strategy::StrategyType::Matrix,
                     values: Some(vec![
-                        HashMap::from([("region".to_string(), "us-east".to_string())]),
-                        HashMap::from([("region".to_string(), "us-west".to_string())]),
-                        HashMap::from([("region".to_string(), "eu-central".to_string())]),
+                        HashMap::from([("region".to_string(), serde_json::to_value("us-east").unwrap())]),
+                        HashMap::from([("region".to_string(), serde_json::to_value("us-west").unwrap())]),
+                        HashMap::from([("region".to_string(), serde_json::to_value("eu-central").unwrap())]),
                     ]),
                     from_state: None,
                 }),
@@ -900,7 +900,7 @@ async fn test_matrix_recompilation_with_direct_adapter() {
         master_task_id: Some(master_task.id),
         matrix_values: Some(HashMap::from([(
             "file".to_string(),
-            "file1.txt".to_string(),
+            serde_json::to_value("file1.txt").unwrap(),
         )])),
         started_at: None,
         ended_at: None,
@@ -918,7 +918,7 @@ async fn test_matrix_recompilation_with_direct_adapter() {
         master_task_id: Some(master_task.id),
         matrix_values: Some(HashMap::from([(
             "file".to_string(),
-            "file2.txt".to_string(),
+            serde_json::to_value("file2.txt").unwrap(),
         )])),
         started_at: None,
         ended_at: None,
@@ -977,7 +977,7 @@ async fn test_matrix_recompilation_with_direct_adapter() {
         master_task_id: Some(master_task.id),
         matrix_values: Some(HashMap::from([(
             "file".to_string(),
-            "file3.txt".to_string(),
+            serde_json::to_value("file3.txt").unwrap(),
         )])),
         started_at: None,
         ended_at: None,

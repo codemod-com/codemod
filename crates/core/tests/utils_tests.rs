@@ -658,9 +658,9 @@ fn test_validate_workflow_valid_matrix_strategy_with_values() {
     // Create a workflow with a valid matrix strategy (with values)
     let mut values = Vec::new();
     let mut value1 = HashMap::new();
-    value1.insert("region".to_string(), "us-east".to_string());
+    value1.insert("region".to_string(), serde_json::to_value("us-east").unwrap());
     let mut value2 = HashMap::new();
-    value2.insert("region".to_string(), "us-west".to_string());
+    value2.insert("region".to_string(), serde_json::to_value("us-west").unwrap());
     values.push(value1);
     values.push(value2);
 

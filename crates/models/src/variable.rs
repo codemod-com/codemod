@@ -10,7 +10,7 @@ pub fn resolve_variables(
     input: &str,
     params: &HashMap<String, String>,
     state: &HashMap<String, Value>,
-    matrix_values: Option<&HashMap<String, String>>,
+    matrix_values: Option<&HashMap<String, Value>>,
 ) -> Result<String> {
     let re = Regex::new(r"\$\{\{([^}]+)\}\}").unwrap();
     let mut result = input.to_string();
@@ -22,7 +22,7 @@ pub fn resolve_variables(
         let replacement =
             // First check if it's a direct matrix value
             if matrix_values.is_some_and(|matrix_values| matrix_values.contains_key(inner)) {
-                matrix_values.unwrap().get(inner).unwrap().clone()
+                serde_json::to_string(matrix_values.unwrap().get(inner).unwrap()).unwrap()
             } else if let Some(name) = inner.strip_prefix("params.") {
                 params.get(name).cloned().ok_or_else(|| {
                     Error::VariableResolution(format!("Parameter not found: {}", name))
@@ -31,7 +31,7 @@ pub fn resolve_variables(
                 let value = state.get(name).ok_or_else(|| {
                     Error::VariableResolution(format!("State value not found: {}", name))
                 })?;
-                value.to_string()
+                serde_json::to_string(value).unwrap()
             } else {
                 return Err(Error::VariableResolution(format!(
                     "Unknown variable type: {}",

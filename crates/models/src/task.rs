@@ -55,7 +55,7 @@ pub struct Task {
     /// For matrix tasks, the matrix values
     #[serde(default)]
     #[ts(optional=nullable)]
-    pub matrix_values: Option<HashMap<String, String>>,
+    pub matrix_values: Option<HashMap<String, serde_json::Value>>,
 
     /// Start time of the task
     #[serde(default)]
@@ -100,7 +100,7 @@ impl Task {
         workflow_run_id: Uuid,
         node_id: String,
         master_task_id: Uuid,
-        matrix_values: HashMap<String, String>,
+        matrix_values: HashMap<String, serde_json::Value>,
     ) -> Self {
         Self {
             id: Uuid::new_v4(),

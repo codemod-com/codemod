@@ -45,7 +45,7 @@ fn create_basic_node(id: &str, depends_on: Vec<&str>) -> Node {
 fn create_matrix_node_values(
     id: &str,
     depends_on: Vec<&str>,
-    values: Vec<HashMap<String, String>>,
+    values: Vec<HashMap<String, serde_json::Value>>,
 ) -> Node {
     Node {
         id: id.to_string(),
@@ -181,8 +181,8 @@ async fn test_calculate_initial_tasks_simple() {
 async fn test_calculate_initial_tasks_matrix_values() {
     let scheduler = Scheduler::new();
     let matrix_values = vec![
-        HashMap::from([("k".to_string(), "v1".to_string())]),
-        HashMap::from([("k".to_string(), "v2".to_string())]),
+        HashMap::from([("k".to_string(), serde_json::Value::String("v1".to_string()))]),
+        HashMap::from([("k".to_string(), serde_json::Value::String("v2".to_string()))]),
     ];
     let workflow = create_test_workflow(vec![
         create_basic_node("node1", vec![]),
@@ -274,12 +274,20 @@ async fn test_calculate_matrix_task_changes_no_master_yet() {
         .new_tasks
         .iter()
         .filter(|t| !t.is_master)
-        .any(|t| t.matrix_values == Some(HashMap::from([("id".to_string(), "a".to_string())]))));
+        .any(|t| t.matrix_values
+            == Some(HashMap::from([(
+                "id".to_string(),
+                serde_json::Value::String("a".to_string())
+            )]))));
     assert!(changes
         .new_tasks
         .iter()
         .filter(|t| !t.is_master)
-        .any(|t| t.matrix_values == Some(HashMap::from([("id".to_string(), "b".to_string())]))));
+        .any(|t| t.matrix_values
+            == Some(HashMap::from([(
+                "id".to_string(),
+                serde_json::Value::String("b".to_string())
+            )]))));
 }
 
 #[tokio::test]
@@ -297,13 +305,13 @@ async fn test_calculate_matrix_task_changes_add_remove() {
         run.id,
         node2_id.clone(),
         master_task.id,
-        HashMap::from([("id".to_string(), "a".to_string())]),
+        HashMap::from([("id".to_string(), serde_json::Value::String("a".to_string()))]),
     );
     let task_b = Task::new_matrix(
         run.id,
         node2_id.clone(),
         master_task.id,
-        HashMap::from([("id".to_string(), "b".to_string())]),
+        HashMap::from([("id".to_string(), serde_json::Value::String("b".to_string()))]),
     );
 
     // Simulate existing tasks
@@ -333,7 +341,10 @@ async fn test_calculate_matrix_task_changes_add_remove() {
     assert_eq!(changes.new_tasks.len(), 1);
     assert!(
         changes.new_tasks[0].matrix_values
-            == Some(HashMap::from([("id".to_string(), "c".to_string())]))
+            == Some(HashMap::from([(
+                "id".to_string(),
+                serde_json::Value::String("c".to_string())
+            )]))
     );
     assert_eq!(changes.new_tasks[0].master_task_id, Some(master_task.id));
 
@@ -415,8 +426,8 @@ async fn test_find_runnable_tasks_simple_dependency() {
 async fn test_find_runnable_tasks_matrix_dependency() {
     let scheduler = Scheduler::new();
     let matrix_values = vec![
-        HashMap::from([("k".to_string(), "v1".to_string())]),
-        HashMap::from([("k".to_string(), "v2".to_string())]),
+        HashMap::from([("k".to_string(), serde_json::Value::String("v1".to_string()))]),
+        HashMap::from([("k".to_string(), serde_json::Value::String("v2".to_string()))]),
     ];
     let workflow = create_test_workflow(vec![
         create_matrix_node_values("node1", vec![], matrix_values.clone()),

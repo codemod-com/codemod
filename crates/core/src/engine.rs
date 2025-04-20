@@ -880,7 +880,10 @@ impl Engine {
         // Add matrix values
         if let Some(matrix_values) = &task.matrix_values {
             for (key, value) in matrix_values {
-                env.insert(key.clone(), value.clone());
+                env.insert(
+                    key.clone(),
+                    serde_json::to_string(value).unwrap_or(value.to_string()),
+                );
             }
         }
 
@@ -999,7 +1002,10 @@ impl Engine {
         // Add matrix values
         if let Some(matrix_values) = &task.matrix_values {
             for (key, value) in matrix_values {
-                env.insert(key.clone(), value.clone());
+                env.insert(
+                    key.clone(),
+                    serde_json::to_string(value).unwrap_or(value.to_string()),
+                );
             }
         }
 

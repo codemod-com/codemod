@@ -318,7 +318,7 @@ impl Scheduler {
                         let matrix_data = match item_value.as_object() {
                             Some(obj) => obj
                                 .iter()
-                                .filter_map(|(k, v)| v.as_str().map(|s| (k.clone(), s.to_string())))
+                                .filter_map(|(k, v)| v.as_str().map(|s| (k.clone(), serde_json::Value::String(s.to_string()))))
                                 .collect::<HashMap<_, _>>(),
                             None => {
                                 warn!(
