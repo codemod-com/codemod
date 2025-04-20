@@ -23,21 +23,26 @@ pub struct Runtime {
 
     /// Container image (for Docker and Podman)
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub image: Option<String>,
 
     /// Working directory inside the container
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub working_dir: Option<String>,
 
     /// User to run as inside the container
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub user: Option<String>,
 
     /// Network mode for the container
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub network: Option<String>,
 
     /// Additional container options
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub options: Option<Vec<String>>,
 }

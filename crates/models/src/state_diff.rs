@@ -1,9 +1,10 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use ts_rs::TS;
 use uuid::Uuid;
 
 /// Represents a diff operation
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
 pub enum DiffOperation {
     /// Add a new value
     Add,
@@ -16,7 +17,7 @@ pub enum DiffOperation {
 }
 
 /// Represents a diff for a single field
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 pub struct FieldDiff {
     /// The operation to perform
     pub operation: DiffOperation,
@@ -25,7 +26,7 @@ pub struct FieldDiff {
 }
 
 /// Represents a diff for a workflow run
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 pub struct WorkflowRunDiff {
     /// The ID of the workflow run
     pub workflow_run_id: Uuid,
@@ -34,7 +35,7 @@ pub struct WorkflowRunDiff {
 }
 
 /// Represents a diff for a task
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 pub struct TaskDiff {
     /// The ID of the task
     pub task_id: Uuid,
@@ -43,7 +44,7 @@ pub struct TaskDiff {
 }
 
 /// Represents a diff for workflow state
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 pub struct StateDiff {
     /// The ID of the workflow run
     pub workflow_run_id: Uuid,

@@ -1,6 +1,11 @@
-use std::{collections::HashMap, fs::File, io::Write, path::Path};
+use std::{
+    collections::{HashMap, HashSet},
+    fs::File,
+    io::Write,
+    path::Path,
+};
 
-use butterflow_models::Workflow;
+use butterflow_models::{StateDiff, Task, TaskDiff, Workflow, WorkflowRun, WorkflowRunDiff};
 use clap::{Parser, Subcommand};
 use serde_json::to_writer_pretty;
 use ts_export::export_recursive;
@@ -18,6 +23,8 @@ struct Args {
 enum Commands {
     /// Generate a JSON schema for the workflow object.
     Schema,
+    /// Generate a TypeScript definition for the workflow object.
+    Ts,
 }
 
 fn main() {
@@ -36,12 +43,26 @@ fn main() {
                 panic!("Cannot create file: {:?}", json_schema_path);
             };
             to_writer_pretty(&mut json_file, &schema).unwrap();
+        }
+        Commands::Ts => {
+            let Ok(xtask_path) = std::env::var("CARGO_MANIFEST_DIR") else {
+                panic!("Cannot find CARGO_MANIFEST_DIR");
+            };
+            let schema_out_dir = Path::new(&xtask_path)
+                .parent()
+                .unwrap()
+                .join("crates/scheduler/npm");
 
-            let ts_schema_path = schema_out_dir.join("workflow.ts");
+            let ts_schema_path = schema_out_dir.join("types.ts");
             let mut ts_file = File::create(&ts_schema_path).unwrap();
             let mut type_hash_map = HashMap::new();
-            export_recursive::<Workflow>(&mut type_hash_map);
-            // sort by key
+            let mut type_names = HashSet::new();
+            export_recursive::<Workflow>(&mut type_hash_map, &mut type_names);
+            export_recursive::<Task>(&mut type_hash_map, &mut type_names);
+            export_recursive::<WorkflowRun>(&mut type_hash_map, &mut type_names);
+            export_recursive::<TaskDiff>(&mut type_hash_map, &mut type_names);
+            export_recursive::<StateDiff>(&mut type_hash_map, &mut type_names);
+            export_recursive::<WorkflowRunDiff>(&mut type_hash_map, &mut type_names);
             let mut type_hash_map = type_hash_map.into_iter().collect::<Vec<_>>();
             type_hash_map.sort_by_key(|(k, _)| *k);
             for (_, ts_def) in type_hash_map {
