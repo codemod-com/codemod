@@ -9,10 +9,14 @@
     "pkg/butterflow_scheduler_bg.wasm",
     "pkg/butterflow_scheduler.js",
     "pkg/butterflow_scheduler.d.ts",
-    "pkg/butterflow_scheduler_bg.wasm.d.ts"
+    "pkg/butterflow_scheduler_bg.wasm.d.ts",
+    "./types.ts"
   ],
   "scripts": {
     "test": "vitest run"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [],
   "author": "Codemod <dev@codemod.com>",
