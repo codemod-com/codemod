@@ -1,10 +1,9 @@
 use anyhow::{Context, Result};
 use butterflow_models::step::StepAction;
-use butterflow_state::cloud_adapter::ApiStateAdapter;
+use butterflow_state::cloud_adapter::CloudStateAdapter;
 use clap::{Parser, Subcommand};
 use log::{error, info};
 use std::collections::HashMap;
-use std::fs;
 use std::path::{Path, PathBuf};
 use uuid::Uuid;
 
@@ -18,10 +17,6 @@ use butterflow_models::{Task, TaskStatus, WorkflowStatus};
 struct Cli {
     #[command(subcommand)]
     command: Commands,
-
-    /// Path to configuration file
-    #[arg(short, long, value_name = "FILE")]
-    config: Option<PathBuf>,
 
     /// Verbose output
     #[arg(short, long)]
@@ -101,7 +96,7 @@ async fn main() -> Result<()> {
     }
 
     // Create engine
-    let engine = create_engine(&cli.config)?;
+    let engine = create_engine()?;
 
     // Handle command
     match &cli.command {
@@ -133,71 +128,23 @@ async fn main() -> Result<()> {
 }
 
 /// Create an engine based on configuration
-fn create_engine(config_path: &Option<PathBuf>) -> Result<Engine> {
-    // If no config file is provided, use default local state adapter
-    if config_path.is_none() {
-        return Ok(Engine::new());
-    }
-
-    // Read config file
-    let config_path = config_path.as_ref().unwrap();
-    let config_content = fs::read_to_string(config_path).context(format!(
-        "Failed to read config file: {}",
-        config_path.display()
-    ))?;
-
-    // Parse config file
-    let config: serde_yaml::Value = serde_yaml::from_str(&config_content).context(format!(
-        "Failed to parse config file: {}",
-        config_path.display()
-    ))?;
-
-    // Get state management configuration
-    let state_management = config.get("stateManagement").and_then(|v| v.as_mapping());
-    if let Some(state_management) = state_management {
-        // Get backend type
-        let backend = state_management
-            .get(serde_yaml::Value::String("backend".to_string()))
-            .and_then(|v| v.as_str());
-
-        match backend {
-            Some("api") => {
-                // Get API configuration
-                let api_config = state_management
-                    .get(serde_yaml::Value::String("apiConfig".to_string()))
-                    .and_then(|v| v.as_mapping());
-
-                if let Some(api_config) = api_config {
-                    // Get endpoint
-                    let endpoint = api_config
-                        .get(serde_yaml::Value::String("endpoint".to_string()))
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("http://localhost:8080");
-
-                    // Get auth token
-                    let auth_token = api_config
-                        .get(serde_yaml::Value::String("authToken".to_string()))
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("");
-
-                    // Create API state adapter
-                    let state_adapter = Box::new(ApiStateAdapter::new(
-                        endpoint.to_string(),
-                        auth_token.to_string(),
-                    ));
-
-                    return Ok(Engine::with_state_adapter(state_adapter));
-                }
-            }
-            _ => {
-                // Use local state adapter
-                return Ok(Engine::new());
-            }
+fn create_engine() -> Result<Engine> {
+    // Check for environment variables first
+    if let (Some(backend), Some(endpoint), auth_token) = (
+        std::env::var("BUTTERFLOW_STATE_BACKEND").ok(),
+        std::env::var("BUTTERFLOW_API_ENDPOINT").ok(),
+        std::env::var("BUTTERFLOW_API_AUTH_TOKEN")
+            .ok()
+            .unwrap_or_default(),
+    ) {
+        if backend == "cloud" {
+            // Create API state adapter
+            let state_adapter = Box::new(CloudStateAdapter::new(endpoint, auth_token));
+            return Ok(Engine::with_state_adapter(state_adapter));
         }
     }
 
-    // Default to local state adapter
-    Ok(Engine::new())
+    return Ok(Engine::new());
 }
 
 /// Run a workflow

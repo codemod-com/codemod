@@ -38,7 +38,7 @@ pub struct Node {
 
     /// IDs of nodes that must complete before this node can run
     #[serde(default)]
-    #[ts(type = "string[]")]
+    #[ts(optional, as = "Option<Vec<String>>")]
     pub depends_on: Vec<String>,
 
     /// Configuration for how the node is triggered
@@ -61,7 +61,7 @@ pub struct Node {
 
     /// Environment variables to inject into the container
     #[serde(default)]
-    #[ts(type = "Record<string, string>")]
+    #[ts(optional, as = "Option<HashMap<String, String>>")]
     pub env: HashMap<String, String>,
 }
 

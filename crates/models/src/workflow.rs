@@ -20,8 +20,10 @@ pub struct Workflow {
     #[ts(optional=nullable)]
     pub state: Option<WorkflowState>,
 
+    // Why using as="Option<Vec<Template>>" -> https://github.com/Aleph-Alpha/ts-rs/issues/175
     /// Templates for reusable components
     #[serde(default)]
+    #[ts(optional, as = "Option<Vec<Template>>")]
     pub templates: Vec<Template>,
 
     /// Nodes in the workflow

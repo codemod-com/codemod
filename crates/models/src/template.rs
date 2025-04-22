@@ -18,6 +18,7 @@ pub struct TemplateInput {
 
     /// Whether the input is required
     #[serde(default)]
+    #[ts(optional, as = "Option<bool>")]
     pub required: bool,
 
     /// Description of the input
@@ -71,11 +72,15 @@ pub struct Template {
 
     /// Outputs from the template
     #[serde(default)]
+    #[ts(optional, as = "Option<Vec<TemplateOutput>>")]
     pub outputs: Vec<TemplateOutput>,
 
     /// Environment variables to inject into the container
     #[serde(default)]
-    #[ts(type = "Record<string, string>")]
+    #[ts(
+        as = "Option<HashMap<String, String>>",
+        optional
+    )]
     pub env: HashMap<String, String>,
 }
 

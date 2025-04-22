@@ -18,7 +18,7 @@ pub struct Strategy {
 
     /// Matrix values (for matrix strategy)
     #[serde(default)]
-    #[ts(type = "Record<string, JsonValue>[] | null", optional=nullable)]
+    #[ts(optional, as = "Option<Vec<HashMap<String, serde_json::Value>>>")]
     pub values: Option<Vec<HashMap<String, serde_json::Value>>>,
 
     /// State key to get matrix values from (for matrix strategy)

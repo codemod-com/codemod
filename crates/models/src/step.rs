@@ -14,7 +14,7 @@ pub struct Step {
 
     /// Environment variables specific to this step
     #[serde(default)]
-    #[ts(type = "Record<string, string> | null", optional=nullable)]
+    #[ts(optional, as = "Option<HashMap<String, String>>")]
     pub env: Option<HashMap<String, String>>,
 }
 
@@ -39,6 +39,6 @@ pub struct TemplateUse {
 
     /// Inputs to pass to the template
     #[serde(default)]
-    #[ts(type = "Record<string, string>")]
+    #[ts(optional, as = "Option<HashMap<String, String>>")]
     pub inputs: HashMap<String, String>,
 }

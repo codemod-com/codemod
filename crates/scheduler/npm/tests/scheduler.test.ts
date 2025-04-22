@@ -1,12 +1,9 @@
 import crypto from "node:crypto";
-import { readFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
-import init, {
-  Scheduler,
+import {
   type MatrixTaskChanges,
   type RunnableTaskChanges,
+  Scheduler,
 } from "../pkg/butterflow_scheduler";
 import type {
   Node,
@@ -17,13 +14,6 @@ import type {
   Workflow,
   WorkflowRun,
 } from "../types";
-
-beforeAll(async () => {
-  const currentDir = join(dirname(fileURLToPath(import.meta.url)), "..", "pkg");
-  const fileUrl = join(currentDir, "butterflow_scheduler_bg.wasm");
-  const wasmBuffer = await readFile(fileUrl);
-  await init(wasmBuffer);
-});
 
 function createBasicNode(id: string, dependsOn: string[]): Node {
   return {

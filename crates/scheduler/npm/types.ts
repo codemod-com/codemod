@@ -1,4 +1,4 @@
-export type JsonValue = number | string | boolean | Array<JsonValue> | { [key in string]?: JsonValue } | null;
+export type JsonValue = number | string | boolean | Array<JsonValue> | Record<string, JsonValue> | null;
 export type Strategy = { 
 /**
  * Type of strategy
@@ -7,7 +7,7 @@ type: StrategyType,
 /**
  * Matrix values (for matrix strategy)
  */
-values?: Record<string, string>[] | null, 
+values?: Array<Record<string, JsonValue>>, 
 /**
  * State key to get matrix values from (for matrix strategy)
  */
@@ -20,7 +20,7 @@ template: string,
 /**
  * Inputs to pass to the template
  */
-inputs: Record<string, string>, };
+inputs?: Record<string, string>, };
 export type Node = { 
 /**
  * Unique identifier for the node
@@ -41,7 +41,7 @@ type: NodeType,
 /**
  * IDs of nodes that must complete before this node can run
  */
-depends_on: string[], 
+depends_on?: Array<string>, 
 /**
  * Configuration for how the node is triggered
  */
@@ -61,7 +61,7 @@ steps: Array<Step>,
 /**
  * Environment variables to inject into the container
  */
-env: Record<string, string>, };
+env?: Record<string, string>, };
 export type TemplateInput = { 
 /**
  * Name of the input
@@ -74,7 +74,7 @@ type: string,
 /**
  * Whether the input is required
  */
-required: boolean, 
+required?: boolean, 
 /**
  * Description of the input
  */
@@ -109,7 +109,7 @@ workflow_run_id: string,
 /**
  * The fields to update
  */
-fields: { [key in string]?: FieldDiff }, };
+fields: Record<string, FieldDiff>, };
 export type Workflow = { 
 /**
  * Version of the workflow format
@@ -122,7 +122,7 @@ state?: WorkflowState | null,
 /**
  * Templates for reusable components
  */
-templates: Array<Template>, 
+templates?: Array<Template>, 
 /**
  * Nodes in the workflow
  */
@@ -152,7 +152,7 @@ type: StateSchemaType,
 /**
  * For object types, the properties of the object
  */
-properties?: { [key in string]?: StateSchemaProperty } | null, };
+properties?: Record<string, StateSchemaProperty> | null, };
 export type TaskStatus = "Pending" | "Running" | "Completed" | "Failed" | "AwaitingTrigger" | "Blocked" | "WontDo";
 export type TaskDiff = { 
 /**
@@ -162,7 +162,7 @@ task_id: string,
 /**
  * The fields to update
  */
-fields: { [key in string]?: FieldDiff }, };
+fields: Record<string, FieldDiff>, };
 export type Runtime = { 
 /**
  * Type of runtime
@@ -206,7 +206,7 @@ workflow_run_id: string,
 /**
  * The fields to update
  */
-fields: { [key in string]?: FieldDiff }, };
+fields: Record<string, FieldDiff>, };
 export type StateSchemaProperty = { 
 /**
  * Type of the property
@@ -245,7 +245,7 @@ master_task_id?: string | null,
 /**
  * For matrix tasks, the matrix values
  */
-matrix_values?: { [key in string]?: string } | null, 
+matrix_values?: Record<string, JsonValue> | null, 
 /**
  * Start time of the task
  */
@@ -292,11 +292,11 @@ steps: Array<Step>,
 /**
  * Outputs from the template
  */
-outputs: Array<TemplateOutput>, 
+outputs?: Array<TemplateOutput>, 
 /**
  * Environment variables to inject into the container
  */
-env: Record<string, string>, };
+env?: Record<string, string>, };
 export type RuntimeType = "direct" | "docker" | "podman";
 export type WorkflowState = { 
 /**
@@ -312,7 +312,7 @@ name: string,
 /**
  * Environment variables specific to this step
  */
-env?: Record<string, string> | null, } & ({ "use": TemplateUse } | { "run": string });
+env?: Record<string, string>, } & ({ "use": TemplateUse } | { "run": string });
 export type StateSchemaType = "array" | "object" | "string" | "number" | "boolean";
 export type WorkflowRun = { 
 /**
@@ -330,7 +330,7 @@ status: WorkflowStatus,
 /**
  * Parameters passed to the workflow
  */
-params: { [key in string]?: string }, 
+params: Record<string, string>, 
 /**
  * Tasks created for this workflow run
  */

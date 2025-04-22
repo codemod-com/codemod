@@ -1,3 +1,4 @@
+use regex::Regex;
 use std::{
     any::TypeId,
     collections::{HashMap, HashSet},
@@ -21,7 +22,7 @@ impl<'a> TypeVisitor for Visit<'a> {
 
         let type_id = TypeId::of::<T>();
         if let std::collections::hash_map::Entry::Vacant(e) = self.type_hash_map.entry(type_id) {
-            e.insert("export ".to_string() + &T::decl());
+            e.insert("export ".to_string() + &replace_object_with_record(&T::decl()));
             self.type_names.insert(T::name());
             export_recursive::<T>(self.type_hash_map, self.type_names);
         }
@@ -34,7 +35,7 @@ pub fn export_recursive<T: TS + 'static + ?Sized>(
 ) {
     type_hash_map
         .entry(TypeId::of::<T>())
-        .or_insert_with(|| "export ".to_string() + &T::decl());
+        .or_insert_with(|| "export ".to_string() + &replace_object_with_record(&T::decl()));
     type_names.insert(T::name());
 
     let mut visitor = Visit {
@@ -43,4 +44,9 @@ pub fn export_recursive<T: TS + 'static + ?Sized>(
     };
 
     T::visit_dependencies(&mut visitor);
+}
+
+fn replace_object_with_record(string: &str) -> String {
+    let re = Regex::new(r"\{\s*\[key in (\w+)\]\?:\s*(\w+)\s*}").unwrap();
+    re.replace(string, "Record<$1, $2>").to_string()
 }
