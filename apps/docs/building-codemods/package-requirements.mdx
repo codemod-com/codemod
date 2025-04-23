@@ -72,7 +72,7 @@ The `.codemodrc.json` configuration file includes several metafields that can be
 </ResponseField>
 
 <ResponseField name="deps" type="array of strings">
-  Can be used to specify dependencies to be installed after successful a codemod run.
+  Can be used to specify dependencies to be installed after a successful codemod run.
   You can also specify a package to be removed by prepending it with a `-` sign.
   Each dependency should be a string in one of the following formats:
 
@@ -142,19 +142,19 @@ Below, you can find the required codemod package structure for each codemod engi
 
     ```json .codemodrc.json
     {
-    "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-    "version": "1.0.0",
-    "private": false,
-    "name": "framework/version/codemod-name",
-    "description": "example codemod description",
-    "engine": "jscodeshift/ts-morph/workflow",
-    "meta": {
-      "tags": ["framework", "migration", "etc"],
+      "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+      "version": "1.0.0",
+      "private": false,
+      "name": "framework/version/codemod-name",
+      "description": "example codemod description",
+      "engine": "jscodeshift/ts-morph/workflow",
+      "meta": {
+        "tags": ["framework", "migration", "etc"],
         "git": "https://github.com/user/repo"
-    },
-    "applicability": {
-      "from": [["framework", "<=", "version"]],
-      "to": [["framework", "=", "version"]]
+      },
+      "applicability": {
+        "from": [["framework", "<=", "version"]],
+        "to": [["framework", "=", "version"]]
       }
     }
     ```
@@ -196,19 +196,19 @@ Below, you can find the required codemod package structure for each codemod engi
 
     ```json .codemodrc.json
     {
-    "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-    "version": "1.0.0",
-    "private": false,
-    "name": "framework/version/codemod-name",
-    "description": "example codemod description",
-    "engine": "ast-grep",
-    "meta": {
-      "tags": ["framework", "migration", "etc"],
-      "git": "https://github.com/user/repo"
-    },
-    "applicability": {
-      "from": [["framework", "<=", "version"]],
-      "to": [["framework", "=", "version"]]
+      "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+      "version": "1.0.0",
+      "private": false,
+      "name": "framework/version/codemod-name",
+      "description": "example codemod description",
+      "engine": "ast-grep",
+      "meta": {
+        "tags": ["framework", "migration", "etc"],
+        "git": "https://github.com/user/repo"
+      },
+      "applicability": {
+        "from": [["framework", "<=", "version"]],
+        "to": [["framework", "=", "version"]]
       }
     }
     ```
