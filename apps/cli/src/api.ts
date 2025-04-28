@@ -128,7 +128,9 @@ export const publish = async (
       },
   formData: FormData,
 ): Promise<void> => {
-  const headers: RawAxiosRequestHeaders = {};
+  const headers: RawAxiosRequestHeaders = {
+    "Content-Type": "multipart/form-data",
+  };
   if (credentials.accessToken) {
     headers.Authorization = `Bearer ${credentials.accessToken}`;
   } else if (credentials.apiKey) {
