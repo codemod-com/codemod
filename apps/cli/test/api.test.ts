@@ -289,7 +289,10 @@ describe("API Client Tests", () => {
         "http://api.example.com/publish",
         mockFormData,
         {
-          headers: { Authorization: `Bearer ${mockAccessToken}` },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${mockAccessToken}`,
+          },
           timeout: 10000,
         },
       );
@@ -304,7 +307,10 @@ describe("API Client Tests", () => {
         "http://api.example.com/publish",
         mockFormData,
         {
-          headers: { "X-API-Key": mockApiKey },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "X-API-Key": mockApiKey,
+          },
           timeout: 10000,
         },
       );

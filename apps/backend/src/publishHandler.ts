@@ -71,19 +71,22 @@ export const publishHandler: RouteHandler<{
     let codemodTarArchiveBuffer: Buffer | null = null;
     let codemodZipArchiveBuffer: Buffer | null = null;
 
-    for await (const multipartFile of request.files({
-      limits: { fileSize: 1024 * 1024 * 100 },
+    let namespace: string | null = null;
+    for await (const part of request.parts({
+      limits: {
+        fileSize: 1024 * 1024 * 100,
+      },
     })) {
-      const buffer = await multipartFile.toBuffer();
-
-      if (multipartFile.fieldname === "codemod.tar.gz") {
-        codemodTarArchiveBuffer = buffer;
-      }
-
-      if (multipartFile.fieldname === "codemod.zip") {
-        codemodZipArchiveBuffer = buffer;
+      if (part.fieldname === "namespace" && "value" in part) {
+        namespace = part.value as string;
+      } else if (part.fieldname === "codemod.tar.gz" && "file" in part) {
+        codemodTarArchiveBuffer = await (part as any).toBuffer();
+      } else if (part.fieldname === "codemod.zip" && "file" in part) {
+        codemodZipArchiveBuffer = await (part as any).toBuffer();
       }
     }
+
+    console.log(namespace, "namespace");
 
     let codemodArchiveBuffer: Buffer;
     if (codemodTarArchiveBuffer !== null) {
@@ -175,14 +178,6 @@ export const publishHandler: RouteHandler<{
     name = isPublishedFromStudio
       ? `${name}-${randomBytes(4).toString("hex")}`
       : name;
-
-    let namespace: string | null = null;
-    try {
-      const formData = await request.formData();
-      namespace = formData.get("namespace")?.toString() ?? null;
-    } catch (err) {
-      //
-    }
 
     let isPrivate = false;
 
