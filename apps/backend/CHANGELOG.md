@@ -1,5 +1,11 @@
 # @codemod-com/backend
 
+## 0.0.172
+
+### Patch Changes
+
+- 0467787: Fix receiving the namespace in the publish route
+
 ## 0.0.171
 
 ### Patch Changes

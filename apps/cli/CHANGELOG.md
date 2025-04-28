@@ -1,5 +1,11 @@
 # codemod
 
+## 0.18.5
+
+### Patch Changes
+
+- 0467787: Add content type for publish request header
+
 ## 0.18.4
 
 ### Patch Changes
