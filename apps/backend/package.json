@@ -4,7 +4,8 @@
   "scripts": {
     "build": "tsc && node esbuild.config.js",
     "start": "node build/index.js",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "dev": "nodemon --exec tsx watch src/index.ts"
   },
   "author": "Codemod inc.",
   "private": true,
