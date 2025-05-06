@@ -1,0 +1,245 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  paths-filter:
+    name: Check for crates changes
+    runs-on: ubuntu-22.04
+    outputs:
+      crates: ${{ steps.filter.outputs.crates }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            crates:
+              - 'crates/**'
+
+  build:
+    name: Build Release
+    needs: paths-filter
+    if: always() && needs.paths-filter.outputs.crates == 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            binary_name: butterflow-linux-x86_64
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            binary_name: butterflow-darwin-aarch64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            binary_name: butterflow-darwin-x86_64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary_name: butterflow-windows-x86_64.exe
+          - os: windows-latest
+            target: i686-pc-windows-msvc
+            binary_name: butterflow-windows-i686.exe
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+            binary_name: butterflow-windows-aarch64.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Get Binary Path
+        id: binary_path
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            echo "path=target/${{ matrix.target }}/release/butterflow.exe" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "path=target/${{ matrix.target }}/release/butterflow" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install dependencies (Linux only)
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get install -y libssl-dev pkg-config
+          if [[ ${{ matrix.target }} == *aarch64* ]]; then
+            sudo apt-get install -y gcc-aarch64-linux-gnu libssl-dev:aarch64
+          fi
+
+      - name: Set up Apple Signing Certificate (macOS only)
+        if: matrix.os == 'macos-latest'
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          echo "$APPLE_CERTIFICATE_BASE64" | base64 --decode > developer_id.p12
+          security create-keychain -p github-actions keychain
+          security default-keychain -s keychain
+          security unlock-keychain -p github-actions keychain
+          security import developer_id.p12 -k keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k github-actions keychain
+
+      - name: Build
+        run: |
+          cargo build --release --target ${{ matrix.target }}
+
+      - name: Chmod binary
+        run: |
+          chmod 755 ${{ steps.binary_path.outputs.path }}
+
+      - name: Sign Binary (macOS only)
+        if: matrix.os == 'macos-latest'
+        env:
+          APPLE_IDENTITY: ${{ secrets.APPLE_IDENTITY }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          codesign --force --timestamp --sign "$APPLE_IDENTITY" --team-id "$APPLE_TEAM_ID" --options runtime ${{ steps.binary_path.outputs.path }}
+
+      - name: Verify Signing (macOS only)
+        if: matrix.os == 'macos-latest'
+        run: |
+          codesign --verify --deep --verbose=4 ${{ steps.binary_path.outputs.path }}
+
+      - name: Create ZIP for Notarization (macOS only)
+        if: matrix.os == 'macos-latest'
+        run: zip -r binary.zip ${{ steps.binary_path.outputs.path }}
+
+      - name: Submit for Notarization (macOS only)
+        if: matrix.os == 'macos-latest'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          xcrun notarytool submit binary.zip \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --wait
+
+      # - name: Staple Notarization (macOS only)
+      #   if: matrix.os == 'macos-latest'
+      #   run: xcrun stapler staple -v ${{ steps.binary_path.outputs.path }}
+
+      - name: Rename binary (Non-Windows)
+        if: matrix.os != 'windows-latest'
+        run: |
+          cd target/${{ matrix.target }}/release
+          mv butterflow ${{ matrix.binary_name }}
+
+      - name: Rename binary (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd target/${{ matrix.target }}/release
+          mv butterflow.exe ${{ matrix.binary_name }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/${{ matrix.binary_name }}
+
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-22.04
+    needs: build
+    # if changes to the crates directory
+    outputs:
+      version: ${{ steps.git-cliff.outputs.version }}
+      changelog: ${{ steps.git-cliff.outputs.content }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Back up CHANGELOG.md
+        run: cp CHANGELOG.md CHANGELOG.md.bak
+
+      - name: Set up git-cliff
+        uses: kenji-miyake/setup-git-cliff@v1
+
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v3
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --unreleased --bump
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_REPO: ${{ github.repository }}
+
+      - name: Restore CHANGELOG.md
+        run: |
+          # Remove the starting "# Changelog" section from the backup
+          sed -i '/^# Changelog$/,$!d' CHANGELOG.md.bak
+          cat CHANGELOG.md.bak >> CHANGELOG.md
+          rm CHANGELOG.md.bak
+
+      - name: Update version in Cargo.toml
+        shell: bash
+        run: |
+          version=$(echo "${{ steps.git-cliff.outputs.version }}" | sed 's/v//g')
+
+          sed "s/^version = \".*\"\$/version = \"$version\"/" ./Cargo.toml > /tmp/cargo.toml
+          mv /tmp/cargo.toml ./Cargo.toml
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Re-generate Cargo.lock
+        run: cargo generate-lockfile
+
+      - name: Update Changelog
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: ${{ github.head_ref }}
+          commit_message: "chore(bump): Bump version ${{ steps.git-cliff.outputs.version }}"
+          file_pattern: "CHANGELOG.md Cargo.toml Cargo.lock"
+
+      - name: Create tag
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${{ steps.git-cliff.outputs.version }}`,
+              sha: context.sha
+            })
+
+  create_release:
+    name: Create Release
+    needs: changelog
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{ needs.changelog.outputs.changelog }}
+          tag_name: ${{ needs.changelog.outputs.version }}
+          files: |
+            x86_64-unknown-linux-gnu/*
+            aarch64-apple-darwin/*
+            x86_64-apple-darwin/*
+            x86_64-pc-windows-msvc/*
+            i686-pc-windows-msvc/*
+            aarch64-pc-windows-msvc/*
+          generate_release_notes: true
