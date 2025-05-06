@@ -61,10 +61,10 @@ jobs:
         shell: bash
         run: |
           if [ "${{ matrix.os }}" == "windows-latest" ]; then
-            echo "path=target/${{ matrix.target }}/release/butterflow.exe" >> "$GITHUB_OUTPUT"
+            echo "path=target/${{ matrix.target }}/release/butterflow-cli.exe" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          echo "path=target/${{ matrix.target }}/release/butterflow" >> "$GITHUB_OUTPUT"
+          echo "path=target/${{ matrix.target }}/release/butterflow-cli" >> "$GITHUB_OUTPUT"
 
       - name: Cache Cargo
         uses: Swatinem/rust-cache@v2
@@ -136,13 +136,13 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           cd target/${{ matrix.target }}/release
-          mv butterflow ${{ matrix.binary_name }}
+          mv butterflow-cli ${{ matrix.binary_name }}
 
       - name: Rename binary (Windows)
         if: matrix.os == 'windows-latest'
         run: |
           cd target/${{ matrix.target }}/release
-          mv butterflow.exe ${{ matrix.binary_name }}
+          mv butterflow-cli.exe ${{ matrix.binary_name }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
