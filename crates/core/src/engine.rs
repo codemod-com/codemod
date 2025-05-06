@@ -87,7 +87,7 @@ impl Engine {
         &self,
         workflow: Workflow,
         params: HashMap<String, String>,
-        bundle_path: PathBuf,
+        bundle_path: Option<PathBuf>,
     ) -> Result<Uuid> {
         // Validate the workflow
         utils::validate_workflow(&workflow)?;
@@ -961,7 +961,7 @@ impl Engine {
         params: &HashMap<String, String>,
         state: &HashMap<String, serde_json::Value>,
         workflow: &Workflow,
-        bundle_path: &PathBuf,
+        bundle_path: &Option<PathBuf>,
     ) -> Result<()> {
         match action {
             StepAction::RunScript(run) => {
@@ -1033,7 +1033,7 @@ impl Engine {
         task: &Task,
         params: &HashMap<String, String>,
         state: &HashMap<String, serde_json::Value>,
-        bundle_path: &PathBuf,
+        bundle_path: &Option<PathBuf>,
     ) -> Result<()> {
         // Prepare environment variables
         let mut env = HashMap::new();
@@ -1065,10 +1065,12 @@ impl Engine {
         let step_outputs_path = temp_dir.join(task.id.to_string());
         File::create(&step_outputs_path)?;
 
-        env.insert(
-            String::from("CODEMOD_PATH"),
-            bundle_path.to_str().unwrap_or("").to_string(),
-        );
+        if let Some(bundle_path) = bundle_path {
+            env.insert(
+                String::from("CODEMOD_PATH"),
+                bundle_path.to_str().unwrap_or("").to_string(),
+            );
+        }
 
         env.insert(
             String::from("STATE_OUTPUTS"),

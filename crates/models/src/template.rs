@@ -77,10 +77,7 @@ pub struct Template {
 
     /// Environment variables to inject into the container
     #[serde(default)]
-    #[ts(
-        as = "Option<HashMap<String, String>>",
-        optional
-    )]
+    #[ts(as = "Option<HashMap<String, String>>", optional)]
     pub env: HashMap<String, String>,
 }
 

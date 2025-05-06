@@ -155,6 +155,7 @@ fn create_test_run(workflow: Workflow) -> WorkflowRun {
         tasks: vec![],
         started_at: chrono::Utc::now(),
         ended_at: None,
+        bundle_path: None,
     }
 }
 

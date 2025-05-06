@@ -69,7 +69,7 @@ pub struct WorkflowRun {
     /// The absolute path to the root directory of the workflow bundle
     #[ts(skip)]
     #[serde(skip)]
-    pub bundle_path: PathBuf,
+    pub bundle_path: Option<PathBuf>,
 }
 
 /// Status of a workflow run

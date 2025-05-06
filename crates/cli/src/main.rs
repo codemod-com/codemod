@@ -144,7 +144,7 @@ fn create_engine() -> Result<Engine> {
         }
     }
 
-    return Ok(Engine::new());
+    Ok(Engine::new())
 }
 
 /// Run a workflow
@@ -163,7 +163,7 @@ async fn run_workflow(engine: &Engine, workflow_source: &str, params: &[String])
 
     // Run workflow
     let workflow_run_id = engine
-        .run_workflow(workflow, params, bundle_path)
+        .run_workflow(workflow, params, Some(bundle_path))
         .await
         .context("Failed to run workflow")?;
 
@@ -256,7 +256,12 @@ fn resolve_workflow_source(source: &str) -> Result<(PathBuf, PathBuf)> {
             path.display()
         ))?;
         // Look for default workflow files within the directory
-        let default_files = ["workflow.yaml", "butterflow.yaml", "workflow.json", "butterflow.json"];
+        let default_files = [
+            "workflow.yaml",
+            "butterflow.yaml",
+            "workflow.json",
+            "butterflow.json",
+        ];
         let mut workflow_file_path = None;
 
         for file_name in default_files.iter() {
