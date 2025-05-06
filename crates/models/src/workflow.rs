@@ -2,6 +2,7 @@ use chrono::{DateTime, Utc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::path::PathBuf;
 use uuid::Uuid;
 
 use crate::node::Node;
@@ -17,10 +18,13 @@ pub struct Workflow {
 
     /// State schema definition
     #[serde(default)]
+    #[ts(optional=nullable)]
     pub state: Option<WorkflowState>,
 
+    // Why using as="Option<Vec<Template>>" -> https://github.com/Aleph-Alpha/ts-rs/issues/175
     /// Templates for reusable components
     #[serde(default)]
+    #[ts(optional, as = "Option<Vec<Template>>")]
     pub templates: Vec<Template>,
 
     /// Nodes in the workflow
@@ -36,7 +40,7 @@ pub struct WorkflowState {
 }
 
 /// Represents a workflow run
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 pub struct WorkflowRun {
     /// Unique identifier for the workflow run
     pub id: Uuid,
@@ -57,11 +61,19 @@ pub struct WorkflowRun {
     pub started_at: DateTime<Utc>,
 
     /// End time of the workflow run (if completed or failed)
+    #[serde(default)]
+    #[ts(optional=nullable)]
     pub ended_at: Option<DateTime<Utc>>,
+
+    // This is not persisted, only used during runtime
+    /// The absolute path to the root directory of the workflow bundle
+    #[ts(skip)]
+    #[serde(skip)]
+    pub bundle_path: Option<PathBuf>,
 }
 
 /// Status of a workflow run
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS)]
 pub enum WorkflowStatus {
     /// Workflow is pending execution
     Pending,

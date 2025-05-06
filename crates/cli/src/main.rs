@@ -1,16 +1,15 @@
 use anyhow::{Context, Result};
 use butterflow_models::step::StepAction;
+use butterflow_state::cloud_adapter::CloudStateAdapter;
 use clap::{Parser, Subcommand};
 use log::{error, info};
 use std::collections::HashMap;
-use std::fs;
 use std::path::{Path, PathBuf};
 use uuid::Uuid;
 
 use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
-use butterflow_state::ApiStateAdapter;
 
 #[derive(Parser)]
 #[command(name = "butterflow")]
@@ -18,10 +17,6 @@ use butterflow_state::ApiStateAdapter;
 struct Cli {
     #[command(subcommand)]
     command: Commands,
-
-    /// Path to configuration file
-    #[arg(short, long, value_name = "FILE")]
-    config: Option<PathBuf>,
 
     /// Verbose output
     #[arg(short, long)]
@@ -32,9 +27,9 @@ struct Cli {
 enum Commands {
     /// Run a workflow
     Run {
-        /// Path to workflow file
-        #[arg(short, long, value_name = "FILE")]
-        workflow: PathBuf,
+        /// Path to workflow file or directory
+        #[arg(short, long, value_name = "PATH")]
+        workflow: String,
 
         /// Workflow parameters (format: key=value)
         #[arg(long = "param", value_name = "KEY=VALUE")]
@@ -101,7 +96,7 @@ async fn main() -> Result<()> {
     }
 
     // Create engine
-    let engine = create_engine(&cli.config)?;
+    let engine = create_engine()?;
 
     // Handle command
     match &cli.command {
@@ -133,79 +128,34 @@ async fn main() -> Result<()> {
 }
 
 /// Create an engine based on configuration
-fn create_engine(config_path: &Option<PathBuf>) -> Result<Engine> {
-    // If no config file is provided, use default local state adapter
-    if config_path.is_none() {
-        return Ok(Engine::new());
-    }
-
-    // Read config file
-    let config_path = config_path.as_ref().unwrap();
-    let config_content = fs::read_to_string(config_path).context(format!(
-        "Failed to read config file: {}",
-        config_path.display()
-    ))?;
-
-    // Parse config file
-    let config: serde_yaml::Value = serde_yaml::from_str(&config_content).context(format!(
-        "Failed to parse config file: {}",
-        config_path.display()
-    ))?;
-
-    // Get state management configuration
-    let state_management = config.get("stateManagement").and_then(|v| v.as_mapping());
-    if let Some(state_management) = state_management {
-        // Get backend type
-        let backend = state_management
-            .get(serde_yaml::Value::String("backend".to_string()))
-            .and_then(|v| v.as_str());
-
-        match backend {
-            Some("api") => {
-                // Get API configuration
-                let api_config = state_management
-                    .get(serde_yaml::Value::String("apiConfig".to_string()))
-                    .and_then(|v| v.as_mapping());
-
-                if let Some(api_config) = api_config {
-                    // Get endpoint
-                    let endpoint = api_config
-                        .get(serde_yaml::Value::String("endpoint".to_string()))
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("http://localhost:8080");
-
-                    // Get auth token
-                    let auth_token = api_config
-                        .get(serde_yaml::Value::String("authToken".to_string()))
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("");
-
-                    // Create API state adapter
-                    let state_adapter = Box::new(ApiStateAdapter::new(
-                        endpoint.to_string(),
-                        auth_token.to_string(),
-                    ));
-
-                    return Ok(Engine::with_state_adapter(state_adapter));
-                }
-            }
-            _ => {
-                // Use local state adapter
-                return Ok(Engine::new());
-            }
+fn create_engine() -> Result<Engine> {
+    // Check for environment variables first
+    if let (Some(backend), Some(endpoint), auth_token) = (
+        std::env::var("BUTTERFLOW_STATE_BACKEND").ok(),
+        std::env::var("BUTTERFLOW_API_ENDPOINT").ok(),
+        std::env::var("BUTTERFLOW_API_AUTH_TOKEN")
+            .ok()
+            .unwrap_or_default(),
+    ) {
+        if backend == "cloud" {
+            // Create API state adapter
+            let state_adapter = Box::new(CloudStateAdapter::new(endpoint, auth_token));
+            return Ok(Engine::with_state_adapter(state_adapter));
         }
     }
 
-    // Default to local state adapter
     Ok(Engine::new())
 }
 
 /// Run a workflow
-async fn run_workflow(engine: &Engine, workflow_path: &Path, params: &[String]) -> Result<()> {
+async fn run_workflow(engine: &Engine, workflow_source: &str, params: &[String]) -> Result<()> {
+    // Resolve workflow file and bundle path
+    let (workflow_file_path, bundle_path) = resolve_workflow_source(workflow_source)?;
+
     // Parse workflow file
-    let workflow = utils::parse_workflow_file(workflow_path).context(format!(
+    let workflow = utils::parse_workflow_file(&workflow_file_path).context(format!(
         "Failed to parse workflow file: {}",
-        workflow_path.display()
+        workflow_file_path.display()
     ))?;
 
     // Parse parameters
@@ -213,7 +163,7 @@ async fn run_workflow(engine: &Engine, workflow_path: &Path, params: &[String]) 
 
     // Run workflow
     let workflow_run_id = engine
-        .run_workflow(workflow, params)
+        .run_workflow(workflow, params, Some(bundle_path))
         .await
         .context("Failed to run workflow")?;
 
@@ -260,10 +210,18 @@ async fn run_workflow(engine: &Engine, workflow_path: &Path, params: &[String]) 
                     workflow_run_id
                 );
                 info!(
-                    "Use 'butterflow resume -i {} --trigger-all' to trigger all tasks",
+                    "Run 'butterflow resume -i {} -t <TASK_ID>' to trigger a specific task",
+                    workflow_run_id
+                );
+                info!(
+                    "Run 'butterflow resume -i {} --trigger-all' to trigger all awaiting tasks",
                     workflow_run_id
                 );
                 break;
+            }
+            WorkflowStatus::Running => {
+                // Still running, wait a bit before checking again
+                tokio::time::sleep(std::time::Duration::from_secs(2)).await;
             }
             WorkflowStatus::Canceled => {
                 info!("Workflow was canceled");
@@ -277,6 +235,66 @@ async fn run_workflow(engine: &Engine, workflow_path: &Path, params: &[String]) 
     }
 
     Ok(())
+}
+
+/// Resolves the workflow source string into the actual workflow file path
+/// and the bundle's root directory path.
+fn resolve_workflow_source(source: &str) -> Result<(PathBuf, PathBuf)> {
+    let path = PathBuf::from(source);
+
+    if !path.exists() {
+        // TODO: Add registry lookup logic here in the future
+        return Err(anyhow::anyhow!(
+            "Workflow source path does not exist: {}",
+            source
+        ));
+    }
+
+    if path.is_dir() {
+        let bundle_path = path.canonicalize().context(format!(
+            "Failed to get absolute path for bundle directory: {}",
+            path.display()
+        ))?;
+        // Look for default workflow files within the directory
+        let default_files = [
+            "workflow.yaml",
+            "butterflow.yaml",
+            "workflow.json",
+            "butterflow.json",
+        ];
+        let mut workflow_file_path = None;
+
+        for file_name in default_files.iter() {
+            let potential_path = bundle_path.join(file_name);
+            if potential_path.is_file() {
+                workflow_file_path = Some(potential_path);
+                break;
+            }
+        }
+
+        match workflow_file_path {
+            Some(file) => Ok((file, bundle_path)),
+            None => Err(anyhow::anyhow!(
+                "No default workflow file (e.g., workflow.yaml) found in directory: {}",
+                bundle_path.display()
+            )),
+        }
+    } else if path.is_file() {
+        let workflow_file_path = path.canonicalize().context(format!(
+            "Failed to get absolute path for workflow file: {}",
+            path.display()
+        ))?;
+        let bundle_path = workflow_file_path
+            .parent()
+            .ok_or_else(|| anyhow::anyhow!("Could not get parent directory for workflow file"))?
+            .to_path_buf();
+        Ok((workflow_file_path, bundle_path))
+    } else {
+        Err(anyhow::anyhow!(
+            "Workflow source path is neither a file nor a directory: {}",
+            source
+        ))
+    }
 }
 
 /// Resume a workflow

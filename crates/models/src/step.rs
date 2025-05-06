@@ -14,7 +14,7 @@ pub struct Step {
 
     /// Environment variables specific to this step
     #[serde(default)]
-    #[ts(type = "Record<string, string> | null")]
+    #[ts(optional, as = "Option<HashMap<String, String>>")]
     pub env: Option<HashMap<String, String>>,
 }
 
@@ -29,6 +29,10 @@ pub enum StepAction {
     /// Script to run
     #[serde(rename = "run")]
     RunScript(String),
+
+    /// ast-grep
+    #[serde(rename = "ast-grep")]
+    AstGrep(UseAstGrep),
 }
 
 /// Represents a template use in a step
@@ -39,6 +43,26 @@ pub struct TemplateUse {
 
     /// Inputs to pass to the template
     #[serde(default)]
-    #[ts(type = "Record<string, string>")]
+    #[ts(optional, as = "Option<HashMap<String, String>>")]
     pub inputs: HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
+#[serde(rename_all = "snake_case")]
+pub struct UseAstGrep {
+    /// Glob paths
+    pub paths: Vec<String>,
+
+    /// Query to run
+    pub query: UseAstGrepQuery,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
+#[serde(rename_all = "snake_case")]
+pub enum UseAstGrepQuery {
+    /// Query to run
+    Inline(String),
+
+    /// Path to query
+    File(String),
 }
