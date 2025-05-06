@@ -380,6 +380,18 @@
           "required": [
             "run"
           ]
+        },
+        {
+          "description": "ast-grep",
+          "type": "object",
+          "properties": {
+            "ast-grep": {
+              "$ref": "#/$defs/UseAstGrep"
+            }
+          },
+          "required": [
+            "ast-grep"
+          ]
         }
       ],
       "required": [
@@ -411,9 +423,7 @@
           "default": null,
           "items": {
             "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
+            "additionalProperties": true
           }
         }
       },
@@ -612,6 +622,56 @@
           "description": "Manual trigger (requires explicit triggering)",
           "type": "string",
           "const": "manual"
+        }
+      ]
+    },
+    "UseAstGrep": {
+      "type": "object",
+      "properties": {
+        "paths": {
+          "description": "Glob paths",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "query": {
+          "description": "Query to run",
+          "$ref": "#/$defs/UseAstGrepQuery"
+        }
+      },
+      "required": [
+        "paths",
+        "query"
+      ]
+    },
+    "UseAstGrepQuery": {
+      "oneOf": [
+        {
+          "description": "Query to run",
+          "type": "object",
+          "properties": {
+            "inline": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "inline"
+          ]
+        },
+        {
+          "description": "Path to query",
+          "type": "object",
+          "properties": {
+            "file": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "file"
+          ]
         }
       ]
     },

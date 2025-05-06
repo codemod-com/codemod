@@ -1,15 +1,19 @@
 use std::collections::{HashMap, HashSet};
 
 use log::{debug, warn};
+#[cfg(target_arch = "wasm32")]
 use serde::Serialize;
+#[cfg(target_arch = "wasm32")]
 use serde_wasm_bindgen::{from_value, to_value};
 use uuid::Uuid;
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
 use butterflow_models::node::NodeType;
 use butterflow_models::trigger::TriggerType;
 use butterflow_models::{Error, Result, Strategy, StrategyType, Task, TaskStatus, WorkflowRun};
 
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen(typescript_custom_section)]
 const MATRIX_TASK_CHANGES: &'static str = r#"
 type Uuid = string;
@@ -45,6 +49,10 @@ pub struct RunnableTaskChanges {
     pub runnable_tasks: Vec<Uuid>,
 }
 
+#[cfg(not(target_arch = "wasm32"))]
+pub struct Scheduler {}
+
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub struct Scheduler {}
 
@@ -57,12 +65,16 @@ impl Default for Scheduler {
 
 #[cfg(not(target_arch = "wasm32"))]
 impl Scheduler {
-    /// Calculate initial tasks for all nodes in a workflow (Rust API)
+    pub fn new() -> Self {
+        Self {}
+    }
+
+    /// Calculate initial tasks for all nodes in a workflow
     pub async fn calculate_initial_tasks(&self, workflow_run: &WorkflowRun) -> Result<Vec<Task>> {
         self.calculate_initial_tasks_internal(workflow_run).await
     }
 
-    /// Calculate changes needed for matrix tasks based on current state (Rust API)
+    /// Calculate changes needed for matrix tasks based on current state
     pub async fn calculate_matrix_task_changes(
         &self,
         workflow_run_id: Uuid,
@@ -74,7 +86,7 @@ impl Scheduler {
             .await
     }
 
-    /// Find tasks that can be executed (Rust API)
+    /// Find tasks that can be executed
     pub async fn find_runnable_tasks(
         &self,
         workflow_run: &WorkflowRun,
@@ -84,6 +96,7 @@ impl Scheduler {
     }
 }
 
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 impl Scheduler {
     // Expose constructor to WASM
@@ -176,6 +189,7 @@ impl Scheduler {
     }
 }
 
+// Internal implementation shared by both Rust and WASM APIs
 impl Scheduler {
     async fn calculate_initial_tasks_internal(
         &self,

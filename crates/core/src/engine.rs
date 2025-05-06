@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 use std::fs::File;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use butterflow_models::step::StepAction;
+use butterflow_models::step::{StepAction, UseAstGrep};
 use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use chrono::Utc;
@@ -19,7 +20,12 @@ use butterflow_models::{
     resolve_variables, DiffOperation, Error, FieldDiff, Node, Result, StateDiff, Task, TaskDiff,
     TaskStatus, Workflow, WorkflowRun, WorkflowRunDiff, WorkflowStatus,
 };
-use butterflow_runners::{DirectRunner, DockerRunner, PodmanRunner, Runner};
+use butterflow_runners::direct_runner::DirectRunner;
+#[cfg(feature = "docker")]
+use butterflow_runners::docker_runner::DockerRunner;
+#[cfg(feature = "podman")]
+use butterflow_runners::podman_runner::PodmanRunner;
+use butterflow_runners::Runner;
 use butterflow_state::StateAdapter;
 
 /// Workflow engine
@@ -81,6 +87,7 @@ impl Engine {
         &self,
         workflow: Workflow,
         params: HashMap<String, String>,
+        bundle_path: PathBuf,
     ) -> Result<Uuid> {
         // Validate the workflow
         utils::validate_workflow(&workflow)?;
@@ -92,6 +99,7 @@ impl Engine {
             workflow: workflow.clone(),
             status: WorkflowStatus::Pending,
             params: params.clone(),
+            bundle_path,
             tasks: Vec::new(),
             started_at: Utc::now(),
             ended_at: None,
@@ -790,8 +798,26 @@ impl Engine {
             .unwrap_or(RuntimeType::Direct)
         {
             RuntimeType::Direct => Box::new(DirectRunner::new()),
-            RuntimeType::Docker => Box::new(DockerRunner::new()),
-            RuntimeType::Podman => Box::new(PodmanRunner::new()),
+            RuntimeType::Docker => {
+                #[cfg(feature = "docker")]
+                {
+                    Box::new(DockerRunner::new())
+                }
+                #[cfg(not(feature = "docker"))]
+                {
+                    return Err(Error::UnsupportedRuntime(RuntimeType::Docker));
+                }
+            }
+            RuntimeType::Podman => {
+                #[cfg(feature = "podman")]
+                {
+                    Box::new(PodmanRunner::new())
+                }
+                #[cfg(not(feature = "podman"))]
+                {
+                    return Err(Error::UnsupportedRuntime(RuntimeType::Podman));
+                }
+            }
         };
 
         // Execute each step in the node
@@ -813,6 +839,7 @@ impl Engine {
                     &workflow_run.params,
                     &state,
                     &workflow_run.workflow,
+                    &workflow_run.bundle_path,
                 )
                 .await;
 
@@ -934,11 +961,21 @@ impl Engine {
         params: &HashMap<String, String>,
         state: &HashMap<String, serde_json::Value>,
         workflow: &Workflow,
+        bundle_path: &PathBuf,
     ) -> Result<()> {
         match action {
             StepAction::RunScript(run) => {
-                self.execute_run_script_step(runner, run, step_env, node, task, params, state)
-                    .await
+                self.execute_run_script_step(
+                    runner,
+                    run,
+                    step_env,
+                    node,
+                    task,
+                    params,
+                    state,
+                    bundle_path,
+                )
+                .await
             }
             StepAction::UseTemplate(template_use) => {
                 // Find the template using the passed workflow reference
@@ -964,12 +1001,25 @@ impl Engine {
                         &combined_params,
                         state,
                         workflow,
+                        bundle_path,
                     ))
                     .await?;
                 }
                 Ok(())
             }
+            StepAction::AstGrep(ast_grep) => {
+                self.execute_ast_grep_step(runner, ast_grep, step_env).await
+            }
         }
+    }
+
+    async fn execute_ast_grep_step(
+        &self,
+        _runner: &dyn Runner,
+        _ast_grep: &UseAstGrep,
+        _step_env: &Option<HashMap<String, String>>,
+    ) -> Result<()> {
+        todo!("Implement ast-grep step");
     }
 
     /// Execute a single RunScript step
@@ -983,6 +1033,7 @@ impl Engine {
         task: &Task,
         params: &HashMap<String, String>,
         state: &HashMap<String, serde_json::Value>,
+        bundle_path: &PathBuf,
     ) -> Result<()> {
         // Prepare environment variables
         let mut env = HashMap::new();
@@ -1013,6 +1064,11 @@ impl Engine {
         let temp_dir = std::env::temp_dir();
         let step_outputs_path = temp_dir.join(task.id.to_string());
         File::create(&step_outputs_path)?;
+
+        env.insert(
+            String::from("CODEMOD_PATH"),
+            bundle_path.to_str().unwrap_or("").to_string(),
+        );
 
         env.insert(
             String::from("STATE_OUTPUTS"),

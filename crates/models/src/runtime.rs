@@ -15,6 +15,16 @@ pub enum RuntimeType {
     Podman,
 }
 
+impl std::fmt::Display for RuntimeType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RuntimeType::Direct => write!(f, "direct"),
+            RuntimeType::Docker => write!(f, "docker"),
+            RuntimeType::Podman => write!(f, "podman"),
+        }
+    }
+}
+
 /// Represents a runtime configuration
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 pub struct Runtime {

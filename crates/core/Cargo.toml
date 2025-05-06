@@ -33,3 +33,5 @@ tempfile = "3.8"
 
 [features]
 default = []
+docker = []
+podman = []

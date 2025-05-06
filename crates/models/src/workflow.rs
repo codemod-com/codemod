@@ -2,6 +2,7 @@ use chrono::{DateTime, Utc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::path::PathBuf;
 use uuid::Uuid;
 
 use crate::node::Node;
@@ -63,6 +64,12 @@ pub struct WorkflowRun {
     #[serde(default)]
     #[ts(optional=nullable)]
     pub ended_at: Option<DateTime<Utc>>,
+
+    // This is not persisted, only used during runtime
+    /// The absolute path to the root directory of the workflow bundle
+    #[ts(skip)]
+    #[serde(skip)]
+    pub bundle_path: PathBuf,
 }
 
 /// Status of a workflow run

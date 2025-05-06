@@ -27,9 +27,9 @@ struct Cli {
 enum Commands {
     /// Run a workflow
     Run {
-        /// Path to workflow file
-        #[arg(short, long, value_name = "FILE")]
-        workflow: PathBuf,
+        /// Path to workflow file or directory
+        #[arg(short, long, value_name = "PATH")]
+        workflow: String,
 
         /// Workflow parameters (format: key=value)
         #[arg(long = "param", value_name = "KEY=VALUE")]
@@ -148,11 +148,14 @@ fn create_engine() -> Result<Engine> {
 }
 
 /// Run a workflow
-async fn run_workflow(engine: &Engine, workflow_path: &Path, params: &[String]) -> Result<()> {
+async fn run_workflow(engine: &Engine, workflow_source: &str, params: &[String]) -> Result<()> {
+    // Resolve workflow file and bundle path
+    let (workflow_file_path, bundle_path) = resolve_workflow_source(workflow_source)?;
+
     // Parse workflow file
-    let workflow = utils::parse_workflow_file(workflow_path).context(format!(
+    let workflow = utils::parse_workflow_file(&workflow_file_path).context(format!(
         "Failed to parse workflow file: {}",
-        workflow_path.display()
+        workflow_file_path.display()
     ))?;
 
     // Parse parameters
@@ -160,7 +163,7 @@ async fn run_workflow(engine: &Engine, workflow_path: &Path, params: &[String]) 
 
     // Run workflow
     let workflow_run_id = engine
-        .run_workflow(workflow, params)
+        .run_workflow(workflow, params, bundle_path)
         .await
         .context("Failed to run workflow")?;
 
@@ -207,10 +210,18 @@ async fn run_workflow(engine: &Engine, workflow_path: &Path, params: &[String]) 
                     workflow_run_id
                 );
                 info!(
-                    "Use 'butterflow resume -i {} --trigger-all' to trigger all tasks",
+                    "Run 'butterflow resume -i {} -t <TASK_ID>' to trigger a specific task",
+                    workflow_run_id
+                );
+                info!(
+                    "Run 'butterflow resume -i {} --trigger-all' to trigger all awaiting tasks",
                     workflow_run_id
                 );
                 break;
+            }
+            WorkflowStatus::Running => {
+                // Still running, wait a bit before checking again
+                tokio::time::sleep(std::time::Duration::from_secs(2)).await;
             }
             WorkflowStatus::Canceled => {
                 info!("Workflow was canceled");
@@ -224,6 +235,61 @@ async fn run_workflow(engine: &Engine, workflow_path: &Path, params: &[String]) 
     }
 
     Ok(())
+}
+
+/// Resolves the workflow source string into the actual workflow file path
+/// and the bundle's root directory path.
+fn resolve_workflow_source(source: &str) -> Result<(PathBuf, PathBuf)> {
+    let path = PathBuf::from(source);
+
+    if !path.exists() {
+        // TODO: Add registry lookup logic here in the future
+        return Err(anyhow::anyhow!(
+            "Workflow source path does not exist: {}",
+            source
+        ));
+    }
+
+    if path.is_dir() {
+        let bundle_path = path.canonicalize().context(format!(
+            "Failed to get absolute path for bundle directory: {}",
+            path.display()
+        ))?;
+        // Look for default workflow files within the directory
+        let default_files = ["workflow.yaml", "butterflow.yaml", "workflow.json", "butterflow.json"];
+        let mut workflow_file_path = None;
+
+        for file_name in default_files.iter() {
+            let potential_path = bundle_path.join(file_name);
+            if potential_path.is_file() {
+                workflow_file_path = Some(potential_path);
+                break;
+            }
+        }
+
+        match workflow_file_path {
+            Some(file) => Ok((file, bundle_path)),
+            None => Err(anyhow::anyhow!(
+                "No default workflow file (e.g., workflow.yaml) found in directory: {}",
+                bundle_path.display()
+            )),
+        }
+    } else if path.is_file() {
+        let workflow_file_path = path.canonicalize().context(format!(
+            "Failed to get absolute path for workflow file: {}",
+            path.display()
+        ))?;
+        let bundle_path = workflow_file_path
+            .parent()
+            .ok_or_else(|| anyhow::anyhow!("Could not get parent directory for workflow file"))?
+            .to_path_buf();
+        Ok((workflow_file_path, bundle_path))
+    } else {
+        Err(anyhow::anyhow!(
+            "Workflow source path is neither a file nor a directory: {}",
+            source
+        ))
+    }
 }
 
 /// Resume a workflow

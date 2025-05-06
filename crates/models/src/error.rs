@@ -1,5 +1,7 @@
 use thiserror::Error;
 
+use crate::RuntimeType;
+
 #[derive(Error, Debug)]
 pub enum Error {
     #[error("IO error: {0}")]
@@ -46,4 +48,7 @@ pub enum Error {
 
     #[error("Other error: {0}")]
     Other(String),
+
+    #[error("Unsupported runtime: {0}")]
+    UnsupportedRuntime(RuntimeType),
 }

@@ -25,3 +25,8 @@ chrono = { workspace = true }
 log = { workspace = true }
 env_logger = { workspace = true }
 dirs = "5.0"
+
+[features]
+default = []
+docker = ["butterflow-models/docker", "butterflow-runners/docker"]
+podman = ["butterflow-models/podman", "butterflow-runners/podman"]

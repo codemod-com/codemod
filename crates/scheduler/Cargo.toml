@@ -10,20 +10,20 @@ license.workspace = true
 rust-version.workspace = true
 
 [lib]
-crate-type = ["lib", "cdylib"]
+crate-type = ["cdylib", "lib"]
 
 [dependencies]
-butterflow-models = { path = "../models" }
+butterflow-models = { path = "../models", features = ["docker", "podman"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 uuid = { workspace = true, features = ["v4"] }
 log = { workspace = true }
-wasm-bindgen = "0.2.100"
-serde-wasm-bindgen = "0.6.5"
-wasm-bindgen-futures = "0.4.43"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { workspace = true, features = ["v4", "js"] }
+wasm-bindgen = "0.2.100"
+serde-wasm-bindgen = "0.6.5"
+wasm-bindgen-futures = "0.4.43"
 
 [dev-dependencies]
 tokio = { workspace = true }
