@@ -411,6 +411,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "sid-maddy",
+      "name": "Siddhesh Mhadnak",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10049286?v=4",
+      "profile": "https://github.com/sid-maddy",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
