@@ -73,8 +73,9 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: Install dependencies (Linux only)
-        if: matrix.os == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-22.04' || (matrix.os == 'self-hosted' && matrix.target == 'aarch64-unknown-linux-gnu')
         run: |
+          sudo apt-get update
           sudo apt-get install -y libssl-dev pkg-config
           if [[ ${{ matrix.target }} == *aarch64* ]]; then
             sudo apt-get install -y gcc-aarch64-linux-gnu libssl-dev:aarch64
@@ -245,4 +246,5 @@ jobs:
             x86_64-pc-windows-msvc/*
             i686-pc-windows-msvc/*
             aarch64-pc-windows-msvc/*
+            aarch64-unknown-linux-gnu/*
           generate_release_notes: true
