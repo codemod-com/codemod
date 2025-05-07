@@ -35,6 +35,7 @@
           {
             "group": "OSS & Community",
             "pages": [
+              "deploying-codemods/cli",
               {
                 "group": "Building codemods",
                 "pages": [
@@ -54,14 +55,9 @@
                   "codemod-registry/introduction",
                   "sharing/publishing-codemods"
                 ]
-              },
-              {
-                "group": "Locally Running Codemods",
-                "pages": ["deploying-codemods/cli"]
               }
             ]
           },
-
           {
             "group": "Quick Links",
             "pages": [

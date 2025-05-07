@@ -1,7 +1,6 @@
 ---
 title: "Codemod CLI"
 description: "Get started with using the Codemod command-line interface."
-icon: "terminal"
 ---
 
 The Codemod command-line interface (CLI) allows you to interact with Codemod platform using a terminal or through an automated system.
@@ -34,14 +33,12 @@ yarn global add codemod
 
 ## Build
 
-### `codemod learn`
+### `codemod init`
 
-The `learn` command uses the diff of the latest edited file to automatically build a codemod using [Codemod Studio](/codemod-studio/).
-
-After running this command, if any git diff exists, the Codemod Engine will use the diff as before/after snippets in Codemod Studio.
+Can be used to scaffold a new codemod package.
 
 ```bash
-codemod learn
+codemod init
 ```
 
 ## Share/discover
@@ -75,14 +72,6 @@ This command has special flags available to it that can be combined together to 
     ```
   </Tab>
 </Tabs>
-
-### `codemod init`
-
-Can be used to scaffold a new codemod package.
-
-```bash
-codemod init
-```
 
 ### `codemod publish`
 
