@@ -8,7 +8,7 @@
 
   <p align="center">
     <br />
-    <a href="https://codemod.com/registry/">Registry</a>
+    <a href="https://go.codemod.com/app">Platform</a>
     ·
     <a href="https://codemod.com/community">Community</a>
     ·
@@ -26,9 +26,17 @@ We are making dream migrations a reality for all developers in the world, one fr
 
 ## Documentation
 
-For details on how to use Codemod platform, check out our [documentation](https://go.codemod.com/docs).
+For details on how to use Codemod, check out our [documentation](https://go.codemod.com/docs).
 
-## Quickstart
+## Codemod Platform
+
+Codemod platform helps you plan, automate, orchestrate, and track code migrations in codebases of any size.
+
+To get started, go to [Codemod platform](https://go.codemod.com/app).
+
+## Codemod CLI
+
+### Quickstart
 
 To get started, you can install Codemod CLI:
 
@@ -38,15 +46,15 @@ npm i -g codemod
 
 With Codemod CLI, you can:
 
-### 1. Build codemods
+#### 1. Build codemods
 
-You can easily build codemods using AI by opening a local project, making changes in a file, and running the following command:
+You can easily scaffold and start building codemods by running the following command:
 
 ```
-codemod learn
+codemod init
 ```
 
-### 2. Publish codemods
+#### 2. Publish codemods
 
 You can publish a [compatible](https://go.codemod.com/package-structure) local codemod package to [Codemod Registry](https://codemod.com/registry) with:
 
@@ -54,7 +62,7 @@ You can publish a [compatible](https://go.codemod.com/package-structure) local c
 codemod publish
 ```
 
-### 3. Run codemods
+#### 3. Run codemods
 
 ```
 codemod [codemod name]
