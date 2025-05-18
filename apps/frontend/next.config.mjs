@@ -56,6 +56,7 @@ const config = {
             "../../packages/codemod-utils",
           ),
         },
+        extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
       },
     };
   },
