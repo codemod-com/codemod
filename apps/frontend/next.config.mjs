@@ -23,6 +23,20 @@ const config = {
       }),
     );
 
+    // Add plugin to handle .js extensions in imports from .ts files
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(/\.js$/, (resource) => {
+        // Only apply to internal imports in the codemod-utils package
+        if (
+          resource.context.includes("packages/codemod-utils/src/jscodeshift") &&
+          resource.request.startsWith("./") &&
+          resource.request.endsWith(".js")
+        ) {
+          resource.request = resource.request.replace(/\.js$/, ".ts");
+        }
+      }),
+    );
+
     return {
       ...config,
       module: {
