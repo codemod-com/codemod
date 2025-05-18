@@ -49,11 +49,44 @@ const config = {
           ...config.resolve.alias,
           "@codemod-com/utilities": path.resolve(
             __dirname,
-            "../../packages/utilities",
+            "../../packages/utilities/src",
           ),
           "@codemod.com/codemod-utils": path.resolve(
             __dirname,
-            "../../packages/codemod-utils",
+            "../../packages/codemod-utils/src",
+          ),
+          // Add aliases for each jscodeshift module to handle .js extensions
+          "./jscodeshift/import-declaration.js": path.resolve(
+            __dirname,
+            "../../packages/codemod-utils/src/jscodeshift/import-declaration.ts",
+          ),
+          "./jscodeshift/class.js": path.resolve(
+            __dirname,
+            "../../packages/codemod-utils/src/jscodeshift/class.ts",
+          ),
+          "./jscodeshift/call-expression.js": path.resolve(
+            __dirname,
+            "../../packages/codemod-utils/src/jscodeshift/call-expression.ts",
+          ),
+          "./jscodeshift/react.js": path.resolve(
+            __dirname,
+            "../../packages/codemod-utils/src/jscodeshift/react.ts",
+          ),
+          "./jscodeshift/global.js": path.resolve(
+            __dirname,
+            "../../packages/codemod-utils/src/jscodeshift/global.ts",
+          ),
+          "./jscodeshift/function.js": path.resolve(
+            __dirname,
+            "../../packages/codemod-utils/src/jscodeshift/function.ts",
+          ),
+          "./jscodeshift/tests.js": path.resolve(
+            __dirname,
+            "../../packages/codemod-utils/src/jscodeshift/tests.ts",
+          ),
+          "./jscodeshift/parser.js": path.resolve(
+            __dirname,
+            "../../packages/codemod-utils/src/jscodeshift/parser.ts",
           ),
         },
         extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
