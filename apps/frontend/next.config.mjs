@@ -108,6 +108,15 @@ const config = {
             __dirname,
             "../../packages/codemod-utils/src/jscodeshift/parser.ts",
           ),
+          // Add aliases for utilities package internal imports
+          "../schemata/codemod-config.js": path.resolve(
+            __dirname,
+            "../../packages/utilities/src/schemata/codemod-config.ts",
+          ),
+          "../functions/formatting.js": path.resolve(
+            __dirname,
+            "../../packages/utilities/src/functions/formatting.ts",
+          ),
         },
         extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
       },
