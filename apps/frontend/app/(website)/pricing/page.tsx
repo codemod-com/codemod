@@ -26,7 +26,8 @@ export async function generateMetadata(
 export default async function Contact() {
   const initial = await loadPricingPage("/pricing");
 
-  if (draftMode().isEnabled) {
+  const { isEnabled } = await draftMode();
+  if (isEnabled) {
     return (
       <PricingPagePreview initial={initial} params={{ pathname: "/contact" }} />
     );

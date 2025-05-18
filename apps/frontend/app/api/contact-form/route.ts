@@ -8,7 +8,7 @@ import { type NextRequest, NextResponse } from "next/server";
  * Refer to useFormSubmission.tsx for how this is called.
  */
 export async function POST(req: NextRequest) {
-  const _headers = headers();
+  const _headers = await headers();
 
   const formData = await req.formData();
 

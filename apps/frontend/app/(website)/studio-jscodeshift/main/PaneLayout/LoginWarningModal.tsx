@@ -17,7 +17,8 @@ const LEARN_KEY = "learn";
 
 export const LoginWarningModal = () => {
   const { isSignedIn, isLoaded } = useAuth();
-  const isFromCLI = useSearchParams().get("command") === LEARN_KEY;
+  const searchParams = useSearchParams();
+  const isFromCLI = searchParams.get("command") === LEARN_KEY;
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     setIsOpen(isFromCLI && isLoaded && !isSignedIn);

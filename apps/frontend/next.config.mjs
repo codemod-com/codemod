@@ -61,7 +61,7 @@ const config = {
     },
   },
   experimental: {
-    taint: true,
+    // taint is now stable in Next.js 15
   },
   async redirects() {
     return [
