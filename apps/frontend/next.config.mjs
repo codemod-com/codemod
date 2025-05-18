@@ -76,6 +76,14 @@ const config = {
     },
   },
   transpilePackages: ["@codemod-com/utilities", "@codemod.com/codemod-utils"],
+  modularizeImports: {
+    "@codemod-com/utilities": {
+      transform: "@codemod-com/utilities/{{member}}",
+    },
+    "@codemod.com/codemod-utils": {
+      transform: "@codemod.com/codemod-utils/{{member}}",
+    },
+  },
   experimental: {
     // taint is now stable in Next.js 15
     externalDir: true,
