@@ -30,7 +30,8 @@ export default async function IndexRoute() {
   const pathname = `/`;
   const initial = await loadModularPage(pathname);
 
-  return draftMode().isEnabled ? (
+  const { isEnabled } = await draftMode();
+  return isEnabled ? (
     <PagePreview initial={initial} />
   ) : (
     <>

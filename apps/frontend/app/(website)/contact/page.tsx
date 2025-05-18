@@ -25,7 +25,8 @@ export async function generateMetadata(
 export default async function Contact() {
   const initial = await loadContactPage("/contact");
 
-  if (draftMode().isEnabled) {
+  const { isEnabled } = await draftMode();
+  if (isEnabled) {
     return (
       <ContactPagePreview initial={initial} params={{ pathname: "/contact" }} />
     );

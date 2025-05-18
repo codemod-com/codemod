@@ -1,4 +1,4 @@
-import babylon, { type ParserOptions } from "@babel/parser";
+import { type ParserOptions, parse } from "@babel/parser";
 import type { Parser } from "jscodeshift";
 
 /**
@@ -58,5 +58,5 @@ export const defaultJSCodeshiftOptions: ParserOptions = {
  * @returns {any} - The parsed AST representation of the input source code.
  */
 export const defaultJSCodeshiftParser: Parser = {
-  parse: (source: string) => babylon.parse(source, defaultJSCodeshiftOptions),
+  parse: (source: string) => parse(source, defaultJSCodeshiftOptions),
 };

@@ -9,7 +9,6 @@ import { notFound } from "next/navigation";
 
 const PricingPagePreview = dynamic(
   () => import("@/components/templates/PricingPage/PagePreview"),
-  { ssr: false },
 );
 
 export async function generateMetadata(
@@ -26,7 +25,8 @@ export async function generateMetadata(
 export default async function Contact() {
   const initial = await loadPricingPage("/pricing");
 
-  if (draftMode().isEnabled) {
+  const { isEnabled } = await draftMode();
+  if (isEnabled) {
     return (
       <PricingPagePreview initial={initial} params={{ pathname: "/contact" }} />
     );

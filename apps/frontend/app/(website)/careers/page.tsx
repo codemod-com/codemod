@@ -23,7 +23,8 @@ export default async function Careers() {
 
   if (!initial?.data) return notFound();
 
-  if (draftMode().isEnabled) {
+  const { isEnabled } = await draftMode();
+  if (isEnabled) {
     return (
       <CareersPagePreview initial={initial} params={{ pathname: "/careers" }} />
     );
