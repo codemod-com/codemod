@@ -1,4 +1,8 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import MonacoEditorPlugin from "monaco-editor-webpack-plugin";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const config = {
@@ -43,8 +47,12 @@ const config = {
         },
         alias: {
           ...config.resolve.alias,
-          "@codemod-com/utilities": require.resolve("../../packages/utilities"),
-          "@codemod.com/codemod-utils": require.resolve(
+          "@codemod-com/utilities": path.resolve(
+            __dirname,
+            "../../packages/utilities",
+          ),
+          "@codemod.com/codemod-utils": path.resolve(
+            __dirname,
             "../../packages/codemod-utils",
           ),
         },
