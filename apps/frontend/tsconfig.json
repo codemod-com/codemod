@@ -35,7 +35,9 @@
       "@utils/*": ["./utils/*"],
       "@context/*": ["./app/context/*"],
       "@auth/*": ["./app/auth/*"],
-      "@mocks/*": ["./mocks/*"]
+      "@mocks/*": ["./mocks/*"],
+      "@codemod-com/utilities": ["../../packages/utilities/src"],
+      "@codemod.com/codemod-utils": ["../../packages/codemod-utils/src"]
     },
     "plugins": [{ "name": "next" }]
   },
