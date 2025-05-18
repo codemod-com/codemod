@@ -26,9 +26,10 @@ const config = {
     // Add plugin to handle .js extensions in imports from .ts files
     config.plugins.push(
       new webpack.NormalModuleReplacementPlugin(/\.js$/, (resource) => {
-        // Only apply to internal imports in the codemod-utils package
+        // Apply to internal imports in both packages
         if (
-          resource.context.includes("packages/codemod-utils/src/jscodeshift") &&
+          (resource.context.includes("packages/codemod-utils/src") ||
+            resource.context.includes("packages/utilities/src")) &&
           resource.request.startsWith("./") &&
           resource.request.endsWith(".js")
         ) {
