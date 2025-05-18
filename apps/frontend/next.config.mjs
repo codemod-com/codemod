@@ -41,6 +41,13 @@ const config = {
           stream: false,
           child_process: false,
         },
+        alias: {
+          ...config.resolve.alias,
+          "@codemod-com/utilities": require.resolve("../../packages/utilities"),
+          "@codemod.com/codemod-utils": require.resolve(
+            "../../packages/codemod-utils",
+          ),
+        },
       },
     };
   },
