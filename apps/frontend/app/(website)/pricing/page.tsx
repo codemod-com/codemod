@@ -9,7 +9,6 @@ import { notFound } from "next/navigation";
 
 const PricingPagePreview = dynamic(
   () => import("@/components/templates/PricingPage/PagePreview"),
-  { ssr: false },
 );
 
 export async function generateMetadata(

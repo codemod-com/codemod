@@ -70,6 +70,10 @@ const config = {
             __dirname,
             "../../packages/codemod-utils/src",
           ),
+          "@codemod-com/filemod": path.resolve(
+            __dirname,
+            "../../packages/filemod/src",
+          ),
           // Add aliases for each jscodeshift module to handle .js extensions
           "./jscodeshift/import-declaration.js": path.resolve(
             __dirname,
@@ -124,7 +128,11 @@ const config = {
       fullUrl: true,
     },
   },
-  transpilePackages: ["@codemod-com/utilities", "@codemod.com/codemod-utils"],
+  transpilePackages: [
+    "@codemod-com/utilities",
+    "@codemod.com/codemod-utils",
+    "@codemod-com/filemod",
+  ],
   // Remove modularizeImports as it's causing issues with barrel imports
   experimental: {
     // taint is now stable in Next.js 15
