@@ -60,6 +60,7 @@ const config = {
       fullUrl: true,
     },
   },
+  transpilePackages: ["@codemod-com/utilities", "@codemod.com/codemod-utils"],
   experimental: {
     // taint is now stable in Next.js 15
   },
