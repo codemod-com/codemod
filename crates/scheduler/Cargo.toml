@@ -21,9 +21,9 @@ log = { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { workspace = true, features = ["v4", "js"] }
-wasm-bindgen = "0.2.100"
+wasm-bindgen = { workspace = true }
 serde-wasm-bindgen = "0.6.5"
-wasm-bindgen-futures = "0.4.43"
+wasm-bindgen-futures = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true }
