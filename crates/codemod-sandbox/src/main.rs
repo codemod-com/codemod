@@ -10,6 +10,7 @@ use wasm_bindgen::prelude::*;
 mod ast_grep;
 mod capabilities;
 mod plugins;
+mod transpiler;
 
 use capabilities::CapabilitiesModule;
 use web_tree_sitter_sg::TreeSitter;
@@ -123,14 +124,6 @@ pub async fn run_module(
         capability_module_name,
         invocation_id,
         "fetch",
-        "invoke",
-        "secrets",
-        "output",
-        "describe",
-        "query",
-        "read",
-        "write",
-        "blob",
     );
 
     let mut peer_loader = BuiltinLoader::default();
@@ -140,11 +133,12 @@ pub async fn run_module(
         let entry = js_sys::Array::from(&entries.get(i));
         let peer = entry.get(0).as_string().unwrap_or_default();
         let code = entry.get(1).as_string().unwrap_or_default();
-        if !peer.is_empty() && !code.is_empty() && name != peer {
+        let transpiled = transpiler::transpile(code).unwrap();
+        if !peer.is_empty() && !transpiled.is_empty() && name != peer {
             let peer_js = format!("{}.js", peer);
-            peer_loader.add_module(&peer, code.as_str());
+            peer_loader.add_module(&peer, transpiled.clone());
             resolver.add_module(&peer);
-            peer_loader.add_module(&peer_js, code.as_str());
+            peer_loader.add_module(&peer_js, transpiled);
             resolver.add_module(&peer_js);
         }
     }

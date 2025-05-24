@@ -17,6 +17,23 @@ web-tree-sitter-sg = { git = "https://github.com/mohebifar/tree-sitter-wasm.git"
 thiserror = "1.0.65"
 serde = { version = "1.0.214", features = ["derive"] }
 serde_json = "1.0.130"
+bytes = "1.0"
+swc_core = { version = "26.2", features = [
+  "common",
+  "base",
+  "ecma_ast_serde",
+  "ecma_codegen",
+  "ecma_minifier",
+  "ecma_transforms",
+  "ecma_transforms_typescript",
+  "ecma_transforms_optimization",
+  "ecma_transforms_react",
+  "ecma_parser",
+  "ecma_parser_typescript",
+  "ecma_utils",
+  "ecma_visit",
+] }
+
 
 wasm-bindgen = { workspace = true, optional = true }
 wasm-bindgen-futures = { workspace = true, optional = true }
