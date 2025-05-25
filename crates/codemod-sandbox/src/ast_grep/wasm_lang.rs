@@ -3,7 +3,6 @@ use std::str::FromStr;
 use ast_grep_core::language::Language;
 use ast_grep_core::matcher::{Pattern, PatternBuilder, PatternError};
 use ast_grep_core::source::{Content, Doc, Edit, SgNode};
-use ast_grep_core::tree_sitter::LanguageExt;
 use ast_grep_core::Position;
 use serde::{de, Deserialize, Deserializer};
 use std::borrow::Cow;
@@ -14,7 +13,7 @@ use web_tree_sitter_sg as ts;
 use web_tree_sitter_sg::{Parser, Point, SyntaxNode, Tree};
 
 type TSLanguage = ts::Language;
-type AstGrepTSLanguage = ast_grep_core::tree_sitter::TSLanguage;
+type AstGrepTSLanguage = ts::Language;
 type TSLanguageError = ts::LanguageError;
 
 #[derive(Clone, Copy)]
@@ -110,6 +109,21 @@ static TS_LANG: Mutex<Option<TsLang>> = Mutex::new(None);
 static LANG: Mutex<WasmLang> = Mutex::new(JavaScript);
 
 impl WasmLang {
+    fn get_ts_language(&self) -> AstGrepTSLanguage {
+        let lang_guard = TS_LANG.lock().expect_throw("get language error");
+
+        let wasm_lang = lang_guard
+            .clone()
+            .unwrap_or_else(|| {
+                panic!("Tree-sitter parser not initialized. Call setupParser() first before using any parsing functions.");
+            })
+            .0;
+
+        // SAFETY: TSLanguage (web_tree_sitter_sg::Language) and AstGrepTSLanguage
+        // (ast_grep_core::tree_sitter::TSLanguage) are essentially the same type
+        unsafe { std::mem::transmute(wasm_lang) }
+    }
+
     pub async fn set_current(lang: &str, parser_path: &str) -> Result<(), JsError> {
         let lang = WasmLang::from_str(lang)?;
         let mut curr_lang = LANG.lock().expect_throw("set language error");
@@ -196,23 +210,6 @@ impl Language for WasmLang {
     fn field_to_id(&self, field: &str) -> Option<u16> {
         let lang = self.get_ts_language();
         lang.field_id_for_name(field)
-    }
-}
-
-impl LanguageExt for WasmLang {
-    fn get_ts_language(&self) -> AstGrepTSLanguage {
-        let lang_guard = TS_LANG.lock().expect_throw("get language error");
-
-        let wasm_lang = lang_guard
-            .clone()
-            .unwrap_or_else(|| {
-                panic!("Tree-sitter parser not initialized. Call setupParser() first before using any parsing functions.");
-            })
-            .0;
-
-        // SAFETY: TSLanguage (web_tree_sitter_sg::Language) and AstGrepTSLanguage
-        // (ast_grep_core::tree_sitter::TSLanguage) are essentially the same type
-        unsafe { std::mem::transmute(wasm_lang) }
     }
 }
 
@@ -337,9 +334,8 @@ impl WasmDoc {
         };
         let parser = Parser::new()?;
         let ast_grep_lang = lang.get_ts_language();
-        // Convert back to web_tree_sitter_sg::Language for the parser
-        let ts_lang = unsafe { convert_to_wasm_lang(ast_grep_lang) };
-        parser.set_language(&ts_lang)?;
+
+        parser.set_language(&ast_grep_lang)?;
         let Some(tree) = parser.parse_with_string(&src.into(), None, None)? else {
             return Err(SgWasmError::FailedToParse);
         };
@@ -477,9 +473,9 @@ impl Doc for WasmDoc {
         self.tree.edit(&edit);
         let parser = Parser::new().map_err(|e| e.to_string())?;
         let ast_grep_lang = self.lang.get_ts_language();
-        // Convert back to web_tree_sitter_sg::Language for the parser
-        let ts_lang = unsafe { convert_to_wasm_lang(ast_grep_lang) };
-        parser.set_language(&ts_lang).map_err(|e| e.to_string())?;
+        parser
+            .set_language(&ast_grep_lang)
+            .map_err(|e| e.to_string())?;
         let src = self.source.inner.iter().collect::<String>();
         let parse_ret = parser.parse_with_string(&src.into(), Some(&self.tree), None);
         let Some(tree) = parse_ret.map_err(|e| e.to_string())? else {
@@ -491,13 +487,4 @@ impl Doc for WasmDoc {
     fn get_node_text<'a>(&'a self, node: &Self::Node<'a>) -> Cow<'a, str> {
         Cow::Owned(node.0.text().into())
     }
-}
-
-unsafe fn convert_to_wasm_lang(lang: AstGrepTSLanguage) -> TSLanguage {
-    std::mem::transmute(lang)
-}
-
-#[allow(unused)]
-unsafe fn convert_to_ast_grep_lang(lang: TSLanguage) -> AstGrepTSLanguage {
-    std::mem::transmute(lang)
 }

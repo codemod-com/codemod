@@ -309,11 +309,11 @@ return ret;
 }
 
 function __wbg_adapter_24(arg0, arg1, arg2) {
-wasm.closure672_externref_shim(arg0, arg1, arg2);
+wasm.closure1515_externref_shim(arg0, arg1, arg2);
 }
 
 function __wbg_adapter_131(arg0, arg1, arg2, arg3) {
-wasm.closure694_externref_shim(arg0, arg1, arg2, arg3);
+wasm.closure1537_externref_shim(arg0, arg1, arg2, arg3);
 }
 
  function __wbg_atob_b687cf564517d11e(arg0, arg1, arg2) {
@@ -669,8 +669,8 @@ const ret = false;
 return ret;
 };
 
- function __wbindgen_closure_wrapper2346(arg0, arg1, arg2) {
-const ret = makeMutClosure(arg0, arg1, 673, __wbg_adapter_24);
+ function __wbindgen_closure_wrapper4305(arg0, arg1, arg2) {
+const ret = makeMutClosure(arg0, arg1, 1516, __wbg_adapter_24);
 return ret;
 };
 
@@ -794,7 +794,7 @@ return {
   __wbg_walk_5a10ef3cc747c1a7,
   __wbg_warn_dec08065228a61fc,
   __wbindgen_cb_drop,
-  __wbindgen_closure_wrapper2346,
+  __wbindgen_closure_wrapper4305,
   __wbindgen_debug_string,
   __wbindgen_error_new,
   __wbindgen_init_externref_table,
