@@ -1,0 +1,49 @@
+{
+  "name": "@codemod.com/codemod-sandbox",
+  "version": "0.1.0",
+  "description": "Codemod Javascript Sandbox",
+  "main": "./dist/src/index.js",
+  "exports": {
+    ".": "./dist/src/index.js",
+    "./sandbox.wasm": "./sandbox.wasm",
+    "./web": "./dist/src/web-exports.js",
+    "./node": "./dist/src/node-exports.js"
+  },
+  "types": "dist/src/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "prepack": "pnpm run build",
+    "build:rs": "cd ../.. && cargo run -p codemod-sandbox-build --color=always -- -r",
+    "copy-runtime-files": "pnpm run build:rs && tsx scripts/copy-runtime-files.ts",
+    "generate-type-declarations": "tsx scripts/generate-type-declarations.ts",
+    "build:tsc": "pnpm run generate-type-declarations && tsc --project tsconfig.build.json --pretty",
+    "build:runtime": "pnpm run copy-runtime-files",
+    "build": "pnpm run build:runtime && pnpm run build:tsc",
+    "lint": "pnpm run build:tsc && eslint src/ --ext .ts",
+    "test": "pnpm run build && node --test --enable-source-maps --test-reporter spec dist/tests/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codemod-com/codemod"
+  },
+  "files": [
+    "dist/src",
+    "sandbox.wasm"
+  ],
+  "keywords": [],
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.2",
+    "@types/node": "^22.0.0",
+    "eslint": "^8.57.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@bjorn3/browser_wasi_shim": "^0.4.1",
+    "web-tree-sitter": "^0.25.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "pnpm@10.4.1+sha512.c753b6c3ad7afa13af388fa6d808035a008e30ea9993f58c6663e2bc5ff21679aa834db094987129aa4d488b86df57f7b634981b2f827cdcacc698cc0cfb88af"
+}

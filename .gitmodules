@@ -1,0 +1,3 @@
+[submodule "submodules/llrt"]
+	path = submodules/llrt
+	url = https://github.com/awslabs/llrt

@@ -1,9 +1,19 @@
 [workspace]
-members = ["crates/models", "crates/core", "crates/cli", "crates/runners", "crates/state", "xtask"]
+members = [
+    "crates/models",
+    "crates/core",
+    "crates/cli",
+    "crates/runners",
+    "crates/state",
+    "crates/codemod-sandbox",
+    "crates/codemod-sandbox/build",
+    "submodules/llrt/llrt_modules",
+    "xtask",
+]
 resolver = "2"
 
 [workspace.package]
-authors = ["Butterflow Team"]
+authors = ["Codemod.com"]
 description = "A self-hostable workflow engine for code transformations"
 documentation = "https://docs.rs/butterflow"
 repository = "https://github.com/codemod-com/butterflow"
@@ -27,3 +37,15 @@ regex = "1.10"
 futures = "0.3"
 clap = { version = "4.5", features = ["derive"] }
 butterflow-models = { path = "crates/models", version = "0.1.0" }
+wasm-bindgen = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+wasm-bindgen-cli-support = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+wasm-bindgen-futures = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+js-sys = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+
+[patch.crates-io]
+wasm-bindgen = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+wasm-bindgen-futures = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+wasm-bindgen-macro = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+wasm-bindgen-shared = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+wasm-bindgen-macro-support = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+js-sys = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
