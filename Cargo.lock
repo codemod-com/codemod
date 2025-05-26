@@ -239,6 +239,7 @@ dependencies = [
  "bit-set",
  "regex",
  "thiserror 2.0.12",
+ "tree-sitter",
 ]
 
 [[package]]
@@ -580,6 +581,7 @@ dependencies = [
  "async-trait",
  "butterflow-models",
  "chrono",
+ "js-sys",
  "log",
  "serde",
  "serde-wasm-bindgen",
@@ -813,10 +815,10 @@ dependencies = [
  "js-sys",
  "rquickjs 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
+ "serde-wasm-bindgen",
  "serde_json",
  "swc_core",
  "thiserror 1.0.69",
- "tree-sitter-facade-sg",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-tree-sitter-sg",
@@ -5700,19 +5702,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tree-sitter-facade-sg"
-version = "0.25.4"
-source = "git+https://github.com/mohebifar/tree-sitter-wasm.git?branch=upgrade/0.25.4#570be1b8770be9d57a63fa9b0eeabdb0ef6789df"
-dependencies = [
- "js-sys",
- "tree-sitter",
- "tree-sitter-language",
- "wasm-bindgen",
- "web-sys 0.3.77 (registry+https://github.com/rust-lang/crates.io-index)",
- "web-tree-sitter-sg",
-]
-
-[[package]]
 name = "tree-sitter-language"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6200,7 +6189,7 @@ dependencies = [
 [[package]]
 name = "web-tree-sitter-sg"
 version = "0.25.4"
-source = "git+https://github.com/mohebifar/tree-sitter-wasm.git?branch=upgrade/0.25.4#570be1b8770be9d57a63fa9b0eeabdb0ef6789df"
+source = "git+https://github.com/mohebifar/tree-sitter-wasm.git?branch=upgrade/0.25.4#b2f3e448b0f9ae96bccf4cc273df5fe52e0ea892"
 dependencies = [
  "js-sys",
  "wasm-bindgen",

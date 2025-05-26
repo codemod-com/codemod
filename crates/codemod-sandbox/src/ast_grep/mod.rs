@@ -2,20 +2,22 @@ pub mod sg_node;
 pub mod types;
 pub mod utils;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm")]
 pub mod wasm_lang;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(feature = "wasm")]
+pub mod wasm_utils;
+
+#[cfg(not(feature = "wasm"))]
 use ast_grep_language::{LanguageExt, SupportLang};
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm")]
 use ast_grep_core::language::Language;
 
 use rquickjs::module::{Declarations, Exports, ModuleDef};
 use rquickjs::{prelude::Func, Class, Ctx, Exception, Object, Result};
 
 use sg_node::{SgNodeRjs, SgRootRjs};
-use std::str::FromStr;
 
 mod serde;
 
@@ -56,7 +58,7 @@ fn parse_rjs(ctx: Ctx<'_>, lang: String, src: String) -> Result<SgRootRjs> {
 // Corresponds to the `parseAsync` function in wasm/lib.rs
 // Takes lang: string, src: string -> Promise<SgRoot>
 fn parse_async_rjs(ctx: Ctx<'_>, lang: String, src: String) -> Result<SgRootRjs> {
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(feature = "wasm")]
     {
         if !wasm_lang::WasmLang::is_parser_initialized() {
             return Err(Exception::throw_message(&ctx, "Tree-sitter parser not initialized. Ensure setupParser() has completed before calling parseAsync."));
@@ -70,8 +72,10 @@ fn parse_async_rjs(ctx: Ctx<'_>, lang: String, src: String) -> Result<SgRootRjs>
 
 // Corresponds to the `kind` function in wasm/lib.rs
 // Takes lang: string, kind_name: string -> u16
-#[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm")]
 fn kind_rjs(ctx: Ctx<'_>, lang: String, kind_name: String) -> Result<u16> {
+    use std::str::FromStr;
+
     use wasm_lang::WasmLang;
     let lang = WasmLang::from_str(&lang)
         .map_err(|e| Exception::throw_message(&ctx, &format!("Language error: {}", e)))?;
@@ -80,7 +84,7 @@ fn kind_rjs(ctx: Ctx<'_>, lang: String, kind_name: String) -> Result<u16> {
     Ok(kind)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(feature = "wasm"))]
 fn kind_rjs(ctx: Ctx<'_>, lang: String, kind_name: String) -> Result<u16> {
     let lang = SupportLang::from_str(&lang)
         .map_err(|e| Exception::throw_message(&ctx, &format!("Language error: {}", e)))?;
@@ -91,9 +95,3 @@ fn kind_rjs(ctx: Ctx<'_>, lang: String, kind_name: String) -> Result<u16> {
 
     Ok(kind)
 }
-
-// TODO: Implement other top-level functions:
-// scanFind(src, configs)
-// scanFix(src, configs)
-// dumpASTNodes(lang, src)
-// dumpPattern(lang, query, selector)

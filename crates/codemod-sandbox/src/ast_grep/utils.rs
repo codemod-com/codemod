@@ -1,8 +1,8 @@
-#[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm")]
 use crate::ast_grep::wasm_lang::WasmLang as SupportLang;
 use ast_grep_config::{DeserializeEnv, RuleCore, SerializableRuleCore};
 use ast_grep_core::{matcher::KindMatcher, Pattern};
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(feature = "wasm"))]
 use ast_grep_language::SupportLang;
 use rquickjs::{Ctx, Exception, FromJs, Result, Value};
 use serde_json;

@@ -28,7 +28,7 @@ struct BuildConfig {
     workspace_root: Option<PathBuf>,
 
     /// Enable optimization passes
-    #[arg(long, default_value_t = true)]
+    #[arg(long, default_value_t = false)]
     optimize: bool,
 
     #[arg(skip)]
@@ -248,6 +248,9 @@ impl JsTransformer {
         for symbol in exported_symbols {
             transformed_lines.push(format!("  {},", symbol));
         }
+
+        transformed_lines.push("  Parser: Parser,".to_string());
+        transformed_lines.push("  Language: Language,".to_string());
 
         transformed_lines.push("};".to_string());
         transformed_lines.push("}".to_string());

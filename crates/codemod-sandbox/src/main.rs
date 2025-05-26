@@ -1,4 +1,4 @@
-use ast_grep::wasm_lang::WasmLang;
+use js_sys::Function;
 use rquickjs::{
     async_with,
     loader::{BuiltinLoader, BuiltinResolver, ModuleLoader},
@@ -7,6 +7,22 @@ use rquickjs::{
 use thiserror::Error;
 use wasm_bindgen::prelude::*;
 
+#[cfg(feature = "wasm")]
+use ast_grep::wasm_lang::WasmDoc;
+#[cfg(feature = "wasm")]
+use ast_grep::wasm_lang::WasmLang;
+#[cfg(feature = "wasm")]
+use ast_grep::wasm_utils::{
+    convert_to_debug_node, dump_pattern_impl, try_get_rule_config, WasmMatch,
+};
+#[cfg(feature = "wasm")]
+use ast_grep_config::CombinedScan;
+#[cfg(feature = "wasm")]
+use ast_grep_core::AstGrep;
+#[cfg(feature = "wasm")]
+use std::collections::HashMap;
+
+#[cfg(feature = "wasm")]
 mod ast_grep;
 mod capabilities;
 mod plugins;
@@ -45,8 +61,10 @@ enum Error {
 type Result<T> = std::result::Result<T, Error>;
 
 #[wasm_bindgen(js_name = initializeTreeSitter)]
-pub async fn initialize_tree_sitter() -> std::result::Result<(), JsError> {
-    TreeSitter::init().await
+pub async fn initialize_tree_sitter(
+    locate_file: Option<Function>,
+) -> std::result::Result<(), JsError> {
+    TreeSitter::init(locate_file).await
 }
 
 #[wasm_bindgen(js_name = setupParser)]
@@ -210,6 +228,95 @@ pub async fn run_module(
     rt.idle().await;
 
     Ok(result?)
+}
+
+#[cfg(feature = "wasm")]
+#[wasm_bindgen(js_name = scanFind)]
+pub fn scan_find(src: String, configs: Vec<JsValue>) -> std::result::Result<JsValue, JsError> {
+    let lang = WasmLang::get_current();
+    let mut rules = vec![];
+    for config in configs {
+        let finder = try_get_rule_config(config)?;
+        rules.push(finder);
+    }
+    let combined = CombinedScan::new(rules.iter().collect());
+    let doc = WasmDoc::try_new(src.clone(), lang).map_err(|e| JsError::new(&e.to_string()))?;
+    let root = AstGrep::doc(doc);
+    let ret: HashMap<_, _> = combined
+        .scan(&root, false)
+        .matches
+        .into_iter()
+        .map(|(rule, matches)| {
+            let matches: Vec<_> = matches
+                .into_iter()
+                .map(|m| WasmMatch::from_match(m, rule))
+                .collect();
+            (rule.id.clone(), matches)
+        })
+        .collect();
+    let ret = serde_wasm_bindgen::to_value(&ret).map_err(|e| JsError::new(&e.to_string()))?;
+    Ok(ret)
+}
+
+#[cfg(feature = "wasm")]
+#[wasm_bindgen(js_name = scanFix)]
+pub fn scan_fix(src: String, configs: Vec<JsValue>) -> std::result::Result<String, JsError> {
+    let lang = WasmLang::get_current();
+    let mut rules = vec![];
+    for config in configs {
+        let finder = try_get_rule_config(config)?;
+        rules.push(finder);
+    }
+    let combined = CombinedScan::new(rules.iter().collect());
+    let doc = WasmDoc::try_new(src.clone(), lang).map_err(|e| JsError::new(&e.to_string()))?;
+    let root = AstGrep::doc(doc);
+    let diffs = combined.scan(&root, true).diffs;
+    if diffs.is_empty() {
+        return Ok(src);
+    }
+    let mut start = 0;
+    let src: Vec<_> = src.chars().collect();
+    let mut new_content = Vec::<char>::new();
+    for (rule, nm) in diffs {
+        let range = nm.range();
+        if start > range.start {
+            continue;
+        }
+        let fixer = rule
+            .get_fixer()
+            .map_err(|e| JsError::new(&e.to_string()))?
+            .expect("rule returned by diff must have fixer");
+        let edit = nm.make_edit(&rule.matcher, &fixer);
+        new_content.extend(&src[start..edit.position]);
+        new_content.extend(&edit.inserted_text);
+        start = edit.position + edit.deleted_length;
+    }
+    // add trailing statements
+    new_content.extend(&src[start..]);
+    Ok(new_content.into_iter().collect())
+}
+
+#[cfg(feature = "wasm")]
+#[wasm_bindgen(js_name = dumpASTNodes)]
+pub fn dump_ast_nodes(src: String) -> std::result::Result<JsValue, JsError> {
+    let lang = WasmLang::get_current();
+    let doc = WasmDoc::try_new(src, lang).map_err(|e| JsError::new(&e.to_string()))?;
+    let root = AstGrep::doc(doc);
+    let debug_node = convert_to_debug_node(root.root());
+    let ret =
+        serde_wasm_bindgen::to_value(&debug_node).map_err(|e| JsError::new(&e.to_string()))?;
+    Ok(ret)
+}
+
+#[cfg(feature = "wasm")]
+#[wasm_bindgen(js_name = dumpPattern)]
+pub fn dump_pattern(
+    src: String,
+    selector: Option<String>,
+) -> std::result::Result<JsValue, JsError> {
+    let dumped = dump_pattern_impl(src, selector)?;
+    let ret = serde_wasm_bindgen::to_value(&dumped).map_err(|e| JsError::new(&e.to_string()))?;
+    Ok(ret)
 }
 
 #[wasm_bindgen(main)]

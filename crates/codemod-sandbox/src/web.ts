@@ -18,6 +18,17 @@ class WebSandbox implements Sandbox {
     this.sandboxInstance = this.initializeSandbox();
   }
 
+  async getWasmExports() {
+    const result = await this.sandboxInstance;
+
+    return {
+      scanFind: result.scanFind,
+      scanFix: result.scanFix,
+      dumpASTNodes: result.dumpASTNodes,
+      dumpPattern: result.dumpPattern,
+    };
+  }
+
   private async initializeSandbox() {
     const wasiRuntime = new WASI(
       [],
@@ -43,6 +54,15 @@ class WebSandbox implements Sandbox {
     );
 
     sandboxFactory.__wbg_set_wasm(instance.exports);
+
+    if (typeof sandboxFactory.__wbindgen_init_externref_table === "function") {
+      sandboxFactory.__wbindgen_init_externref_table();
+    } else {
+      console.warn(
+        "Heap system detected - ensure factory.js has proper heap setup"
+      );
+    }
+
     // @ts-expect-error 2739
     wasiRuntime.start({ exports: instance.exports });
     return sandboxFactory;
@@ -50,7 +70,7 @@ class WebSandbox implements Sandbox {
 
   async initializeTreeSitter() {
     const sandbox = await this.sandboxInstance;
-    await sandbox.initializeTreeSitter();
+    return sandbox.Parser.init();
   }
 
   async setupParser(lang: string, path: string) {

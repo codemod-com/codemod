@@ -43,7 +43,6 @@ wasm-bindgen-futures = { git = "https://github.com/mohebifar/wasm-bindgen.git", 
 js-sys = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
 
 [patch.crates-io]
-tree-sitter = { git = "https://github.com/mohebifar/tree-sitter-wasm.git", package = "tree-sitter-facade-sg", branch = "upgrade/0.25.4" }
 wasm-bindgen = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
 wasm-bindgen-futures = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
 wasm-bindgen-macro = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }

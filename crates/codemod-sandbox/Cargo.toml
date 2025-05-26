@@ -9,14 +9,9 @@ rquickjs = { version = "0.9.0", default-features = false, features = [
   "futures",
   "macro",
 ] }
-
-tree-sitter-facade-sg = "0.25.3"
-
-web-tree-sitter-sg = { git = "https://github.com/mohebifar/tree-sitter-wasm.git", branch = "upgrade/0.25.4" }
-
 thiserror = "1.0.65"
-serde = { version = "1.0.214", features = ["derive"] }
-serde_json = "1.0.130"
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 bytes = "1.0"
 swc_core = { version = "26.2", features = [
   "common",
@@ -33,27 +28,23 @@ swc_core = { version = "26.2", features = [
   "ecma_utils",
   "ecma_visit",
 ] }
-
-
 wasm-bindgen = { workspace = true, optional = true }
 wasm-bindgen-futures = { workspace = true, optional = true }
 js-sys = { workspace = true, optional = true }
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-# Native dependencies only - use native ast-grep
-# ast-grep-core = { version = "0.38.2", default-features = false }
-# ast-grep-config = { version = "0.38.2" }
-# ast-grep-language = { version = "0.38.2" }
-
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-# WASM dependencies - for browser environments
-ast-grep-core = { version = "0.38.2", default-features = false }
-ast-grep-config = { version = "0.38.2", default-features = false}
-wasm-bindgen = { workspace = true }
-wasm-bindgen-futures = { workspace = true }
-js-sys = { workspace = true }
 web-tree-sitter-sg = { git = "https://github.com/mohebifar/tree-sitter-wasm.git", branch = "upgrade/0.25.4", optional = true }
+serde-wasm-bindgen = { version = "0.6", optional = true }
+ast-grep-core = { version = "0.38.2", default-features = false, optional = true }
+ast-grep-config = { version = "0.38.2", default-features = false, optional = true }
 
 [features]
 default = []
-wasm = ["web-tree-sitter-sg", "wasm-bindgen", "wasm-bindgen-futures", "js-sys"]
+native = ["ast-grep-core/tree-sitter", "ast-grep-config/tree-sitter"]
+wasm = [
+  "ast-grep-core",
+  "ast-grep-config",
+  "web-tree-sitter-sg",
+  "wasm-bindgen",
+  "wasm-bindgen-futures",
+  "js-sys",
+  "serde-wasm-bindgen",
+]

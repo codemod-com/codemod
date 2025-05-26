@@ -21,24 +21,28 @@ async function loadWasmRuntime(): Promise<Buffer> {
 
 class NodeSandbox implements Sandbox {
   private readonly runtimeBuffer: Promise<Buffer>;
+  private sandbox: ReturnType<typeof factory>;
 
-  constructor() {
-    this.runtimeBuffer = loadWasmRuntime();
+  constructor(buffer?: Buffer) {
+    this.runtimeBuffer = buffer ? Promise.resolve(buffer) : loadWasmRuntime();
   }
 
-  async runModule(
-    sessionId: UUID,
-    operation: "default" | "describe",
-    moduleRegistry: ModuleSpec,
-    moduleName: string,
-    moduleInputs: Record<string, unknown>
-  ) {
-    const wasmBytes = await this.runtimeBuffer;
-    const moduleCode = moduleRegistry[moduleName];
+  async initializeTreeSitter(locateFile: (path: string) => string) {
+    const instance = await this.getWasmInstance();
+    await instance.Parser.init({ locateFile });
+  }
 
-    if (!moduleCode) {
-      return { $error: `Unable to find module "${moduleName}"` };
+  async setupParser(lang: string, path: string) {
+    const instance = await this.getWasmInstance();
+    return instance.setupParser(lang, path);
+  }
+
+  private async getWasmInstance() {
+    if (this.sandbox) {
+      return this.sandbox;
     }
+
+    const wasmBytes = await this.runtimeBuffer;
 
     const wasiInstance = new WASI(
       [],
@@ -64,7 +68,46 @@ class NodeSandbox implements Sandbox {
     // @ts-expect-error 2739
     wasiInstance.start({ exports: instance.exports });
 
-    const executionResult = await sandboxFactory.run_module(
+    if (typeof sandboxFactory.__wbindgen_init_externref_table === "function") {
+      sandboxFactory.__wbindgen_init_externref_table();
+    } else {
+      console.warn(
+        "Heap system detected - ensure factory.js has proper heap setup"
+      );
+    }
+
+    this.sandbox = sandboxFactory;
+
+    return this.sandbox;
+  }
+
+  async getWasmExports() {
+    const instance = await this.getWasmInstance();
+
+    return {
+      scanFind: instance.scanFind,
+      scanFix: instance.scanFix,
+      dumpASTNodes: instance.dumpASTNodes,
+      dumpPattern: instance.dumpPattern,
+    };
+  }
+
+  async runModule(
+    sessionId: UUID,
+    operation: "default" | "describe",
+    moduleRegistry: ModuleSpec,
+    moduleName: string,
+    moduleInputs: Record<string, unknown>
+  ) {
+    const moduleCode = moduleRegistry[moduleName];
+
+    if (!moduleCode) {
+      return { $error: `Unable to find module "${moduleName}"` };
+    }
+
+    const instance = await this.getWasmInstance();
+
+    const executionResult = await instance.run_module(
       sessionId,
       operation,
       moduleName,

@@ -19,11 +19,12 @@ serde_json = { workspace = true }
 uuid = { workspace = true, features = ["v4"] }
 log = { workspace = true }
 
-[target.'cfg(target_arch = "wasm32")'.dependencies]
+[target.'cfg(feature = "wasm")'.dependencies]
 uuid = { workspace = true, features = ["v4", "js"] }
 wasm-bindgen = { workspace = true }
 serde-wasm-bindgen = "0.6.5"
 wasm-bindgen-futures = { workspace = true }
+js-sys = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true }

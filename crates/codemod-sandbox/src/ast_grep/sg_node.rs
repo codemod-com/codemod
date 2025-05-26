@@ -1,10 +1,10 @@
-#[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm")]
 use crate::ast_grep::wasm_lang::WasmDoc;
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(feature = "wasm"))]
 use ast_grep_core::tree_sitter::StrDoc as TreeSitterStrDoc;
 use ast_grep_core::{AstGrep, Node, NodeMatch};
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(feature = "wasm"))]
 use ast_grep_language::SupportLang;
 
 use rquickjs::{class::Trace, methods, Ctx, Exception, JsLifetime, Result};
@@ -16,9 +16,9 @@ use crate::ast_grep::types::JsEdit;
 use crate::ast_grep::types::JsNodeRange;
 use crate::ast_grep::utils::{convert_matcher, JsMatcherRjs};
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(feature = "wasm"))]
 type StrDoc = TreeSitterStrDoc<SupportLang>;
-#[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm")]
 type StrDoc = WasmDoc;
 
 // No manual Trace for PhantomData - orphan rule violation
@@ -67,7 +67,7 @@ impl<'js> SgRootRjs<'js> {
 
 impl<'js> SgRootRjs<'js> {
     pub fn try_new(lang_str: String, src: String) -> std::result::Result<Self, String> {
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(feature = "wasm")]
         {
             if !crate::ast_grep::wasm_lang::WasmLang::is_parser_initialized() {
                 return Err(
@@ -87,7 +87,7 @@ impl<'js> SgRootRjs<'js> {
             })
         }
 
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(feature = "wasm"))]
         {
             let lang = SupportLang::from_str(&lang_str)
                 .map_err(|e| format!("Unsupported language: {}. Error: {}", lang_str, e))?;

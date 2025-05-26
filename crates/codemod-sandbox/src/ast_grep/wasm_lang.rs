@@ -151,13 +151,13 @@ async fn setup_parser(parser_path: &str) -> Result<(), SgWasmError> {
     Ok(())
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm")]
 async fn get_lang(parser_path: &str) -> Result<TSLanguage, SgWasmError> {
     let lang = TSLanguage::load_path(parser_path).await?;
     Ok(lang)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(feature = "wasm"))]
 async fn get_lang(_path: &str) -> Result<TSLanguage, SgWasmError> {
     unreachable!()
 }
