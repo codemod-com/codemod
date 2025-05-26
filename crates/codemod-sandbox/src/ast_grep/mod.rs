@@ -21,6 +21,7 @@ use sg_node::{SgNodeRjs, SgRootRjs};
 
 mod serde;
 
+#[allow(dead_code)]
 pub struct AstGrepModule;
 
 impl ModuleDef for AstGrepModule {
@@ -48,15 +49,11 @@ impl ModuleDef for AstGrepModule {
     }
 }
 
-// Corresponds to the `parse` function in wasm/lib.rs
-// Takes lang: string, src: string -> SgRoot
 fn parse_rjs(ctx: Ctx<'_>, lang: String, src: String) -> Result<SgRootRjs> {
     SgRootRjs::try_new(lang, src)
         .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {}", e)))
 }
 
-// Corresponds to the `parseAsync` function in wasm/lib.rs
-// Takes lang: string, src: string -> Promise<SgRoot>
 fn parse_async_rjs(ctx: Ctx<'_>, lang: String, src: String) -> Result<SgRootRjs> {
     #[cfg(feature = "wasm")]
     {
@@ -86,6 +83,8 @@ fn kind_rjs(ctx: Ctx<'_>, lang: String, kind_name: String) -> Result<u16> {
 
 #[cfg(not(feature = "wasm"))]
 fn kind_rjs(ctx: Ctx<'_>, lang: String, kind_name: String) -> Result<u16> {
+    use std::str::FromStr;
+
     let lang = SupportLang::from_str(&lang)
         .map_err(|e| Exception::throw_message(&ctx, &format!("Language error: {}", e)))?;
 

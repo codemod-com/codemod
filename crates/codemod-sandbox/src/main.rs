@@ -1,323 +1,325 @@
-use js_sys::Function;
-use rquickjs::{
-    async_with,
-    loader::{BuiltinLoader, BuiltinResolver, ModuleLoader},
-    CatchResultExt,
-};
-use thiserror::Error;
-use wasm_bindgen::prelude::*;
-
-#[cfg(feature = "wasm")]
-use ast_grep::wasm_lang::WasmDoc;
-#[cfg(feature = "wasm")]
-use ast_grep::wasm_lang::WasmLang;
-#[cfg(feature = "wasm")]
-use ast_grep::wasm_utils::{
-    convert_to_debug_node, dump_pattern_impl, try_get_rule_config, WasmMatch,
-};
-#[cfg(feature = "wasm")]
-use ast_grep_config::CombinedScan;
-#[cfg(feature = "wasm")]
-use ast_grep_core::AstGrep;
-#[cfg(feature = "wasm")]
-use std::collections::HashMap;
-
-#[cfg(feature = "wasm")]
 mod ast_grep;
 mod capabilities;
 mod plugins;
 mod transpiler;
 
-use capabilities::CapabilitiesModule;
-use web_tree_sitter_sg::TreeSitter;
-
-#[derive(Debug, Error)]
-enum Error {
-    #[error("Value could not be stringified to JSON")]
-    NotStringifiable,
-
-    #[error("A QuickJS error occured: {0}")]
-    QuickJS(#[from] rquickjs::Error),
-
-    #[error("Error loading module: {0}")]
-    Loading(String),
-
-    #[error("Error evaluating module: {0}")]
-    Evaluating(String),
-
-    #[error("Error getting default export: {0}")]
-    GettingDefaultExport(String),
-
-    #[error("Error getting `default` function: {0}")]
-    GettintDefaultFunction(String),
-
-    #[error("Error parsing input values: {0}")]
-    ParsingInputValues(String),
-
-    #[error("{0}")]
-    CallingModuleFunction(String),
-}
-
-type Result<T> = std::result::Result<T, Error>;
-
-#[wasm_bindgen(js_name = initializeTreeSitter)]
-pub async fn initialize_tree_sitter(
-    locate_file: Option<Function>,
-) -> std::result::Result<(), JsError> {
-    TreeSitter::init(locate_file).await
-}
-
-#[wasm_bindgen(js_name = setupParser)]
-pub async fn setup_parser(
-    lang_name: String,
-    parser_path: String,
-) -> std::result::Result<(), JsError> {
-    WasmLang::set_current(&lang_name, &parser_path).await
-}
-
-#[wasm_bindgen]
-pub fn eval_code(code: String) -> std::result::Result<String, JsError> {
-    let rt = rquickjs::Runtime::new()?;
-    let ctx = rquickjs::Context::full(&rt)?;
-    let result: Result<String> = ctx.with(|ctx| {
-        let result_obj: rquickjs::Value = ctx.eval(code.as_str())?;
-        let Some(result_str) = ctx.json_stringify(result_obj)? else {
-            return Err(Error::NotStringifiable);
-        };
-        Ok(result_str.to_string()?)
-    });
-    Ok(result?)
-}
-
-async fn maybe_promise<'js>(
-    result_obj: rquickjs::Value<'js>,
-) -> rquickjs::Result<rquickjs::Value<'js>> {
-    let resolved_obj: rquickjs::Value = if result_obj.is_promise() {
-        let promise = result_obj.as_promise().unwrap().clone();
-        let ctx = result_obj.ctx();
-        while ctx.execute_pending_job() {}
-        let result = promise.into_future::<rquickjs::Value<'js>>().await?;
-        result
-    } else {
-        result_obj.clone()
-    };
-    Ok(resolved_obj)
-}
-
-macro_rules! add_capability_modules {
-    ($resolver:expr, $loader:expr, $module_name:expr, $invocation_id:expr, $($capability:expr),+ $(,)?) => {
-        $(
-            $loader.add_module(
-                concat!("@", $capability),
-                format!(
-                    "import {{ {} }} from \"{}\";\nexport default function(inputs) {{ return {}(\"{}\", inputs); }}\n",
-                    $capability,
-                    $module_name,
-                    $capability,
-                    $invocation_id
-                )
-            );
-            $resolver.add_module(concat!("@", $capability));
-        )+
-    };
-}
-
-#[wasm_bindgen]
-pub async fn run_module(
-    invocation_id: String,
-    method: String,
-    name: String,
-    modules: JsValue,
-    code: String,
-    json: String,
-) -> std::result::Result<String, JsError> {
-    let mut resolver = BuiltinResolver::default();
-
-    let capability_module_name = format!("bb-{}", invocation_id);
-
-    let mut capabilities_loader = BuiltinLoader::default();
-    add_capability_modules!(
-        resolver,
-        capabilities_loader,
-        capability_module_name,
-        invocation_id,
-        "fetch",
-    );
-
-    let mut peer_loader = BuiltinLoader::default();
-    let object = js_sys::Object::from(modules);
-    let entries = js_sys::Object::entries(&object);
-    for i in 0..entries.length() {
-        let entry = js_sys::Array::from(&entries.get(i));
-        let peer = entry.get(0).as_string().unwrap_or_default();
-        let code = entry.get(1).as_string().unwrap_or_default();
-        let transpiled = transpiler::transpile(code).unwrap();
-        if !peer.is_empty() && !transpiled.is_empty() && name != peer {
-            let peer_js = format!("{}.js", peer);
-            peer_loader.add_module(&peer, transpiled.clone());
-            resolver.add_module(&peer);
-            peer_loader.add_module(&peer_js, transpiled);
-            resolver.add_module(&peer_js);
-        }
-    }
-    resolver.add_module(capability_module_name.clone());
-
-    // Register ast_grep module
-    resolver.add_module("ast-grep");
-
-    let loader = (
-        capabilities_loader,
-        peer_loader,
-        ModuleLoader::default()
-            .with_module(capability_module_name.clone(), CapabilitiesModule)
-            .with_module("ast-grep", ast_grep::AstGrepModule),
-    );
-
-    let rt = rquickjs::AsyncRuntime::new()?;
-    let ctx = rquickjs::AsyncContext::full(&rt).await?;
-
-    ctx.with(|ctx| plugins::console::init(&ctx)).await?;
-    ctx.with(|ctx| plugins::atob::init(&ctx)).await?;
-
-    rt.set_loader(resolver, loader).await;
-
-    let result = async_with!(ctx => |ctx| {
-
-        // Load the module.
-        let module = rquickjs::Module::declare(ctx.clone(), name, code)
-            .catch(&ctx)
-            .map_err(|e| Error::Loading(e.to_string()))?;
-
-        // Evaluate module.
-        let (evaluated, _) = module
-            .eval()
-            .catch(&ctx)
-            .map_err(|e| Error::Evaluating(e.to_string()))?;
-        while ctx.execute_pending_job() {}
-
-        // Get the default export.
-        let namespace = evaluated
-            .namespace()
-            .catch(&ctx)
-            .map_err(|e| Error::GettingDefaultExport(e.to_string()))?;
-
-        let func = namespace
-            .get::<_, rquickjs::Function>(method)
-            .catch(&ctx)
-            .map_err(|e| Error::GettintDefaultFunction(e.to_string()))?;
-
-        let inputs = ctx
-            .json_parse(json)
-            .catch(&ctx)
-            .map_err(|e| Error::ParsingInputValues(e.to_string()))?;
-
-        // Call it and return value.
-        let result_obj: rquickjs::Value = maybe_promise(
-            func.call((inputs,)).catch(&ctx)
-            .map_err(|e| Error::CallingModuleFunction(e.to_string()))?
-        ).await.catch(&ctx)
-        .map_err(|e| Error::CallingModuleFunction(e.to_string()))?;
-
-        let Some(result_str) = ctx.json_stringify(result_obj)? else {
-            return Err(Error::NotStringifiable);
-        };
-        Ok(result_str.to_string()?)
-    })
-    .await;
-
-    rt.idle().await;
-
-    Ok(result?)
-}
-
 #[cfg(feature = "wasm")]
-#[wasm_bindgen(js_name = scanFind)]
-pub fn scan_find(src: String, configs: Vec<JsValue>) -> std::result::Result<JsValue, JsError> {
-    let lang = WasmLang::get_current();
-    let mut rules = vec![];
-    for config in configs {
-        let finder = try_get_rule_config(config)?;
-        rules.push(finder);
+mod wasm_main {
+    use js_sys::Function;
+    use rquickjs::{
+        async_with,
+        loader::{BuiltinLoader, BuiltinResolver, ModuleLoader},
+        CatchResultExt,
+    };
+    use thiserror::Error;
+    use wasm_bindgen::prelude::*;
+
+    use crate::ast_grep::wasm_lang::{WasmDoc, WasmLang};
+    use crate::ast_grep::wasm_utils::{
+        convert_to_debug_node, dump_pattern_impl, try_get_rule_config, WasmMatch,
+    };
+    use crate::ast_grep::AstGrepModule;
+    use crate::capabilities::CapabilitiesModule;
+    use crate::plugins;
+    use crate::transpiler;
+    use ast_grep_config::CombinedScan;
+    use ast_grep_core::AstGrep;
+
+    use std::collections::HashMap;
+
+    use web_tree_sitter_sg::TreeSitter;
+
+    #[derive(Debug, Error)]
+    enum Error {
+        #[error("Value could not be stringified to JSON")]
+        NotStringifiable,
+
+        #[error("A QuickJS error occured: {0}")]
+        QuickJS(#[from] rquickjs::Error),
+
+        #[error("Error loading module: {0}")]
+        Loading(String),
+
+        #[error("Error evaluating module: {0}")]
+        Evaluating(String),
+
+        #[error("Error getting default export: {0}")]
+        GettingDefaultExport(String),
+
+        #[error("Error getting `default` function: {0}")]
+        GettintDefaultFunction(String),
+
+        #[error("Error parsing input values: {0}")]
+        ParsingInputValues(String),
+
+        #[error("{0}")]
+        CallingModuleFunction(String),
     }
-    let combined = CombinedScan::new(rules.iter().collect());
-    let doc = WasmDoc::try_new(src.clone(), lang).map_err(|e| JsError::new(&e.to_string()))?;
-    let root = AstGrep::doc(doc);
-    let ret: HashMap<_, _> = combined
-        .scan(&root, false)
-        .matches
-        .into_iter()
-        .map(|(rule, matches)| {
-            let matches: Vec<_> = matches
-                .into_iter()
-                .map(|m| WasmMatch::from_match(m, rule))
-                .collect();
-            (rule.id.clone(), matches)
+
+    type Result<T> = std::result::Result<T, Error>;
+
+    #[wasm_bindgen(js_name = initializeTreeSitter)]
+    pub async fn initialize_tree_sitter(
+        locate_file: Option<Function>,
+    ) -> std::result::Result<(), JsError> {
+        TreeSitter::init(locate_file).await
+    }
+
+    #[wasm_bindgen(js_name = setupParser)]
+    pub async fn setup_parser(
+        lang_name: String,
+        parser_path: String,
+    ) -> std::result::Result<(), JsError> {
+        WasmLang::set_current(&lang_name, &parser_path).await
+    }
+
+    #[wasm_bindgen]
+    pub fn eval_code(code: String) -> std::result::Result<String, JsError> {
+        let rt = rquickjs::Runtime::new()?;
+        let ctx = rquickjs::Context::full(&rt)?;
+        let result: Result<String> = ctx.with(|ctx| {
+            let result_obj: rquickjs::Value = ctx.eval(code.as_str())?;
+            let Some(result_str) = ctx.json_stringify(result_obj)? else {
+                return Err(Error::NotStringifiable);
+            };
+            Ok(result_str.to_string()?)
+        });
+        Ok(result?)
+    }
+
+    async fn maybe_promise<'js>(
+        result_obj: rquickjs::Value<'js>,
+    ) -> rquickjs::Result<rquickjs::Value<'js>> {
+        let resolved_obj: rquickjs::Value = if result_obj.is_promise() {
+            let promise = result_obj.as_promise().unwrap().clone();
+            let ctx = result_obj.ctx();
+            while ctx.execute_pending_job() {}
+            let result = promise.into_future::<rquickjs::Value<'js>>().await?;
+            result
+        } else {
+            result_obj.clone()
+        };
+        Ok(resolved_obj)
+    }
+
+    macro_rules! add_capability_modules {
+        ($resolver:expr, $loader:expr, $module_name:expr, $invocation_id:expr, $($capability:expr),+ $(,)?) => {
+            $(
+                $loader.add_module(
+                    concat!("@", $capability),
+                    format!(
+                        "import {{ {} }} from \"{}\";\nexport default function(inputs) {{ return {}(\"{}\", inputs); }}\n",
+                        $capability,
+                        $module_name,
+                        $capability,
+                        $invocation_id
+                    )
+                );
+                $resolver.add_module(concat!("@", $capability));
+            )+
+        };
+    }
+
+    #[wasm_bindgen]
+    pub async fn run_module(
+        invocation_id: String,
+        method: String,
+        name: String,
+        modules: JsValue,
+        code: String,
+        json: String,
+    ) -> std::result::Result<String, JsError> {
+        let mut resolver = BuiltinResolver::default();
+
+        let capability_module_name = format!("bb-{}", invocation_id);
+
+        let mut capabilities_loader = BuiltinLoader::default();
+        add_capability_modules!(
+            resolver,
+            capabilities_loader,
+            capability_module_name,
+            invocation_id,
+            "fetch",
+        );
+
+        let mut peer_loader = BuiltinLoader::default();
+        let object = js_sys::Object::from(modules);
+        let entries = js_sys::Object::entries(&object);
+        for i in 0..entries.length() {
+            let entry = js_sys::Array::from(&entries.get(i));
+            let peer = entry.get(0).as_string().unwrap_or_default();
+            let code = entry.get(1).as_string().unwrap_or_default();
+            let transpiled = transpiler::transpile(code).unwrap();
+            if !peer.is_empty() && !transpiled.is_empty() && name != peer {
+                let peer_js = format!("{}.js", peer);
+                peer_loader.add_module(&peer, transpiled.clone());
+                resolver.add_module(&peer);
+                peer_loader.add_module(&peer_js, transpiled);
+                resolver.add_module(&peer_js);
+            }
+        }
+        resolver.add_module(capability_module_name.clone());
+
+        // Register ast_grep module
+        resolver.add_module("ast-grep");
+
+        let loader = (
+            capabilities_loader,
+            peer_loader,
+            ModuleLoader::default()
+                .with_module(capability_module_name.clone(), CapabilitiesModule)
+                .with_module("ast-grep", AstGrepModule),
+        );
+
+        let rt = rquickjs::AsyncRuntime::new()?;
+        let ctx = rquickjs::AsyncContext::full(&rt).await?;
+
+        ctx.with(|ctx| plugins::console::init(&ctx)).await?;
+        ctx.with(|ctx| plugins::atob::init(&ctx)).await?;
+
+        rt.set_loader(resolver, loader).await;
+
+        let result = async_with!(ctx => |ctx| {
+
+            // Load the module.
+            let module = rquickjs::Module::declare(ctx.clone(), name, code)
+                .catch(&ctx)
+                .map_err(|e| Error::Loading(e.to_string()))?;
+
+            // Evaluate module.
+            let (evaluated, _) = module
+                .eval()
+                .catch(&ctx)
+                .map_err(|e| Error::Evaluating(e.to_string()))?;
+            while ctx.execute_pending_job() {}
+
+            // Get the default export.
+            let namespace = evaluated
+                .namespace()
+                .catch(&ctx)
+                .map_err(|e| Error::GettingDefaultExport(e.to_string()))?;
+
+            let func = namespace
+                .get::<_, rquickjs::Function>(method)
+                .catch(&ctx)
+                .map_err(|e| Error::GettintDefaultFunction(e.to_string()))?;
+
+            let inputs = ctx
+                .json_parse(json)
+                .catch(&ctx)
+                .map_err(|e| Error::ParsingInputValues(e.to_string()))?;
+
+            // Call it and return value.
+            let result_obj: rquickjs::Value = maybe_promise(
+                func.call((inputs,)).catch(&ctx)
+                .map_err(|e| Error::CallingModuleFunction(e.to_string()))?
+            ).await.catch(&ctx)
+            .map_err(|e| Error::CallingModuleFunction(e.to_string()))?;
+
+            let Some(result_str) = ctx.json_stringify(result_obj)? else {
+                return Err(Error::NotStringifiable);
+            };
+            Ok(result_str.to_string()?)
         })
-        .collect();
-    let ret = serde_wasm_bindgen::to_value(&ret).map_err(|e| JsError::new(&e.to_string()))?;
-    Ok(ret)
-}
+        .await;
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen(js_name = scanFix)]
-pub fn scan_fix(src: String, configs: Vec<JsValue>) -> std::result::Result<String, JsError> {
-    let lang = WasmLang::get_current();
-    let mut rules = vec![];
-    for config in configs {
-        let finder = try_get_rule_config(config)?;
-        rules.push(finder);
+        rt.idle().await;
+
+        Ok(result?)
     }
-    let combined = CombinedScan::new(rules.iter().collect());
-    let doc = WasmDoc::try_new(src.clone(), lang).map_err(|e| JsError::new(&e.to_string()))?;
-    let root = AstGrep::doc(doc);
-    let diffs = combined.scan(&root, true).diffs;
-    if diffs.is_empty() {
-        return Ok(src);
-    }
-    let mut start = 0;
-    let src: Vec<_> = src.chars().collect();
-    let mut new_content = Vec::<char>::new();
-    for (rule, nm) in diffs {
-        let range = nm.range();
-        if start > range.start {
-            continue;
+
+    #[wasm_bindgen(js_name = scanFind)]
+    pub fn scan_find(src: String, configs: Vec<JsValue>) -> std::result::Result<JsValue, JsError> {
+        let lang = WasmLang::get_current();
+        let mut rules = vec![];
+        for config in configs {
+            let finder = try_get_rule_config(config)?;
+            rules.push(finder);
         }
-        let fixer = rule
-            .get_fixer()
-            .map_err(|e| JsError::new(&e.to_string()))?
-            .expect("rule returned by diff must have fixer");
-        let edit = nm.make_edit(&rule.matcher, &fixer);
-        new_content.extend(&src[start..edit.position]);
-        new_content.extend(&edit.inserted_text);
-        start = edit.position + edit.deleted_length;
+        let combined = CombinedScan::new(rules.iter().collect());
+        let doc = WasmDoc::try_new(src.clone(), lang).map_err(|e| JsError::new(&e.to_string()))?;
+        let root = AstGrep::doc(doc);
+        let ret: HashMap<_, _> = combined
+            .scan(&root, false)
+            .matches
+            .into_iter()
+            .map(|(rule, matches)| {
+                let matches: Vec<_> = matches
+                    .into_iter()
+                    .map(|m| WasmMatch::from_match(m, rule))
+                    .collect();
+                (rule.id.clone(), matches)
+            })
+            .collect();
+        let ret = serde_wasm_bindgen::to_value(&ret).map_err(|e| JsError::new(&e.to_string()))?;
+        Ok(ret)
     }
-    // add trailing statements
-    new_content.extend(&src[start..]);
-    Ok(new_content.into_iter().collect())
+
+    #[wasm_bindgen(js_name = scanFix)]
+    pub fn scan_fix(src: String, configs: Vec<JsValue>) -> std::result::Result<String, JsError> {
+        let lang = WasmLang::get_current();
+        let mut rules = vec![];
+        for config in configs {
+            let finder = try_get_rule_config(config)?;
+            rules.push(finder);
+        }
+        let combined = CombinedScan::new(rules.iter().collect());
+        let doc = WasmDoc::try_new(src.clone(), lang).map_err(|e| JsError::new(&e.to_string()))?;
+        let root = AstGrep::doc(doc);
+        let diffs = combined.scan(&root, true).diffs;
+        if diffs.is_empty() {
+            return Ok(src);
+        }
+        let mut start = 0;
+        let src: Vec<_> = src.chars().collect();
+        let mut new_content = Vec::<char>::new();
+        for (rule, nm) in diffs {
+            let range = nm.range();
+            if start > range.start {
+                continue;
+            }
+            let fixer = rule
+                .get_fixer()
+                .map_err(|e| JsError::new(&e.to_string()))?
+                .expect("rule returned by diff must have fixer");
+            let edit = nm.make_edit(&rule.matcher, &fixer);
+            new_content.extend(&src[start..edit.position]);
+            new_content.extend(&edit.inserted_text);
+            start = edit.position + edit.deleted_length;
+        }
+        // add trailing statements
+        new_content.extend(&src[start..]);
+        Ok(new_content.into_iter().collect())
+    }
+
+    #[wasm_bindgen(js_name = dumpASTNodes)]
+    pub fn dump_ast_nodes(src: String) -> std::result::Result<JsValue, JsError> {
+        let lang = WasmLang::get_current();
+        let doc = WasmDoc::try_new(src, lang).map_err(|e| JsError::new(&e.to_string()))?;
+        let root = AstGrep::doc(doc);
+        let debug_node = convert_to_debug_node(root.root());
+        let ret =
+            serde_wasm_bindgen::to_value(&debug_node).map_err(|e| JsError::new(&e.to_string()))?;
+        Ok(ret)
+    }
+
+    #[wasm_bindgen(js_name = dumpPattern)]
+    pub fn dump_pattern(
+        src: String,
+        selector: Option<String>,
+    ) -> std::result::Result<JsValue, JsError> {
+        let dumped = dump_pattern_impl(src, selector)?;
+        let ret =
+            serde_wasm_bindgen::to_value(&dumped).map_err(|e| JsError::new(&e.to_string()))?;
+        Ok(ret)
+    }
+
+    #[wasm_bindgen(main)]
+    pub fn main() {}
 }
 
 #[cfg(feature = "wasm")]
-#[wasm_bindgen(js_name = dumpASTNodes)]
-pub fn dump_ast_nodes(src: String) -> std::result::Result<JsValue, JsError> {
-    let lang = WasmLang::get_current();
-    let doc = WasmDoc::try_new(src, lang).map_err(|e| JsError::new(&e.to_string()))?;
-    let root = AstGrep::doc(doc);
-    let debug_node = convert_to_debug_node(root.root());
-    let ret =
-        serde_wasm_bindgen::to_value(&debug_node).map_err(|e| JsError::new(&e.to_string()))?;
-    Ok(ret)
-}
+pub use wasm_main::*;
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen(js_name = dumpPattern)]
-pub fn dump_pattern(
-    src: String,
-    selector: Option<String>,
-) -> std::result::Result<JsValue, JsError> {
-    let dumped = dump_pattern_impl(src, selector)?;
-    let ret = serde_wasm_bindgen::to_value(&dumped).map_err(|e| JsError::new(&e.to_string()))?;
-    Ok(ret)
-}
-
-#[wasm_bindgen(main)]
+#[cfg(not(feature = "wasm"))]
 pub fn main() {}

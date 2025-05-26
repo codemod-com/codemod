@@ -14,7 +14,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@1.82.0
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
         id: toolchain
         with:
           components: clippy
@@ -26,7 +28,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@1.82.0
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
         id: toolchain
         with:
           components: rustfmt
@@ -38,7 +42,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@1.82.0
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
         id: toolchain
       - name: Run tests
         run: cargo test

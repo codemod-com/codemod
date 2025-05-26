@@ -21,7 +21,7 @@ async function loadWasmRuntime(): Promise<Buffer> {
 
 class NodeSandbox implements Sandbox {
   private readonly runtimeBuffer: Promise<Buffer>;
-  private sandbox: ReturnType<typeof factory>;
+  private sandbox: ReturnType<typeof factory> | null = null;
 
   constructor(buffer?: Buffer) {
     this.runtimeBuffer = buffer ? Promise.resolve(buffer) : loadWasmRuntime();

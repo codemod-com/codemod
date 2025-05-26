@@ -243,6 +243,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ast-grep-language"
+version = "0.38.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b01a4d26db4cb4d3411fdba25af8b0cf1e07af8dcf494a0fd7a5472152bb9373"
+dependencies = [
+ "ast-grep-core",
+ "ignore",
+ "serde",
+ "tree-sitter",
+]
+
+[[package]]
 name = "ast_node"
 version = "3.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -811,6 +823,7 @@ version = "0.1.0"
 dependencies = [
  "ast-grep-config",
  "ast-grep-core",
+ "ast-grep-language",
  "bytes",
  "js-sys",
  "rquickjs 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2052,6 +2065,22 @@ name = "if_chain"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cb56e1aa765b4b4f3aadfab769793b7087bb03a4ea4920644a6d238e2df5b9ed"
+
+[[package]]
+name = "ignore"
+version = "0.4.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d89fd380afde86567dfba715db065673989d6253f42b88179abd3eae47bda4b"
+dependencies = [
+ "crossbeam-deque",
+ "globset",
+ "log",
+ "memchr",
+ "regex-automata",
+ "same-file",
+ "walkdir",
+ "winapi-util",
+]
 
 [[package]]
 name = "indexmap"

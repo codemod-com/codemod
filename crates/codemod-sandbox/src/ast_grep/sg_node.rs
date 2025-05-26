@@ -327,7 +327,7 @@ impl<'js> SgNodeRjs<'js> {
         match matcher {
             JsMatcherRjs::Pattern(pattern) => match self.inner_node.find(pattern) {
                 Some(node) => {
-                    let node_match: NodeMatch<_> = node.into();
+                    let node_match: NodeMatch<_> = node;
                     let static_node_match: NodeMatch<'static, StrDoc> =
                         unsafe { std::mem::transmute(node_match) };
                     Ok(Some(SgNodeRjs {
@@ -340,7 +340,7 @@ impl<'js> SgNodeRjs<'js> {
             },
             JsMatcherRjs::Kind(kind_matcher) => match self.inner_node.find(kind_matcher) {
                 Some(node) => {
-                    let node_match: NodeMatch<_> = node.into();
+                    let node_match: NodeMatch<_> = node;
                     let static_node_match: NodeMatch<'static, StrDoc> =
                         unsafe { std::mem::transmute(node_match) };
                     Ok(Some(SgNodeRjs {
@@ -353,7 +353,7 @@ impl<'js> SgNodeRjs<'js> {
             },
             JsMatcherRjs::Config(config) => match self.inner_node.find(config) {
                 Some(node) => {
-                    let node_match: NodeMatch<_> = node.into();
+                    let node_match: NodeMatch<_> = node;
                     let static_node_match: NodeMatch<'static, StrDoc> =
                         unsafe { std::mem::transmute(node_match) };
                     Ok(Some(SgNodeRjs {
@@ -381,7 +381,7 @@ impl<'js> SgNodeRjs<'js> {
                 .inner_node
                 .find_all(pattern)
                 .map(|node| {
-                    let node_match: NodeMatch<_> = node.into();
+                    let node_match: NodeMatch<_> = node;
                     let static_node_match: NodeMatch<'static, StrDoc> =
                         unsafe { std::mem::transmute(node_match) };
                     SgNodeRjs {
@@ -395,7 +395,7 @@ impl<'js> SgNodeRjs<'js> {
                 .inner_node
                 .find_all(kind_matcher)
                 .map(|node| {
-                    let node_match: NodeMatch<_> = node.into();
+                    let node_match: NodeMatch<_> = node;
                     let static_node_match: NodeMatch<'static, StrDoc> =
                         unsafe { std::mem::transmute(node_match) };
                     SgNodeRjs {
@@ -409,7 +409,7 @@ impl<'js> SgNodeRjs<'js> {
                 .inner_node
                 .find_all(config)
                 .map(|node| {
-                    let node_match: NodeMatch<_> = node.into();
+                    let node_match: NodeMatch<_> = node;
                     let static_node_match: NodeMatch<'static, StrDoc> =
                         unsafe { std::mem::transmute(node_match) };
                     SgNodeRjs {

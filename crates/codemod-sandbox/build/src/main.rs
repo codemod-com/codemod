@@ -104,6 +104,7 @@ impl<'a> WasmBuilder<'a> {
             package,
             "--features",
             "wasm",
+            "--no-default-features",
         ];
 
         if self.config.release {
@@ -285,7 +286,6 @@ impl JsTransformer {
                     .split('=')
                     .next()
                     .context("Const export missing assignment")?
-                    .trim()
                     .split_whitespace()
                     .last()
                     .context("Invalid const declaration")?;

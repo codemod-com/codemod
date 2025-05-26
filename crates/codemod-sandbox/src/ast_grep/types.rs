@@ -27,7 +27,7 @@ impl<'js> IntoJs<'js> for JsPosition {
         obj.set("row", self.row)?;
         obj.set("column", self.column)?;
         obj.set("index", self.index)?;
-        Ok(obj.into_js(ctx)?)
+        obj.into_js(ctx)
     }
 }
 
@@ -53,7 +53,7 @@ impl<'js> IntoJs<'js> for JsNodeRange {
         let obj = Object::new(ctx.clone())?;
         obj.set("start", self.start)?;
         obj.set("end", self.end)?;
-        Ok(obj.into_js(ctx)?)
+        obj.into_js(ctx)
     }
 }
 
@@ -88,6 +88,6 @@ impl<'js> IntoJs<'js> for JsEdit {
         obj.set("startPos", self.start_pos)?;
         obj.set("endPos", self.end_pos)?;
         obj.set("insertedText", self.inserted_text)?;
-        Ok(obj.into_js(ctx)?)
+        obj.into_js(ctx)
     }
 }

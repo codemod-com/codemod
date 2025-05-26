@@ -9,6 +9,7 @@ use serde_json;
 
 use super::serde::JsValue;
 
+#[allow(clippy::large_enum_variant)]
 pub enum JsMatcherRjs {
     Pattern(Pattern),
     Kind(KindMatcher),

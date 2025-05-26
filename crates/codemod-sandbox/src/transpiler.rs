@@ -10,6 +10,7 @@ use swc_core::{
     },
 };
 
+#[allow(dead_code)]
 pub fn transpile(source: String) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     // Create source map
     let cm: Arc<SourceMap> = Default::default();

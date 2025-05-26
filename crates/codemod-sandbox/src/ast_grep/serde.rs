@@ -4,7 +4,7 @@ use rquickjs::{Ctx, FromJs, IntoJs, Type, Value as QValue};
 pub(crate) struct JsValue(pub serde_json::Value);
 
 impl<'js> FromJs<'js> for JsValue {
-    fn from_js(ctx: &Ctx<'js>, v: QValue<'js>) -> rquickjs::Result<Self> {
+    fn from_js(_ctx: &Ctx<'js>, v: QValue<'js>) -> rquickjs::Result<Self> {
         let computed_value = match v.type_of() {
             Type::Uninitialized | Type::Undefined | Type::Null => serde_json::Value::Null,
             Type::Bool => {
@@ -34,11 +34,9 @@ impl<'js> FromJs<'js> for JsValue {
                 let mut values = Vec::new();
 
                 if let Some(array) = v.as_array() {
-                    for item_result in array.iter() {
-                        if let Ok(element) = item_result {
-                            let element_value = Self::from_js(ctx, element)?.0;
-                            values.push(element_value);
-                        }
+                    for element in array.iter().flatten() {
+                        let element_value = Self::from_js(_ctx, element)?.0;
+                        values.push(element_value);
                     }
                 }
 
@@ -48,12 +46,10 @@ impl<'js> FromJs<'js> for JsValue {
                 let mut map = serde_json::Map::new();
 
                 if let Some(obj) = v.as_object() {
-                    for key_result in obj.keys::<String>() {
-                        if let Ok(key) = key_result {
-                            if let Ok(prop) = obj.get(&key) {
-                                let prop_value = Self::from_js(ctx, prop)?.0;
-                                map.insert(key, prop_value);
-                            }
+                    for key in obj.keys::<String>().flatten() {
+                        if let Ok(prop) = obj.get(&key) {
+                            let prop_value = Self::from_js(_ctx, prop)?.0;
+                            map.insert(key, prop_value);
                         }
                     }
                 }
