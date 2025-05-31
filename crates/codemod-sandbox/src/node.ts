@@ -19,9 +19,16 @@ async function loadWasmRuntime(): Promise<Buffer> {
   return readFile(fileURLToPath(wasmFile));
 }
 
+export interface LogEntry {
+  timestamp: number;
+  level: "info" | "warn" | "error";
+  message: string;
+}
+
 class NodeSandbox implements Sandbox {
   private readonly runtimeBuffer: Promise<Buffer>;
   private sandbox: ReturnType<typeof factory> | null = null;
+  private logs: LogEntry[] = [];
 
   constructor(buffer?: Buffer) {
     this.runtimeBuffer = buffer ? Promise.resolve(buffer) : loadWasmRuntime();
@@ -37,6 +44,14 @@ class NodeSandbox implements Sandbox {
     return instance.setupParser(lang, path);
   }
 
+  getLogs() {
+    return this.logs;
+  }
+
+  clearLogs() {
+    this.logs = [];
+  }
+
   private async getWasmInstance() {
     if (this.sandbox) {
       return this.sandbox;
@@ -50,10 +65,18 @@ class NodeSandbox implements Sandbox {
       [
         new OpenFile(new WasiFile([])), // stdin
         ConsoleStdout.lineBuffered((message) =>
-          console.log(`[WASI stdout] ${message}`)
+          this.logs.push({
+            timestamp: Date.now(),
+            level: "info",
+            message,
+          })
         ),
         ConsoleStdout.lineBuffered((message) =>
-          console.warn(`[WASI stderr] ${message}`)
+          this.logs.push({
+            timestamp: Date.now(),
+            level: "warn",
+            message,
+          })
         ),
       ]
     );
@@ -105,6 +128,8 @@ class NodeSandbox implements Sandbox {
       return { $error: `Unable to find module "${moduleName}"` };
     }
 
+    this.clearLogs();
+
     const instance = await this.getWasmInstance();
 
     const executionResult = await instance.run_module(
@@ -116,6 +141,6 @@ class NodeSandbox implements Sandbox {
       JSON.stringify(moduleInputs)
     );
 
-    return JSON.parse(executionResult);
+    return executionResult;
   }
 }

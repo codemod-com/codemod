@@ -1,1 +1,1 @@
-export { NodeSandbox } from "./node.js";
+export { NodeSandbox, type LogEntry } from "./node.js";

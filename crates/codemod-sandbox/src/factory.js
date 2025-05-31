@@ -255,36 +255,6 @@ const ret = wasm.setupParser(ptr0, len0, ptr1, len1);
 return ret;
 }
 
-function takeFromExternrefTable0(idx) {
-const value = wasm.__wbindgen_export_4.get(idx);
-wasm.__externref_table_dealloc(idx);
-return value;
-}
-/**
-* @param {string} code
-* @returns {string}
-*/
- function eval_code(code) {
-let deferred3_0;
-let deferred3_1;
-try {
-const ptr0 = passStringToWasm0(code, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-const len0 = WASM_VECTOR_LEN;
-const ret = wasm.eval_code(ptr0, len0);
-var ptr2 = ret[0];
-var len2 = ret[1];
-if (ret[3]) {
-ptr2 = 0; len2 = 0;
-throw takeFromExternrefTable0(ret[2]);
-}
-deferred3_0 = ptr2;
-deferred3_1 = len2;
-return getStringFromWasm0(ptr2, len2);
-} finally {
-wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
-}
-}
-
 /**
 * @param {string} invocation_id
 * @param {string} method
@@ -292,7 +262,7 @@ wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
 * @param {any} modules
 * @param {string} code
 * @param {string} json
-* @returns {Promise<string>}
+* @returns {Promise<any>}
 */
  function run_module(invocation_id, method, name, modules, code, json) {
 const ptr0 = passStringToWasm0(invocation_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -309,6 +279,11 @@ const ret = wasm.run_module(ptr0, len0, ptr1, len1, ptr2, len2, modules, ptr3, l
 return ret;
 }
 
+function takeFromExternrefTable0(idx) {
+const value = wasm.__wbindgen_export_4.get(idx);
+wasm.__externref_table_dealloc(idx);
+return value;
+}
 /**
 * @param {string} src
 * @param {any[]} configs
@@ -386,11 +361,11 @@ return takeFromExternrefTable0(ret[0]);
 }
 
 function __wbg_adapter_50(arg0, arg1, arg2) {
-wasm.closure1704_externref_shim(arg0, arg1, arg2);
+wasm.closure1705_externref_shim(arg0, arg1, arg2);
 }
 
-function __wbg_adapter_199(arg0, arg1, arg2, arg3) {
-wasm.closure1726_externref_shim(arg0, arg1, arg2, arg3);
+function __wbg_adapter_200(arg0, arg1, arg2, arg3) {
+wasm.closure1727_externref_shim(arg0, arg1, arg2, arg3);
 }
 
  function __wbg_String_8f0eb39a4a4c2f66(arg0, arg1) {
@@ -686,7 +661,7 @@ var cb0 = (arg0, arg1) => {
 const a = state0.a;
 state0.a = 0;
 try {
-return __wbg_adapter_199(a, state0.b, arg0, arg1);
+return __wbg_adapter_200(a, state0.b, arg0, arg1);
 } finally {
 state0.a = a;
 }
@@ -761,6 +736,11 @@ return ret;
  function __wbg_previousSibling_0d5cdd5a811cedb2(arg0) {
 const ret = arg0.previousSibling;
 return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+};
+
+ function __wbg_push_737cfc8c1432c2c6(arg0, arg1) {
+const ret = arg0.push(arg1);
+return ret;
 };
 
  function __wbg_queueMicrotask_97d92b4fcc8a61c5(arg0) {
@@ -917,8 +897,8 @@ const ret = false;
 return ret;
 };
 
- function __wbindgen_closure_wrapper4812(arg0, arg1, arg2) {
-const ret = makeMutClosure(arg0, arg1, 1705, __wbg_adapter_50);
+ function __wbindgen_closure_wrapper4820(arg0, arg1, arg2) {
+const ret = makeMutClosure(arg0, arg1, 1706, __wbg_adapter_50);
 return ret;
 };
 
@@ -1027,7 +1007,6 @@ return {
   __wbg_set_wasm,
   initializeTreeSitter,
   setupParser,
-  eval_code,
   run_module,
   scanFind,
   scanFix,
@@ -1094,6 +1073,7 @@ return {
   __wbg_parse_211b75b6b50e2da5,
   __wbg_parse_def2e24ef1252aff,
   __wbg_previousSibling_0d5cdd5a811cedb2,
+  __wbg_push_737cfc8c1432c2c6,
   __wbg_queueMicrotask_97d92b4fcc8a61c5,
   __wbg_queueMicrotask_d3219def82552485,
   __wbg_resolve_4851785c9c5f573d,
@@ -1124,7 +1104,7 @@ return {
   __wbindgen_bigint_get_as_i64,
   __wbindgen_boolean_get,
   __wbindgen_cb_drop,
-  __wbindgen_closure_wrapper4812,
+  __wbindgen_closure_wrapper4820,
   __wbindgen_debug_string,
   __wbindgen_error_new,
   __wbindgen_in,

@@ -42,6 +42,7 @@ pub enum WasmLang {
     Scala,
     Swift,
     Yaml,
+    Angular,
 }
 
 use WasmLang::*;
@@ -84,6 +85,7 @@ impl FromStr for WasmLang {
             "scala" => Scala,
             "swift" => Swift,
             "yaml" => Yaml,
+            "angular" => Angular,
             _ => return Err(NotSupport(s.to_string())),
         })
     }
@@ -189,6 +191,7 @@ impl Language for WasmLang {
             W::TypeScript => '$',
             W::Tsx => '$',
             W::Yaml => '$',
+            W::Angular => '$',
         }
     }
 

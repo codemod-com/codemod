@@ -108,7 +108,7 @@ class WebSandbox implements Sandbox {
       moduleCode,
       inputData
     );
-    return JSON.parse(executionResult);
+    return executionResult;
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@codemod.com/codemod-sandbox",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "Codemod Javascript Sandbox",
   "main": "./dist/src/index.js",
   "exports": {
@@ -13,7 +13,7 @@
   "type": "module",
   "scripts": {
     "prepack": "pnpm run build",
-    "build:rs": "cd ../.. && cargo run -p codemod-sandbox-build --color=always -- -r",
+    "build:rs": "cd ../.. && cargo run -p codemod-sandbox-build --color=always -- -r --optimize",
     "copy-runtime-files": "pnpm run build:rs && tsx scripts/copy-runtime-files.ts",
     "generate-type-declarations": "tsx scripts/generate-type-declarations.ts",
     "build:tsc": "pnpm run generate-type-declarations && tsc --project tsconfig.build.json --pretty",

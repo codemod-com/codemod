@@ -2,6 +2,7 @@ mod ast_grep;
 mod capabilities;
 mod plugins;
 mod transpiler;
+mod utils;
 
 #[cfg(feature = "wasm")]
 mod wasm_main {
@@ -14,7 +15,6 @@ mod wasm_main {
     use thiserror::Error;
     use wasm_bindgen::prelude::*;
 
-    use crate::ast_grep::wasm_lang::{WasmDoc, WasmLang};
     use crate::ast_grep::wasm_utils::{
         convert_to_debug_node, dump_pattern_impl, try_get_rule_config, WasmMatch,
     };
@@ -22,6 +22,10 @@ mod wasm_main {
     use crate::capabilities::CapabilitiesModule;
     use crate::plugins;
     use crate::transpiler;
+    use crate::{
+        ast_grep::wasm_lang::{WasmDoc, WasmLang},
+        utils::quick_js_wasm::quickjs_value_to_jsvalue,
+    };
     use ast_grep_config::CombinedScan;
     use ast_grep_core::AstGrep;
 
@@ -31,9 +35,6 @@ mod wasm_main {
 
     #[derive(Debug, Error)]
     enum Error {
-        #[error("Value could not be stringified to JSON")]
-        NotStringifiable,
-
         #[error("A QuickJS error occured: {0}")]
         QuickJS(#[from] rquickjs::Error),
 
@@ -56,8 +57,6 @@ mod wasm_main {
         CallingModuleFunction(String),
     }
 
-    type Result<T> = std::result::Result<T, Error>;
-
     #[wasm_bindgen(js_name = initializeTreeSitter)]
     pub async fn initialize_tree_sitter(
         locate_file: Option<Function>,
@@ -71,20 +70,6 @@ mod wasm_main {
         parser_path: String,
     ) -> std::result::Result<(), JsError> {
         WasmLang::set_current(&lang_name, &parser_path).await
-    }
-
-    #[wasm_bindgen]
-    pub fn eval_code(code: String) -> std::result::Result<String, JsError> {
-        let rt = rquickjs::Runtime::new()?;
-        let ctx = rquickjs::Context::full(&rt)?;
-        let result: Result<String> = ctx.with(|ctx| {
-            let result_obj: rquickjs::Value = ctx.eval(code.as_str())?;
-            let Some(result_str) = ctx.json_stringify(result_obj)? else {
-                return Err(Error::NotStringifiable);
-            };
-            Ok(result_str.to_string()?)
-        });
-        Ok(result?)
     }
 
     async fn maybe_promise<'js>(
@@ -128,7 +113,7 @@ mod wasm_main {
         modules: JsValue,
         code: String,
         json: String,
-    ) -> std::result::Result<String, JsError> {
+    ) -> std::result::Result<JsValue, JsError> {
         let mut resolver = BuiltinResolver::default();
 
         let capability_module_name = format!("bb-{}", invocation_id);
@@ -216,16 +201,13 @@ mod wasm_main {
             ).await.catch(&ctx)
             .map_err(|e| Error::CallingModuleFunction(e.to_string()))?;
 
-            let Some(result_str) = ctx.json_stringify(result_obj)? else {
-                return Err(Error::NotStringifiable);
-            };
-            Ok(result_str.to_string()?)
+            quickjs_value_to_jsvalue(result_obj)
         })
         .await;
 
         rt.idle().await;
 
-        Ok(result?)
+        result
     }
 
     #[wasm_bindgen(js_name = scanFind)]
