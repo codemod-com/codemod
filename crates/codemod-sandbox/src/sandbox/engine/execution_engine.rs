@@ -89,7 +89,7 @@ where
         });
 
         // Process files using optimized thread pool
-        let chunk_size = (target_files.len() + max_concurrent - 1) / max_concurrent;
+        let chunk_size = target_files.len().div_ceil(max_concurrent);
         let mut handles = Vec::new();
 
         let js_code = Arc::new(js_code.to_string());

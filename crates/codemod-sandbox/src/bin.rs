@@ -11,7 +11,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
     if args.len() < 3 {
         eprintln!("Usage: {} <path-to-js-file> <target-directory> [--no-gitignore] [--include-hidden] [--max-threads=N]", args[0]);
-        eprintln!("");
         eprintln!("Options:");
         eprintln!("  --no-gitignore     Don't respect .gitignore files");
         eprintln!("  --include-hidden   Include hidden files and directories");
