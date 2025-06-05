@@ -1,4 +1,4 @@
-use rquickjs::{Ctx, Error, FromJs, IntoJs, Object, Result, Value};
+use crate::rquickjs_compat::{Ctx, Error, FromJs, IntoJs, Object, Result, Value};
 
 use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Clone)]

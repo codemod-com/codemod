@@ -7,7 +7,12 @@ use ast_grep_core::{AstGrep, Node, NodeMatch};
 #[cfg(not(feature = "wasm"))]
 use ast_grep_language::SupportLang;
 
-use rquickjs::{class::Trace, methods, Ctx, Exception, JsLifetime, Result};
+#[cfg(feature = "wasm")]
+use crate::rquickjs_compat as rquickjs_git;
+
+use crate::rquickjs_compat::{
+    class, class::Trace, methods, Ctx, Exception, JsLifetime, Result, Value,
+};
 use std::marker::PhantomData;
 use std::str::FromStr;
 use std::sync::Arc;
@@ -24,7 +29,7 @@ type StrDoc = WasmDoc;
 // No manual Trace for PhantomData - orphan rule violation
 
 #[derive(Trace)]
-#[rquickjs::class(rename_all = "camelCase")]
+#[class(rename_all = "camelCase")]
 pub struct SgRootRjs<'js> {
     #[qjs(skip_trace)]
     // AstGrep is not Trace, Arc<T> is Trace if T is Send+Sync+'static or skipped
@@ -101,7 +106,7 @@ impl<'js> SgRootRjs<'js> {
 }
 
 #[derive(Trace, Clone)]
-#[rquickjs::class(rename_all = "camelCase")]
+#[class(rename_all = "camelCase")]
 pub struct SgNodeRjs<'js> {
     #[qjs(skip_trace)] // AstGrep is not Trace
     pub(crate) grep_arc: Arc<AstGrep<StrDoc>>,
@@ -316,11 +321,7 @@ impl<'js> SgNodeRjs<'js> {
             .collect())
     }
 
-    pub fn find(
-        &self,
-        value: rquickjs::Value<'js>,
-        ctx: Ctx<'js>,
-    ) -> Result<Option<SgNodeRjs<'js>>> {
+    pub fn find(&self, value: Value<'js>, ctx: Ctx<'js>) -> Result<Option<SgNodeRjs<'js>>> {
         let lang = *self.inner_node.lang();
         let matcher = convert_matcher(value, lang, &ctx)?;
 
@@ -368,11 +369,7 @@ impl<'js> SgNodeRjs<'js> {
     }
 
     #[qjs(rename = "findAll")]
-    pub fn find_all(
-        &self,
-        value: rquickjs::Value<'js>,
-        ctx: Ctx<'js>,
-    ) -> Result<Vec<SgNodeRjs<'js>>> {
+    pub fn find_all(&self, value: Value<'js>, ctx: Ctx<'js>) -> Result<Vec<SgNodeRjs<'js>>> {
         let lang = *self.inner_node.lang();
         let matcher = convert_matcher(value, lang, &ctx)?;
 
@@ -422,7 +419,7 @@ impl<'js> SgNodeRjs<'js> {
         }
     }
 
-    pub fn matches(&self, value: rquickjs::Value<'js>, ctx: Ctx<'js>) -> Result<bool> {
+    pub fn matches(&self, value: Value<'js>, ctx: Ctx<'js>) -> Result<bool> {
         let lang = *self.inner_node.lang();
         let matcher = convert_matcher(value, lang, &ctx)?;
 
@@ -433,7 +430,7 @@ impl<'js> SgNodeRjs<'js> {
         }
     }
 
-    pub fn inside(&self, value: rquickjs::Value<'js>, ctx: Ctx<'js>) -> Result<bool> {
+    pub fn inside(&self, value: Value<'js>, ctx: Ctx<'js>) -> Result<bool> {
         let lang = *self.inner_node.lang();
         let matcher = convert_matcher(value, lang, &ctx)?;
 
@@ -444,7 +441,7 @@ impl<'js> SgNodeRjs<'js> {
         }
     }
 
-    pub fn has(&self, value: rquickjs::Value<'js>, ctx: Ctx<'js>) -> Result<bool> {
+    pub fn has(&self, value: Value<'js>, ctx: Ctx<'js>) -> Result<bool> {
         let lang = *self.inner_node.lang();
         let matcher = convert_matcher(value, lang, &ctx)?;
 

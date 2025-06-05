@@ -1,9 +1,8 @@
-use rquickjs::Ctx;
-use rquickjs::Result;
+use crate::rquickjs_compat::{Ctx, Result, String as RquickjsString};
 use wasm_bindgen::prelude::*;
 
 pub fn init(ctx: &Ctx<'_>) -> Result<()> {
-    use rquickjs::function::Func;
+    use crate::rquickjs_compat::function::Func;
     let globals = ctx.globals();
 
     globals.set("atob", Func::from(qj_atob))?;
@@ -18,16 +17,16 @@ extern "C" {
     fn btoa(s: &str) -> String;
 }
 
-fn qj_atob(s: rquickjs::String) -> Result<rquickjs::String> {
+fn qj_atob(s: RquickjsString) -> Result<RquickjsString> {
     let ctx = s.ctx().clone();
     let s = s.to_string().unwrap();
     let result = atob(s.as_str());
-    rquickjs::String::from_str(ctx, result.as_str())
+    RquickjsString::from_str(ctx, result.as_str())
 }
 
-fn qj_btoa(s: rquickjs::String) -> Result<rquickjs::String> {
+fn qj_btoa(s: RquickjsString) -> Result<RquickjsString> {
     let ctx = s.ctx().clone();
     let s = s.to_string().unwrap();
     let result = btoa(s.as_str());
-    rquickjs::String::from_str(ctx, result.as_str())
+    RquickjsString::from_str(ctx, result.as_str())
 }
