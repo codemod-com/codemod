@@ -6,7 +6,6 @@ use crate::sandbox::resolvers::ModuleResolver;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use std::thread;
 
 #[cfg(feature = "native")]
 use {
@@ -36,7 +35,7 @@ where
         }
     }
 
-    /// Execute JavaScript code on all files in a directory
+    /// Execute JavaScript code on all files in a directory using WalkParallel
     pub async fn execute_on_directory(
         &self,
         js_code: &str,
@@ -55,20 +54,95 @@ where
             });
         }
 
-        // Walk the directory to get all files
-        let file_paths = self
-            .config
-            .filesystem
-            .walk_dir(target_dir, self.config.walk_options.clone())
-            .await?;
+        // Use ignore::WalkParallel for efficient parallel directory walking and processing
+        use ignore::{WalkBuilder, WalkState};
 
-        if file_paths.is_empty() {
-            return Err(ExecutionError::NoFilesFound);
-        }
+        let max_concurrent = self.config.max_threads.unwrap_or_else(|| {
+            std::thread::available_parallelism()
+                .map(|n| n.get())
+                .unwrap_or(4)
+        });
 
-        println!("Processing {} files...", file_paths.len());
+        let js_code = Arc::new(js_code.to_string());
+        let config = Arc::clone(&self.config);
+        let processed_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let errors = Arc::new(std::sync::Mutex::new(Vec::new()));
 
-        self.execute_on_files(js_code, file_paths).await
+        // Execute in a blocking context since WalkParallel is synchronous
+        let target_dir = target_dir.to_path_buf();
+        tokio::task::spawn_blocking(move || {
+            let mut walk_builder = WalkBuilder::new(target_dir);
+            walk_builder
+                .git_ignore(config.walk_options.respect_gitignore)
+                .hidden(!config.walk_options.include_hidden)
+                .threads(max_concurrent);
+
+            if let Some(max_depth) = config.walk_options.max_depth {
+                walk_builder.max_depth(Some(max_depth));
+            }
+
+            walk_builder.build_parallel().run(|| {
+                let js_code = Arc::clone(&js_code);
+                let config = Arc::clone(&config);
+                let processed_count = Arc::clone(&processed_count);
+                let errors = Arc::clone(&errors);
+
+                Box::new(move |entry_result| {
+                    match entry_result {
+                        Ok(entry) => {
+                            // Only process files, not directories
+                            if entry.file_type().is_some_and(|ft| ft.is_file()) {
+                                let file_path = entry.path();
+
+                                // Create a runtime for this thread
+                                let rt = tokio::runtime::Builder::new_current_thread()
+                                    .enable_all()
+                                    .build()
+                                    .unwrap();
+
+                                rt.block_on(async {
+                                    if let Err(e) =
+                                        Self::execute_on_single_file(&config, &js_code, file_path)
+                                            .await
+                                    {
+                                        let error_msg = format!(
+                                            "Error processing file {}: {}",
+                                            file_path.display(),
+                                            e
+                                        );
+                                        eprintln!("{}", error_msg);
+                                        errors.lock().unwrap().push(error_msg);
+                                    } else {
+                                        processed_count
+                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                    }
+                                });
+                            }
+                        }
+                        Err(err) => {
+                            let error_msg = format!("Error walking directory: {}", err);
+                            eprintln!("{}", error_msg);
+                            errors.lock().unwrap().push(error_msg);
+                        }
+                    }
+                    WalkState::Continue
+                })
+            });
+
+            let count = processed_count.load(std::sync::atomic::Ordering::Relaxed);
+            if count == 0 {
+                return Err(ExecutionError::NoFilesFound);
+            }
+
+            println!("Successfully processed {} files", count);
+            Ok(())
+        })
+        .await
+        .map_err(|e| ExecutionError::ThreadExecution {
+            message: format!("Directory processing failed: {:?}", e),
+        })??;
+
+        Ok(())
     }
 
     /// Execute JavaScript code on a specific list of files
@@ -81,36 +155,45 @@ where
             return Err(ExecutionError::NoFilesFound);
         }
 
-        // Determine the number of concurrent threads
+        // Use ignore's WalkParallel for efficient parallel processing
         let max_concurrent = self.config.max_threads.unwrap_or_else(|| {
             std::thread::available_parallelism()
                 .map(|n| n.get())
                 .unwrap_or(4)
         });
 
-        // Process files using optimized thread pool
+        let js_code = Arc::new(js_code.to_string());
+        let config = Arc::clone(&self.config);
+        let errors = Arc::new(std::sync::Mutex::new(Vec::new()));
+
+        // Process files in parallel using a thread pool
         let chunk_size = target_files.len().div_ceil(max_concurrent);
         let mut handles = Vec::new();
-
-        let js_code = Arc::new(js_code.to_string());
 
         for chunk in target_files.chunks(chunk_size) {
             let chunk = chunk.to_vec();
             let js_code = Arc::clone(&js_code);
-            let config = Arc::clone(&self.config);
+            let config = Arc::clone(&config);
+            let errors = Arc::clone(&errors);
 
-            let handle = thread::spawn(move || {
-                // Create a new tokio runtime for this thread
-                let rt = tokio::runtime::Runtime::new().unwrap();
-                rt.block_on(async move {
+            let handle = std::thread::spawn(move || {
+                let rt = tokio::runtime::Builder::new_current_thread()
+                    .enable_all()
+                    .build()
+                    .unwrap();
+
+                rt.block_on(async {
                     for file_path in chunk {
                         if let Err(e) =
                             Self::execute_on_single_file(&config, &js_code, &file_path).await
                         {
-                            eprintln!("Error processing file {}: {}", file_path.display(), e);
+                            let error_msg =
+                                format!("Error processing file {}: {}", file_path.display(), e);
+                            eprintln!("{}", error_msg);
+                            errors.lock().unwrap().push(error_msg);
                         }
                     }
-                });
+                })
             });
 
             handles.push(handle);
