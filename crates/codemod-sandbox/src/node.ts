@@ -9,13 +9,15 @@ import { fileURLToPath } from "node:url";
 import factory from "./factory.js";
 import type { ModuleSpec, Sandbox } from "./types.js";
 import type { UUID } from "./types.js";
+import { createRequire } from "node:module";
 
 export { NodeSandbox };
 
 async function loadWasmRuntime(): Promise<Buffer> {
-  const wasmFile = import.meta.resolve(
-    "@codemod-com/codemod-sandbox/sandbox.wasm"
-  );
+  const require = createRequire(import.meta.url);
+
+  const wasmFile = require.resolve("@codemod-com/codemod-sandbox/sandbox.wasm");
+
   return readFile(fileURLToPath(wasmFile));
 }
 

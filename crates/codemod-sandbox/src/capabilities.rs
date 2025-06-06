@@ -3,18 +3,22 @@ mod wasm_capabilities {
 
     use std::future::Future;
 
-    use rquickjs::{module::ModuleDef, prelude::Async, Ctx, Function, Result, Value};
+    use crate::rquickjs_compat::{
+        module::{Declarations, Exports, ModuleDef},
+        prelude::Async,
+        Ctx, Function, Result, Value,
+    };
     use wasm_bindgen::prelude::*;
 
     pub struct CapabilitiesModule;
 
     impl ModuleDef for CapabilitiesModule {
-        fn declare(decl: &rquickjs::module::Declarations) -> Result<()> {
+        fn declare(decl: &Declarations) -> Result<()> {
             decl.declare("fetch")?;
             Ok(())
         }
 
-        fn evaluate<'js>(ctx: &Ctx<'js>, exports: &rquickjs::module::Exports<'js>) -> Result<()> {
+        fn evaluate<'js>(ctx: &Ctx<'js>, exports: &Exports<'js>) -> Result<()> {
             let context = ctx.clone();
             let fetch_function =
                 Function::new(context.clone(), Async(execute_fetch))?.with_name("fetch")?;
@@ -27,7 +31,7 @@ mod wasm_capabilities {
         request_id: String,
         input_value: Value<'js>,
         capability_handler: CapabilityFn,
-    ) -> rquickjs::Result<Value<'js>>
+    ) -> Result<Value<'js>>
     where
         CapabilityFn: FnOnce(String, String) -> FutureResult,
         FutureResult: Future<Output = JsValue>,
@@ -54,7 +58,7 @@ mod wasm_capabilities {
             async fn $wrapper_name<'js>(
                 request_id: String,
                 input_data: Value<'js>,
-            ) -> rquickjs::Result<Value<'js>> {
+            ) -> Result<Value<'js>> {
                 execute_capability_with_serialization(request_id, input_data, $external_capability)
                     .await
             }

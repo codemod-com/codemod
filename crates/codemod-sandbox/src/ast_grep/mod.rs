@@ -1,6 +1,6 @@
-pub mod sg_node;
-pub mod types;
-pub mod utils;
+mod sg_node;
+mod types;
+mod utils;
 
 #[cfg(feature = "wasm")]
 pub mod wasm_lang;
@@ -14,8 +14,8 @@ use ast_grep_language::{LanguageExt, SupportLang};
 #[cfg(feature = "wasm")]
 use ast_grep_core::language::Language;
 
-use rquickjs::module::{Declarations, Exports, ModuleDef};
-use rquickjs::{prelude::Func, Class, Ctx, Exception, Object, Result};
+use crate::rquickjs_compat::module::{Declarations, Exports, ModuleDef};
+use crate::rquickjs_compat::{prelude::Func, Class, Ctx, Exception, Object, Result};
 
 use sg_node::{SgNodeRjs, SgRootRjs};
 
