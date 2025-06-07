@@ -93,7 +93,7 @@ jobs:
 
       - name: Build
         run: |
-          cargo build --release --target ${{ matrix.target }}
+          cargo build --release -p butterflow-cli --target ${{ matrix.target }}
 
       - name: Chmod binary
         run: |

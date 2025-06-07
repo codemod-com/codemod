@@ -51,7 +51,6 @@ pub async fn handler(args: &Command) -> Result<()> {
         .parent()
         .unwrap_or(Path::new("."))
         .to_path_buf();
-    println!("script_base_dir: {}", script_base_dir.display());
     let resolver = Arc::new(FileSystemResolver::new(
         filesystem.clone(),
         script_base_dir.clone(),

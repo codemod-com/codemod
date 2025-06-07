@@ -3,15 +3,6 @@ name = "codemod-sandbox"
 version = "0.1.0"
 edition = "2021"
 
-[[bin]]
-name = "codemod-sandbox-test-cli"
-path = "src/bin.rs"
-required-features = ["native"]
-
-[lib]
-path = "src/lib.rs"
-
-
 [dependencies]
 rquickjs-registry = { package = "rquickjs", version = "0.9.0", default-features = false, optional = true }
 rquickjs-git = { package = "rquickjs", git = "https://github.com/DelSkayn/rquickjs.git", version = "0.9.0", default-features = false, optional = true }
