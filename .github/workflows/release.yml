@@ -41,15 +41,15 @@ jobs:
           - os: macos-latest
             target: x86_64-apple-darwin
             binary_name: butterflow-darwin-x86_64
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            binary_name: butterflow-windows-x86_64.exe
-          - os: windows-latest
-            target: i686-pc-windows-msvc
-            binary_name: butterflow-windows-i686.exe
-          - os: windows-latest
-            target: aarch64-pc-windows-msvc
-            binary_name: butterflow-windows-aarch64.exe
+          # - os: windows-latest
+          #   target: x86_64-pc-windows-msvc
+          #   binary_name: butterflow-windows-x86_64.exe
+          # - os: windows-latest
+          #   target: i686-pc-windows-msvc
+          #   binary_name: butterflow-windows-i686.exe
+          # - os: windows-latest
+          #   target: aarch64-pc-windows-msvc
+          #   binary_name: butterflow-windows-aarch64.exe
 
     steps:
       - uses: actions/checkout@v4
