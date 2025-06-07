@@ -35,6 +35,8 @@ pub struct SgRootRjs<'js> {
     // AstGrep is not Trace, Arc<T> is Trace if T is Send+Sync+'static or skipped
     pub(crate) inner_arc: Arc<AstGrep<StrDoc>>,
     #[qjs(skip_trace)]
+    pub(crate) filename: Option<String>,
+    #[qjs(skip_trace)]
     _phantom: PhantomData<&'js ()>,
 }
 
@@ -64,6 +66,10 @@ impl<'js> SgRootRjs<'js> {
         })
     }
 
+    pub fn filename(&self) -> Result<String> {
+        Ok(self.filename.clone().unwrap_or_default())
+    }
+
     pub fn source(&self) -> Result<String> {
         let str_slice: &str = "asd";
         Ok(str_slice.to_string())
@@ -71,7 +77,11 @@ impl<'js> SgRootRjs<'js> {
 }
 
 impl<'js> SgRootRjs<'js> {
-    pub fn try_new(lang_str: String, src: String) -> std::result::Result<Self, String> {
+    pub fn try_new(
+        lang_str: String,
+        src: String,
+        filename: Option<String>,
+    ) -> std::result::Result<Self, String> {
         #[cfg(feature = "wasm")]
         {
             if !crate::ast_grep::wasm_lang::WasmLang::is_parser_initialized() {
@@ -88,6 +98,7 @@ impl<'js> SgRootRjs<'js> {
 
             Ok(SgRootRjs {
                 inner_arc: Arc::new(unsafe { std::mem::transmute(doc) }),
+                filename,
                 _phantom: PhantomData,
             })
         }
@@ -100,6 +111,7 @@ impl<'js> SgRootRjs<'js> {
             Ok(SgRootRjs {
                 inner_arc: Arc::new(grep),
                 _phantom: PhantomData,
+                filename,
             })
         }
     }

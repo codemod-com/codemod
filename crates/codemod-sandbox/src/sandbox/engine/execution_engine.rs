@@ -1,19 +1,19 @@
 use super::config::ExecutionConfig;
+use super::language_data::get_extensions_for_language;
+use super::quickjs_adapters::{QuickJSLoader, QuickJSResolver};
+use crate::ast_grep::AstGrepModule;
+use crate::rquickjs_compat::{CatchResultExt, Function, Module};
 use crate::sandbox::errors::ExecutionError;
 use crate::sandbox::filesystem::FileSystem;
 use crate::sandbox::loaders::ModuleLoader;
 use crate::sandbox::resolvers::ModuleResolver;
-use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use ast_grep_language::SupportLang;
+use ignore::{WalkBuilder, WalkState};
+use llrt_modules::module_builder::ModuleBuilder;
+use rquickjs_git::{async_with, AsyncContext, AsyncRuntime};
+use std::path::Path;
 use std::sync::Arc;
-
-#[cfg(feature = "native")]
-use {
-    super::quickjs_adapters::{QuickJSLoader, QuickJSResolver},
-    crate::ast_grep::AstGrepModule,
-    llrt_modules::module_builder::ModuleBuilder,
-    rquickjs_git::{async_with, context::EvalOptions, AsyncContext, AsyncRuntime, Error},
-};
+use tokio::io::AsyncWriteExt;
 
 /// Main execution engine for running JavaScript code
 ///
@@ -38,7 +38,7 @@ where
     /// Execute JavaScript code on all files in a directory using WalkParallel
     pub async fn execute_on_directory(
         &self,
-        js_code: &str,
+        script_path: &Path,
         target_dir: &Path,
     ) -> Result<(), ExecutionError> {
         // Check if target directory exists
@@ -54,19 +54,25 @@ where
             });
         }
 
-        // Use ignore::WalkParallel for efficient parallel directory walking and processing
-        use ignore::{WalkBuilder, WalkState};
-
         let max_concurrent = self.config.max_threads.unwrap_or_else(|| {
             std::thread::available_parallelism()
                 .map(|n| n.get())
                 .unwrap_or(4)
         });
 
-        let js_code = Arc::new(js_code.to_string());
+        let language = self.config.language.unwrap_or(SupportLang::TypeScript);
+
         let config = Arc::clone(&self.config);
         let processed_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
         let errors = Arc::new(std::sync::Mutex::new(Vec::new()));
+        let script_path = Arc::new(script_path.to_path_buf());
+        let ts_extensions =
+            Arc::new(self.config.extensions.as_ref().cloned().unwrap_or_else(|| {
+                get_extensions_for_language(language)
+                    .into_iter()
+                    .map(|s| s.to_string())
+                    .collect()
+            }));
 
         // Execute in a blocking context since WalkParallel is synchronous
         let target_dir = target_dir.to_path_buf();
@@ -82,46 +88,55 @@ where
             }
 
             walk_builder.build_parallel().run(|| {
-                let js_code = Arc::clone(&js_code);
                 let config = Arc::clone(&config);
                 let processed_count = Arc::clone(&processed_count);
                 let errors = Arc::clone(&errors);
+                let script_path = Arc::clone(&script_path);
+                let ts_extensions = Arc::clone(&ts_extensions);
 
                 Box::new(move |entry_result| {
                     match entry_result {
                         Ok(entry) => {
-                            // Only process files, not directories
-                            if entry.file_type().is_some_and(|ft| ft.is_file()) {
-                                let file_path = entry.path();
+                            let file_path = entry.path();
 
-                                // Create a runtime for this thread
-                                let rt = tokio::runtime::Builder::new_current_thread()
-                                    .enable_all()
-                                    .build()
-                                    .unwrap();
-
-                                rt.block_on(async {
-                                    if let Err(e) =
-                                        Self::execute_on_single_file(&config, &js_code, file_path)
-                                            .await
-                                    {
-                                        let error_msg = format!(
-                                            "Error processing file {}: {}",
-                                            file_path.display(),
-                                            e
-                                        );
-                                        eprintln!("{}", error_msg);
-                                        errors.lock().unwrap().push(error_msg);
-                                    } else {
-                                        processed_count
-                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                                    }
-                                });
+                            if entry.file_type().is_some_and(|ft| ft.is_dir())
+                                || !ts_extensions
+                                    .iter()
+                                    .any(|ext| file_path.to_string_lossy().ends_with(ext))
+                            {
+                                return WalkState::Continue;
                             }
+
+                            // Create a runtime for this thread
+                            let rt = tokio::runtime::Builder::new_current_thread()
+                                .enable_all()
+                                .build()
+                                .unwrap();
+
+                            rt.block_on(async {
+                                if let Err(e) =
+                                    Self::execute_on_single_file(&config, &script_path, file_path)
+                                        .await
+                                {
+                                    let error_msg = format!(
+                                        "Error processing file {}: {}",
+                                        file_path.display(),
+                                        match e {
+                                            ExecutionError::Runtime { source } => {
+                                                source.to_string()
+                                            }
+                                            _ => e.to_string(),
+                                        }
+                                    );
+                                    errors.lock().unwrap().push(error_msg);
+                                } else {
+                                    processed_count
+                                        .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                }
+                            });
                         }
                         Err(err) => {
                             let error_msg = format!("Error walking directory: {}", err);
-                            eprintln!("{}", error_msg);
                             errors.lock().unwrap().push(error_msg);
                         }
                     }
@@ -134,7 +149,6 @@ where
                 return Err(ExecutionError::NoFilesFound);
             }
 
-            println!("Successfully processed {} files", count);
             Ok(())
         })
         .await
@@ -145,97 +159,15 @@ where
         Ok(())
     }
 
-    /// Execute JavaScript code on a specific list of files
-    pub async fn execute_on_files(
-        &self,
-        js_code: &str,
-        target_files: Vec<PathBuf>,
-    ) -> Result<(), ExecutionError> {
-        if target_files.is_empty() {
-            return Err(ExecutionError::NoFilesFound);
-        }
-
-        // Use ignore's WalkParallel for efficient parallel processing
-        let max_concurrent = self.config.max_threads.unwrap_or_else(|| {
-            std::thread::available_parallelism()
-                .map(|n| n.get())
-                .unwrap_or(4)
-        });
-
-        let js_code = Arc::new(js_code.to_string());
-        let config = Arc::clone(&self.config);
-        let errors = Arc::new(std::sync::Mutex::new(Vec::new()));
-
-        // Process files in parallel using a thread pool
-        let chunk_size = target_files.len().div_ceil(max_concurrent);
-        let mut handles = Vec::new();
-
-        for chunk in target_files.chunks(chunk_size) {
-            let chunk = chunk.to_vec();
-            let js_code = Arc::clone(&js_code);
-            let config = Arc::clone(&config);
-            let errors = Arc::clone(&errors);
-
-            let handle = std::thread::spawn(move || {
-                let rt = tokio::runtime::Builder::new_current_thread()
-                    .enable_all()
-                    .build()
-                    .unwrap();
-
-                rt.block_on(async {
-                    for file_path in chunk {
-                        if let Err(e) =
-                            Self::execute_on_single_file(&config, &js_code, &file_path).await
-                        {
-                            let error_msg =
-                                format!("Error processing file {}: {}", file_path.display(), e);
-                            eprintln!("{}", error_msg);
-                            errors.lock().unwrap().push(error_msg);
-                        }
-                    }
-                })
-            });
-
-            handles.push(handle);
-        }
-
-        // Wait for all threads to complete
-        for handle in handles {
-            if let Err(e) = handle.join() {
-                return Err(ExecutionError::ThreadExecution {
-                    message: format!("Thread execution failed: {:?}", e),
-                });
-            }
-        }
-
-        Ok(())
-    }
-
-    /// Execute JavaScript code from string with mock filesystem
-    pub async fn execute_from_string(
-        &self,
-        js_code: &str,
-        _mock_files: HashMap<PathBuf, String>,
-    ) -> Result<(), ExecutionError> {
-        // For now, just execute the JavaScript code without file processing
-        // In a more complete implementation, you would set up the mock files
-        // and then process them similar to execute_on_files
-
-        // This is a simplified implementation that just runs the JS code once
-        let dummy_file = PathBuf::from("__mock__.js");
-        Self::execute_on_single_file(&self.config, &Arc::new(js_code.to_string()), &dummy_file)
-            .await
-    }
-
     /// Execute JavaScript code on a single file
     async fn execute_on_single_file(
         config: &Arc<ExecutionConfig<F, R, L>>,
-        js_code: &str,
+        script_path: &Path,
         target_file_path: &Path,
     ) -> Result<(), ExecutionError> {
         #[cfg(feature = "native")]
         {
-            Self::execute_with_quickjs(config, js_code, target_file_path).await
+            Self::execute_with_quickjs(config, script_path, target_file_path).await
         }
 
         #[cfg(not(feature = "native"))]
@@ -251,9 +183,21 @@ where
     #[cfg(feature = "native")]
     async fn execute_with_quickjs(
         config: &Arc<ExecutionConfig<F, R, L>>,
-        js_code: &str,
+        script_path: &Path,
         target_file_path: &Path,
     ) -> Result<(), ExecutionError> {
+        use crate::utils::quickjs_utils::maybe_promise;
+
+        let script_name = script_path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or("main.js");
+
+        let js_code = format!(
+            include_str!("scripts/main_script.js.txt"),
+            script_name = script_name
+        );
+
         // Initialize QuickJS runtime and context
         let runtime = AsyncRuntime::new().map_err(|e| ExecutionError::Runtime {
             source: crate::sandbox::errors::RuntimeError::InitializationFailed {
@@ -290,45 +234,118 @@ where
                 },
             })?;
 
-        // Attach global modules
-        async_with!(context => |ctx| {
-            global_attachment.attach(&ctx)?;
-            Ok::<_, Error>(())
-        })
-        .await
-        .map_err(|e| ExecutionError::Runtime {
-            source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                message: format!("Failed to attach global modules: {}", e),
-            },
-        })?;
-
         // Execute JavaScript code
-        async_with!(context => |ctx| {
-            // Set the current file path
-            let file_path_str = target_file_path.to_string_lossy();
-            ctx.globals().set("__CURRENT_FILE_PATH__", file_path_str.as_ref())?;
+        let result: Result<Option<String>, ExecutionError> = async_with!(context => |ctx| {
+            global_attachment.attach(&ctx).map_err(|e| ExecutionError::Runtime {
+                source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                    message: format!("Failed to attach global modules: {}", e),
+                },
+            })?;
 
-            // Set up evaluation options
-            let mut options = EvalOptions::default();
-            options.global = false;
-            options.strict = true;
+            let execution = async {
+                let module = Module::declare(ctx.clone(), "__codemod_entry.js", js_code)
+                    .catch(&ctx)
+                    .map_err(|e| ExecutionError::Runtime {
+                        source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                            message: format!("Failed to declare module: {}", e),
+                        },
+                    })?;
 
-            // Execute JavaScript
-            if let Err(Error::Exception) = ctx.eval_with_options::<(), _>(
-                js_code.as_bytes(),
-                options
-            ) {
-                eprintln!("JavaScript Error in file {}: {:#?}", target_file_path.display(), ctx.catch());
-            }
+                // Set the current file path for the codemod
+                let file_path_str = target_file_path.to_string_lossy();
+                ctx.globals()
+                    .set("CODEMOD_TARGET_FILE_PATH", file_path_str.as_ref())
+                    .map_err(|e| ExecutionError::Runtime {
+                        source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                            message: format!("Failed to set global variable: {}", e),
+                        },
+                    })?;
 
-            Ok::<_, Error>(())
+                // Evaluate module.
+                let (evaluated, _) = module
+                    .eval()
+                    .catch(&ctx)
+                    .map_err(|e| ExecutionError::Runtime {
+                        source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                            message: e.to_string(),
+                        },
+                    })?;
+                while ctx.execute_pending_job() {}
+
+                // Get the default export.
+                let namespace = evaluated
+                    .namespace()
+                    .catch(&ctx)
+                    .map_err(|e| ExecutionError::Runtime {
+                        source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                            message: e.to_string(),
+                        },
+                    })?;
+
+
+                let func = namespace
+                    .get::<_, Function>("executeCodemod")
+                    .catch(&ctx)
+                    .map_err(|e| ExecutionError::Runtime {
+                        source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                            message: e.to_string(),
+                        },
+                    })?;
+
+
+                // Call it and return value.
+                let result_obj_promise = func.call(()).catch(&ctx).map_err(|e| {
+                    ExecutionError::Runtime {
+                        source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                            message: e.to_string(),
+                        },
+                    }
+                })?;
+                let result_obj = maybe_promise(result_obj_promise)
+                    .await
+                    .catch(&ctx)
+                    .map_err(|e| ExecutionError::Runtime {
+                        source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                            message: e.to_string(),
+                        },
+                    })?;
+
+                if result_obj.is_string() {
+                    Ok(Some(result_obj.get::<String>().unwrap()))
+                } else if result_obj.is_null() || result_obj.is_undefined() {
+                    Ok(None)
+                } else {
+                    Err(ExecutionError::Runtime {
+                        source: crate::sandbox::errors::RuntimeError::ExecutionFailed {
+                            message: "Invalid result type".to_string(),
+                        },
+                    })
+                }
+            };
+            execution.await
         })
-        .await
-        .map_err(|e| ExecutionError::Runtime {
-            source: crate::sandbox::errors::RuntimeError::ExecutionFailed {
-                message: format!("JavaScript execution failed: {}", e),
-            },
-        })?;
+        .await;
+
+        if let Some(new_content) = result? {
+            let mut file = tokio::fs::File::create(target_file_path)
+                .await
+                .map_err(|e| ExecutionError::Configuration {
+                    message: format!(
+                        "Failed to open file for writing {}: {}",
+                        target_file_path.display(),
+                        e
+                    ),
+                })?;
+            file.write_all(new_content.as_bytes()).await.map_err(|e| {
+                ExecutionError::Configuration {
+                    message: format!(
+                        "Failed to write to file {}: {}",
+                        target_file_path.display(),
+                        e
+                    ),
+                }
+            })?;
+        }
 
         Ok(())
     }

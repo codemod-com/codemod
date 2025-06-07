@@ -10,7 +10,7 @@ use std::{env, path::Path, sync::Arc};
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
     if args.len() < 3 {
-        eprintln!("Usage: {} <path-to-js-file> <target-directory> [--no-gitignore] [--include-hidden] [--max-threads=N]", args[0]);
+        eprintln!("Usage: {} <path-to-js-file> <target-directory> [--no-gitignore] [--include-hidden] [--max-threads=N] [--dry-run]", args[0]);
         eprintln!("Options:");
         eprintln!("  --no-gitignore     Don't respect .gitignore files");
         eprintln!("  --include-hidden   Include hidden files and directories");
@@ -48,6 +48,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             "--include-hidden" => {
                 walk_options.include_hidden = true;
             }
+            "--dry-run" => {
+                config = config.with_dry_run(true);
+            }
             _ if arg.starts_with("--max-threads=") => {
                 if let Some(value) = arg.strip_prefix("--max-threads=") {
                     match value.parse::<usize>() {
@@ -64,6 +67,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     std::process::exit(1);
                 }
             }
+            _ if arg.starts_with("--language=") => {
+                if let Some(value) = arg.strip_prefix("--language=") {
+                    config = config.with_language(value.parse().unwrap());
+                }
+            }
+            _ if arg.starts_with("--extensions=") => {
+                if let Some(value) = arg.strip_prefix("--extensions=") {
+                    config =
+                        config.with_extensions(value.split(',').map(|s| s.to_string()).collect());
+                }
+            }
             _ => {
                 eprintln!("Error: Unknown argument: {}", arg);
                 std::process::exit(1);
@@ -73,19 +87,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     config = config.with_walk_options(walk_options);
 
-    // Read the JavaScript file
-    let js_content = std::fs::read_to_string(js_file_path).map_err(|e| {
-        format!(
-            "Failed to read JavaScript file '{}': {}",
-            js_file_path.display(),
-            e
-        )
-    })?;
+    // Verify the JavaScript file exists
+    if !js_file_path.exists() {
+        eprintln!(
+            "Error: JavaScript file '{}' does not exist",
+            js_file_path.display()
+        );
+        std::process::exit(1);
+    }
 
     // Create and run the execution engine
     let engine = ExecutionEngine::new(config);
     if let Err(e) = engine
-        .execute_on_directory(&js_content, target_directory)
+        .execute_on_directory(js_file_path, target_directory)
         .await
     {
         eprintln!("Error: {}", e);

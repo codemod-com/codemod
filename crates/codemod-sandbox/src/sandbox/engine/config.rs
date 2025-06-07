@@ -1,3 +1,5 @@
+use ast_grep_language::SupportLang;
+
 use crate::sandbox::filesystem::{FileSystem, WalkOptions};
 use crate::sandbox::loaders::ModuleLoader;
 use crate::sandbox::resolvers::ModuleResolver;
@@ -23,6 +25,12 @@ where
     pub max_threads: Option<usize>,
     /// Options for directory walking
     pub walk_options: WalkOptions,
+    /// Language to use for execution
+    pub language: Option<SupportLang>,
+    /// Extensions to use for execution
+    pub extensions: Option<Vec<String>>,
+    /// Whether to dry run the execution
+    pub dry_run: bool,
 }
 
 impl<F, R, L> ExecutionConfig<F, R, L>
@@ -44,6 +52,9 @@ where
             script_base_dir,
             max_threads: None,
             walk_options: WalkOptions::default(),
+            language: None,
+            extensions: None,
+            dry_run: false,
         }
     }
 
@@ -69,6 +80,21 @@ where
 
     pub fn with_max_depth(mut self, max_depth: usize) -> Self {
         self.walk_options.max_depth = Some(max_depth);
+        self
+    }
+
+    pub fn with_language(mut self, language: SupportLang) -> Self {
+        self.language = Some(language);
+        self
+    }
+
+    pub fn with_extensions(mut self, extensions: Vec<String>) -> Self {
+        self.extensions = Some(extensions);
+        self
+    }
+
+    pub fn with_dry_run(mut self, dry_run: bool) -> Self {
+        self.dry_run = dry_run;
         self
     }
 }
