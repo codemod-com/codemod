@@ -1,3 +1,4 @@
+use crate::utils::transpiler;
 use rquickjs_git::{
     loader::{Loader, Resolver},
     Ctx, Error, Module,
@@ -56,7 +57,19 @@ impl Loader for QuickJSLoader {
         let path = std::path::Path::new(name);
         if path.exists() && path.is_file() {
             let source = std::fs::read_to_string(path).map_err(|_| Error::new_loading(name))?;
-            Module::declare(ctx.clone(), name, source.as_bytes())
+
+            // Check if the file is a TypeScript file that needs transpilation
+            let extension = path.extension().and_then(|ext| ext.to_str());
+            let needs_transpilation = matches!(extension, Some("ts") | Some("mts") | Some("cts"));
+
+            if needs_transpilation {
+                let transpiled_bytes = transpiler::transpile(source).map_err(|err| {
+                    Error::new_loading(&format!("Transpilation failed for {}: {}", name, err))
+                })?;
+                Module::declare(ctx.clone(), name, transpiled_bytes.as_slice())
+            } else {
+                Module::declare(ctx.clone(), name, source.as_bytes())
+            }
         } else {
             Err(Error::new_loading(name))
         }
