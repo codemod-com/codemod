@@ -543,6 +543,7 @@ dependencies = [
  "butterflow-state",
  "chrono",
  "clap",
+ "codemod-sandbox",
  "dirs",
  "env_logger",
  "log",

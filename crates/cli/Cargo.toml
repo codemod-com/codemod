@@ -14,6 +14,7 @@ butterflow-models = { path = "../models" }
 butterflow-core = { path = "../core" }
 butterflow-state = { path = "../state" }
 butterflow-runners = { path = "../runners" }
+codemod-sandbox = { path = "../codemod-sandbox" }
 tokio = { workspace = true }
 clap = { version = "4.5", features = ["derive"] }
 serde = { workspace = true }

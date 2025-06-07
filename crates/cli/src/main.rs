@@ -21,6 +21,9 @@ enum Commands {
     /// Manage workflows
     Workflow(WorkflowArgs),
 
+    /// JavaScript sandbox execution
+    Jssg(JssgArgs),
+
     /// Initialize a new workflow
     Init(commands::init::Command),
 
@@ -35,6 +38,12 @@ enum Commands {
 struct WorkflowArgs {
     #[command(subcommand)]
     command: WorkflowCommands,
+}
+
+#[derive(Args, Debug)]
+struct JssgArgs {
+    #[command(subcommand)]
+    command: JssgCommands,
 }
 
 #[derive(Subcommand, Debug)]
@@ -56,6 +65,12 @@ enum WorkflowCommands {
 
     /// Cancel a workflow run
     Cancel(commands::workflow::cancel::Command),
+}
+
+#[derive(Subcommand, Debug)]
+enum JssgCommands {
+    /// Run JavaScript code transformation
+    Run(commands::jssg::run::Command),
 }
 
 #[tokio::main]
@@ -96,6 +111,11 @@ async fn main() -> Result<()> {
             }
             WorkflowCommands::Cancel(args) => {
                 commands::workflow::cancel::handler(&engine, args).await?;
+            }
+        },
+        Commands::Jssg(args) => match &args.command {
+            JssgCommands::Run(args) => {
+                commands::jssg::run::handler(args).await?;
             }
         },
         Commands::Init(args) => {
