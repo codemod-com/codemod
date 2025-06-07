@@ -101,9 +101,13 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     // Create and run the execution engine
     let engine = ExecutionEngine::new(config);
-    engine
+    let stats = engine
         .execute_on_directory(js_file_path, target_directory)
         .await?;
+
+    println!("Modified files: {:?}", stats.files_modified);
+    println!("Unmodified files: {:?}", stats.files_unmodified);
+    println!("Files with errors: {:?}", stats.files_with_errors);
 
     Ok(())
 }

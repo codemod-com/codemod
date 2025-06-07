@@ -11,9 +11,70 @@ use ast_grep_language::SupportLang;
 use ignore::{WalkBuilder, WalkState};
 use llrt_modules::module_builder::ModuleBuilder;
 use rquickjs_git::{async_with, AsyncContext, AsyncRuntime};
+use std::fmt;
 use std::path::Path;
 use std::sync::Arc;
 use tokio::io::AsyncWriteExt;
+
+/// Statistics about the execution results
+#[derive(Debug, Clone, Default)]
+pub struct ExecutionStats {
+    pub files_modified: usize,
+    pub files_unmodified: usize,
+    pub files_with_errors: usize,
+}
+
+impl ExecutionStats {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Total number of files processed
+    pub fn total_files(&self) -> usize {
+        self.files_modified + self.files_unmodified + self.files_with_errors
+    }
+
+    /// Returns true if any files were processed successfully (modified or unmodified)
+    pub fn has_successful_files(&self) -> bool {
+        self.files_modified > 0 || self.files_unmodified > 0
+    }
+
+    /// Returns true if any files had errors during processing
+    pub fn has_errors(&self) -> bool {
+        self.files_with_errors > 0
+    }
+
+    /// Returns the success rate as a percentage (0.0 to 1.0)
+    pub fn success_rate(&self) -> f64 {
+        let total = self.total_files();
+        if total == 0 {
+            0.0
+        } else {
+            (self.files_modified + self.files_unmodified) as f64 / total as f64
+        }
+    }
+}
+
+impl fmt::Display for ExecutionStats {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "Execution Summary: {} files processed ({} modified, {} unmodified, {} errors)",
+            self.total_files(),
+            self.files_modified,
+            self.files_unmodified,
+            self.files_with_errors
+        )
+    }
+}
+
+/// Result of executing a codemod on a single file
+#[derive(Debug, Clone)]
+pub enum ExecutionResult {
+    Modified,
+    Unmodified,
+    Error(String),
+}
 
 /// Main execution engine for running JavaScript code
 ///
@@ -40,7 +101,7 @@ where
         &self,
         script_path: &Path,
         target_dir: &Path,
-    ) -> Result<(), ExecutionError> {
+    ) -> Result<ExecutionStats, ExecutionError> {
         // Check if target directory exists
         if !self.config.filesystem.exists(target_dir).await {
             return Err(ExecutionError::Configuration {
@@ -63,7 +124,9 @@ where
         let language = self.config.language.unwrap_or(SupportLang::TypeScript);
 
         let config = Arc::clone(&self.config);
-        let processed_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let modified_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let unmodified_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let error_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
         let errors = Arc::new(std::sync::Mutex::new(Vec::new()));
         let script_path = Arc::new(script_path.to_path_buf());
         let ts_extensions =
@@ -89,7 +152,9 @@ where
 
             walk_builder.build_parallel().run(|| {
                 let config = Arc::clone(&config);
-                let processed_count = Arc::clone(&processed_count);
+                let modified_count = Arc::clone(&modified_count);
+                let unmodified_count = Arc::clone(&unmodified_count);
+                let error_count = Arc::clone(&error_count);
                 let errors = Arc::clone(&errors);
                 let script_path = Arc::clone(&script_path);
                 let ts_extensions = Arc::clone(&ts_extensions);
@@ -114,28 +179,47 @@ where
                                 .unwrap();
 
                             rt.block_on(async {
-                                if let Err(e) =
-                                    Self::execute_on_single_file(&config, &script_path, file_path)
-                                        .await
+                                match Self::execute_on_single_file(&config, &script_path, file_path)
+                                    .await
                                 {
-                                    let error_msg = format!(
-                                        "Error processing file {}: {}",
-                                        file_path.display(),
-                                        match e {
-                                            ExecutionError::Runtime { source } => {
-                                                source.to_string()
+                                    Ok(ExecutionResult::Modified) => {
+                                        modified_count
+                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                    }
+                                    Ok(ExecutionResult::Unmodified) => {
+                                        unmodified_count
+                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                    }
+                                    Ok(ExecutionResult::Error(msg)) => {
+                                        error_count
+                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                        let error_msg = format!(
+                                            "Error processing file {}: {}",
+                                            file_path.display(),
+                                            msg
+                                        );
+                                        errors.lock().unwrap().push(error_msg);
+                                    }
+                                    Err(e) => {
+                                        error_count
+                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                        let error_msg = format!(
+                                            "Error processing file {}: {}",
+                                            file_path.display(),
+                                            match e {
+                                                ExecutionError::Runtime { source } => {
+                                                    source.to_string()
+                                                }
+                                                _ => e.to_string(),
                                             }
-                                            _ => e.to_string(),
-                                        }
-                                    );
-                                    errors.lock().unwrap().push(error_msg);
-                                } else {
-                                    processed_count
-                                        .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                        );
+                                        errors.lock().unwrap().push(error_msg);
+                                    }
                                 }
                             });
                         }
                         Err(err) => {
+                            error_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                             let error_msg = format!("Error walking directory: {}", err);
                             errors.lock().unwrap().push(error_msg);
                         }
@@ -144,19 +228,24 @@ where
                 })
             });
 
-            let count = processed_count.load(std::sync::atomic::Ordering::Relaxed);
-            if count == 0 {
+            let modified = modified_count.load(std::sync::atomic::Ordering::Relaxed);
+            let unmodified = unmodified_count.load(std::sync::atomic::Ordering::Relaxed);
+            let errors = error_count.load(std::sync::atomic::Ordering::Relaxed);
+
+            if modified + unmodified + errors == 0 {
                 return Err(ExecutionError::NoFilesFound);
             }
 
-            Ok(())
+            Ok(ExecutionStats {
+                files_modified: modified,
+                files_unmodified: unmodified,
+                files_with_errors: errors,
+            })
         })
         .await
         .map_err(|e| ExecutionError::ThreadExecution {
             message: format!("Directory processing failed: {:?}", e),
-        })??;
-
-        Ok(())
+        })?
     }
 
     /// Execute JavaScript code on a single file
@@ -164,7 +253,7 @@ where
         config: &Arc<ExecutionConfig<F, R, L>>,
         script_path: &Path,
         target_file_path: &Path,
-    ) -> Result<(), ExecutionError> {
+    ) -> Result<ExecutionResult, ExecutionError> {
         #[cfg(feature = "native")]
         {
             Self::execute_with_quickjs(config, script_path, target_file_path).await
@@ -173,10 +262,9 @@ where
         #[cfg(not(feature = "native"))]
         {
             // For non-native builds (like WASM), we would use a different execution strategy
-            Err(ExecutionError::Configuration {
-                message: "JavaScript execution not supported in this build configuration"
-                    .to_string(),
-            })
+            Ok(ExecutionResult::Error(
+                "JavaScript execution not supported in this build configuration".to_string(),
+            ))
         }
     }
 
@@ -185,7 +273,7 @@ where
         config: &Arc<ExecutionConfig<F, R, L>>,
         script_path: &Path,
         target_file_path: &Path,
-    ) -> Result<(), ExecutionError> {
+    ) -> Result<ExecutionResult, ExecutionError> {
         use crate::utils::quickjs_utils::maybe_promise;
 
         let script_name = script_path
@@ -326,27 +414,44 @@ where
         })
         .await;
 
-        if let Some(new_content) = result? {
-            let mut file = tokio::fs::File::create(target_file_path)
-                .await
-                .map_err(|e| ExecutionError::Configuration {
-                    message: format!(
-                        "Failed to open file for writing {}: {}",
-                        target_file_path.display(),
-                        e
-                    ),
-                })?;
-            file.write_all(new_content.as_bytes()).await.map_err(|e| {
-                ExecutionError::Configuration {
-                    message: format!(
-                        "Failed to write to file {}: {}",
-                        target_file_path.display(),
-                        e
-                    ),
+        match result {
+            Ok(Some(new_content)) => {
+                let original_content =
+                    tokio::fs::read_to_string(target_file_path)
+                        .await
+                        .map_err(|e| ExecutionError::Configuration {
+                            message: format!(
+                                "Failed to read file {}: {}",
+                                target_file_path.display(),
+                                e
+                            ),
+                        })?;
+                if new_content == original_content {
+                    return Ok(ExecutionResult::Unmodified);
                 }
-            })?;
-        }
 
-        Ok(())
+                let mut file = tokio::fs::File::create(target_file_path)
+                    .await
+                    .map_err(|e| ExecutionError::Configuration {
+                        message: format!(
+                            "Failed to open file for writing {}: {}",
+                            target_file_path.display(),
+                            e
+                        ),
+                    })?;
+                file.write_all(new_content.as_bytes()).await.map_err(|e| {
+                    ExecutionError::Configuration {
+                        message: format!(
+                            "Failed to write to file {}: {}",
+                            target_file_path.display(),
+                            e
+                        ),
+                    }
+                })?;
+                Ok(ExecutionResult::Modified)
+            }
+            Ok(None) => Ok(ExecutionResult::Unmodified),
+            Err(e) => Err(e),
+        }
     }
 }
