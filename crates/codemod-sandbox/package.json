@@ -2,14 +2,14 @@
   "name": "@codemod.com/codemod-sandbox",
   "version": "0.1.4",
   "description": "Codemod Javascript Sandbox",
-  "main": "./dist/src/index.js",
+  "main": "./dist/js/index.js",
   "exports": {
-    ".": "./dist/src/index.js",
+    ".": "./dist/js/index.js",
     "./sandbox.wasm": "./sandbox.wasm",
-    "./web": "./dist/src/web-exports.js",
-    "./node": "./dist/src/node-exports.js"
+    "./web": "./dist/js/web-exports.js",
+    "./node": "./dist/js/node-exports.js"
   },
-  "types": "dist/src/index.d.ts",
+  "types": "dist/js/index.d.ts",
   "type": "module",
   "scripts": {
     "prepack": "pnpm run build",
@@ -19,7 +19,7 @@
     "build:tsc": "pnpm run generate-type-declarations && tsc --project tsconfig.build.json --pretty",
     "build:runtime": "pnpm run copy-runtime-files",
     "build": "pnpm run build:runtime && pnpm run build:tsc",
-    "lint": "pnpm run build:tsc && eslint src/ --ext .ts",
+    "lint": "pnpm run build:tsc && eslint js/ --ext .ts",
     "test": "pnpm run build && node --test --enable-source-maps --test-reporter spec dist/tests/*.js"
   },
   "repository": {
@@ -27,7 +27,7 @@
     "url": "https://github.com/codemod-com/codemod"
   },
   "files": [
-    "dist/src",
+    "dist/js",
     "sandbox.wasm"
   ],
   "keywords": [],

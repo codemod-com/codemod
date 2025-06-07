@@ -5,6 +5,6 @@
     "outDir": "./dist",
     "lib": ["ES2022", "DOM"]
   },
-  "include": ["src/**/*", "tests/**/*", "scripts/**/*"],
+  "include": ["js/**/*", "tests/**/*", "scripts/**/*", "js/factory.js"],
   "extends": "@tsconfig/node22"
 }

@@ -9,8 +9,8 @@ class TypeDeclarationGenerator {
 
   constructor() {
     this.scriptDir = dirname(fileURLToPath(import.meta.url));
-    this.sourceFile = resolve(this.scriptDir, "../src/environment.d.ts");
-    this.outputFile = resolve(this.scriptDir, "../src/type-declarations.ts");
+    this.sourceFile = resolve(this.scriptDir, "../js/environment.d.ts");
+    this.outputFile = resolve(this.scriptDir, "../js/type-declarations.ts");
   }
 
   private escapeTemplateString(content: string): string {

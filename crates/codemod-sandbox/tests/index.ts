@@ -1,8 +1,8 @@
 import { deepStrictEqual, rejects } from "node:assert";
 import test, { describe } from "node:test";
 
-import { NodeSandbox } from "../src/node.js";
-import { SandboxedModule } from "../src/module.js";
+import { NodeSandbox } from "../js/node.js";
+import { SandboxedModule } from "../js/module.js";
 
 async function run(
   code: string,

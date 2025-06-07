@@ -14,7 +14,7 @@ interface FileCopyTask {
 const FILE_MAPPINGS: ReadonlyArray<FileCopyTask> = [
   {
     sourceFileName: "codemod-sandbox_bg.js",
-    destinationPath: ["src", "factory.js"]
+    destinationPath: ["js", "factory.js"]
   },
   {
     sourceFileName: "codemod-sandbox_bg.wasm", 

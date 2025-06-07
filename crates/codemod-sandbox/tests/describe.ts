@@ -1,8 +1,8 @@
 import { deepStrictEqual } from "node:assert";
 import test, { describe } from "node:test";
-import { NodeSandbox } from "../src/node.js";
-import { DescriberInputs } from "../src/types.js";
-import { SandboxedModule } from "../src/module.js";
+import { NodeSandbox } from "../js/node.js";
+import { DescriberInputs } from "../js/types.js";
+import { SandboxedModule } from "../js/module.js";
 
 async function describeModule(
   code: string,
