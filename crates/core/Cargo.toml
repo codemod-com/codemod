@@ -1,6 +1,6 @@
 [package]
 name = "butterflow-core"
-version = "0.1.0"
+version.workspace = true
 edition = "2021"
 authors.workspace = true
 description.workspace = true
@@ -10,10 +10,10 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-butterflow-models = { path = "../models" }
-butterflow-runners = { path = "../runners" }
-butterflow-state = { path = "../state" }
-butterflow-scheduler = { path = "../scheduler" }
+butterflow-models = { workspace = true }
+butterflow-runners = { workspace = true }
+butterflow-state = { workspace = true }
+butterflow-scheduler = { workspace = true }
 tokio = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

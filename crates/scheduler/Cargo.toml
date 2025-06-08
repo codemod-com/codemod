@@ -1,6 +1,6 @@
 [package]
 name = "butterflow-scheduler"
-version = "0.1.0"
+version.workspace = true
 edition = "2021"
 authors.workspace = true
 description.workspace = true
@@ -13,7 +13,7 @@ rust-version.workspace = true
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-butterflow-models = { path = "../models", features = ["docker", "podman"] }
+butterflow-models = { workspace = true, features = ["docker", "podman"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 uuid = { workspace = true, features = ["v4"] }

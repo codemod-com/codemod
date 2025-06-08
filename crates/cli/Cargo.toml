@@ -1,6 +1,6 @@
 [package]
 name = "codemod"
-version = "0.1.0"
+version.workspace = true
 edition = "2021"
 authors.workspace = true
 description.workspace = true
@@ -10,11 +10,11 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-butterflow-models = { path = "../models" }
-butterflow-core = { path = "../core" }
-butterflow-state = { path = "../state" }
-butterflow-runners = { path = "../runners" }
-codemod-sandbox = { path = "../codemod-sandbox" }
+butterflow-models = { workspace = true }
+butterflow-core = { workspace = true }
+butterflow-state = { workspace = true }
+butterflow-runners = { workspace = true }
+codemod-sandbox = { workspace = true }
 tokio = { workspace = true }
 clap = { version = "4.5", features = ["derive"] }
 serde = { workspace = true }
