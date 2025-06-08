@@ -107,7 +107,23 @@ jobs:
           APPLE_IDENTITY: ${{ secrets.APPLE_IDENTITY }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          codesign --force --timestamp --sign "$APPLE_IDENTITY" --team-id "$APPLE_TEAM_ID" --options runtime ${{ steps.binary_path.outputs.path }}
+          # Try codesign with timeout and retry mechanism
+          for i in {1..3}; do
+            echo "Attempt $i: Signing binary..."
+            if timeout 300 codesign --force --timestamp --sign "$APPLE_IDENTITY" --team-id "$APPLE_TEAM_ID" --options runtime ${{ steps.binary_path.outputs.path }}; then
+              echo "Signing successful on attempt $i"
+              break
+            else
+              echo "Signing failed on attempt $i"
+              if [ $i -eq 3 ]; then
+                echo "All signing attempts failed, trying without timestamp..."
+                codesign --force --sign "$APPLE_IDENTITY" --team-id "$APPLE_TEAM_ID" --options runtime ${{ steps.binary_path.outputs.path }}
+              else
+                echo "Retrying in 30 seconds..."
+                sleep 30
+              fi
+            fi
+          done
 
       - name: Verify Signing (macOS only)
         if: matrix.os == 'macos-latest'
