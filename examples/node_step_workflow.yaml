@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../schemas/workflow.json
 version: "1"
-# Run with: butterflow-cli run -w examples/node_step_workflow.yaml --param test=1234 --param branch=begin
+# Run with: codemod run -w examples/node_step_workflow.yaml --param test=1234 --param branch=begin
 # Observe that the initial params are printed, and that the template gets its
 # correct params (which can shadow the main workflow params)
 nodes:

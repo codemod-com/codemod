@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 env:
-  TEST_PACKAGES: -p butterflow-cli -p codemod-sandbox -p butterflow-core -p butterflow-models -p butterflow-runners -p butterflow-scheduler -p butterflow-state
+  TEST_PACKAGES: -p codemod -p codemod-sandbox -p butterflow-core -p butterflow-models -p butterflow-runners -p butterflow-scheduler -p butterflow-state
 
 jobs:
   lint:
