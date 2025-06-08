@@ -70,12 +70,13 @@ impl<'a> WasmBuilder<'a> {
 
     async fn execute_build_pipeline(&self) -> Result<()> {
         let package_name = "codemod-sandbox";
+        let wasm_filename = format!("{}.wasm", package_name);
 
         self.compile_wasm_package(package_name)
             .await
             .context("Failed to compile WebAssembly package")?;
 
-        self.generate_bindings(&format!("{}.wasm", package_name))
+        self.generate_bindings(&wasm_filename)
             .await
             .context("Failed to generate bindings")?;
 

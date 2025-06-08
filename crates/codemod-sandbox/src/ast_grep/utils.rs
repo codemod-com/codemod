@@ -5,7 +5,6 @@ use ast_grep_config::{DeserializeEnv, RuleCore, SerializableRuleCore};
 use ast_grep_core::{matcher::KindMatcher, Pattern};
 #[cfg(not(feature = "wasm"))]
 use ast_grep_language::SupportLang;
-use serde_json;
 
 use super::serde::JsValue;
 

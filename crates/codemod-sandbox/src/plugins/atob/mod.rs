@@ -20,13 +20,13 @@ extern "C" {
 fn qj_atob(s: RquickjsString) -> Result<RquickjsString> {
     let ctx = s.ctx().clone();
     let s = s.to_string().unwrap();
-    let result = atob(s.as_str());
+    let result = unsafe { atob(s.as_str()) };
     RquickjsString::from_str(ctx, result.as_str())
 }
 
 fn qj_btoa(s: RquickjsString) -> Result<RquickjsString> {
     let ctx = s.ctx().clone();
     let s = s.to_string().unwrap();
-    let result = btoa(s.as_str());
+    let result = unsafe { btoa(s.as_str()) };
     RquickjsString::from_str(ctx, result.as_str())
 }

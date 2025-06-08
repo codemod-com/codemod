@@ -2,7 +2,9 @@ use super::config::ExecutionConfig;
 use super::language_data::get_extensions_for_language;
 use super::quickjs_adapters::{QuickJSLoader, QuickJSResolver};
 use crate::ast_grep::AstGrepModule;
-use crate::rquickjs_compat::{CatchResultExt, Function, Module};
+use crate::rquickjs_compat::{
+    async_with, AsyncContext, AsyncRuntime, CatchResultExt, Function, Module,
+};
 use crate::sandbox::errors::ExecutionError;
 use crate::sandbox::filesystem::FileSystem;
 use crate::sandbox::loaders::ModuleLoader;
@@ -10,7 +12,6 @@ use crate::sandbox::resolvers::ModuleResolver;
 use ast_grep_language::SupportLang;
 use ignore::{WalkBuilder, WalkState};
 use llrt_modules::module_builder::ModuleBuilder;
-use rquickjs_git::{async_with, AsyncContext, AsyncRuntime};
 use std::fmt;
 use std::path::Path;
 use std::sync::Arc;
