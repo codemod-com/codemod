@@ -9,7 +9,7 @@ import Icon from "@/components/shared/Icon";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import AuthButtons from "@auth/AuthButtons";
 import { cx } from "cva";
-import { AreaChart, FolderKanban, Languages } from "lucide-react";
+import { AreaChart, FolderKanban, Languages, Users2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import HeaderDropdown from "./HeaderNavigation";
@@ -119,7 +119,16 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
       <HeaderDropdown
         label="Solution"
         items={[
+
           {
+            href: "https://app.codemod.com/pages/insights",
+            icon: (
+              <Users2 className="size-5 transition-colors group-hover:text-black" />
+            ),
+            label: "Engineer leaders",
+            description: "Business-aligned code-driven dashboards",
+          },
+                    {
             href: "/i18n",
             icon: (
               <Languages className="size-5 transition-colors group-hover:text-black" />

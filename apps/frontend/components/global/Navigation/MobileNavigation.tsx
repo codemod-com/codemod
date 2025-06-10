@@ -5,7 +5,7 @@ import LinkButton from "@/components/shared/LinkButton";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, type Variants, motion } from "framer-motion";
-import { AreaChart, FolderKanban, Languages } from "lucide-react";
+import { AreaChart, FolderKanban, Languages, Users2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import HeaderDropdown from "./HeaderNavigation";
@@ -98,7 +98,16 @@ export function MobileDropdown({
             <HeaderDropdown
               label="Solution"
               items={[
-                {
+ 
+                          {
+            href: "https://app.codemod.com/pages/insights",
+            icon: (
+              <Users2 className="size-5 transition-colors group-hover:text-black" />
+            ),
+            label: "Engineer leaders",
+            description: "Business-aligned code-driven dashboards",
+          },  
+                         {
                   href: "/i18n",
                   icon: (
                     <Languages className="size-5 transition-colors group-hover:text-black" />
