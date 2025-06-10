@@ -98,16 +98,15 @@ export function MobileDropdown({
             <HeaderDropdown
               label="Solution"
               items={[
- 
-                          {
-            href: "https://app.codemod.com/pages/insights",
-            icon: (
-              <Users2 className="size-5 transition-colors group-hover:text-black" />
-            ),
-            label: "Engineer leaders",
-            description: "Business-aligned code-driven dashboards",
-          },  
-                         {
+                {
+                  href: "https://app.codemod.com/pages/insights",
+                  icon: (
+                    <Users2 className="size-5 transition-colors group-hover:text-black" />
+                  ),
+                  label: "Engineer leaders",
+                  description: "Business-aligned code-driven dashboards",
+                },
+                {
                   href: "/i18n",
                   icon: (
                     <Languages className="size-5 transition-colors group-hover:text-black" />

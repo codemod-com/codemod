@@ -119,7 +119,6 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
       <HeaderDropdown
         label="Solution"
         items={[
-
           {
             href: "https://app.codemod.com/pages/insights",
             icon: (
@@ -128,7 +127,7 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
             label: "Engineer leaders",
             description: "Business-aligned code-driven dashboards",
           },
-                    {
+          {
             href: "/i18n",
             icon: (
               <Languages className="size-5 transition-colors group-hover:text-black" />
