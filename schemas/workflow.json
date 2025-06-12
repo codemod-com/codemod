@@ -36,7 +36,10 @@
       "type": "string"
     }
   },
-  "required": ["version", "nodes"],
+  "required": [
+    "version",
+    "nodes"
+  ],
   "$defs": {
     "Node": {
       "description": "Represents a node in a workflow",
@@ -44,7 +47,10 @@
       "properties": {
         "description": {
           "description": "Detailed description of what the node does",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         },
         "type": {
@@ -120,7 +126,11 @@
           "default": null
         }
       },
-      "required": ["id", "name", "steps"]
+      "required": [
+        "id",
+        "name",
+        "steps"
+      ]
     },
     "NodeType": {
       "description": "Type of node",
@@ -147,17 +157,26 @@
         },
         "image": {
           "description": "Container image (for Docker and Podman)",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         },
         "network": {
           "description": "Network mode for the container",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         },
         "options": {
           "description": "Additional container options",
-          "type": ["array", "null"],
+          "type": [
+            "array",
+            "null"
+          ],
           "default": null,
           "items": {
             "type": "string"
@@ -165,16 +184,24 @@
         },
         "user": {
           "description": "User to run as inside the container",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         },
         "working_dir": {
           "description": "Working directory inside the container",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         }
       },
-      "required": ["type"]
+      "required": [
+        "type"
+      ]
     },
     "RuntimeType": {
       "description": "Type of runtime",
@@ -202,7 +229,10 @@
       "properties": {
         "description": {
           "description": "Description of the state schema",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         },
         "type": {
@@ -226,7 +256,10 @@
           "type": "string"
         }
       },
-      "required": ["name", "type"]
+      "required": [
+        "name",
+        "type"
+      ]
     },
     "StateSchemaItems": {
       "description": "Represents the schema for items in an array",
@@ -238,14 +271,19 @@
         },
         "properties": {
           "description": "For object types, the properties of the object",
-          "type": ["object", "null"],
+          "type": [
+            "object",
+            "null"
+          ],
           "additionalProperties": {
             "$ref": "#/$defs/StateSchemaProperty"
           },
           "default": null
         }
       },
-      "required": ["type"]
+      "required": [
+        "type"
+      ]
     },
     "StateSchemaProperty": {
       "description": "Represents a state schema property",
@@ -253,7 +291,10 @@
       "properties": {
         "description": {
           "description": "Description of the property",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         },
         "type": {
@@ -261,7 +302,9 @@
           "$ref": "#/$defs/StateSchemaType"
         }
       },
-      "required": ["type"]
+      "required": [
+        "type"
+      ]
     },
     "StateSchemaType": {
       "description": "Type of state schema property",
@@ -299,7 +342,10 @@
       "properties": {
         "env": {
           "description": "Environment variables specific to this step",
-          "type": ["object", "null"],
+          "type": [
+            "object",
+            "null"
+          ],
           "additionalProperties": {
             "type": "string"
           },
@@ -319,7 +365,9 @@
               "$ref": "#/$defs/TemplateUse"
             }
           },
-          "required": ["use"]
+          "required": [
+            "use"
+          ]
         },
         {
           "description": "Script to run",
@@ -329,7 +377,9 @@
               "type": "string"
             }
           },
-          "required": ["run"]
+          "required": [
+            "run"
+          ]
         },
         {
           "description": "ast-grep",
@@ -339,10 +389,14 @@
               "$ref": "#/$defs/UseAstGrep"
             }
           },
-          "required": ["ast-grep"]
+          "required": [
+            "ast-grep"
+          ]
         }
       ],
-      "required": ["name"]
+      "required": [
+        "name"
+      ]
     },
     "Strategy": {
       "description": "Represents a strategy configuration",
@@ -354,12 +408,18 @@
         },
         "from_state": {
           "description": "State key to get matrix values from (for matrix strategy)",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         },
         "values": {
           "description": "Matrix values (for matrix strategy)",
-          "type": ["array", "null"],
+          "type": [
+            "array",
+            "null"
+          ],
           "default": null,
           "items": {
             "type": "object",
@@ -367,7 +427,9 @@
           }
         }
       },
-      "required": ["type"]
+      "required": [
+        "type"
+      ]
     },
     "StrategyType": {
       "description": "Type of strategy",
@@ -385,7 +447,10 @@
       "properties": {
         "description": {
           "description": "Detailed description of what the template does",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         },
         "env": {
@@ -440,7 +505,11 @@
           }
         }
       },
-      "required": ["id", "name", "steps"]
+      "required": [
+        "id",
+        "name",
+        "steps"
+      ]
     },
     "TemplateInput": {
       "description": "Represents a template input",
@@ -448,7 +517,10 @@
       "properties": {
         "description": {
           "description": "Description of the input",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         },
         "type": {
@@ -458,7 +530,10 @@
         },
         "default": {
           "description": "Default value for the input",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         },
         "name": {
@@ -471,7 +546,9 @@
           "default": false
         }
       },
-      "required": ["name"]
+      "required": [
+        "name"
+      ]
     },
     "TemplateOutput": {
       "description": "Represents a template output",
@@ -479,7 +556,10 @@
       "properties": {
         "description": {
           "description": "Description of the output",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": null
         },
         "name": {
@@ -491,7 +571,10 @@
           "type": "string"
         }
       },
-      "required": ["name", "value"]
+      "required": [
+        "name",
+        "value"
+      ]
     },
     "TemplateUse": {
       "description": "Represents a template use in a step",
@@ -510,7 +593,9 @@
           "type": "string"
         }
       },
-      "required": ["template"]
+      "required": [
+        "template"
+      ]
     },
     "Trigger": {
       "description": "Represents a trigger configuration",
@@ -521,7 +606,9 @@
           "$ref": "#/$defs/TriggerType"
         }
       },
-      "required": ["type"]
+      "required": [
+        "type"
+      ]
     },
     "TriggerType": {
       "description": "Type of trigger",
@@ -553,7 +640,10 @@
           "$ref": "#/$defs/UseAstGrepQuery"
         }
       },
-      "required": ["paths", "query"]
+      "required": [
+        "paths",
+        "query"
+      ]
     },
     "UseAstGrepQuery": {
       "oneOf": [
@@ -566,7 +656,9 @@
             }
           },
           "additionalProperties": false,
-          "required": ["inline"]
+          "required": [
+            "inline"
+          ]
         },
         {
           "description": "Path to query",
@@ -577,7 +669,9 @@
             }
           },
           "additionalProperties": false,
-          "required": ["file"]
+          "required": [
+            "file"
+          ]
         }
       ]
     },
