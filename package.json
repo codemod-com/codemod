@@ -46,7 +46,7 @@
     "lint:formatter": "biome format --write --diagnostic-level=error .",
     "test": "pnpm run test:unit && pnpm run test:backend",
     "test:silent": "pnpm run test:unit --silent && pnpm run test:backend --silent",
-    "test:unit": "vitest run --exclude \"(apps/backend/**/*.*|packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts)\"",
+    "test:unit": "vitest run --exclude \"(apps/backend/**/*.*|submodules/**/*.*|crates/**/*.*|packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts)\"",
     "test:backend": "pnpm --filter @codemod-com/backend test",
     "test:win": "vitest run packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts",
     "coverage": "pnpm test:unit --coverage",
