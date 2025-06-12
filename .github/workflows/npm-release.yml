@@ -1,4 +1,4 @@
-name: Release
+name: NPM Release
 
 on:
   push:
@@ -9,7 +9,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   release:
-    name: Release
+    name: NPM Release
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository

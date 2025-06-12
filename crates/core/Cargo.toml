@@ -1,0 +1,37 @@
+[package]
+name = "butterflow-core"
+version.workspace = true
+edition = "2021"
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+repository.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+butterflow-models = { workspace = true }
+butterflow-runners = { workspace = true }
+butterflow-state = { workspace = true }
+butterflow-scheduler = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+log = { workspace = true }
+async-trait = { workspace = true }
+regex = { workspace = true }
+futures = { workspace = true }
+reqwest = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3.8"
+
+[features]
+default = []
+docker = []
+podman = []
