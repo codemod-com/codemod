@@ -1,0 +1,70 @@
+[package]
+name = "codemod-sandbox"
+version.workspace = true
+edition = "2021"
+
+[dependencies]
+rquickjs-registry = { package = "rquickjs", version = "0.9.0", default-features = false, optional = true }
+rquickjs-git = { package = "rquickjs", git = "https://github.com/DelSkayn/rquickjs.git", version = "0.9.0", default-features = false, optional = true }
+thiserror = "1.0.65"
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+tokio = { version = "1.0", features = [
+  "rt-multi-thread",
+  "macros",
+  "fs",
+], optional = true }
+bytes = "1.0"
+swc_core = { version = "26.2", features = [
+  "common",
+  "base",
+  "ecma_ast_serde",
+  "ecma_codegen",
+  "ecma_minifier",
+  "ecma_transforms",
+  "ecma_transforms_typescript",
+  "ecma_transforms_optimization",
+  "ecma_transforms_react",
+  "ecma_parser",
+  "ecma_parser_typescript",
+  "ecma_utils",
+  "ecma_visit",
+] }
+wasm-bindgen = { workspace = true, optional = true }
+wasm-bindgen-futures = { workspace = true, optional = true }
+js-sys = { workspace = true, optional = true }
+web-tree-sitter-sg = { git = "https://github.com/mohebifar/tree-sitter-wasm.git", branch = "upgrade/0.25.4", optional = true }
+serde-wasm-bindgen = { version = "0.6", optional = true }
+ast-grep-core = { version = "0.38.2", default-features = false, optional = true }
+ast-grep-config = { version = "0.38.2", default-features = false, optional = true }
+ast-grep-language = { version = "0.38.2", default-features = true, optional = true }
+llrt_modules = { path = "../../submodules/llrt/llrt_modules", default-features = true, optional = true }
+ignore = { version = "0.4.23", optional = true }
+
+[features]
+default = ["native", "real-fs"]
+wasm = [
+  "mock-fs",
+  "ast-grep-core",
+  "ast-grep-config",
+  "web-tree-sitter-sg",
+  "wasm-bindgen",
+  "wasm-bindgen-futures",
+  "js-sys",
+  "serde-wasm-bindgen",
+  "rquickjs-registry/loader",
+  "rquickjs-registry/futures",
+  "rquickjs-registry/macro",
+]
+native = [
+  "real-fs",
+  "ast-grep-core/tree-sitter",
+  "ast-grep-config/tree-sitter",
+  "ast-grep-language",
+  "llrt_modules",
+  "rquickjs-git",
+  "rquickjs-git/full-async",
+  "tokio",
+]
+real-fs = ["tokio", "ignore"]
+mock-fs = []

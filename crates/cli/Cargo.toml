@@ -1,0 +1,33 @@
+[package]
+name = "codemod"
+version.workspace = true
+edition = "2021"
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+repository.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+butterflow-models = { workspace = true }
+butterflow-core = { workspace = true }
+butterflow-state = { workspace = true }
+butterflow-runners = { workspace = true }
+codemod-sandbox = { workspace = true }
+tokio = { workspace = true }
+clap = { version = "4.5", features = ["derive"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+anyhow = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+log = { workspace = true }
+env_logger = { workspace = true }
+dirs = "5.0"
+
+[features]
+default = []
+docker = ["butterflow-models/docker", "butterflow-runners/docker"]
+podman = ["butterflow-models/podman", "butterflow-runners/podman"]

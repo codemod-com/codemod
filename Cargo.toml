@@ -1,0 +1,58 @@
+[workspace]
+members = [
+    "crates/models",
+    "crates/core",
+    "crates/cli",
+    "crates/runners",
+    "crates/state",
+    "crates/codemod-sandbox",
+    "crates/codemod-sandbox/build",
+    "submodules/llrt/llrt_modules",
+    "xtask",
+]
+resolver = "2"
+
+[workspace.package]
+authors = ["Codemod.com"]
+description = "A self-hostable workflow engine for code transformations"
+documentation = "https://docs.rs/butterflow"
+repository = "https://github.com/codemod-com/butterflow"
+license = "MIT"
+rust-version = "1.70"
+version = "0.2.0"
+
+[workspace.dependencies]
+butterflow-models = { path = "crates/models" }
+butterflow-core = { path = "crates/core" }
+butterflow-state = { path = "crates/state" }
+butterflow-runners = { path = "crates/runners" }
+butterflow-scheduler = { path = "crates/scheduler" }
+codemod-sandbox = { path = "crates/codemod-sandbox" }
+
+tokio = { version = "1.36", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+thiserror = "2.0"
+anyhow = "1.0"
+uuid = { version = "1.6", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+log = "0.4"
+async-trait = "0.1"
+env_logger = "0.11"
+reqwest = { version = "0.12", features = ["json"] }
+regex = "1.10"
+futures = "0.3"
+clap = { version = "4.5", features = ["derive"] }
+wasm-bindgen = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi", version = "0.2.100" }
+wasm-bindgen-cli-support = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi", version = "0.2.100" }
+wasm-bindgen-futures = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi", version = "0.4.50" }
+js-sys = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi", version = "0.3.77" }
+
+[patch.crates-io]
+wasm-bindgen = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+wasm-bindgen-futures = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+wasm-bindgen-macro = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+wasm-bindgen-shared = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+wasm-bindgen-macro-support = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
+js-sys = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }

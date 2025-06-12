@@ -1,40 +1,64 @@
+# OS files
 .DS_Store
+Thumbs.db
 
+# Dependencies
 node_modules/
+
+# Build outputs
 dist/
 build/
 out/
+/target/
 tsconfig.tsbuildinfo
 
-.turbo/
+# Generated files
+generated/
+/crates/codemod_runner/target
+/crates/codemod-sandbox/target
+/crates/codemod-sandbox/js/factory.js
+/crates/codemod-sandbox/sandbox.wasm
+/tree-sitter-*.wasm
+/tree-sitter.wasm
+/web-tree-sitter.js
+/crates/scheduler/npm/pkg
 
+# Environment files
 **.env
 
-# Extension
-.vscode-test/
-*.vsix
+# IDE files
 .idea/
-yarn-error.log
-.trunk
+.vscode/
+.vscode-test/
+*.iml
+*.vsix
 
-# Studio
-.pnp
-.pnp.js
-coverage/
+# Log files
+yarn-error.log
 npm-debug.log*
 yarn-debug.log*
+
+# Cache and temporary files
+.turbo/
 .eslintcache/
+.cache
+.trunk
+
+# Framework specific
+.pnp
+.pnp.js
 .next/
 .vercel/
 
-# Backend
-build/
-generated/
+# Database
+.prisma
 
-# Workflow
-.cache
+# Rust specific
+**/*.rs.bk
+*.pdb
+
+# Testing
+coverage/
 
 # CLI package
 apps/cli/package/
-
-.prisma

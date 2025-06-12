@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "allowJs": true,
+    "outDir": "./dist",
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": ["js/**/*", "tests/**/*", "scripts/**/*", "js/factory.js"],
+  "extends": "@tsconfig/node22"
+}

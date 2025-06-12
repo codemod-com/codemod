@@ -1,0 +1,2 @@
+# Set all files in schemas/ directory as generated
+schemas/* linguist-generated=true
