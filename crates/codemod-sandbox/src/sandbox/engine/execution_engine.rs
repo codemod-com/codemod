@@ -2,9 +2,7 @@ use super::config::ExecutionConfig;
 use super::language_data::get_extensions_for_language;
 use super::quickjs_adapters::{QuickJSLoader, QuickJSResolver};
 use crate::ast_grep::AstGrepModule;
-use crate::rquickjs_compat::{
-    async_with, AsyncContext, AsyncRuntime, CatchResultExt, Function, Module,
-};
+use crate::rquickjs_compat::{CatchResultExt, Function, Module};
 use crate::sandbox::errors::ExecutionError;
 use crate::sandbox::filesystem::FileSystem;
 use crate::sandbox::loaders::ModuleLoader;
@@ -12,6 +10,7 @@ use crate::sandbox::resolvers::ModuleResolver;
 use ast_grep_language::SupportLang;
 use ignore::{WalkBuilder, WalkState};
 use llrt_modules::module_builder::ModuleBuilder;
+use rquickjs_git::{async_with, AsyncContext, AsyncRuntime};
 use std::fmt;
 use std::path::Path;
 use std::sync::Arc;
@@ -77,6 +76,52 @@ pub enum ExecutionResult {
     Error(String),
 }
 
+/// Output of executing a codemod on content (in-memory)
+#[derive(Debug, Clone)]
+pub struct ExecutionOutput {
+    /// The transformed content, if any
+    pub content: Option<String>,
+    /// Whether the content was modified from the original
+    pub modified: bool,
+    /// Error message if execution failed
+    pub error: Option<String>,
+}
+
+impl ExecutionOutput {
+    /// Create a successful output with transformed content
+    pub fn success(content: Option<String>, original_content: &str) -> Self {
+        let modified = match &content {
+            Some(new_content) => new_content != original_content,
+            None => false,
+        };
+
+        Self {
+            content,
+            modified,
+            error: None,
+        }
+    }
+
+    /// Create an error output
+    pub fn error(message: String) -> Self {
+        Self {
+            content: None,
+            modified: false,
+            error: Some(message),
+        }
+    }
+
+    /// Check if the execution was successful
+    pub fn is_success(&self) -> bool {
+        self.error.is_none()
+    }
+
+    /// Check if the execution failed
+    pub fn is_error(&self) -> bool {
+        self.error.is_some()
+    }
+}
+
 /// Main execution engine for running JavaScript code
 ///
 /// This engine coordinates filesystem operations, module resolution,
@@ -94,6 +139,27 @@ where
     pub fn new(config: ExecutionConfig<F, R, L>) -> Self {
         Self {
             config: Arc::new(config),
+        }
+    }
+
+    /// Execute a codemod on string content without touching the filesystem
+    /// This is useful for testing where we want to process content in memory
+    pub async fn execute_codemod_on_content(
+        &self,
+        script_path: &Path,
+        file_path: &Path,
+        content: &str,
+    ) -> Result<ExecutionOutput, ExecutionError> {
+        #[cfg(feature = "native")]
+        {
+            Self::execute_codemod_with_quickjs(&self.config, script_path, file_path, content).await
+        }
+
+        #[cfg(not(feature = "native"))]
+        {
+            Ok(ExecutionOutput::error(
+                "JavaScript execution not supported in this build configuration".to_string(),
+            ))
         }
     }
 
@@ -275,6 +341,73 @@ where
         script_path: &Path,
         target_file_path: &Path,
     ) -> Result<ExecutionResult, ExecutionError> {
+        // Read the original file content
+        let original_content = tokio::fs::read_to_string(target_file_path)
+            .await
+            .map_err(|e| ExecutionError::Configuration {
+                message: format!("Failed to read file {}: {}", target_file_path.display(), e),
+            })?;
+
+        // Execute the codemod on the content
+        let execution_output = Self::execute_codemod_with_quickjs(
+            config,
+            script_path,
+            target_file_path,
+            &original_content,
+        )
+        .await?;
+
+        // Handle the result
+        match execution_output {
+            ExecutionOutput {
+                content: Some(new_content),
+                modified: true,
+                error: None,
+            } => {
+                // Write the modified content back to the file
+                let mut file = tokio::fs::File::create(target_file_path)
+                    .await
+                    .map_err(|e| ExecutionError::Configuration {
+                        message: format!(
+                            "Failed to open file for writing {}: {}",
+                            target_file_path.display(),
+                            e
+                        ),
+                    })?;
+                file.write_all(new_content.as_bytes()).await.map_err(|e| {
+                    ExecutionError::Configuration {
+                        message: format!(
+                            "Failed to write to file {}: {}",
+                            target_file_path.display(),
+                            e
+                        ),
+                    }
+                })?;
+                Ok(ExecutionResult::Modified)
+            }
+            ExecutionOutput {
+                modified: false,
+                error: None,
+                ..
+            } => Ok(ExecutionResult::Unmodified),
+            ExecutionOutput {
+                error: Some(err), ..
+            } => Ok(ExecutionResult::Error(err)),
+            _ => Ok(ExecutionResult::Error(
+                "Unexpected execution output state".to_string(),
+            )),
+        }
+    }
+
+    /// Execute a codemod on string content using QuickJS
+    /// This is the core execution logic that doesn't touch the filesystem
+    #[cfg(feature = "native")]
+    async fn execute_codemod_with_quickjs(
+        config: &Arc<ExecutionConfig<F, R, L>>,
+        script_path: &Path,
+        file_path: &Path,
+        content: &str,
+    ) -> Result<ExecutionOutput, ExecutionError> {
         use crate::utils::quickjs_utils::maybe_promise;
 
         let script_name = script_path
@@ -341,7 +474,7 @@ where
                     })?;
 
                 // Set the current file path for the codemod
-                let file_path_str = target_file_path.to_string_lossy();
+                let file_path_str = file_path.to_string_lossy();
                 ctx.globals()
                     .set("CODEMOD_TARGET_FILE_PATH", file_path_str.as_ref())
                     .map_err(|e| ExecutionError::Runtime {
@@ -415,44 +548,13 @@ where
         })
         .await;
 
+        // Convert the result to ExecutionOutput
         match result {
-            Ok(Some(new_content)) => {
-                let original_content =
-                    tokio::fs::read_to_string(target_file_path)
-                        .await
-                        .map_err(|e| ExecutionError::Configuration {
-                            message: format!(
-                                "Failed to read file {}: {}",
-                                target_file_path.display(),
-                                e
-                            ),
-                        })?;
-                if new_content == original_content {
-                    return Ok(ExecutionResult::Unmodified);
-                }
-
-                let mut file = tokio::fs::File::create(target_file_path)
-                    .await
-                    .map_err(|e| ExecutionError::Configuration {
-                        message: format!(
-                            "Failed to open file for writing {}: {}",
-                            target_file_path.display(),
-                            e
-                        ),
-                    })?;
-                file.write_all(new_content.as_bytes()).await.map_err(|e| {
-                    ExecutionError::Configuration {
-                        message: format!(
-                            "Failed to write to file {}: {}",
-                            target_file_path.display(),
-                            e
-                        ),
-                    }
-                })?;
-                Ok(ExecutionResult::Modified)
+            Ok(new_content) => Ok(ExecutionOutput::success(new_content, content)),
+            Err(e) => {
+                println!("Error: {:?}", e);
+                Ok(ExecutionOutput::error(e.to_string()))
             }
-            Ok(None) => Ok(ExecutionResult::Unmodified),
-            Err(e) => Err(e),
         }
     }
 }
