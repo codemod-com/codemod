@@ -5,7 +5,7 @@ mod commands;
 mod engine;
 
 #[derive(Parser)]
-#[command(name = "butterflow")]
+#[command(name = "codemod")]
 #[command(about = "A self-hostable workflow engine for code transformations", long_about = None)]
 struct Cli {
     #[command(subcommand)]
@@ -21,7 +21,7 @@ enum Commands {
     /// Manage workflows
     Workflow(WorkflowArgs),
 
-    /// JavaScript sandbox execution
+    /// JavaScript ast-grep execution
     Jssg(JssgArgs),
 
     /// Initialize a new workflow
@@ -71,6 +71,8 @@ enum WorkflowCommands {
 enum JssgCommands {
     /// Run JavaScript code transformation
     Run(commands::jssg::run::Command),
+    /// Test JavaScript code transformations
+    Test(commands::jssg::test::Command),
 }
 
 #[tokio::main]
@@ -116,6 +118,9 @@ async fn main() -> Result<()> {
         Commands::Jssg(args) => match &args.command {
             JssgCommands::Run(args) => {
                 commands::jssg::run::handler(args).await?;
+            }
+            JssgCommands::Test(args) => {
+                commands::jssg::test::handler(args).await?;
             }
         },
         Commands::Init(args) => {

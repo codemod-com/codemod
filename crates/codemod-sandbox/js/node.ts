@@ -1,5 +1,4 @@
 import { readFile } from "node:fs/promises";
-import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import {
   ConsoleStdout,
@@ -14,10 +13,9 @@ import type { UUID } from "./types.js";
 export { NodeSandbox };
 
 async function loadWasmRuntime(): Promise<Buffer> {
-  const require = createRequire(import.meta.url);
-
-  const wasmFile = require.resolve("@codemod-com/codemod-sandbox/sandbox.wasm");
-
+  const wasmFile = import.meta.resolve(
+    "@codemod-com/codemod-sandbox/sandbox.wasm",
+  );
   return readFile(fileURLToPath(wasmFile));
 }
 

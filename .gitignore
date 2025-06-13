@@ -14,8 +14,6 @@ tsconfig.tsbuildinfo
 
 # Generated files
 generated/
-/crates/codemod_runner/target
-/crates/codemod-sandbox/target
 /crates/codemod-sandbox/js/factory.js
 /crates/codemod-sandbox/sandbox.wasm
 /tree-sitter-*.wasm
@@ -56,6 +54,7 @@ yarn-debug.log*
 # Rust specific
 **/*.rs.bk
 *.pdb
+target/
 
 # Testing
 coverage/

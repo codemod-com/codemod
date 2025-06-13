@@ -1,4 +1,3 @@
-import type { UUID } from "@breadboard-ai/types";
 import { Capabilities } from "./capabilities.js";
 import type {
   CapabilityRegistry,
@@ -11,6 +10,8 @@ import type {
 } from "./types.js";
 
 export { SandboxedModule };
+
+type UUID = string;
 
 interface ExecutionSession {
   sessionId: UUID;

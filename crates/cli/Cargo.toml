@@ -26,6 +26,17 @@ chrono = { workspace = true }
 log = { workspace = true }
 env_logger = { workspace = true }
 dirs = "5.0"
+regex = { workspace = true }
+walkdir = "2.4"
+tempfile = "3.8"
+num_cpus = "1.16"
+thiserror = { workspace = true }
+
+# Testing framework dependencies
+libtest-mimic = "0.8"
+similar = "2.0"
+notify = "8.0"
+ast-grep-language.workspace = true
 
 [features]
 default = []
