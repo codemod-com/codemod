@@ -40,8 +40,8 @@ jobs:
       - name: Cache Cargo
         uses: Swatinem/rust-cache@v2
 
-      - name: Re-generate Cargo.lock
-        run: cargo generate-lockfile
+      - name: Update Cargo.lock
+        run: cargo check
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
