@@ -1,0 +1,58 @@
+name: Version Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to bump to (e.g., 1.2.3)"
+        required: true
+        type: string
+
+jobs:
+  version-bump:
+    name: Bump Version
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Validate version format
+        run: |
+          if [[ ! "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Version must be in format x.y.z (e.g., 1.2.3)"
+            exit 1
+          fi
+
+      - name: Update version in Cargo.toml
+        run: |
+          version="${{ github.event.inputs.version }}"
+          sed "s/^version = \".*\"\$/version = \"$version\"/" ./Cargo.toml > /tmp/cargo.toml
+          mv /tmp/cargo.toml ./Cargo.toml
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Re-generate Cargo.lock
+        run: cargo generate-lockfile
+
+      - name: Commit version bump
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add Cargo.toml Cargo.lock
+          git commit -m "chore(bump): Bump version to v${{ github.event.inputs.version }}"
+
+      - name: Push changes
+        run: git push origin main
+
+      - name: Create tag
+        run: |
+          git tag "codemod-next@${{ github.event.inputs.version }}"
+          git push origin "codemod-next@${{ github.event.inputs.version }}"
