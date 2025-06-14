@@ -7,24 +7,8 @@ on:
       - main
 
 jobs:
-  paths-filter:
-    name: Check for crates changes
-    runs-on: ubuntu-22.04
-    outputs:
-      crates: ${{ steps.filter.outputs.crates }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            crates:
-              - 'crates/**'
-
   build:
     name: Build Release
-    needs: paths-filter
-    if: always() && needs.paths-filter.outputs.crates == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
