@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,17 +43,17 @@ jobs:
       - name: Re-generate Cargo.lock
         run: cargo generate-lockfile
 
-      - name: Commit version bump
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add Cargo.toml Cargo.lock
-          git commit -m "chore(bump): Bump version to v${{ github.event.inputs.version }}"
-
-      - name: Push changes
-        run: git push origin main
-
-      - name: Create tag
-        run: |
-          git tag "codemod-next@${{ github.event.inputs.version }}"
-          git push origin "codemod-next@${{ github.event.inputs.version }}"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(bump): Bump version to v${{ github.event.inputs.version }}"
+          title: "chore(bump): Bump version to v${{ github.event.inputs.version }}"
+          body: |
+            This PR bumps the version to v${{ github.event.inputs.version }}.
+            
+            Changes:
+            - Updated version in Cargo.toml
+            - Regenerated Cargo.lock
+          branch: "version-bump-v${{ github.event.inputs.version }}"
+          delete-branch: true

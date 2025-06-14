@@ -1,0 +1,39 @@
+name: Tag on Version Bump
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  create-tag:
+    name: Create Version Tag
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    if: |
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.title, 'chore(bump): Bump version to v')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from PR title
+        id: extract-version
+        run: |
+          title="${{ github.event.pull_request.title }}"
+          version=$(echo "$title" | sed -n 's/.*chore(bump): Bump version to v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
+          if [[ -z "$version" ]]; then
+            echo "Could not extract version from PR title: $title"
+            exit 1
+          fi
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Create and push tag
+        run: |
+          version="${{ steps.extract-version.outputs.version }}"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag "codemod-next@$version"
+          git push origin "codemod-next@$version" 
