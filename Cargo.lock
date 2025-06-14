@@ -540,7 +540,7 @@ dependencies = [
 
 [[package]]
 name = "butterflow-core"
-version = "1.0.0-rc.1"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -564,7 +564,7 @@ dependencies = [
 
 [[package]]
 name = "butterflow-models"
-version = "1.0.0-rc.1"
+version = "0.2.0"
 dependencies = [
  "chrono",
  "regex",
@@ -580,7 +580,7 @@ dependencies = [
 
 [[package]]
 name = "butterflow-runners"
-version = "1.0.0-rc.1"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -595,7 +595,7 @@ dependencies = [
 
 [[package]]
 name = "butterflow-scheduler"
-version = "1.0.0-rc.1"
+version = "0.2.0"
 dependencies = [
  "async-trait",
  "butterflow-models",
@@ -613,7 +613,7 @@ dependencies = [
 
 [[package]]
 name = "butterflow-state"
-version = "1.0.0-rc.1"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -826,7 +826,7 @@ dependencies = [
 
 [[package]]
 name = "codemod"
-version = "1.0.0-rc.1"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "ast-grep-language",
@@ -857,7 +857,7 @@ dependencies = [
 
 [[package]]
 name = "codemod-sandbox"
-version = "1.0.0-rc.1"
+version = "0.2.0"
 dependencies = [
  "ast-grep-config",
  "ast-grep-core",
@@ -7148,7 +7148,7 @@ dependencies = [
 
 [[package]]
 name = "xtask"
-version = "1.0.0-rc.1"
+version = "0.2.0"
 dependencies = [
  "butterflow-models",
  "clap",
