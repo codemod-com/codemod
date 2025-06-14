@@ -192,6 +192,7 @@ jobs:
             
             ${{ steps.git-cliff.outputs.content }}
           branch: changelog-update-${{ github.ref_name }}
+          base: main
           delete-branch: true
 
   create_release:
