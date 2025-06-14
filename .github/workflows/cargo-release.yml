@@ -179,11 +179,20 @@ jobs:
           cat CHANGELOG.md.bak >> CHANGELOG.md
           rm CHANGELOG.md.bak
 
-      - name: Update Changelog
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
         with:
-          commit_message: "chore(changelog): Update changelog for ${{ github.ref_name }}"
-          file_pattern: "CHANGELOG.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(changelog): Update changelog for ${{ github.ref_name }}"
+          title: "Update changelog for ${{ github.ref_name }}"
+          body: |
+            This PR updates the changelog for the release `${{ github.ref_name }}`.
+            
+            Generated changelog:
+            
+            ${{ steps.git-cliff.outputs.content }}
+          branch: changelog-update-${{ github.ref_name }}
+          delete-branch: true
 
   create_release:
     name: Create Release
