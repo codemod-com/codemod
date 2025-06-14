@@ -23,7 +23,7 @@ jobs:
         id: extract-version
         run: |
           title="${{ github.event.pull_request.title }}"
-          version=$(echo "$title" | sed -n 's/.*chore(bump): Bump codemod crates version to v\([0-9]\+\.[0-9]\+\.[0-9]\+\(-rc\.[0-9]\+\)\?).*/\1/p')
+          version=$(echo "$title" | sed -E 's/.*chore\(bump\): Bump codemod crates version to v([0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?).*/\1/')
           if [[ -z "$version" ]]; then
             echo "Could not extract version from PR title: $title"
             exit 1
