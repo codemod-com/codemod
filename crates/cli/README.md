@@ -1,6 +1,6 @@
-# Butterflow CLI
+# Codemod CLI
 
-The Butterflow CLI is a command-line interface for running and managing Butterflow workflows - a lightweight, self-hostable workflow engine designed for running large-scale code transformation jobs.
+The Codemod CLI is a command-line interface for running and managing Butterflow workflows - a lightweight, self-hostable workflow engine designed for running large-scale code transformation jobs.
 
 ## Installation
 
@@ -8,13 +8,13 @@ The Butterflow CLI is a command-line interface for running and managing Butterfl
 
 ```bash
 # Clone the repository
-git clone https://github.com/codemod-com/butterflow.git
-cd butterflow
+git clone https://github.com/codemod-com/codemod.git
+cd codemod
 
 # Build the project
 cargo build --release
 
-# The executable will be available at target/release/butterflow
+# The executable will be available at target/release/codemod
 ```
 
 ## Quick Start
@@ -38,24 +38,24 @@ nodes:
 2. Run the workflow:
 
 ```bash
-butterflow run -w workflow.yaml
+codemod run -w workflow.yaml
 ```
 
 ## Commands
 
-### `butterflow init`
+### `codemod init`
 
 Initialize a new Butterflow workflow project with interactive setup:
 
 ```bash
 # Initialize a new project in current directory
-butterflow init
+codemod init
 
 # Initialize a new project in a specific directory
-butterflow init my-project/
+codemod init my-project/
 
 # Initialize with a specific name
-butterflow init --name my-workflow
+codemod init --name my-workflow
 ```
 
 **Options:**
@@ -140,7 +140,7 @@ my-workflow/
 
 ```bash
 # Create a new AST-grep JavaScript project
-$ butterflow init my-js-codemod
+$ codemod init my-js-codemod
 ? What type of workflow would you like to create? AST-grep with JavaScript/TypeScript rules
 ? Which language would you like to target? JavaScript/TypeScript
 ? Project name: my-js-codemod
@@ -157,43 +157,43 @@ $ butterflow init my-js-codemod
 Next steps:
   cd my-js-codemod
   npm install
-  butterflow validate -w workflow.yaml
-  butterflow run -w workflow.yaml
+  codemod validate -w workflow.yaml
+  codemod run -w workflow.yaml
 ```
 
-### `butterflow run`
+### `codemod run`
 
 Execute a workflow from various sources:
 
 ```bash
 # Run from a specific workflow file
-butterflow run -w workflow.yaml
-butterflow run -w path/to/workflow.yaml
+codemod run -w workflow.yaml
+codemod run -w path/to/workflow.yaml
 
 # Run from a workflow bundle directory (containing workflow.yaml)
-butterflow run ./my-workflow-bundle/
+codemod run ./my-workflow-bundle/
 
 # Run from a registry (Conceptual)
-# butterflow run my-registry/react-19-codemods:latest 
+# codemod run my-registry/react-19-codemods:latest 
 ```
 
 **Options:**
 - `-w, --workflow <FILE>`: Path to the workflow definition file
 - Positional argument: Path to workflow file or bundle directory
 
-### `butterflow resume`
+### `codemod resume`
 
 Resume a paused workflow or trigger manual tasks:
 
 ```bash
 # Resume a workflow run by ID
-butterflow resume -i <workflow-run-id>
+codemod resume -i <workflow-run-id>
 
 # Trigger a specific task by UUID
-butterflow resume -i <workflow-run-id> -t <task-uuid>
+codemod resume -i <workflow-run-id> -t <task-uuid>
 
 # Trigger all tasks currently awaiting manual triggers
-butterflow resume -i <workflow-run-id> --trigger-all
+codemod resume -i <workflow-run-id> --trigger-all
 ```
 
 **Options:**
@@ -201,17 +201,17 @@ butterflow resume -i <workflow-run-id> --trigger-all
 - `-t, --task <UUID>`: Specific task UUID to trigger
 - `--trigger-all`: Trigger all tasks in `AwaitingTrigger` state
 
-### `butterflow validate`
+### `codemod validate`
 
 Validate a workflow definition without executing it:
 
 ```bash
 # Validate a workflow file
-butterflow validate -w workflow.yaml
-butterflow validate -w path/to/workflow.yaml
+codemod validate -w workflow.yaml
+codemod validate -w path/to/workflow.yaml
 
 # Validate a workflow bundle
-butterflow validate ./my-workflow-bundle/
+codemod validate ./my-workflow-bundle/
 ```
 
 **Validation Checks:**
@@ -230,7 +230,7 @@ butterflow validate ./my-workflow-bundle/
 
 Valid workflow:
 ```bash
-$ butterflow validate -w valid-workflow.yaml
+$ codemod validate -w valid-workflow.yaml
 ✓ Workflow definition is valid
 Schema validation: Passed
 Node dependencies: Valid (3 nodes, 2 dependency relationships)
@@ -241,29 +241,29 @@ State schema: Valid (2 schema definitions)
 
 Invalid workflow:
 ```bash
-$ butterflow validate -w invalid-workflow.yaml
+$ codemod validate -w invalid-workflow.yaml
 ✗ Workflow definition is invalid
 Error at nodes[2].strategy: Matrix strategy requires 'values' or 'from_state' property
 Error at nodes[1].depends_on[0]: Referenced node 'non-existent-node' does not exist
 Error: Cyclic dependency detected: node-a → node-b → node-a
 ```
 
-### `butterflow login`
+### `codemod login`
 
 Authenticate with a Butterflow registry to publish and manage codemods:
 
 ```bash
 # Login to the default registry
-butterflow login
+codemod login
 
 # Login to a specific registry
-butterflow login --registry https://registry.example.com
+codemod login --registry https://registry.example.com
 
 # Login with a token (for CI/CD)
-butterflow login --token <your-token>
+codemod login --token <your-token>
 
 # Login with username/password
-butterflow login --username <username>
+codemod login --username <username>
 ```
 
 **Options:**
@@ -275,7 +275,7 @@ butterflow login --username <username>
 **Interactive Login:**
 
 ```bash
-$ butterflow login
+$ codemod login
 ? Registry URL: https://registry.butterflow.com (default)
 ? Username: john.doe
 ? Password: ********
@@ -289,28 +289,28 @@ $ butterflow login
 ```bash
 # Set authentication token
 export BUTTERFLOW_TOKEN="your-registry-token"
-butterflow login --token $BUTTERFLOW_TOKEN
+codemod login --token $BUTTERFLOW_TOKEN
 ```
 
-### `butterflow publish`
+### `codemod publish`
 
 Publish a codemod to a registry for sharing and reuse:
 
 ```bash
 # Publish current directory as a codemod
-butterflow publish
+codemod publish
 
 # Publish a specific codemod directory
-butterflow publish ./my-codemod/
+codemod publish ./my-codemod/
 
 # Publish with specific version
-butterflow publish --version 1.2.3
+codemod publish --version 1.2.3
 
 # Publish to specific registry
-butterflow publish --registry https://registry.example.com
+codemod publish --registry https://registry.example.com
 
 # Dry run (validate without publishing)
-butterflow publish --dry-run
+codemod publish --dry-run
 ```
 
 **Options:**
@@ -324,7 +324,7 @@ butterflow publish --dry-run
 **Publishing Flow:**
 
 ```bash
-$ butterflow publish
+$ codemod publish
 ✓ Validating codemod.yaml manifest
 ✓ Validating workflow.yaml
 ✓ Running tests (if present)
@@ -332,7 +332,7 @@ $ butterflow publish
 ✓ Uploading to registry @my-org/react-hooks-migration@1.0.0
 ✓ Published successfully!
 
-Install with: butterflow run @my-org/react-hooks-migration@1.0.0
+Install with: codemod run @my-org/react-hooks-migration@1.0.0
 ```
 
 ## Codemod Manifest Standard
@@ -426,26 +426,26 @@ The CLI supports loading workflows from different sources:
 
 ### File Path
 ```bash
-butterflow run -w path/to/your/workflow.yaml
+codemod run -w path/to/your/workflow.yaml
 ```
 Loads the specific file. The base path for execution is the directory containing this file.
 
 ### Directory Path (Bundle)
 ```bash
-butterflow run path/to/your/bundle/
+codemod run path/to/your/bundle/
 ```
 Butterflow looks for a standard workflow file (e.g., `workflow.yaml`) inside this directory. The base path for execution is this directory.
 
 ### Registry Identifier
 ```bash
 # Install and run a published codemod
-butterflow run @my-org/react-hooks-migration@1.0.0
+codemod run @my-org/react-hooks-migration@1.0.0
 
 # Run latest version
-butterflow run @my-org/react-hooks-migration@latest
+codemod run @my-org/react-hooks-migration@latest
 
 # Run with custom parameters
-butterflow run @my-org/api-migration-v2@2.1.0 --param api_base_url=https://staging-api.example.com
+codemod run @my-org/api-migration-v2@2.1.0 --param api_base_url=https://staging-api.example.com
 ```
 
 When running from a registry, Butterflow:
@@ -473,7 +473,7 @@ The CLI supports multiple execution runtimes:
 - **Podman**: Uses Podman for container execution  
 - **Direct**: Runs commands directly on the host machine
 
-When using `runtime: direct`, commands execute with the same working directory as the `butterflow` CLI invocation. Use the `$CODEMOD_PATH` environment variable to access files within the workflow bundle.
+When using `runtime: direct`, commands execute with the same working directory as the `codemod` CLI invocation. Use the `$CODEMOD_PATH` environment variable to access files within the workflow bundle.
 
 ### Environment Variables
 
@@ -507,14 +507,14 @@ When a workflow pauses for manual triggers:
 
 1. The workflow state is persisted with tasks marked `AwaitingTrigger`
 2. The CLI provides task UUIDs for manual triggering
-3. Use `butterflow resume` to trigger specific tasks or all awaiting tasks
+3. Use `codemod resume` to trigger specific tasks or all awaiting tasks
 
 ```bash
 # Trigger specific deployment task
-butterflow resume -i abc123-workflow-run-id -t def456-task-uuid
+codemod resume -i abc123-workflow-run-id -t def456-task-uuid
 
 # Trigger all awaiting tasks and continue
-butterflow resume -i abc123-workflow-run-id --trigger-all
+codemod resume -i abc123-workflow-run-id --trigger-all
 ```
 
 ## Error Handling
@@ -524,7 +524,7 @@ butterflow resume -i abc123-workflow-run-id --trigger-all
 Validation is performed automatically when running workflows:
 
 ```bash
-$ butterflow run -w invalid-workflow.yaml
+$ codemod run -w invalid-workflow.yaml
 ✗ Workflow definition is invalid
 Error: Cyclic dependency detected: node-a → node-b → node-a
 Workflow execution aborted
@@ -535,7 +535,7 @@ Workflow execution aborted
 If a workflow fails or is interrupted:
 
 1. The state is automatically persisted
-2. Use `butterflow resume` to continue from the last checkpoint
+2. Use `codemod resume` to continue from the last checkpoint
 3. Failed tasks can be retried while preserving completed work
 
 ## Examples
@@ -557,42 +557,42 @@ nodes:
         run: echo "Hello from Butterflow!"
 EOF
 
-butterflow run -w hello.yaml
+codemod run -w hello.yaml
 ```
 
 ### Matrix Workflow with Manual Approval
 
 ```bash
 # Run matrix workflow requiring manual triggers
-butterflow run -w deploy-workflow.yaml
+codemod run -w deploy-workflow.yaml
 
 # When paused, trigger specific environments
-butterflow resume -i <run-id> -t <staging-task-uuid>
-butterflow resume -i <run-id> -t <prod-task-uuid>
+codemod resume -i <run-id> -t <staging-task-uuid>
+codemod resume -i <run-id> -t <prod-task-uuid>
 ```
 
 ### Workflow Validation and Publishing
 
 ```bash
 # Validate before running
-butterflow validate -w complex-workflow.yaml
+codemod validate -w complex-workflow.yaml
 
 # Run if validation passes
-butterflow run -w complex-workflow.yaml
+codemod run -w complex-workflow.yaml
 
 # Login to registry and publish a codemod
-butterflow login
-butterflow publish ./my-codemod/
+codemod login
+codemod publish ./my-codemod/
 
 # Run published codemod
-butterflow run @my-org/my-codemod@1.0.0
+codemod run @my-org/my-codemod@1.0.0
 ```
 
 ### Publishing Workflow
 
 ```bash
 # Create and publish a new codemod
-butterflow init my-api-migration
+codemod init my-api-migration
 cd my-api-migration
 
 # Develop and test your codemod
@@ -610,9 +610,9 @@ targets:
 EOF
 
 # Validate and publish
-butterflow validate
-butterflow publish --dry-run  # Preview
-butterflow publish           # Publish to registry
+codemod validate
+codemod publish --dry-run  # Preview
+codemod publish           # Publish to registry
 ```
 
 ## Global Options
@@ -627,5 +627,308 @@ Most commands support these global options:
 For detailed help on any command, use:
 
 ```bash
-butterflow <command> --help
+codemod <command> --help
 ```
+
+## JSSG (JavaScript AST-grep)
+
+JSSG is a JavaScript/TypeScript codemod runner and testing framework inspired by [ast-grep](https://ast-grep.github.io/). It enables you to write codemods in JavaScript and apply them to codebases with powerful CLI and test automation support.
+
+### Running a Codemod
+
+To run a JavaScript codemod on a target directory:
+
+```bash
+cbc jssg run my-codemod.js ./src --language javascript
+```
+
+**Options:**
+- `--language <LANG>`: Target language (javascript, typescript, etc.)
+- `--extensions <ext1,ext2>`: Comma-separated list of file extensions to process
+- `--no-gitignore`: Do not respect .gitignore files
+- `--include-hidden`: Include hidden files and directories
+- `--max-threads <N>`: Maximum number of concurrent threads
+- `--dry-run`: Perform a dry run without making changes
+
+See `cbc jssg run --help` for all options.
+
+### Example
+
+```bash
+cbc jssg run my-codemod.js ./src --language javascript --dry-run
+```
+
+---
+
+# JSSG Testing Framework Usage Guide
+
+## Overview
+
+The JSSG Testing Framework provides comprehensive testing capabilities for JavaScript codemods with before/after fixture files. It integrates with the existing ExecutionEngine and provides a familiar test runner interface.
+
+## Quick Start
+
+### 1. Basic Test Structure
+
+Create a test directory with the following structure:
+
+```
+tests/
+├── simple-transform/
+│   ├── input.js
+│   └── expected.js
+├── complex-case/
+│   ├── input.ts
+│   └── expected.ts
+└── multi-file/
+    ├── input/
+    │   ├── file1.js
+    │   └── file2.js
+    └── expected/
+        ├── file1.js
+        └── file2.js
+```
+
+### 2. Running Tests
+
+```bash
+# Basic test run
+cbc jssg test my-codemod.js --language javascript
+
+# With custom test directory
+cbc jssg test my-codemod.js --language typescript --test-directory ./my-tests
+
+# Update snapshots (create/update expected files)
+cbc jssg test my-codemod.js --language javascript --update-snapshots
+
+# Verbose output with detailed diffs
+cbc jssg test my-codemod.js --language javascript --verbose
+
+# Watch mode (re-run tests on file changes)
+cbc jssg test my-codemod.js --language javascript --watch
+```
+
+## CLI Options
+
+### Required Arguments
+- `codemod_file`: Path to the codemod JavaScript file
+- `--language`: Target language (javascript, typescript, etc.)
+
+### Test Discovery
+- `--test-directory`: Test directory (default: "tests")
+- `--filter`: Run only tests matching pattern
+
+### Output Control
+- `--reporter`: Output format (console, json, terse)
+- `--verbose`: Show detailed output
+- `--context-lines`: Number of diff context lines (default: 3)
+- `--ignore-whitespace`: Ignore whitespace in comparisons
+
+### Test Execution
+- `--timeout`: Test timeout in seconds (default: 30)
+- `--max-threads`: Maximum concurrent threads
+- `--sequential`: Run tests sequentially
+- `--fail-fast`: Stop on first failure
+
+### Snapshot Management
+- `--update-snapshots`: Create/update expected files
+- `--expect-errors`: Comma-separated patterns for tests expected to fail
+
+### Development
+- `--watch`: Watch for changes and re-run tests
+
+## Test File Formats
+
+### Single File Format
+Each test case is a directory with `input.{ext}` and `expected.{ext}` files:
+
+```
+test-case-name/
+├── input.js      # Input code
+└── expected.js   # Expected output
+```
+
+### Multi-File Format
+For testing multiple files, use `input/` and `expected/` directories:
+
+```
+test-case-name/
+├── input/
+│   ├── file1.js
+│   └── file2.js
+└── expected/
+    ├── file1.js
+    └── file2.js
+```
+
+## Language Support
+
+The framework automatically detects input files based on language extensions:
+
+- **JavaScript**: `.js`, `.jsx`, `.mjs`
+- **TypeScript**: `.ts`, `.tsx`, `.mts`
+- **Other languages**: Determined by `get_extensions_for_language()`
+
+## Error Handling
+
+### Missing Expected Files
+```bash
+# Error: No expected file found
+cbc jssg test my-codemod.js --language javascript
+# Error: No expected file found for input.js in tests/my-test. Run with --update-snapshots to create it.
+
+# Solution: Create expected files
+cbc jssg test my-codemod.js --language javascript --update-snapshots
+# Created expected file for my-test/input.js
+```
+
+### Ambiguous Input Files
+```bash
+# Error: Multiple input files found
+# tests/my-test/input.js and tests/my-test/input.ts both exist
+
+# Solution: Use only one input file or organize into directories
+```
+
+### Expected Test Failures
+```bash
+# Test cases that should fail
+cbc jssg test my-codemod.js --language javascript --expect-errors "error-case,invalid-syntax"
+```
+
+## Output Formats
+
+### Console (Default)
+```
+test my-test ... ok
+test failing-test ... FAILED
+
+failures:
+
+---- failing-test stdout ----
+Output mismatch for file expected.js:
+-const x = 1;
++const y = 1;
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored
+```
+
+### JSON
+```bash
+cbc jssg test my-codemod.js --language javascript --reporter json
+```
+
+```json
+{
+  "type": "suite",
+  "event": "started",
+  "test_count": 2
+}
+{
+  "type": "test",
+  "event": "started",
+  "name": "my-test"
+}
+{
+  "type": "test",
+  "name": "my-test",
+  "event": "ok"
+}
+```
+
+### Terse
+```bash
+cbc jssg test my-codemod.js --language javascript --reporter terse
+```
+
+```
+..F
+
+failures:
+...
+```
+
+## Advanced Features
+
+### Snapshot Management
+```bash
+# Create initial snapshots
+cbc jssg test my-codemod.js --language javascript --update-snapshots
+
+# Update specific test snapshots
+cbc jssg test my-codemod.js --language javascript --filter "specific-test" --update-snapshots
+```
+
+### Test Filtering
+```bash
+# Run tests matching pattern
+cbc jssg test my-codemod.js --language javascript --filter "transform"
+
+# Run specific test
+cbc jssg test my-codemod.js --language javascript --filter "my-specific-test"
+```
+
+### Performance Tuning
+```bash
+# Limit concurrent threads
+cbc jssg test my-codemod.js --language javascript --max-threads 2
+
+# Run sequentially for debugging
+cbc jssg test my-codemod.js --language javascript --sequential
+
+# Set custom timeout
+cbc jssg test my-codemod.js --language javascript --timeout 60
+```
+
+### Diff Customization
+```bash
+# More context in diffs
+cbc jssg test my-codemod.js --language javascript --context-lines 5
+
+# Ignore whitespace differences
+cbc jssg test my-codemod.js --language javascript --ignore-whitespace
+```
+
+## Integration with Development Workflow
+
+### CI/CD Integration
+```yaml
+# GitHub Actions example
+- name: Run codemod tests
+  run: cbc jssg test my-codemod.js --language javascript --reporter json
+```
+
+### IDE Integration
+The framework outputs standard test results that can be consumed by IDEs and test runners.
+
+### Watch Mode Development
+```bash
+# Continuous testing during development
+cbc jssg test my-codemod.js --language javascript --watch --verbose
+```
+
+## Best Practices
+
+1. **Organize tests by functionality**: Group related test cases in descriptive directories
+2. **Use meaningful test names**: Directory names become test names in output
+3. **Start with --update-snapshots**: Generate initial expected files, then review and commit
+4. **Use --expect-errors for negative tests**: Test error conditions explicitly
+5. **Leverage --filter during development**: Focus on specific tests while developing
+6. **Use --watch for rapid iteration**: Get immediate feedback on changes
+
+## Troubleshooting
+
+### Common Issues
+
+1. **No tests found**: Check test directory path and file extensions
+2. **Ambiguous input files**: Ensure only one input file per test case
+3. **Timeout errors**: Increase timeout for complex codemods
+4. **Memory issues**: Reduce max-threads for large test suites
+
+### Debug Mode
+```bash
+# Verbose output for debugging
+cbc jssg test my-codemod.js --language javascript --verbose --sequential
+```
+
+This framework provides a robust foundation for testing JavaScript codemods with familiar tooling and comprehensive features.
