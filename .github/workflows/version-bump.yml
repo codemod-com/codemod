@@ -23,8 +23,8 @@ jobs:
 
       - name: Validate version format
         run: |
-          if [[ ! "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Error: Version must be in format x.y.z (e.g., 1.2.3)"
+          if [[ ! "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]; then
+            echo "Error: Version must be in format x.y.z (e.g., 1.2.3) or x.y.z-rc.n (e.g., 1.2.3-rc.1)"
             exit 1
           fi
 
@@ -47,13 +47,13 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore(bump): Bump version to v${{ github.event.inputs.version }}"
-          title: "chore(bump): Bump version to v${{ github.event.inputs.version }}"
+          commit-message: "chore(bump): Bump codemod crates version to v${{ github.event.inputs.version }}"
+          title: "chore(bump): Bump codemod crates version to v${{ github.event.inputs.version }}"
           body: |
-            This PR bumps the version to v${{ github.event.inputs.version }}.
+            This PR bumps the codemod crates version to v${{ github.event.inputs.version }}.
             
             Changes:
             - Updated version in Cargo.toml
             - Regenerated Cargo.lock
-          branch: "version-bump-v${{ github.event.inputs.version }}"
+          branch: "version-bump-codemod-crates-v${{ github.event.inputs.version }}"
           delete-branch: true
