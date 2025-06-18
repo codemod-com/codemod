@@ -39,7 +39,11 @@ ast-grep-core = { version = "0.38.2", default-features = false, optional = true 
 ast-grep-config = { version = "0.38.2", default-features = false, optional = true }
 ast-grep-language = { workspace = true, default-features = true, optional = true }
 llrt_modules = { path = "../../submodules/llrt/llrt_modules", default-features = true, optional = true }
-ignore = { version = "0.4.23", optional = true }
+ignore = { workspace = true, optional = true }
+serde_yaml = { workspace = true, optional = true }
+
+[dev-dependencies]
+tempfile = "3.8"
 
 [features]
 default = ["native", "real-fs"]
@@ -65,6 +69,7 @@ native = [
   "rquickjs-git",
   "rquickjs-git/full-async",
   "tokio",
+  "serde_yaml",
 ]
 real-fs = ["tokio", "ignore"]
 mock-fs = []

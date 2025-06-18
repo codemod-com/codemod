@@ -5,3 +5,6 @@ mod plugins;
 mod rquickjs_compat;
 pub mod sandbox;
 mod utils;
+
+#[cfg(feature = "native")]
+pub use ast_grep::{execute_ast_grep_on_paths, execute_ast_grep_on_paths_with_fixes};

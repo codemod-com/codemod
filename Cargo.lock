@@ -95,21 +95,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "alloc-no-stdlib"
-version = "2.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc7bb162ec39d46ab1ca8c77bf72e890535becd1751bb45f64c597edb4c8c6b3"
-
-[[package]]
-name = "alloc-stdlib"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94fb8275041c72129eb51b7d0322c29b8387a0386127718b096429201a5d6ece"
-dependencies = [
- "alloc-no-stdlib",
-]
-
-[[package]]
 name = "allocator-api2"
 version = "0.2.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -129,12 +114,6 @@ checksum = "819e7219dbd41043ac279b19830f2efc897156490d7fd6ea916720117ee66311"
 dependencies = [
  "libc",
 ]
-
-[[package]]
-name = "anes"
-version = "0.1.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4b46cbb362ab8752921c97e041f5e366ee6297bd428a31275b9fcf1e380f7299"
 
 [[package]]
 name = "anstream"
@@ -203,16 +182,6 @@ name = "ascii"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d92bec98840b8f03a5ff5413de5293bfcd8bf96467cf5452609f939ec6f5de16"
-
-[[package]]
-name = "assert-json-diff"
-version = "2.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "47e4f2b81832e72834d7518d8487a0396a28cc408186a2e8854c0f98011faf12"
-dependencies = [
- "serde",
- "serde_json",
-]
 
 [[package]]
 name = "ast-grep-config"
@@ -464,27 +433,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "brotli"
-version = "8.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9991eea70ea4f293524138648e41ee89b0b2b12ddef3b255effa43c8056e0e0d"
-dependencies = [
- "alloc-no-stdlib",
- "alloc-stdlib",
- "brotli-decompressor",
-]
-
-[[package]]
-name = "brotli-decompressor"
-version = "5.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "874bb8112abecc98cbd6d81ea4fa7e94fb9449648c93cc89aa40c81c24d7de03"
-dependencies = [
- "alloc-no-stdlib",
- "alloc-stdlib",
-]
-
-[[package]]
 name = "brotlic"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -512,7 +460,7 @@ dependencies = [
  "chrono",
  "either",
  "indexmap 2.9.0",
- "itertools 0.13.0",
+ "itertools",
  "nom",
  "serde",
  "serde_json",
@@ -549,6 +497,7 @@ dependencies = [
  "butterflow-scheduler",
  "butterflow-state",
  "chrono",
+ "codemod-sandbox",
  "futures",
  "log",
  "regex",
@@ -683,12 +632,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cast"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "37b2a672a2cb129a2e41c10b1224bb368f9f37a2b16b612598138befd7b37eb5"
-
-[[package]]
 name = "castaway"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -736,33 +679,6 @@ dependencies = [
  "serde",
  "wasm-bindgen",
  "windows-link",
-]
-
-[[package]]
-name = "ciborium"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42e69ffd6f0917f5c029256a24d0161db17cea3997d185db0d35926308770f0e"
-dependencies = [
- "ciborium-io",
- "ciborium-ll",
- "serde",
-]
-
-[[package]]
-name = "ciborium-io"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05afea1e0a06c9be33d539b876f1ce3692f4afea2cb41f740e7743225ed1c757"
-
-[[package]]
-name = "ciborium-ll"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57663b653d948a338bfb3eeba9bb2fd5fcfaecb9e199e87e1eda4d9e8b240fd9"
-dependencies = [
- "ciborium-io",
- "half",
 ]
 
 [[package]]
@@ -871,7 +787,9 @@ dependencies = [
  "serde",
  "serde-wasm-bindgen",
  "serde_json",
+ "serde_yaml",
  "swc_core",
+ "tempfile",
  "thiserror 1.0.69",
  "tokio",
  "wasm-bindgen",
@@ -980,42 +898,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "criterion"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2b12d017a929603d80db1831cd3a24082f8137ce19c69e6447f54f5fc8d692f"
-dependencies = [
- "anes",
- "cast",
- "ciborium",
- "clap",
- "criterion-plot",
- "is-terminal",
- "itertools 0.10.5",
- "num-traits",
- "once_cell",
- "oorandom",
- "plotters",
- "rayon",
- "regex",
- "serde",
- "serde_derive",
- "serde_json",
- "tinytemplate",
- "walkdir",
-]
-
-[[package]]
-name = "criterion-plot"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6b50826342786a51a89e2da3a28f1c32b06e387201bc2d19791f622c673706b1"
-dependencies = [
- "cast",
- "itertools 0.10.5",
-]
-
-[[package]]
 name = "crossbeam-deque"
 version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1039,12 +921,6 @@ name = "crossbeam-utils"
 version = "0.8.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
-
-[[package]]
-name = "crunchy"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43da5946c66ffcc7745f48db692ffbb10a83bfe0afd96235c5c2a4fb23994929"
 
 [[package]]
 name = "crypto-bigint"
@@ -1157,24 +1033,6 @@ name = "data-encoding"
 version = "2.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a2330da5de22e8a3cb63252ce2abb30116bf5265e89c0e01bc17015ce30a476"
-
-[[package]]
-name = "deadpool"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb84100978c1c7b37f09ed3ce3e5f843af02c2a2c431bae5b19230dad2c1b490"
-dependencies = [
- "async-trait",
- "deadpool-runtime",
- "num_cpus",
- "tokio",
-]
-
-[[package]]
-name = "deadpool-runtime"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "092966b41edc516079bdf31ec78a2e0588d1d0c08f78b91d8307215928642b2b"
 
 [[package]]
 name = "debugid"
@@ -1753,16 +1611,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "half"
-version = "2.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "459196ed295495a68f7d7fe1d84f6c4b7ff0e21fe3017b2f283c6fac3ad803c9"
-dependencies = [
- "cfg-if",
- "crunchy",
-]
-
-[[package]]
 name = "halfbrown"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1828,12 +1676,6 @@ name = "hermit-abi"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d231dfb89cfffdbc30e7fc41579ed6066ad03abda9e567ccafae602b97ec5024"
-
-[[package]]
-name = "hermit-abi"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f154ce46856750ed433c8649605bf7ed2de3bc35fd9d2a9f30cddd873c80cb08"
 
 [[package]]
 name = "hex-simd"
@@ -1927,12 +1769,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6dbf3de79e51f3d586ab4cb9d5c3e2c14aa28ed23d180cf89b4df0454a69cc87"
 
 [[package]]
-name = "httpdate"
-version = "1.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9"
-
-[[package]]
 name = "hyper"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1945,7 +1781,6 @@ dependencies = [
  "http",
  "http-body",
  "httparse",
- "httpdate",
  "itoa",
  "pin-project-lite",
  "smallvec",
@@ -2244,30 +2079,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "is-terminal"
-version = "0.4.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e04d7f318608d35d4b61ddd75cbdaee86b023ebe2bd5a66ee0915f0bf93095a9"
-dependencies = [
- "hermit-abi 0.5.1",
- "libc",
- "windows-sys 0.59.0",
-]
-
-[[package]]
 name = "is_terminal_polyfill"
 version = "1.70.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7943c866cc5cd64cbc25b2e01621d07fa8eb2a1a23160ee81ce38704e97b8ecf"
-
-[[package]]
-name = "itertools"
-version = "0.10.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0fd2260e829bddf4cb6ea802289de2f86d6a7a690192fbe91b3f46e0f2c8473"
-dependencies = [
- "either",
-]
 
 [[package]]
 name = "itertools"
@@ -2434,21 +2249,17 @@ version = "0.5.1-beta"
 dependencies = [
  "llrt_events",
  "llrt_exceptions",
- "llrt_test",
  "llrt_timers",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
 ]
 
 [[package]]
 name = "llrt_assert"
 version = "0.5.1-beta"
 dependencies = [
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
 ]
 
 [[package]]
@@ -2456,10 +2267,8 @@ name = "llrt_buffer"
 version = "0.5.1-beta"
 dependencies = [
  "llrt_encoding",
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
 ]
 
 [[package]]
@@ -2479,7 +2288,6 @@ dependencies = [
  "llrt_context",
  "llrt_events",
  "llrt_stream",
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
  "tokio",
@@ -2489,7 +2297,6 @@ dependencies = [
 name = "llrt_compression"
 version = "0.5.1-beta"
 dependencies = [
- "brotli",
  "brotlic",
  "flate2",
  "zstd",
@@ -2509,7 +2316,6 @@ name = "llrt_context"
 version = "0.5.1-beta"
 dependencies = [
  "llrt_build",
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
  "tokio",
@@ -2535,7 +2341,6 @@ dependencies = [
  "llrt_context",
  "llrt_encoding",
  "llrt_json",
- "llrt_test",
  "llrt_utils",
  "md-5",
  "memchr",
@@ -2549,7 +2354,6 @@ dependencies = [
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
  "rsa",
  "spki",
- "tokio",
  "uuid",
  "uuid-simd",
  "x25519-dalek",
@@ -2626,7 +2430,6 @@ dependencies = [
  "llrt_dns_cache",
  "llrt_encoding",
  "llrt_json",
- "llrt_test",
  "llrt_url",
  "llrt_utils",
  "once_cell",
@@ -2639,7 +2442,6 @@ dependencies = [
  "tower-service",
  "tracing",
  "webpki-roots",
- "wiremock",
 ]
 
 [[package]]
@@ -2650,7 +2452,6 @@ dependencies = [
  "llrt_buffer",
  "llrt_encoding",
  "llrt_path",
- "llrt_test",
  "llrt_utils",
  "ring",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
@@ -2661,15 +2462,12 @@ dependencies = [
 name = "llrt_json"
 version = "0.5.1-beta"
 dependencies = [
- "criterion",
  "itoa",
  "llrt_build",
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
  "ryu",
  "simd-json",
- "tokio",
 ]
 
 [[package]]
@@ -2734,9 +2532,7 @@ dependencies = [
  "llrt_context",
  "llrt_events",
  "llrt_stream",
- "llrt_test",
  "llrt_utils",
- "rand 0.8.5",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
  "tokio",
  "tracing",
@@ -2746,9 +2542,7 @@ dependencies = [
 name = "llrt_numbers"
 version = "0.5.1-beta"
 dependencies = [
- "criterion",
  "itoa",
- "llrt_test",
  "llrt_utils",
  "rand 0.8.5",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
@@ -2761,13 +2555,11 @@ version = "0.5.1-beta"
 dependencies = [
  "home",
  "libc",
- "llrt_test",
  "llrt_utils",
  "num_cpus",
  "once_cell",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
  "sysinfo",
- "tokio",
  "users",
  "whoami",
  "windows-registry 0.5.2",
@@ -2779,11 +2571,8 @@ dependencies = [
 name = "llrt_path"
 version = "0.5.1-beta"
 dependencies = [
- "criterion",
  "llrt_utils",
  "memchr",
- "once_cell",
- "rand 0.8.5",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
 ]
 
@@ -2791,10 +2580,8 @@ dependencies = [
 name = "llrt_perf_hooks"
 version = "0.5.1-beta"
 dependencies = [
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
 ]
 
 [[package]]
@@ -2802,10 +2589,8 @@ name = "llrt_process"
 version = "0.5.1-beta"
 dependencies = [
  "libc",
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
 ]
 
 [[package]]
@@ -2825,10 +2610,8 @@ name = "llrt_stream_web"
 version = "0.5.1-beta"
 dependencies = [
  "llrt_abort",
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
 ]
 
 [[package]]
@@ -2837,20 +2620,8 @@ version = "0.5.1-beta"
 dependencies = [
  "llrt_buffer",
  "llrt_encoding",
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
-]
-
-[[package]]
-name = "llrt_test"
-version = "0.5.1-beta"
-dependencies = [
- "nanoid",
- "rand 0.8.5",
- "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
 ]
 
 [[package]]
@@ -2858,7 +2629,6 @@ name = "llrt_timers"
 version = "0.5.1-beta"
 dependencies = [
  "llrt_context",
- "llrt_test",
  "llrt_utils",
  "once_cell",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
@@ -2870,20 +2640,16 @@ name = "llrt_tty"
 version = "0.5.1-beta"
 dependencies = [
  "libc",
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
 ]
 
 [[package]]
 name = "llrt_url"
 version = "0.5.1-beta"
 dependencies = [
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
  "url",
 ]
 
@@ -2903,7 +2669,6 @@ name = "llrt_utils"
 version = "0.5.1-beta"
 dependencies = [
  "llrt_build",
- "llrt_test",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
  "tokio",
  "tracing",
@@ -2916,10 +2681,8 @@ dependencies = [
  "llrt_buffer",
  "llrt_compression",
  "llrt_context",
- "llrt_test",
  "llrt_utils",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
 ]
 
 [[package]]
@@ -3028,15 +2791,6 @@ dependencies = [
  "log",
  "wasi 0.11.0+wasi-snapshot-preview1",
  "windows-sys 0.59.0",
-]
-
-[[package]]
-name = "nanoid"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ffa00dec017b5b1a8b7cf5e2c008bfda1aa7e0697ac1508b491fdf2622fb4d8"
-dependencies = [
- "rand 0.8.5",
 ]
 
 [[package]]
@@ -3179,7 +2933,7 @@ version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4161fcb6d602d4d2081af7c3a45852d875a03dd337a6bfdd6e06407b61342a43"
 dependencies = [
- "hermit-abi 0.3.9",
+ "hermit-abi",
  "libc",
 ]
 
@@ -3222,12 +2976,6 @@ name = "once_cell_polyfill"
 version = "1.70.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4895175b425cb1f87721b59f0f286c2092bd4af812243672510e1ac53e2e0ad"
-
-[[package]]
-name = "oorandom"
-version = "11.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d6790f58c7ff633d8771f42965289203411a5e5c68388703c06e14f24770b41e"
 
 [[package]]
 name = "opaque-debug"
@@ -3506,34 +3254,6 @@ name = "pkg-config"
 version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
-
-[[package]]
-name = "plotters"
-version = "0.3.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5aeb6f403d7a4911efb1e33402027fc44f29b5bf6def3effcc22d7bb75f2b747"
-dependencies = [
- "num-traits",
- "plotters-backend",
- "plotters-svg",
- "wasm-bindgen",
- "web-sys 0.3.77 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "plotters-backend"
-version = "0.3.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df42e13c12958a16b3f7f4386b9ab1f3e7933914ecea48da7139435263a4172a"
-
-[[package]]
-name = "plotters-svg"
-version = "0.3.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "51bae2ac328883f7acdfea3d66a7c35751187f870bc81f94563733a154d7a670"
-dependencies = [
- "plotters-backend",
-]
 
 [[package]]
 name = "polyval"
@@ -5759,16 +5479,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tinytemplate"
-version = "1.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be4d6b5f19ff7664e8c98d03e2139cb510db9b0a60b55f8e8709b689d939b6bc"
-dependencies = [
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "tokio"
 version = "1.45.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7084,30 +6794,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c06928c8748d81b05c9be96aad92e1b6ff01833332f281e8cfca3be4b35fc9ec"
 dependencies = [
  "memchr",
-]
-
-[[package]]
-name = "wiremock"
-version = "0.6.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "101681b74cd87b5899e87bcf5a64e83334dd313fcd3053ea72e6dba18928e301"
-dependencies = [
- "assert-json-diff",
- "async-trait",
- "base64",
- "deadpool",
- "futures",
- "http",
- "http-body-util",
- "hyper",
- "hyper-util",
- "log",
- "once_cell",
- "regex",
- "serde",
- "serde_json",
- "tokio",
- "url",
 ]
 
 [[package]]

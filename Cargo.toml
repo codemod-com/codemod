@@ -7,10 +7,11 @@ members = [
     "crates/state",
     "crates/codemod-sandbox",
     "crates/codemod-sandbox/build",
-    "submodules/llrt/llrt_modules",
     "xtask",
 ]
 resolver = "2"
+
+exclude = ["submodules/llrt/llrt_modules"]
 
 [workspace.package]
 authors = ["Codemod.com"]
@@ -35,6 +36,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_yaml = "0.9"
 thiserror = "2.0"
+ignore = { version = "0.4.23" }
 anyhow = "1.0"
 uuid = { version = "1.6", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }

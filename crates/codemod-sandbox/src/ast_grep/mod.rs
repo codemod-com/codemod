@@ -8,6 +8,9 @@ pub mod wasm_lang;
 #[cfg(feature = "wasm")]
 pub mod wasm_utils;
 
+#[cfg(feature = "native")]
+pub mod native;
+
 #[cfg(not(feature = "wasm"))]
 use ast_grep_language::{LanguageExt, SupportLang};
 
@@ -20,6 +23,9 @@ use crate::rquickjs_compat::{prelude::Func, Class, Ctx, Exception, Object, Resul
 use sg_node::{SgNodeRjs, SgRootRjs};
 
 mod serde;
+
+#[cfg(feature = "native")]
+pub use native::{execute_ast_grep_on_paths, execute_ast_grep_on_paths_with_fixes};
 
 #[allow(dead_code)]
 pub struct AstGrepModule;

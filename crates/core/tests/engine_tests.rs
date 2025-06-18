@@ -1,5 +1,7 @@
 use butterflow_state::mock_adapter::MockStateAdapter;
 use std::collections::HashMap;
+use std::fs;
+use tempfile::TempDir;
 
 use butterflow_core::engine::Engine;
 use butterflow_core::{
@@ -7,7 +9,7 @@ use butterflow_core::{
     WorkflowStatus,
 };
 use butterflow_models::node::NodeType;
-use butterflow_models::step::StepAction;
+use butterflow_models::step::{StepAction, UseAstGrep};
 use butterflow_models::strategy::Strategy;
 use butterflow_models::trigger::TriggerType;
 use butterflow_models::{DiffOperation, FieldDiff, TaskDiff};
@@ -1280,4 +1282,264 @@ async fn test_invalid_template_reference() {
 
     // The result should be an error
     assert!(result.is_err());
+}
+
+// Helper function for AST grep tests
+fn create_test_file(dir: &std::path::Path, name: &str, content: &str) -> std::path::PathBuf {
+    let file_path = dir.join(name);
+    if let Some(parent) = file_path.parent() {
+        fs::create_dir_all(parent).unwrap();
+    }
+    fs::write(&file_path, content).unwrap();
+    file_path
+}
+
+#[tokio::test]
+async fn test_execute_ast_grep_step() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create test JavaScript files
+    create_test_file(
+        temp_path,
+        "src/app.js",
+        r#"
+function main() {
+    console.log("Starting app");
+    var count = 0;
+    console.log("Count:", count);
+}
+"#,
+    );
+
+    create_test_file(
+        temp_path,
+        "src/utils.js",
+        r#"
+function helper() {
+    console.log("Helper function");
+    let data = getData();
+    return data;
+}
+"#,
+    );
+
+    // Create ast-grep config
+    create_test_file(
+        temp_path,
+        "ast-grep-rules.yaml",
+        r#"id: console-log
+language: javascript
+rule:
+  pattern: console.log($$$)
+message: "Found console.log statement"
+---
+id: var-declaration
+language: javascript
+rule:
+  pattern: var $VAR = $VALUE
+message: "Found var declaration"
+"#,
+    );
+
+    // Create a simple workflow with ast-grep step
+    let ast_grep_step = UseAstGrep {
+        paths: vec!["src/**/*.js".to_string()],
+        config_file: "ast-grep-rules.yaml".to_string(),
+    };
+
+    let step = Step {
+        name: "Test AST Grep".to_string(),
+        action: StepAction::AstGrep(ast_grep_step),
+        env: None,
+    };
+
+    // Create a simple node for testing
+    let _node = Node {
+        id: "test-node".to_string(),
+        name: "Test Node".to_string(),
+        description: None,
+        r#type: butterflow_models::node::NodeType::Automatic,
+        runtime: None,
+        depends_on: vec![],
+        steps: vec![step],
+        strategy: None,
+        trigger: None,
+        env: HashMap::new(),
+    };
+
+    // Create a dummy task
+    let _task = Task {
+        id: Uuid::new_v4(),
+        workflow_run_id: Uuid::new_v4(),
+        node_id: "test-node".to_string(),
+        status: TaskStatus::Pending,
+        is_master: false,
+        master_task_id: None,
+        matrix_values: None,
+        started_at: None,
+        ended_at: None,
+        logs: vec![],
+        error: None,
+    };
+
+    // Create engine and test execution
+    let engine = Engine::new();
+    let result = engine
+        .execute_ast_grep_step_with_dir(
+            &UseAstGrep {
+                paths: vec!["src/**/*.js".to_string()],
+                config_file: "ast-grep-rules.yaml".to_string(),
+            },
+            Some(temp_path.to_path_buf()),
+        )
+        .await;
+
+    // Assert the step executed successfully
+    assert!(
+        result.is_ok(),
+        "AST grep step should execute successfully: {:?}",
+        result
+    );
+}
+
+#[tokio::test]
+async fn test_execute_ast_grep_step_with_typescript() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create test TypeScript file
+    create_test_file(
+        temp_path,
+        "src/component.ts",
+        r#"
+interface User {
+    name: string;
+    age: number;
+}
+
+function greetUser(user: User): void {
+    console.log(`Hello, ${user.name}!`);
+}
+
+const createUser = (name: string, age: number): User => {
+    return { name, age };
+};
+"#,
+    );
+
+    // Create ast-grep config for TypeScript
+    create_test_file(
+        temp_path,
+        "ts-rules.yaml",
+        r#"id: console-log
+language: typescript
+rule:
+  pattern: console.log($$$)
+message: "Found console.log statement"
+---
+id: interface-declaration
+language: typescript
+rule:
+  pattern: interface $NAME { $$$ }
+message: "Found interface declaration"
+"#,
+    );
+
+    // Create engine and test execution
+    let engine = Engine::new();
+    let result = engine
+        .execute_ast_grep_step_with_dir(
+            &UseAstGrep {
+                paths: vec!["src/**/*.ts".to_string()],
+                config_file: "ts-rules.yaml".to_string(),
+            },
+            Some(temp_path.to_path_buf()),
+        )
+        .await;
+
+    // Assert the step executed successfully
+    assert!(
+        result.is_ok(),
+        "TypeScript AST grep step should execute successfully: {:?}",
+        result
+    );
+}
+
+#[tokio::test]
+async fn test_execute_ast_grep_step_nonexistent_config() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create test file but no config
+    create_test_file(temp_path, "test.js", "console.log('test');");
+
+    // Create engine and test execution with nonexistent config
+    let engine = Engine::new();
+    let result = engine
+        .execute_ast_grep_step_with_dir(
+            &UseAstGrep {
+                paths: vec!["test.js".to_string()],
+                config_file: "nonexistent.yaml".to_string(),
+            },
+            Some(temp_path.to_path_buf()),
+        )
+        .await;
+
+    // Should fail gracefully
+    assert!(result.is_err(), "Should fail with nonexistent config file");
+    assert!(result
+        .unwrap_err()
+        .to_string()
+        .contains("AST grep execution failed"));
+}
+
+#[tokio::test]
+async fn test_execute_ast_grep_step_no_matches() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create test file with no console.log
+    create_test_file(
+        temp_path,
+        "test.js",
+        r#"
+function add(a, b) {
+    return a + b;
+}
+
+let result = add(1, 2);
+"#,
+    );
+
+    // Create config that looks for console.log
+    create_test_file(
+        temp_path,
+        "rules.yaml",
+        r#"id: console-log
+language: javascript
+rule:
+  pattern: console.log($$$)
+message: "Found console.log statement"
+"#,
+    );
+
+    // Create engine and test execution
+    let engine = Engine::new();
+    let result = engine
+        .execute_ast_grep_step_with_dir(
+            &UseAstGrep {
+                paths: vec!["test.js".to_string()],
+                config_file: "rules.yaml".to_string(),
+            },
+            Some(temp_path.to_path_buf()),
+        )
+        .await;
+
+    // Should succeed even with no matches
+    assert!(
+        result.is_ok(),
+        "Should succeed even with no matches: {:?}",
+        result
+    );
 }
