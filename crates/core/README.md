@@ -66,7 +66,8 @@ butterflow run ./my-workflow-bundle/
 - **State schema definition**: Define the structure of the global shared workflow state
 - **Global Shared State**: Centralized, schema-validated state for all tasks
 - **Dynamic Task Recompilation**: Matrix tasks adapt on-the-fly to state changes
-- **Flexible Workflow Sources**: Run workflows from single YAML/JSON files, local directories (bundles), or fetch bundles from a registry.
+- **Flexible Workflow Sources**: Run workflows from single YAML/JSON files, local directories (bundles), or fetch bundles from a registry
+- **Built-in AST grep**: Integrated ast-grep support with automatic language extension inference and fix application
 
 ## Architecture
 
@@ -136,9 +137,9 @@ templates:
         run: git clone ${{inputs.repo_url}} repo
 
 nodes:
-  - id: evaluate-codeowners
-    name: Evaluate codeowners
-    description: Shard the Codemod run into smaller chunks based on the codeowners
+  - id: checkout-and-analyze
+    name: Checkout and analyze code
+    description: Clone repository and perform initial code analysis
     type: automatic
     runtime:
       type: docker
@@ -150,6 +151,32 @@ nodes:
           - template: checkout-repo
             inputs:
               repo_url: ${{params.repo_url}}
+      
+      - id: find-console-logs
+        name: Find console.log statements
+        ast-grep:
+          config_file: "rules/console-log.yaml"
+          exclude:
+            - "**/node_modules/**"
+            - "**/*.test.*"
+      
+      - id: check-typescript-issues
+        name: Check TypeScript code quality
+        ast-grep:
+          config_file: "rules/typescript-quality.yaml"
+          base_path: "./repo"
+          # Automatically searches .ts, .tsx files based on rule languages
+
+  - id: evaluate-codeowners
+    name: Evaluate codeowners
+    description: Shard the Codemod run into smaller chunks based on the codeowners
+    type: automatic
+    depends_on:
+      - checkout-and-analyze
+    runtime:
+      type: docker
+      image: node:18-alpine
+    steps:
       # Example step that might write to state
       - id: generate-shards
         name: Generate Shards
@@ -169,8 +196,21 @@ nodes:
       from_state: i18nShardsTs # Dynamically generates tasks based on state
     steps:
       # Matrix variables 'team' and 'shardId' are injected from the state item
-      - id: run-codemod
-        run: echo "Running TS codemod for team $team on shard $shardId"
+      - id: apply-i18n-codemod
+        name: Apply i18n transformations
+        ast-grep:
+          config_file: "codemods/i18n-transform.yaml"
+          base_path: "./repo"
+          include:
+            - "src/**/*.ts"
+            - "src/**/*.tsx"
+          exclude:
+            - "**/*.test.*"
+            - "**/*.spec.*"
+      
+      - id: verify-changes
+        name: Verify codemod results
+        run: echo "Applied i18n codemod for team $team on shard $shardId"
 ```
 
 ### Workflow Components
@@ -284,8 +324,65 @@ Steps within a node can have the following properties:
 | `description` | Detailed description of what the step does |
 | `uses`        | Template to use for this step              |
 | `run`         | Command to run                             |
+| `ast-grep`    | AST grep configuration for code analysis   |
+
+Steps can perform one of three types of actions:
+
+1. **Template Usage** (`uses`): Execute a predefined template with specific inputs
+2. **Script Execution** (`run`): Execute shell commands or scripts
+3. **AST Grep Analysis** (`ast-grep`): Perform code searching and transformation using ast-grep
 
 ⚠️ Deprecated: Butterflow no longer supports per-step or per-node outputs. All state interactions are now done through the global shared state.
+
+### AST Grep Integration
+
+Butterflow includes built-in support for [ast-grep](https://ast-grep.github.io/), a fast code searching and rewriting tool. This integration provides powerful code analysis and transformation capabilities with automatic language detection and smart file filtering.
+
+#### Basic AST Grep Step
+
+```yaml
+steps:
+  - name: "Find console.log statements"
+    ast-grep:
+      config_file: "rules/console-log.yaml"
+```
+
+#### AST Grep Configuration
+
+| Property      | Type                | Required | Description                                                                |
+| ------------- | ------------------- | -------- | -------------------------------------------------------------------------- |
+| `config_file` | `string`            | Yes      | Path to the ast-grep configuration file (.yaml or .json)                  |
+| `include`     | `array<string>`     | No       | Include glob patterns (defaults to language-specific extensions)          |
+| `exclude`     | `array<string>`     | No       | Exclude glob patterns                                                      |
+| `base_path`   | `string`            | No       | Base path for resolving globs (defaults to current working directory)     |
+
+#### Automatic Language Extension Inference
+
+When the `include` field is omitted or empty, Butterflow automatically infers applicable file extensions based on the languages specified in your ast-grep rules:
+
+```yaml
+# ast-grep config file (rules.yaml)
+id: console-log
+language: javascript
+rule:
+  pattern: console.log($$$)
+message: "Found console.log statement"
+---
+id: typescript-console
+language: typescript  
+rule:
+  pattern: console.log($$$)
+message: "Found console.log in TypeScript"
+```
+
+```yaml
+# Workflow step - will automatically search *.js, *.mjs, *.cjs, *.ts, *.mts, *.cts files
+steps:
+  - name: "Find console.log in JS/TS files"
+    ast-grep:
+      config_file: "rules.yaml"
+      # No include field - auto-infers from rule languages
+```
 
 ## Node vs Task
 

@@ -25,7 +25,10 @@ use sg_node::{SgNodeRjs, SgRootRjs};
 mod serde;
 
 #[cfg(feature = "native")]
-pub use native::{execute_ast_grep_on_paths, execute_ast_grep_on_paths_with_fixes};
+pub use native::{
+    execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes, execute_ast_grep_on_paths,
+    execute_ast_grep_on_paths_with_fixes,
+};
 
 #[allow(dead_code)]
 pub struct AstGrepModule;

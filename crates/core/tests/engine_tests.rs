@@ -1344,7 +1344,9 @@ message: "Found var declaration"
 
     // Create a simple workflow with ast-grep step
     let ast_grep_step = UseAstGrep {
-        paths: vec!["src/**/*.js".to_string()],
+        include: Some(vec!["src/**/*.js".to_string()]),
+        exclude: None,
+        base_path: None,
         config_file: "ast-grep-rules.yaml".to_string(),
     };
 
@@ -1388,7 +1390,9 @@ message: "Found var declaration"
     let result = engine
         .execute_ast_grep_step_with_dir(
             &UseAstGrep {
-                paths: vec!["src/**/*.js".to_string()],
+                include: Some(vec!["src/**/*.js".to_string()]),
+                exclude: None,
+                base_path: None,
                 config_file: "ast-grep-rules.yaml".to_string(),
             },
             Some(temp_path.to_path_buf()),
@@ -1451,7 +1455,9 @@ message: "Found interface declaration"
     let result = engine
         .execute_ast_grep_step_with_dir(
             &UseAstGrep {
-                paths: vec!["src/**/*.ts".to_string()],
+                include: Some(vec!["src/**/*.ts".to_string()]),
+                exclude: None,
+                base_path: None,
                 config_file: "ts-rules.yaml".to_string(),
             },
             Some(temp_path.to_path_buf()),
@@ -1479,7 +1485,9 @@ async fn test_execute_ast_grep_step_nonexistent_config() {
     let result = engine
         .execute_ast_grep_step_with_dir(
             &UseAstGrep {
-                paths: vec!["test.js".to_string()],
+                include: Some(vec!["test.js".to_string()]),
+                exclude: None,
+                base_path: None,
                 config_file: "nonexistent.yaml".to_string(),
             },
             Some(temp_path.to_path_buf()),
@@ -1491,7 +1499,7 @@ async fn test_execute_ast_grep_step_nonexistent_config() {
     assert!(result
         .unwrap_err()
         .to_string()
-        .contains("AST grep execution failed"));
+        .contains("AST grep config file not found"));
 }
 
 #[tokio::test]
@@ -1529,7 +1537,9 @@ message: "Found console.log statement"
     let result = engine
         .execute_ast_grep_step_with_dir(
             &UseAstGrep {
-                paths: vec!["test.js".to_string()],
+                include: Some(vec!["test.js".to_string()]),
+                exclude: None,
+                base_path: None,
                 config_file: "rules.yaml".to_string(),
             },
             Some(temp_path.to_path_buf()),

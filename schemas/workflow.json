@@ -628,51 +628,43 @@
     "UseAstGrep": {
       "type": "object",
       "properties": {
-        "paths": {
-          "description": "Glob paths",
-          "type": "array",
+        "base_path": {
+          "description": "Base path for resolving relative globs (optional, defaults to current working directory)",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "config_file": {
+          "description": "Path to the ast-grep config file (.yaml)",
+          "type": "string"
+        },
+        "exclude": {
+          "description": "Exclude globs for files to skip (optional)",
+          "type": [
+            "array",
+            "null"
+          ],
+          "default": null,
           "items": {
             "type": "string"
           }
         },
-        "query": {
-          "description": "Query to run",
-          "$ref": "#/$defs/UseAstGrepQuery"
+        "include": {
+          "description": "Include globs for files to search (optional, defaults to language-specific extensions)",
+          "type": [
+            "array",
+            "null"
+          ],
+          "default": null,
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
-        "paths",
-        "query"
-      ]
-    },
-    "UseAstGrepQuery": {
-      "oneOf": [
-        {
-          "description": "Query to run",
-          "type": "object",
-          "properties": {
-            "inline": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "inline"
-          ]
-        },
-        {
-          "description": "Path to query",
-          "type": "object",
-          "properties": {
-            "file": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "file"
-          ]
-        }
+        "config_file"
       ]
     },
     "WorkflowState": {

@@ -50,8 +50,20 @@ pub struct TemplateUse {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
 #[serde(rename_all = "snake_case")]
 pub struct UseAstGrep {
-    /// Glob paths to apply the ast-grep config to
-    pub paths: Vec<String>,
+    /// Include globs for files to search (optional, defaults to language-specific extensions)
+    #[serde(default)]
+    #[ts(optional, as = "Option<Vec<String>>")]
+    pub include: Option<Vec<String>>,
+
+    /// Exclude globs for files to skip (optional)
+    #[serde(default)]
+    #[ts(optional, as = "Option<Vec<String>>")]
+    pub exclude: Option<Vec<String>>,
+
+    /// Base path for resolving relative globs (optional, defaults to current working directory)
+    #[serde(default)]
+    #[ts(optional, as = "Option<String>")]
+    pub base_path: Option<String>,
 
     /// Path to the ast-grep config file (.yaml)
     pub config_file: String,

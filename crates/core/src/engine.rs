@@ -1018,8 +1018,7 @@ impl Engine {
         ast_grep: &UseAstGrep,
         working_dir: Option<std::path::PathBuf>,
     ) -> Result<()> {
-        use codemod_sandbox::{execute_ast_grep_on_paths, execute_ast_grep_on_paths_with_fixes};
-        use std::fs;
+        use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
 
         // Get the working directory from parameter, falling back to current directory
         let working_dir = working_dir.or_else(|| std::env::current_dir().ok());
@@ -1032,27 +1031,36 @@ impl Engine {
             std::path::PathBuf::from(&ast_grep.config_file)
         };
 
-        let should_apply_fixes = if config_path.exists() {
-            let config_content = fs::read_to_string(&config_path)
-                .map_err(|e| Error::Other(format!("Failed to read config file: {}", e)))?;
-            // Check if any rule contains a "fix:" field
-            config_content.contains("fix:")
-        } else {
-            false
-        };
+        if !config_path.exists() {
+            return Err(Error::Other(format!(
+                "AST grep config file not found: {}",
+                ast_grep.config_file
+            )));
+        }
 
-        // Execute ast-grep on the specified paths with the config file
+        // TODO: Make this configurable
+        let should_apply_fixes = true;
+
+        // Execute ast-grep using include/exclude globs with the config file
         let matches = if should_apply_fixes {
             info!("Applying AST grep fixes from config file");
-            execute_ast_grep_on_paths_with_fixes(
-                &ast_grep.paths,
+            execute_ast_grep_on_globs_with_fixes(
+                ast_grep.include.as_deref(),
+                ast_grep.exclude.as_deref(),
+                ast_grep.base_path.as_deref(),
                 &ast_grep.config_file,
                 working_dir_ref,
             )
             .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {}", e)))?
         } else {
-            execute_ast_grep_on_paths(&ast_grep.paths, &ast_grep.config_file, working_dir_ref)
-                .map_err(|e| Error::Other(format!("AST grep execution failed: {}", e)))?
+            execute_ast_grep_on_globs(
+                ast_grep.include.as_deref(),
+                ast_grep.exclude.as_deref(),
+                ast_grep.base_path.as_deref(),
+                &ast_grep.config_file,
+                working_dir_ref,
+            )
+            .map_err(|e| Error::Other(format!("AST grep execution failed: {}", e)))?
         };
 
         // Log the results

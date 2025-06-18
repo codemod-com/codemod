@@ -7,4 +7,7 @@ pub mod sandbox;
 mod utils;
 
 #[cfg(feature = "native")]
-pub use ast_grep::{execute_ast_grep_on_paths, execute_ast_grep_on_paths_with_fixes};
+pub use ast_grep::{
+    execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes, execute_ast_grep_on_paths,
+    execute_ast_grep_on_paths_with_fixes,
+};

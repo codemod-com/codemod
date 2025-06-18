@@ -6,9 +6,14 @@ use ast_grep_config::{from_yaml_string, CombinedScan, RuleConfig};
 use ast_grep_core::tree_sitter::StrDoc;
 use ast_grep_core::AstGrep;
 use ast_grep_language::SupportLang;
-use ignore::WalkBuilder;
+use ignore::{
+    overrides::{Override, OverrideBuilder},
+    WalkBuilder,
+};
 use serde_json;
 use thiserror::Error;
+
+use crate::sandbox::engine::language_data::get_extensions_for_language;
 
 #[derive(Error, Debug)]
 pub enum AstGrepError {
@@ -24,6 +29,8 @@ pub enum AstGrepError {
     Config(String),
     #[error("Path error: {0}")]
     Path(String),
+    #[error("Glob error: {0}")]
+    Glob(String),
 }
 
 #[derive(Debug, Clone)]
@@ -39,34 +46,56 @@ pub struct AstGrepMatch {
     pub rule_id: String,
 }
 
-/// Execute ast-grep on the specified paths using the given config file
+/// Execute ast-grep using include/exclude globs with the given config file
 ///
 /// # Arguments
-/// * `paths` - Glob patterns for paths to search
+/// * `include_globs` - Optional include glob patterns for files to search (None means auto-infer from rule languages)
+/// * `exclude_globs` - Optional exclude glob patterns for files to skip
+/// * `base_path` - Optional base path for resolving relative globs (defaults to current working directory)
 /// * `config_file` - Path to the ast-grep configuration file (.yaml or .json)
-/// * `working_dir` - Optional working directory to resolve relative paths
+/// * `working_dir` - Optional working directory to resolve config file path
 ///
 /// # Returns
 /// Vector of matches found across all files
-pub fn execute_ast_grep_on_paths(
-    paths: &[String],
+pub fn execute_ast_grep_on_globs(
+    include_globs: Option<&[String]>,
+    exclude_globs: Option<&[String]>,
+    base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_paths_with_options(paths, config_file, working_dir, false)
+    execute_ast_grep_on_globs_with_options(
+        include_globs,
+        exclude_globs,
+        base_path,
+        config_file,
+        working_dir,
+        false,
+    )
 }
 
-/// Execute ast-grep on the given paths with option to apply fixes
-pub fn execute_ast_grep_on_paths_with_fixes(
-    paths: &[String],
+/// Execute ast-grep on the given globs with option to apply fixes
+pub fn execute_ast_grep_on_globs_with_fixes(
+    include_globs: Option<&[String]>,
+    exclude_globs: Option<&[String]>,
+    base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_paths_with_options(paths, config_file, working_dir, true)
+    execute_ast_grep_on_globs_with_options(
+        include_globs,
+        exclude_globs,
+        base_path,
+        config_file,
+        working_dir,
+        true,
+    )
 }
 
-fn execute_ast_grep_on_paths_with_options(
-    paths: &[String],
+fn execute_ast_grep_on_globs_with_options(
+    include_globs: Option<&[String]>,
+    exclude_globs: Option<&[String]>,
+    base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
     apply_fixes: bool,
@@ -108,44 +137,154 @@ fn execute_ast_grep_on_paths_with_options(
         return Ok(Vec::new());
     }
 
+    // Extract languages from rules and get their extensions
+    let mut rule_languages = std::collections::HashSet::new();
+    for rule in &rule_configs {
+        rule_languages.insert(rule.language);
+    }
+
+    // Get extensions for all rule languages
+    let mut applicable_extensions = std::collections::HashSet::new();
+    for lang in &rule_languages {
+        let extensions = get_extensions_for_language(*lang);
+        for ext in extensions {
+            // Convert .ext to *.ext glob pattern
+            if ext.starts_with('.') {
+                applicable_extensions.insert(format!("*{}", ext));
+            } else {
+                applicable_extensions.insert(format!("*.{}", ext));
+            }
+        }
+    }
+
+    // Enhance include globs with language-specific extensions if needed
+    let enhanced_include_globs = if let Some(globs) = include_globs {
+        if globs.is_empty() {
+            // If empty array provided, use all applicable extensions
+            applicable_extensions.into_iter().collect::<Vec<_>>()
+        } else {
+            // Check if include patterns are very generic (like **, *.*, etc.)
+            // and enhance them with language-specific extensions
+            let mut enhanced = Vec::new();
+            for glob in globs {
+                if is_generic_glob_pattern(glob) {
+                    // For generic patterns, add language-specific variants
+                    for ext_pattern in &applicable_extensions {
+                        if glob == "**" {
+                            enhanced.push(format!("**/{}", ext_pattern));
+                        } else if glob == "*" {
+                            enhanced.push(ext_pattern.clone());
+                        } else {
+                            enhanced.push(glob.clone());
+                        }
+                    }
+                } else {
+                    // Keep specific patterns as-is
+                    enhanced.push(glob.clone());
+                }
+            }
+
+            // If no enhancements were made, use original patterns
+            if enhanced.is_empty() {
+                globs.to_vec()
+            } else {
+                enhanced
+            }
+        }
+    } else {
+        // If None provided, use all applicable extensions
+        applicable_extensions.into_iter().collect::<Vec<_>>()
+    };
+
     // Create combined scan
     let rule_refs: Vec<&RuleConfig<SupportLang>> = rule_configs.iter().collect();
     let combined_scan = CombinedScan::new(rule_refs);
 
+    // Determine the search base path
+    let search_base = if let Some(base) = base_path {
+        let base_path_buf = PathBuf::from(base);
+        if base_path_buf.is_absolute() {
+            base_path_buf
+        } else {
+            // Make relative to current working directory or provided working_dir
+            if let Some(wd) = working_dir {
+                wd.join(base_path_buf)
+            } else {
+                std::env::current_dir()
+                    .map_err(AstGrepError::Io)?
+                    .join(base_path_buf)
+            }
+        }
+    } else {
+        // Default to current working directory or provided working_dir
+        working_dir
+            .map(|p| p.to_path_buf())
+            .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")))
+    };
+
+    // Build glob overrides using the enhanced include patterns
+    let globs = build_globs(&enhanced_include_globs, exclude_globs, &search_base)?;
+
+    // Use WalkBuilder with globs
+    let walker = WalkBuilder::new(&search_base)
+        .follow_links(false)
+        .git_ignore(true)
+        .ignore(true)
+        .hidden(false)
+        .overrides(globs)
+        .build();
+
     let mut all_matches = Vec::new();
 
-    // Process each path pattern
-    for path_pattern in paths {
-        let resolved_path = if let Some(wd) = working_dir {
-            wd.join(path_pattern)
-        } else {
-            PathBuf::from(path_pattern)
-        };
+    for entry in walker {
+        let entry = entry.map_err(|e| AstGrepError::Io(std::io::Error::other(e)))?;
 
-        // Handle different path types
-        if resolved_path.is_file() {
-            // Single file
-            let matches = scan_file(&resolved_path, &combined_scan, &rule_configs, apply_fixes)?;
-            all_matches.extend(matches);
-        } else if resolved_path.is_dir() {
-            // Directory - walk recursively
-            let matches =
-                scan_directory(&resolved_path, &combined_scan, &rule_configs, apply_fixes)?;
-            all_matches.extend(matches);
-        } else {
-            // Pattern matching using ignore crate
-            let matches = scan_pattern(
-                path_pattern,
-                working_dir,
-                &combined_scan,
-                &rule_configs,
-                apply_fixes,
-            )?;
+        if entry.file_type().is_some_and(|ft| ft.is_file()) {
+            let matches = scan_file(entry.path(), &combined_scan, &rule_configs, apply_fixes)?;
             all_matches.extend(matches);
         }
     }
 
     Ok(all_matches)
+}
+
+/// Check if a glob pattern is generic and should be enhanced with language-specific extensions
+fn is_generic_glob_pattern(pattern: &str) -> bool {
+    matches!(pattern, "**" | "*" | "**/*" | "*.*")
+}
+
+/// Build glob overrides for include/exclude patterns
+fn build_globs(
+    include_globs: &[String],
+    exclude_globs: Option<&[String]>,
+    base_path: &Path,
+) -> Result<Override, AstGrepError> {
+    let mut builder = OverrideBuilder::new(base_path);
+
+    // Add include patterns
+    for glob in include_globs {
+        builder
+            .add(glob)
+            .map_err(|e| AstGrepError::Glob(format!("Invalid include glob '{}': {}", glob, e)))?;
+    }
+
+    // Add exclude patterns (prefixed with !)
+    if let Some(excludes) = exclude_globs {
+        for glob in excludes {
+            let exclude_pattern = if glob.starts_with('!') {
+                glob.to_string()
+            } else {
+                format!("!{}", glob)
+            };
+            builder.add(&exclude_pattern).map_err(|e| {
+                AstGrepError::Glob(format!("Invalid exclude glob '{}': {}", exclude_pattern, e))
+            })?;
+        }
+    }
+
+    builder
+        .build()
+        .map_err(|e| AstGrepError::Glob(format!("Failed to build glob overrides: {}", e)))
 }
 
 fn scan_file(
@@ -165,84 +304,6 @@ fn scan_file(
         rule_configs,
         apply_fixes,
     )
-}
-
-fn scan_directory(
-    dir_path: &Path,
-    combined_scan: &CombinedScan<SupportLang>,
-    rule_configs: &[RuleConfig<SupportLang>],
-    apply_fixes: bool,
-) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    let mut all_matches = Vec::new();
-
-    for entry in WalkBuilder::new(dir_path)
-        .follow_links(false)
-        .git_ignore(true)
-        .build()
-    {
-        let entry = entry.map_err(|e| AstGrepError::Io(std::io::Error::other(e)))?;
-
-        if entry.file_type().is_some_and(|ft| ft.is_file()) {
-            let matches = scan_file(entry.path(), combined_scan, rule_configs, apply_fixes)?;
-            all_matches.extend(matches);
-        }
-    }
-
-    Ok(all_matches)
-}
-
-fn scan_pattern(
-    pattern: &str,
-    working_dir: Option<&Path>,
-    combined_scan: &CombinedScan<SupportLang>,
-    rule_configs: &[RuleConfig<SupportLang>],
-    apply_fixes: bool,
-) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    let mut all_matches = Vec::new();
-    let base_dir = working_dir.unwrap_or(Path::new("."));
-
-    // For recursive patterns (containing **), start from base directory
-    // For other patterns, try to determine the actual directory to search
-    let search_path = if pattern.contains("**") {
-        base_dir.to_path_buf()
-    } else {
-        let (search_dir, _file_pattern) = parse_glob_pattern(pattern);
-        if search_dir.is_empty() {
-            base_dir.to_path_buf()
-        } else {
-            let candidate_path = base_dir.join(search_dir);
-            if candidate_path.exists() {
-                candidate_path
-            } else {
-                // Directory doesn't exist, search from base
-                base_dir.to_path_buf()
-            }
-        }
-    };
-
-    // Use WalkBuilder for better control over traversal
-    let walker = WalkBuilder::new(&search_path)
-        .follow_links(false)
-        .git_ignore(true)
-        .ignore(true)
-        .hidden(false)
-        .build();
-
-    for entry in walker {
-        let entry = entry.map_err(|e| AstGrepError::Io(std::io::Error::other(e)))?;
-
-        if entry.file_type().is_some_and(|ft| ft.is_file()) {
-            let path = entry.path();
-
-            // Check if path matches the pattern using improved glob matching
-            if matches_glob_pattern(path, pattern, base_dir) {
-                let matches = scan_file(path, combined_scan, rule_configs, apply_fixes)?;
-                all_matches.extend(matches);
-            }
-        }
-    }
-
-    Ok(all_matches)
 }
 
 fn scan_content(
@@ -295,17 +356,51 @@ fn scan_content(
         // Sort edits by position in reverse order (end to start)
         edit_infos.sort_by(|a, b| b.0.cmp(&a.0));
 
-        // Apply edits to content
+        // Apply edits to content using a proper offset-tracking approach
         if !edit_infos.is_empty() {
-            let content_bytes = content.as_bytes();
-            let mut result_bytes = content_bytes.to_vec();
+            // Build the new content by applying edits in reverse order (end to start)
+            // This ensures that earlier edits don't affect the positions of later edits
+            let original_content = content;
+            let mut new_content_parts = Vec::new();
+            let mut last_end = original_content.len();
 
-            for (position, deleted_length, inserted_text) in edit_infos {
-                let start = position;
-                let end = position + deleted_length;
+            // Process edits in reverse order by position
+            for (position, deleted_length, inserted_text) in edit_infos.iter() {
+                let start = *position;
+                let end = start + deleted_length;
 
-                // Replace the range with the new content
-                result_bytes.splice(start..end, inserted_text.iter().cloned());
+                // Validate that the edit is within bounds of the original content
+                if start > original_content.len() || end > original_content.len() {
+                    eprintln!(
+                        "Warning: Edit range {}..{} is beyond original content length {}. Skipping edit.",
+                        start, end, original_content.len()
+                    );
+                    continue;
+                }
+
+                // Add the content after this edit (from end of edit to last_end)
+                if end < last_end {
+                    new_content_parts.push(&original_content.as_bytes()[end..last_end]);
+                }
+
+                // Add the replacement text
+                new_content_parts.push(inserted_text);
+
+                last_end = start;
+            }
+
+            // Add the content before the first edit (from 0 to last_end)
+            if last_end > 0 {
+                new_content_parts.push(&original_content.as_bytes()[0..last_end]);
+            }
+
+            // Reverse the parts since we built them in reverse order
+            new_content_parts.reverse();
+
+            // Concatenate all parts
+            let mut result_bytes = Vec::new();
+            for part in new_content_parts {
+                result_bytes.extend_from_slice(part);
             }
 
             new_content = String::from_utf8(result_bytes).map_err(|e| {
@@ -395,150 +490,22 @@ fn detect_language(file_path: &Path) -> Result<SupportLang, AstGrepError> {
         .map_err(|_| AstGrepError::Language(format!("Language not supported: {}", language_str)))
 }
 
-/// Parse a glob pattern to extract directory and file pattern components
-fn parse_glob_pattern(pattern: &str) -> (&str, &str) {
-    // Split pattern into directory part and file pattern part
-    if let Some(last_slash) = pattern.rfind('/') {
-        let (dir_part, file_part) = pattern.split_at(last_slash + 1);
-        (dir_part.trim_end_matches('/'), file_part)
-    } else {
-        ("", pattern)
-    }
+/// Backward compatibility function - converts paths to include globs
+pub fn execute_ast_grep_on_paths(
+    paths: &[String],
+    config_file: &str,
+    working_dir: Option<&Path>,
+) -> Result<Vec<AstGrepMatch>, AstGrepError> {
+    execute_ast_grep_on_globs(Some(paths), None, None, config_file, working_dir)
 }
 
-/// Check if a path matches a glob pattern
-fn matches_glob_pattern(path: &Path, pattern: &str, base_dir: &Path) -> bool {
-    // Get relative path from base directory
-    let rel_path = if let Ok(relative) = path.strip_prefix(base_dir) {
-        relative
-    } else {
-        path
-    };
-
-    let path_str = rel_path.to_string_lossy();
-    let path_str = path_str.replace('\\', "/"); // Normalize path separators
-
-    // Handle different glob patterns
-    if pattern.contains("**") {
-        // Recursive glob pattern (e.g., "src/**/*.js")
-        matches_recursive_glob(&path_str, pattern)
-    } else if pattern.contains('*') {
-        // Simple glob pattern (e.g., "*.js", "src/*.ts")
-        matches_simple_glob(&path_str, pattern)
-    } else {
-        // Exact match or substring match
-        path_str == pattern || path_str.ends_with(pattern)
-    }
-}
-
-/// Match simple glob patterns with single * wildcards
-fn matches_simple_glob(path: &str, pattern: &str) -> bool {
-    let pattern_parts: Vec<&str> = pattern.split('*').collect();
-
-    if pattern_parts.len() == 1 {
-        // No wildcards - exact match
-        return path == pattern;
-    }
-
-    if pattern_parts.len() == 2 {
-        // Single wildcard (e.g., "*.js", "src/*.ts")
-        let prefix = pattern_parts[0];
-        let suffix = pattern_parts[1];
-
-        if prefix.is_empty() {
-            // Pattern like "*.js"
-            path.ends_with(suffix)
-        } else if suffix.is_empty() {
-            // Pattern like "src/*"
-            path.starts_with(prefix)
-        } else {
-            // Pattern like "src/*.js"
-            path.starts_with(prefix) && path.ends_with(suffix)
-        }
-    } else {
-        // Multiple wildcards - more complex matching
-        let mut path_pos = 0;
-
-        for (i, part) in pattern_parts.iter().enumerate() {
-            if part.is_empty() {
-                continue;
-            }
-
-            if i == 0 {
-                // First part must match from the beginning
-                if !path[path_pos..].starts_with(part) {
-                    return false;
-                }
-                path_pos += part.len();
-            } else if i == pattern_parts.len() - 1 {
-                // Last part must match at the end
-                return path[path_pos..].ends_with(part);
-            } else {
-                // Middle parts must be found somewhere
-                if let Some(pos) = path[path_pos..].find(part) {
-                    path_pos += pos + part.len();
-                } else {
-                    return false;
-                }
-            }
-        }
-
-        true
-    }
-}
-
-/// Match recursive glob patterns with ** wildcards
-fn matches_recursive_glob(path: &str, pattern: &str) -> bool {
-    // Handle patterns like "src/**/*.js" or "**/*.ts"
-    if let Some(double_star_pos) = pattern.find("**") {
-        let before_double_star = &pattern[..double_star_pos];
-        let after_double_star = &pattern[double_star_pos + 2..];
-
-        // Remove leading slash from after_double_star if present
-        let after_double_star = after_double_star
-            .strip_prefix('/')
-            .unwrap_or(after_double_star);
-
-        // Check prefix match
-        let prefix_matches = if before_double_star.is_empty() {
-            true // Pattern starts with **
-        } else {
-            let prefix = before_double_star.trim_end_matches('/');
-            path.starts_with(prefix)
-        };
-
-        if !prefix_matches {
-            return false;
-        }
-
-        // Check suffix match
-        if after_double_star.is_empty() {
-            true // Pattern ends with **
-        } else {
-            // For patterns like "src/**/*.js", we need to match "*.js" somewhere after "src/"
-            let relevant_part = if before_double_star.is_empty() {
-                path
-            } else {
-                let prefix = before_double_star.trim_end_matches('/');
-                if let Some(pos) = path.find(prefix) {
-                    &path[pos + prefix.len()..]
-                } else {
-                    return false;
-                }
-            };
-
-            // Now match the suffix pattern against the relevant part
-            if after_double_star.contains('*') {
-                matches_simple_glob(relevant_part, after_double_star)
-            } else {
-                relevant_part.contains(after_double_star)
-                    || relevant_part.ends_with(after_double_star)
-            }
-        }
-    } else {
-        // No ** found, treat as simple glob
-        matches_simple_glob(path, pattern)
-    }
+/// Backward compatibility function - converts paths to include globs with fixes
+pub fn execute_ast_grep_on_paths_with_fixes(
+    paths: &[String],
+    config_file: &str,
+    working_dir: Option<&Path>,
+) -> Result<Vec<AstGrepMatch>, AstGrepError> {
+    execute_ast_grep_on_globs_with_fixes(Some(paths), None, None, config_file, working_dir)
 }
 
 #[cfg(test)]
@@ -564,6 +531,7 @@ mod tests {
 
     #[test]
     fn test_detect_language() {
+        // Test various file extensions
         assert_eq!(
             detect_language(Path::new("test.js")).unwrap().to_string(),
             "JavaScript"
@@ -571,6 +539,10 @@ mod tests {
         assert_eq!(
             detect_language(Path::new("test.ts")).unwrap().to_string(),
             "TypeScript"
+        );
+        assert_eq!(
+            detect_language(Path::new("test.tsx")).unwrap().to_string(),
+            "Tsx"
         );
         assert_eq!(
             detect_language(Path::new("test.py")).unwrap().to_string(),
@@ -586,115 +558,7 @@ mod tests {
     }
 
     #[test]
-    fn test_matches_pattern() {
-        let base_dir = Path::new("/test");
-
-        // Exact matches
-        assert!(matches_glob_pattern(
-            Path::new("/test/test.js"),
-            "test.js",
-            base_dir
-        ));
-        assert!(matches_glob_pattern(
-            Path::new("/test/src/test.js"),
-            "test.js",
-            base_dir
-        ));
-
-        // Wildcard patterns
-        assert!(matches_glob_pattern(
-            Path::new("/test/test.js"),
-            "*.js",
-            base_dir
-        ));
-        assert!(matches_glob_pattern(
-            Path::new("/test/src/test.js"),
-            "src/*.js",
-            base_dir
-        ));
-        assert!(matches_glob_pattern(
-            Path::new("/test/src/components/App.tsx"),
-            "*.tsx",
-            base_dir
-        ));
-
-        // Non-matches
-        assert!(!matches_glob_pattern(
-            Path::new("/test/test.py"),
-            "*.js",
-            base_dir
-        ));
-        assert!(!matches_glob_pattern(
-            Path::new("/test/other.js"),
-            "test.js",
-            base_dir
-        ));
-    }
-
-    #[test]
-    fn test_glob_pattern_matching() {
-        let base_dir = Path::new("/test");
-
-        // Simple glob patterns
-        assert!(matches_glob_pattern(
-            Path::new("/test/app.js"),
-            "*.js",
-            base_dir
-        ));
-        assert!(matches_glob_pattern(
-            Path::new("/test/src/app.js"),
-            "src/*.js",
-            base_dir
-        ));
-        assert!(!matches_glob_pattern(
-            Path::new("/test/app.py"),
-            "*.js",
-            base_dir
-        ));
-
-        // Recursive glob patterns
-        assert!(matches_glob_pattern(
-            Path::new("/test/src/components/App.tsx"),
-            "**/*.tsx",
-            base_dir
-        ));
-        assert!(matches_glob_pattern(
-            Path::new("/test/src/utils/helpers.js"),
-            "src/**/*.js",
-            base_dir
-        ));
-        assert!(!matches_glob_pattern(
-            Path::new("/test/src/utils/helpers.py"),
-            "src/**/*.js",
-            base_dir
-        ));
-
-        // Exact path matches
-        assert!(matches_glob_pattern(
-            Path::new("/test/package.json"),
-            "package.json",
-            base_dir
-        ));
-        assert!(!matches_glob_pattern(
-            Path::new("/test/other.json"),
-            "package.json",
-            base_dir
-        ));
-    }
-
-    #[test]
-    fn test_parse_glob_pattern() {
-        assert_eq!(parse_glob_pattern("*.js"), ("", "*.js"));
-        assert_eq!(parse_glob_pattern("src/*.js"), ("src", "*.js"));
-        assert_eq!(
-            parse_glob_pattern("src/components/**/*.tsx"),
-            ("src/components/**", "*.tsx")
-        );
-        assert_eq!(parse_glob_pattern("package.json"), ("", "package.json"));
-    }
-
-    #[test]
-    fn test_execute_ast_grep_on_paths_with_javascript() {
+    fn test_execute_ast_grep_on_globs_with_javascript() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -724,8 +588,10 @@ message: "Found var declaration"
         let config_path = create_test_config(temp_path, "rules.yaml", config_content);
 
         // Execute ast-grep
-        let matches = execute_ast_grep_on_paths(
-            &["test.js".to_string()],
+        let matches = execute_ast_grep_on_globs(
+            Some(&["test.js".to_string()]),
+            None,
+            None,
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
@@ -754,7 +620,7 @@ message: "Found var declaration"
     }
 
     #[test]
-    fn test_execute_ast_grep_on_paths_with_typescript() {
+    fn test_execute_ast_grep_on_globs_with_typescript() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -786,8 +652,10 @@ message: "Found console.log statement"
         let config_path = create_test_config(temp_path, "ts-rules.yaml", config_content);
 
         // Execute ast-grep
-        let matches = execute_ast_grep_on_paths(
-            &["test.ts".to_string()],
+        let matches = execute_ast_grep_on_globs(
+            Some(&["test.ts".to_string()]),
+            None,
+            None,
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
@@ -827,9 +695,11 @@ message: "Found console.log statement"
 "#;
         let config_path = create_test_config(temp_path, "rules.yaml", config_content);
 
-        // Execute ast-grep on directory
-        let matches = execute_ast_grep_on_paths(
-            &["src/".to_string()],
+        // Execute ast-grep on src directory using proper glob pattern
+        let matches = execute_ast_grep_on_globs(
+            Some(&["src/**/*.js".to_string()]),
+            None,
+            None,
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
@@ -873,8 +743,10 @@ message: "Found console.log statement"
         let config_path = create_test_config(temp_path, "rules.json", config_content);
 
         // Execute ast-grep
-        let matches = execute_ast_grep_on_paths(
-            &["test.js".to_string()],
+        let matches = execute_ast_grep_on_globs(
+            Some(&["test.js".to_string()]),
+            None,
+            None,
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
@@ -904,8 +776,10 @@ message: "Found console.log statement"
         let config_path = create_test_config(temp_path, "rules.yaml", config_content);
 
         // Execute ast-grep
-        let matches = execute_ast_grep_on_paths(
-            &["test.js".to_string()],
+        let matches = execute_ast_grep_on_globs(
+            Some(&["test.js".to_string()]),
+            None,
+            None,
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
@@ -934,8 +808,10 @@ rule:
         let config_path = create_test_config(temp_path, "rules.yaml", config_content);
 
         // Execute ast-grep on nonexistent file - should handle gracefully
-        let result = execute_ast_grep_on_paths(
-            &["nonexistent.js".to_string()],
+        let result = execute_ast_grep_on_globs(
+            Some(&["nonexistent.js".to_string()]),
+            None,
+            None,
             config_path.to_str().unwrap(),
             Some(temp_path),
         );
@@ -972,8 +848,10 @@ message: "Found console.log statement"
         let config_path = create_test_config(temp_path, "rules.yaml", config_content);
 
         // Test recursive glob pattern
-        let matches = execute_ast_grep_on_paths(
-            &["**/*.js".to_string()],
+        let matches = execute_ast_grep_on_globs(
+            Some(&["**/*.js".to_string()]),
+            None,
+            None,
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
@@ -996,8 +874,10 @@ message: "Found console.log statement"
         }
 
         // Test more specific pattern
-        let matches = execute_ast_grep_on_paths(
-            &["src/**/*.js".to_string()],
+        let matches = execute_ast_grep_on_globs(
+            Some(&["src/**/*.js".to_string()]),
+            None,
+            None,
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
@@ -1058,8 +938,10 @@ message: "Found var declaration"
         create_test_config(temp_path, "rules.yaml", config_content);
 
         // Execute with fixes
-        let matches = execute_ast_grep_on_paths_with_fixes(
-            &["test.js".to_string()],
+        let matches = execute_ast_grep_on_globs_with_fixes(
+            Some(&["test.js".to_string()]),
+            None,
+            None,
             "rules.yaml",
             Some(temp_path),
         )
@@ -1078,5 +960,143 @@ message: "Found var declaration"
         assert!(modified_content.contains("let userCount"));
         assert!(!modified_content.contains("console.log"));
         assert!(!modified_content.contains("var userCount"));
+    }
+
+    #[test]
+    fn test_automatic_language_extension_inference() {
+        let temp_dir = TempDir::new().unwrap();
+        let temp_path = temp_dir.path();
+
+        // Create test files with different extensions
+        create_test_file(temp_path, "app.js", "console.log('js file');");
+        create_test_file(temp_path, "utils.mjs", "console.log('mjs file');");
+        create_test_file(temp_path, "config.ts", "console.log('ts file');");
+        create_test_file(temp_path, "component.tsx", "console.log('tsx file');");
+        create_test_file(temp_path, "script.py", "print('python file')"); // Different language
+        create_test_file(temp_path, "readme.md", "# Markdown file"); // Different language
+
+        // Create config with JavaScript, TypeScript, and TSX rules
+        let config_content = r#"id: console-log-js
+language: javascript
+rule:
+  pattern: console.log($$$)
+message: "Found console.log statement in JavaScript"
+---
+id: console-log-ts
+language: typescript
+rule:
+  pattern: console.log($$$)
+message: "Found console.log statement in TypeScript"
+---
+id: console-log-tsx
+language: tsx
+rule:
+  pattern: console.log($$$)
+message: "Found console.log statement in TSX"
+"#;
+        let config_path = create_test_config(temp_path, "rules.yaml", config_content);
+
+        // Test with empty include patterns - should auto-infer extensions
+        let matches = execute_ast_grep_on_globs(
+            None, // None means auto-infer from rule languages
+            None,
+            None,
+            config_path.to_str().unwrap(),
+            Some(temp_path),
+        )
+        .unwrap();
+
+        // Debug: print all matches
+        println!("Found {} total matches:", matches.len());
+        for (i, ast_match) in matches.iter().enumerate() {
+            println!(
+                "  {}: {} (rule: {})",
+                i + 1,
+                ast_match.file_path,
+                ast_match.rule_id
+            );
+        }
+
+        // Should find console.log in JS/TS files but not Python or Markdown
+        assert!(
+            matches.len() >= 4, // Now we should get 4: 2 JS, 1 TS, 1 TSX
+            "Expected at least 4 matches from JS/TS/TSX files, got {}",
+            matches.len()
+        );
+
+        // Verify matches are from JS/TS files only
+        let mut js_count = 0;
+        let mut ts_count = 0;
+        let mut tsx_count = 0;
+        for ast_match in &matches {
+            if ast_match.file_path.ends_with(".js") || ast_match.file_path.ends_with(".mjs") {
+                js_count += 1;
+            } else if ast_match.file_path.ends_with(".ts") {
+                ts_count += 1;
+            } else if ast_match.file_path.ends_with(".tsx") {
+                tsx_count += 1;
+            } else {
+                panic!("Unexpected file type in matches: {}", ast_match.file_path);
+            }
+        }
+
+        println!(
+            "JS matches: {}, TS matches: {}, TSX matches: {}",
+            js_count, ts_count, tsx_count
+        );
+
+        assert!(js_count >= 2, "Should find matches in JS files");
+        assert!(ts_count >= 1, "Should find matches in TS files");
+        assert!(tsx_count >= 1, "Should find matches in TSX files");
+
+        // Verify no matches from .py or .md files by checking file paths
+        for ast_match in &matches {
+            assert!(
+                !ast_match.file_path.ends_with(".py") && !ast_match.file_path.ends_with(".md"),
+                "Should not match Python or Markdown files: {}",
+                ast_match.file_path
+            );
+        }
+    }
+
+    #[test]
+    fn test_generic_glob_enhancement() {
+        let temp_dir = TempDir::new().unwrap();
+        let temp_path = temp_dir.path();
+
+        // Create nested structure with various file types
+        create_test_file(temp_path, "src/app.js", "console.log('app');");
+        create_test_file(temp_path, "src/utils.ts", "console.log('utils');");
+        create_test_file(temp_path, "docs/readme.md", "# README");
+        create_test_file(temp_path, "scripts/build.py", "print('build')");
+
+        // Create JavaScript-only config
+        let config_content = r#"id: console-log
+language: javascript
+rule:
+  pattern: console.log($$$)
+message: "Found console.log statement"
+"#;
+        let config_path = create_test_config(temp_path, "rules.yaml", config_content);
+
+        // Test with generic glob pattern "**" - should be enhanced to "**/*.js", "**/*.mjs", "**/*.cjs"
+        let matches = execute_ast_grep_on_globs(
+            Some(&["**".to_string()]),
+            None,
+            None,
+            config_path.to_str().unwrap(),
+            Some(temp_path),
+        )
+        .unwrap();
+
+        // Should find matches in JS files only, not TS, MD, or PY
+        assert!(!matches.is_empty());
+        for ast_match in &matches {
+            assert!(
+                ast_match.file_path.ends_with(".js"),
+                "With JavaScript rules, should only match .js files, got: {}",
+                ast_match.file_path
+            );
+        }
     }
 }
