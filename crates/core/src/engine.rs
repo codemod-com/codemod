@@ -1008,18 +1008,91 @@ impl Engine {
                 Ok(())
             }
             StepAction::AstGrep(ast_grep) => {
-                self.execute_ast_grep_step(runner, ast_grep, step_env).await
+                self.execute_ast_grep_step_with_dir(ast_grep, None).await
             }
         }
     }
 
-    async fn execute_ast_grep_step(
+    pub async fn execute_ast_grep_step_with_dir(
         &self,
-        _runner: &dyn Runner,
-        _ast_grep: &UseAstGrep,
-        _step_env: &Option<HashMap<String, String>>,
+        ast_grep: &UseAstGrep,
+        working_dir: Option<std::path::PathBuf>,
     ) -> Result<()> {
-        todo!("Implement ast-grep step");
+        use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
+
+        // Get the working directory from parameter, falling back to current directory
+        let working_dir = working_dir.or_else(|| std::env::current_dir().ok());
+        let working_dir_ref = working_dir.as_deref();
+
+        // Check if the config file contains any fixers to determine if we should apply fixes
+        let config_path = if let Some(wd) = working_dir_ref {
+            wd.join(&ast_grep.config_file)
+        } else {
+            std::path::PathBuf::from(&ast_grep.config_file)
+        };
+
+        if !config_path.exists() {
+            return Err(Error::Other(format!(
+                "AST grep config file not found: {}",
+                ast_grep.config_file
+            )));
+        }
+
+        // TODO: Make this configurable
+        let should_apply_fixes = true;
+
+        // Execute ast-grep using include/exclude globs with the config file
+        let matches = if should_apply_fixes {
+            info!("Applying AST grep fixes from config file");
+            execute_ast_grep_on_globs_with_fixes(
+                ast_grep.include.as_deref(),
+                ast_grep.exclude.as_deref(),
+                ast_grep.base_path.as_deref(),
+                &ast_grep.config_file,
+                working_dir_ref,
+            )
+            .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {}", e)))?
+        } else {
+            execute_ast_grep_on_globs(
+                ast_grep.include.as_deref(),
+                ast_grep.exclude.as_deref(),
+                ast_grep.base_path.as_deref(),
+                &ast_grep.config_file,
+                working_dir_ref,
+            )
+            .map_err(|e| Error::Other(format!("AST grep execution failed: {}", e)))?
+        };
+
+        // Log the results
+        if should_apply_fixes {
+            info!(
+                "AST grep applied fixes and found {} matches across all files",
+                matches.len()
+            );
+        } else {
+            info!("AST grep found {} matches across all files", matches.len());
+        }
+
+        for ast_match in &matches {
+            info!(
+                "Match in {}: {}:{}-{}:{} (rule: {})",
+                ast_match.file_path,
+                ast_match.start_line,
+                ast_match.start_column,
+                ast_match.end_line,
+                ast_match.end_column,
+                ast_match.rule_id
+            );
+            debug!("Match text: {}", ast_match.match_text);
+        }
+
+        // TODO: Consider writing match results to state or logs
+        // For now, we just log the results. In the future, this could be extended to:
+        // 1. Write matches to the workflow state for other tasks to use
+        // 2. Write matches to a file for further processing
+        // 3. Fail the step if matches are found (for linting use cases)
+
+        Ok(())
     }
 
     /// Execute a single RunScript step
