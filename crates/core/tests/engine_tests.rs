@@ -9,7 +9,7 @@ use butterflow_core::{
     WorkflowStatus,
 };
 use butterflow_models::node::NodeType;
-use butterflow_models::step::{StepAction, UseAstGrep};
+use butterflow_models::step::{StepAction, UseAstGrep, UseJSAstGrep};
 use butterflow_models::strategy::Strategy;
 use butterflow_models::trigger::TriggerType;
 use butterflow_models::{DiffOperation, FieldDiff, TaskDiff};
@@ -1395,7 +1395,7 @@ message: "Found var declaration"
                 base_path: None,
                 config_file: "ast-grep-rules.yaml".to_string(),
             },
-            Some(temp_path.to_path_buf()),
+            Some(temp_path),
         )
         .await;
 
@@ -1460,7 +1460,7 @@ message: "Found interface declaration"
                 base_path: None,
                 config_file: "ts-rules.yaml".to_string(),
             },
-            Some(temp_path.to_path_buf()),
+            Some(temp_path),
         )
         .await;
 
@@ -1490,7 +1490,7 @@ async fn test_execute_ast_grep_step_nonexistent_config() {
                 base_path: None,
                 config_file: "nonexistent.yaml".to_string(),
             },
-            Some(temp_path.to_path_buf()),
+            Some(temp_path),
         )
         .await;
 
@@ -1542,7 +1542,7 @@ message: "Found console.log statement"
                 base_path: None,
                 config_file: "rules.yaml".to_string(),
             },
-            Some(temp_path.to_path_buf()),
+            Some(temp_path),
         )
         .await;
 
@@ -1551,5 +1551,579 @@ message: "Found console.log statement"
         result.is_ok(),
         "Should succeed even with no matches: {:?}",
         result
+    );
+}
+
+#[tokio::test]
+async fn test_execute_js_ast_grep_step() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create a simple JavaScript codemod file
+    create_test_file(
+        temp_path,
+        "codemod.js",
+        r#"
+import { CallExpression } from '@ast-grep/napi';
+
+export default function transform(ast) {
+  return ast
+    .findAll({ rule: { pattern: 'console.log($$$)' } })
+    .replace('logger.info($$$)');
+}
+"#,
+    );
+
+    // Create test files to transform
+    create_test_file(
+        temp_path,
+        "src/app.js",
+        r#"
+function main() {
+    console.log("Starting app");
+    var count = 0;
+    console.log("Count:", count);
+}
+"#,
+    );
+
+    create_test_file(
+        temp_path,
+        "src/utils.js",
+        r#"
+function helper() {
+    console.log("Helper function");
+    let data = getData();
+    return data;
+}
+"#,
+    );
+
+    // Create engine and test execution
+    let engine = Engine::new();
+    let result = engine
+        .execute_js_ast_grep_step_with_dir(
+            &UseJSAstGrep {
+                js_file: "codemod.js".to_string(),
+                base_path: Some("src".to_string()),
+                include: Some(vec!["**/*.js".to_string()]),
+                exclude: None,
+                no_gitignore: Some(false),
+                include_hidden: Some(false),
+                max_threads: Some(2),
+                dry_run: Some(false),
+                language: Some("javascript".to_string()),
+            },
+            Some(temp_path),
+        )
+        .await;
+
+    // Assert the step executed successfully
+    assert!(
+        result.is_ok(),
+        "JS AST grep step should execute successfully: {:?}",
+        result
+    );
+}
+
+#[tokio::test]
+async fn test_execute_js_ast_grep_step_with_typescript() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create a TypeScript codemod file
+    create_test_file(
+        temp_path,
+        "ts-codemod.js",
+        r#"
+export default function transform(ast) {
+  return ast
+    .findAll({ 
+      rule: { 
+        pattern: 'interface $NAME { $$$ }' 
+      } 
+    })
+    .replace('type $NAME = { $$$ }');
+}
+"#,
+    );
+
+    // Create test TypeScript files
+    create_test_file(
+        temp_path,
+        "src/types.ts",
+        r#"
+interface User {
+    name: string;
+    age: number;
+}
+
+interface Product {
+    id: number;
+    title: string;
+}
+"#,
+    );
+
+    create_test_file(
+        temp_path,
+        "src/models.ts",
+        r#"
+interface ApiResponse {
+    data: any;
+    status: number;
+}
+"#,
+    );
+
+    // Create engine and test execution
+    let engine = Engine::new();
+    let result = engine
+        .execute_js_ast_grep_step_with_dir(
+            &UseJSAstGrep {
+                js_file: "ts-codemod.js".to_string(),
+                base_path: Some("src".to_string()),
+                include: Some(vec!["**/*.ts".to_string(), "**/*.tsx".to_string()]),
+                exclude: None,
+                no_gitignore: Some(false),
+                include_hidden: Some(false),
+                max_threads: Some(4),
+                dry_run: Some(false),
+                language: Some("typescript".to_string()),
+            },
+            Some(temp_path),
+        )
+        .await;
+
+    // Assert the step executed successfully
+    assert!(
+        result.is_ok(),
+        "TypeScript JS AST grep step should execute successfully: {:?}",
+        result
+    );
+}
+
+#[tokio::test]
+async fn test_execute_js_ast_grep_step_dry_run() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create a codemod file
+    create_test_file(
+        temp_path,
+        "dry-run-codemod.js",
+        r#"
+export default function transform(ast) {
+  return ast
+    .findAll({ rule: { pattern: 'var $VAR = $VALUE' } })
+    .replace('const $VAR = $VALUE');
+}
+"#,
+    );
+
+    // Create test file
+    create_test_file(
+        temp_path,
+        "test.js",
+        r#"
+var name = "test";
+var count = 0;
+"#,
+    );
+
+    // Create engine and test execution with dry run
+    let engine = Engine::new();
+    let result = engine
+        .execute_js_ast_grep_step_with_dir(
+            &UseJSAstGrep {
+                js_file: "dry-run-codemod.js".to_string(),
+                base_path: None, // Use current directory
+                include: Some(vec!["**/*.js".to_string()]),
+                exclude: None,
+                no_gitignore: Some(false),
+                include_hidden: Some(false),
+                max_threads: None,   // Use default
+                dry_run: Some(true), // Enable dry run
+                language: Some("javascript".to_string()),
+            },
+            Some(temp_path),
+        )
+        .await;
+
+    // Assert the step executed successfully
+    assert!(
+        result.is_ok(),
+        "Dry run JS AST grep step should execute successfully: {:?}",
+        result
+    );
+}
+
+#[tokio::test]
+async fn test_execute_js_ast_grep_step_nonexistent_js_file() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create test file but no codemod
+    create_test_file(temp_path, "test.js", "console.log('test');");
+
+    // Create engine and test execution with nonexistent JavaScript file
+    let engine = Engine::new();
+    let result = engine
+        .execute_js_ast_grep_step_with_dir(
+            &UseJSAstGrep {
+                js_file: "nonexistent-codemod.js".to_string(),
+                base_path: None,
+                include: None,
+                exclude: None,
+                no_gitignore: Some(false),
+                include_hidden: Some(false),
+                max_threads: None,
+                dry_run: Some(false),
+                language: None,
+            },
+            Some(temp_path),
+        )
+        .await;
+
+    // Should fail gracefully
+    assert!(result.is_err(), "Should fail with nonexistent JS file");
+    assert!(result.unwrap_err().to_string().contains("JavaScript file"));
+}
+
+#[tokio::test]
+async fn test_execute_js_ast_grep_step_with_gitignore() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create a codemod file
+    create_test_file(
+        temp_path,
+        "gitignore-codemod.js",
+        r#"
+export default function transform(ast) {
+  return ast
+    .findAll({ rule: { pattern: 'console.log($$$)' } })
+    .replace('logger.info($$$)');
+}
+"#,
+    );
+
+    // Create .gitignore file
+    create_test_file(
+        temp_path,
+        ".gitignore",
+        r#"
+node_modules/
+*.log
+build/
+"#,
+    );
+
+    // Create test files in different locations
+    create_test_file(temp_path, "src/app.js", "console.log('main app');");
+    create_test_file(temp_path, "build/dist.js", "console.log('built file');");
+    create_test_file(
+        temp_path,
+        "node_modules/lib.js",
+        "console.log('dependency');",
+    );
+
+    // Create engine and test execution respecting gitignore
+    let engine = Engine::new();
+    let result = engine
+        .execute_js_ast_grep_step_with_dir(
+            &UseJSAstGrep {
+                js_file: "gitignore-codemod.js".to_string(),
+                base_path: None,
+                include: Some(vec!["**/*.js".to_string()]),
+                exclude: None,
+                no_gitignore: Some(false), // Respect gitignore
+                include_hidden: Some(false),
+                max_threads: Some(1),
+                dry_run: Some(false),
+                language: Some("javascript".to_string()),
+            },
+            Some(temp_path),
+        )
+        .await;
+
+    // Assert the step executed successfully
+    assert!(
+        result.is_ok(),
+        "JS AST grep step with gitignore should execute successfully: {:?}",
+        result
+    );
+
+    // Test without respecting gitignore
+    let result_no_gitignore = engine
+        .execute_js_ast_grep_step_with_dir(
+            &UseJSAstGrep {
+                js_file: "gitignore-codemod.js".to_string(),
+                base_path: None,
+                include: Some(vec!["**/*.js".to_string()]),
+                exclude: None,
+                no_gitignore: Some(true), // Don't respect gitignore
+                include_hidden: Some(false),
+                max_threads: Some(1),
+                dry_run: Some(false),
+                language: Some("javascript".to_string()),
+            },
+            Some(temp_path),
+        )
+        .await;
+
+    // Should also succeed
+    assert!(
+        result_no_gitignore.is_ok(),
+        "JS AST grep step without gitignore should execute successfully: {:?}",
+        result_no_gitignore
+    );
+}
+
+#[tokio::test]
+async fn test_execute_js_ast_grep_step_with_hidden_files() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create a codemod file
+    create_test_file(
+        temp_path,
+        "hidden-codemod.js",
+        r#"
+export default function transform(ast) {
+  return ast
+    .findAll({ rule: { pattern: 'const $VAR = $VALUE' } })
+    .replace('let $VAR = $VALUE');
+}
+"#,
+    );
+
+    // Create hidden file
+    create_test_file(temp_path, ".hidden.js", "const secret = 'hidden';");
+
+    // Create regular file
+    create_test_file(temp_path, "regular.js", "const normal = 'visible';");
+
+    // Create engine and test execution including hidden files
+    let engine = Engine::new();
+    let result = engine
+        .execute_js_ast_grep_step_with_dir(
+            &UseJSAstGrep {
+                js_file: "hidden-codemod.js".to_string(),
+                base_path: None,
+                include: Some(vec!["**/*.js".to_string()]),
+                exclude: None,
+                no_gitignore: Some(false),
+                include_hidden: Some(true), // Include hidden files
+                max_threads: Some(1),
+                dry_run: Some(false),
+                language: Some("javascript".to_string()),
+            },
+            Some(temp_path),
+        )
+        .await;
+
+    // Assert the step executed successfully
+    assert!(
+        result.is_ok(),
+        "JS AST grep step with hidden files should execute successfully: {:?}",
+        result
+    );
+}
+
+#[tokio::test]
+async fn test_execute_js_ast_grep_step_invalid_max_threads() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create a simple codemod file
+    create_test_file(
+        temp_path,
+        "codemod.js",
+        r#"
+export default function transform(ast) {
+  return ast;
+}
+"#,
+    );
+
+    // Create test file
+    create_test_file(temp_path, "test.js", "console.log('test');");
+
+    // Create engine and test execution with invalid max_threads
+    let engine = Engine::new();
+    let result = engine
+        .execute_js_ast_grep_step_with_dir(
+            &UseJSAstGrep {
+                js_file: "codemod.js".to_string(),
+                base_path: None,
+                include: None,
+                exclude: None,
+                no_gitignore: Some(false),
+                include_hidden: Some(false),
+                max_threads: Some(0), // Invalid: must be > 0
+                dry_run: Some(false),
+                language: None,
+            },
+            Some(temp_path),
+        )
+        .await;
+
+    // Should fail gracefully
+    assert!(result.is_err(), "Should fail with invalid max_threads");
+    assert!(result
+        .unwrap_err()
+        .to_string()
+        .contains("max-threads must be greater than 0"));
+}
+
+#[tokio::test]
+async fn test_execute_js_ast_grep_step_invalid_language() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create a simple codemod file
+    create_test_file(
+        temp_path,
+        "codemod.js",
+        r#"
+export default function transform(ast) {
+  return ast;
+}
+"#,
+    );
+
+    // Create test file
+    create_test_file(temp_path, "test.js", "console.log('test');");
+
+    // Create engine and test execution with invalid language
+    let engine = Engine::new();
+    let result = engine
+        .execute_js_ast_grep_step_with_dir(
+            &UseJSAstGrep {
+                js_file: "codemod.js".to_string(),
+                base_path: None,
+                include: None,
+                exclude: None,
+                no_gitignore: Some(false),
+                include_hidden: Some(false),
+                max_threads: None,
+                dry_run: Some(false),
+                language: Some("invalid-language".to_string()), // Invalid language
+            },
+            Some(temp_path),
+        )
+        .await;
+
+    // Should fail gracefully
+    assert!(result.is_err(), "Should fail with invalid language");
+    assert!(result.unwrap_err().to_string().contains("Invalid language"));
+}
+
+// Helper function to create a workflow with JSAstGrep step
+fn create_js_ast_grep_workflow() -> Workflow {
+    Workflow {
+        version: "1".to_string(),
+        state: None,
+        templates: vec![],
+        nodes: vec![Node {
+            id: "js-ast-grep-node".to_string(),
+            name: "JS AST Grep Node".to_string(),
+            description: Some("Test node for JS AST grep".to_string()),
+            r#type: NodeType::Automatic,
+            depends_on: vec![],
+            trigger: None,
+            strategy: None,
+            runtime: Some(Runtime {
+                r#type: RuntimeType::Direct,
+                image: None,
+                working_dir: None,
+                user: None,
+                network: None,
+                options: None,
+            }),
+            steps: vec![Step {
+                name: "JS AST Grep Step".to_string(),
+                action: StepAction::JSAstGrep(UseJSAstGrep {
+                    js_file: "codemod.js".to_string(),
+                    base_path: Some("src".to_string()),
+                    include: Some(vec!["**/*.js".to_string()]),
+                    exclude: None,
+                    no_gitignore: Some(false),
+                    include_hidden: Some(false),
+                    max_threads: Some(2),
+                    dry_run: Some(false),
+                    language: Some("javascript".to_string()),
+                }),
+                env: None,
+            }],
+            env: HashMap::new(),
+        }],
+    }
+}
+
+#[tokio::test]
+async fn test_js_ast_grep_workflow_execution() {
+    let temp_dir = TempDir::new().unwrap();
+    let temp_path = temp_dir.path();
+
+    // Create codemod and test files
+    create_test_file(
+        temp_path,
+        "codemod.js",
+        r#"
+import { CallExpression } from '@ast-grep/napi';
+
+export default function transform(ast) {
+  return ast
+    .findAll({ rule: { pattern: 'console.log($$$)' } })
+    .replace('logger.info($$$)');
+}
+"#,
+    );
+
+    create_test_file(temp_path, "src/app.js", "console.log('Hello, World!');");
+
+    // Create engine with workflow
+    let state_adapter = Box::new(MockStateAdapter::new());
+    let engine = Engine::with_state_adapter(state_adapter);
+
+    let workflow = create_js_ast_grep_workflow();
+    let params = HashMap::new();
+
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, Some(temp_path.to_path_buf()))
+        .await
+        .unwrap();
+
+    // Allow some time for the workflow to start
+    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+
+    // Get the workflow run
+    let workflow_run = engine.get_workflow_run(workflow_run_id).await.unwrap();
+
+    // Check that the workflow run is running or completed
+    assert!(
+        workflow_run.status == WorkflowStatus::Running
+            || workflow_run.status == WorkflowStatus::Completed
+    );
+
+    // Get the tasks
+    let tasks = engine.get_tasks(workflow_run_id).await.unwrap();
+
+    // There should be at least 1 task
+    assert!(!tasks.is_empty());
+
+    // Check that the task for the JS AST grep node exists
+    let js_ast_grep_task = tasks
+        .iter()
+        .find(|t| t.node_id == "js-ast-grep-node")
+        .unwrap();
+
+    // Check that the task status is valid
+    assert!(
+        js_ast_grep_task.status == TaskStatus::Running
+            || js_ast_grep_task.status == TaskStatus::Completed
+            || js_ast_grep_task.status == TaskStatus::Failed
     );
 }

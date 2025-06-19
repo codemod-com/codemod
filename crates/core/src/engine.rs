@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use butterflow_models::step::{StepAction, UseAstGrep};
+use butterflow_models::step::{StepAction, UseAstGrep, UseJSAstGrep};
 use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use chrono::Utc;
@@ -674,6 +674,58 @@ impl Engine {
                 });
             }
 
+            // Check for tasks that have failed dependencies and mark them as WontDo
+            for task in &tasks_after_recompilation {
+                if task.status != TaskStatus::Pending {
+                    continue;
+                }
+
+                // Get the node for this task
+                let node = current_workflow_run
+                    .workflow
+                    .nodes
+                    .iter()
+                    .find(|n| n.id == task.node_id);
+
+                if let Some(node) = node {
+                    // Check if any dependency has failed
+                    let has_failed_dependency = node.depends_on.iter().any(|dep_id| {
+                        tasks_after_recompilation
+                            .iter()
+                            .filter(|t| t.node_id == *dep_id)
+                            .any(|t| t.status == TaskStatus::Failed)
+                    });
+
+                    if has_failed_dependency {
+                        debug!(
+                            "Marking task {} as WontDo due to failed dependency",
+                            task.id
+                        );
+
+                        // Create a task diff to mark as WontDo
+                        let mut fields = HashMap::new();
+                        fields.insert(
+                            "status".to_string(),
+                            FieldDiff {
+                                operation: DiffOperation::Update,
+                                value: Some(serde_json::to_value(TaskStatus::WontDo)?),
+                            },
+                        );
+                        let task_diff = TaskDiff {
+                            task_id: task.id,
+                            fields,
+                        };
+
+                        // Apply the diff
+                        self.state_adapter
+                            .lock()
+                            .await
+                            .apply_task_diff(&task_diff)
+                            .await?;
+                    }
+                }
+            }
+
             // Wait a bit before checking again
             time::sleep(Duration::from_secs(1)).await;
         }
@@ -1008,7 +1060,12 @@ impl Engine {
                 Ok(())
             }
             StepAction::AstGrep(ast_grep) => {
-                self.execute_ast_grep_step_with_dir(ast_grep, None).await
+                self.execute_ast_grep_step_with_dir(ast_grep, bundle_path.as_deref())
+                    .await
+            }
+            StepAction::JSAstGrep(js_ast_grep) => {
+                self.execute_js_ast_grep_step_with_dir(js_ast_grep, bundle_path.as_deref())
+                    .await
             }
         }
     }
@@ -1016,16 +1073,20 @@ impl Engine {
     pub async fn execute_ast_grep_step_with_dir(
         &self,
         ast_grep: &UseAstGrep,
-        working_dir: Option<std::path::PathBuf>,
+        bundle_path: Option<&std::path::Path>,
     ) -> Result<()> {
         use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
 
-        // Get the working directory from parameter, falling back to current directory
-        let working_dir = working_dir.or_else(|| std::env::current_dir().ok());
+        // Use bundle path as working directory, falling back to current directory
+        let working_dir = bundle_path
+            .map(|p| p.to_path_buf())
+            .or_else(|| std::env::current_dir().ok());
         let working_dir_ref = working_dir.as_deref();
 
-        // Check if the config file contains any fixers to determine if we should apply fixes
-        let config_path = if let Some(wd) = working_dir_ref {
+        // Resolve config file path relative to bundle path
+        let config_path = if let Some(bundle) = bundle_path {
+            bundle.join(&ast_grep.config_file)
+        } else if let Some(wd) = working_dir_ref {
             wd.join(&ast_grep.config_file)
         } else {
             std::path::PathBuf::from(&ast_grep.config_file)
@@ -1034,7 +1095,7 @@ impl Engine {
         if !config_path.exists() {
             return Err(Error::Other(format!(
                 "AST grep config file not found: {}",
-                ast_grep.config_file
+                config_path.display()
             )));
         }
 
@@ -1043,12 +1104,15 @@ impl Engine {
 
         // Execute ast-grep using include/exclude globs with the config file
         let matches = if should_apply_fixes {
-            info!("Applying AST grep fixes from config file");
+            info!(
+                "Applying AST grep fixes from config file: {}",
+                config_path.display()
+            );
             execute_ast_grep_on_globs_with_fixes(
                 ast_grep.include.as_deref(),
                 ast_grep.exclude.as_deref(),
                 ast_grep.base_path.as_deref(),
-                &ast_grep.config_file,
+                &config_path.to_string_lossy(),
                 working_dir_ref,
             )
             .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {}", e)))?
@@ -1057,7 +1121,7 @@ impl Engine {
                 ast_grep.include.as_deref(),
                 ast_grep.exclude.as_deref(),
                 ast_grep.base_path.as_deref(),
-                &ast_grep.config_file,
+                &config_path.to_string_lossy(),
                 working_dir_ref,
             )
             .map_err(|e| Error::Other(format!("AST grep execution failed: {}", e)))?
@@ -1091,6 +1155,147 @@ impl Engine {
         // 1. Write matches to the workflow state for other tasks to use
         // 2. Write matches to a file for further processing
         // 3. Fail the step if matches are found (for linting use cases)
+
+        Ok(())
+    }
+
+    pub async fn execute_js_ast_grep_step_with_dir(
+        &self,
+        js_ast_grep: &UseJSAstGrep,
+        bundle_path: Option<&std::path::Path>,
+    ) -> Result<()> {
+        use codemod_sandbox::sandbox::{
+            engine::{
+                language_data::get_extensions_for_language, ExecutionConfig, ExecutionEngine,
+            },
+            filesystem::{RealFileSystem, WalkOptions},
+            loaders::FileSystemLoader,
+            resolvers::FileSystemResolver,
+        };
+        use std::{path::Path, sync::Arc};
+
+        // Use bundle path as working directory, falling back to current directory
+        let working_dir = bundle_path
+            .map(|p| p.to_path_buf())
+            .or_else(|| std::env::current_dir().ok());
+
+        // Resolve JavaScript file path relative to bundle path
+        let js_file_path = if let Some(bundle) = bundle_path {
+            bundle.join(&js_ast_grep.js_file)
+        } else if let Some(wd) = &working_dir {
+            wd.join(&js_ast_grep.js_file)
+        } else {
+            std::path::PathBuf::from(&js_ast_grep.js_file)
+        };
+
+        // Resolve base path - similar to ast-grep implementation
+        let base_path = if let Some(base) = &js_ast_grep.base_path {
+            // Base path is relative to current working directory, not bundle path
+            std::env::current_dir()
+                .unwrap_or_else(|_| std::path::PathBuf::from("."))
+                .join(base)
+        } else {
+            // If no base path specified, use current working directory
+            std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."))
+        };
+
+        // Verify the JavaScript file exists
+        if !js_file_path.exists() {
+            return Err(Error::Other(format!(
+                "JavaScript file '{}' does not exist",
+                js_file_path.display()
+            )));
+        }
+
+        // Set up the modular system
+        let filesystem = Arc::new(RealFileSystem::new());
+        let script_base_dir = js_file_path
+            .parent()
+            .unwrap_or(Path::new("."))
+            .to_path_buf();
+        let resolver = Arc::new(FileSystemResolver::new(
+            filesystem.clone(),
+            script_base_dir.clone(),
+        ));
+        let loader = Arc::new(FileSystemLoader::new(filesystem.clone()));
+
+        let mut config = ExecutionConfig::new(filesystem, resolver, loader, script_base_dir);
+        let mut walk_options = WalkOptions::default();
+
+        // Apply configuration options from the step definition
+        if js_ast_grep.no_gitignore.unwrap_or(false) {
+            walk_options.respect_gitignore = false;
+        }
+
+        if js_ast_grep.include_hidden.unwrap_or(false) {
+            walk_options.include_hidden = true;
+        }
+
+        if js_ast_grep.dry_run.unwrap_or(false) {
+            config = config.with_dry_run(true);
+        }
+
+        if let Some(threads) = js_ast_grep.max_threads {
+            if threads > 0 {
+                config = config.with_max_threads(threads);
+            } else {
+                return Err(Error::Other(
+                    "max-threads must be greater than 0".to_string(),
+                ));
+            }
+        }
+
+        // Set language first to get default extensions
+        let language = if let Some(lang_str) = &js_ast_grep.language {
+            let parsed_lang = lang_str
+                .parse()
+                .map_err(|e| Error::Other(format!("Invalid language '{}': {}", lang_str, e)))?;
+            config = config.with_language(parsed_lang);
+            parsed_lang
+        } else {
+            // Parse TypeScript as default
+            let default_lang = "typescript"
+                .parse()
+                .map_err(|e| Error::Other(format!("Failed to parse default language: {}", e)))?;
+            config = config.with_language(default_lang);
+            default_lang
+        };
+
+        // Handle include/exclude patterns with proper glob support
+        if let Some(include_patterns) = &js_ast_grep.include {
+            config = config.with_include_globs(include_patterns.clone());
+        } else {
+            // When include is None, use default extensions for the language
+            let default_extensions = get_extensions_for_language(language)
+                .into_iter()
+                .map(|ext| ext.trim_start_matches('.').to_string())
+                .collect();
+            config = config.with_extensions(default_extensions);
+        }
+
+        if let Some(exclude_patterns) = &js_ast_grep.exclude {
+            config = config.with_exclude_globs(exclude_patterns.clone());
+        }
+
+        config = config.with_walk_options(walk_options);
+
+        // Create and run the execution engine
+        let engine = ExecutionEngine::new(config);
+        let stats = engine
+            .execute_on_directory(&js_file_path, &base_path)
+            .await
+            .map_err(|e| Error::Other(format!("JavaScript execution failed: {}", e)))?;
+
+        info!("JS AST grep execution completed");
+        info!("Modified files: {:?}", stats.files_modified);
+        info!("Unmodified files: {:?}", stats.files_unmodified);
+        info!("Files with errors: {:?}", stats.files_with_errors);
+
+        // TODO: Consider writing execution stats to state or logs
+        // Similar to AST grep, this could be extended to:
+        // 1. Write execution results to the workflow state for other tasks to use
+        // 2. Fail the step if there were errors during execution
+        // 3. Write detailed logs for debugging
 
         Ok(())
     }

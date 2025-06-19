@@ -3,7 +3,7 @@ import transform from "./{script_name}";
 
 export function executeCodemod() {{
     try {{
-        const sgRoot = astGrep.parseFile("javascript", CODEMOD_TARGET_FILE_PATH);
+        const sgRoot = astGrep.parseFile(CODEMOD_LANGUAGE, CODEMOD_TARGET_FILE_PATH);
         return transform(sgRoot);
     }} catch (e) {{
         console.error(e);

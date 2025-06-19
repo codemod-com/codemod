@@ -33,6 +33,10 @@ pub enum StepAction {
     /// ast-grep
     #[serde(rename = "ast-grep")]
     AstGrep(UseAstGrep),
+
+    /// JavaScript AST grep execution
+    #[serde(rename = "js-ast-grep")]
+    JSAstGrep(UseJSAstGrep),
 }
 
 /// Represents a template use in a step
@@ -67,4 +71,51 @@ pub struct UseAstGrep {
 
     /// Path to the ast-grep config file (.yaml)
     pub config_file: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
+#[serde(rename_all = "snake_case")]
+pub struct UseJSAstGrep {
+    /// Path to the JavaScript file to execute
+    pub js_file: String,
+
+    /// Include globs for files to search (optional, defaults to language-specific extensions)
+    #[serde(default)]
+    #[ts(optional, as = "Option<Vec<String>>")]
+    pub include: Option<Vec<String>>,
+
+    /// Exclude globs for files to skip (optional)
+    #[serde(default)]
+    #[ts(optional, as = "Option<Vec<String>>")]
+    pub exclude: Option<Vec<String>>,
+
+    /// Base path for resolving relative globs (optional, defaults to current working directory)
+    #[serde(default)]
+    #[ts(optional, as = "Option<String>")]
+    pub base_path: Option<String>,
+
+    /// Don't respect .gitignore files (optional, defaults to false)
+    #[serde(default)]
+    #[ts(optional, as = "Option<bool>")]
+    pub no_gitignore: Option<bool>,
+
+    /// Include hidden files and directories (optional, defaults to false)
+    #[serde(default)]
+    #[ts(optional, as = "Option<bool>")]
+    pub include_hidden: Option<bool>,
+
+    /// Set maximum number of concurrent threads (optional, defaults to CPU cores)
+    #[serde(default)]
+    #[ts(optional, as = "Option<usize>")]
+    pub max_threads: Option<usize>,
+
+    /// Perform a dry run without making changes (optional, defaults to false)
+    #[serde(default)]
+    #[ts(optional, as = "Option<bool>")]
+    pub dry_run: Option<bool>,
+
+    /// Language to process (optional)
+    #[serde(default)]
+    #[ts(optional, as = "Option<String>")]
+    pub language: Option<String>,
 }
