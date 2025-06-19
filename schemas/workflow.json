@@ -392,6 +392,18 @@
           "required": [
             "ast-grep"
           ]
+        },
+        {
+          "description": "JavaScript AST grep execution",
+          "type": "object",
+          "properties": {
+            "js-ast-grep": {
+              "$ref": "#/$defs/UseJSAstGrep"
+            }
+          },
+          "required": [
+            "js-ast-grep"
+          ]
         }
       ],
       "required": [
@@ -665,6 +677,90 @@
       },
       "required": [
         "config_file"
+      ]
+    },
+    "UseJSAstGrep": {
+      "type": "object",
+      "properties": {
+        "base_path": {
+          "description": "Base path for resolving relative globs (optional, defaults to current working directory)",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "dry_run": {
+          "description": "Perform a dry run without making changes (optional, defaults to false)",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "exclude": {
+          "description": "Exclude globs for files to skip (optional)",
+          "type": [
+            "array",
+            "null"
+          ],
+          "default": null,
+          "items": {
+            "type": "string"
+          }
+        },
+        "include": {
+          "description": "Include globs for files to search (optional, defaults to language-specific extensions)",
+          "type": [
+            "array",
+            "null"
+          ],
+          "default": null,
+          "items": {
+            "type": "string"
+          }
+        },
+        "include_hidden": {
+          "description": "Include hidden files and directories (optional, defaults to false)",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "js_file": {
+          "description": "Path to the JavaScript file to execute",
+          "type": "string"
+        },
+        "language": {
+          "description": "Language to process (optional)",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "max_threads": {
+          "description": "Set maximum number of concurrent threads (optional, defaults to CPU cores)",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "default": null,
+          "minimum": 0
+        },
+        "no_gitignore": {
+          "description": "Don't respect .gitignore files (optional, defaults to false)",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "js_file"
       ]
     },
     "WorkflowState": {
