@@ -1,6 +1,7 @@
 use anyhow::Result;
 use clap::{Args, Parser, Subcommand};
 
+mod auth;
 mod commands;
 mod engine;
 
@@ -29,6 +30,12 @@ enum Commands {
 
     /// Login to a registry
     Login(commands::login::Command),
+
+    /// Logout from a registry
+    Logout(commands::logout::Command),
+
+    /// Show current authentication status
+    Whoami(commands::whoami::Command),
 
     /// Publish a workflow
     Publish(commands::publish::Command),
@@ -127,7 +134,13 @@ async fn main() -> Result<()> {
             commands::init::handler(args)?;
         }
         Commands::Login(args) => {
-            commands::login::handler(args)?;
+            commands::login::handler(args).await?;
+        }
+        Commands::Logout(args) => {
+            commands::logout::handler(args).await?;
+        }
+        Commands::Whoami(args) => {
+            commands::whoami::handler(args).await?;
         }
         Commands::Publish(args) => {
             commands::publish::handler(args)?;

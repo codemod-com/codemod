@@ -32,6 +32,20 @@ tempfile = "3.8"
 num_cpus = "1.16"
 thiserror = { workspace = true }
 
+# OIDC and HTTP dependencies
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+oauth2 = "4.4"
+url = "2.4"
+base64 = "0.22"
+sha2 = "0.10"
+rand = "0.8"
+hyper = { version = "0.14", features = ["full"] }
+hyper-rustls = "0.24"
+rustls = "0.21"
+tokio-rustls = "0.24"
+percent-encoding = "2.3"
+open = "5.0"
+
 # Testing framework dependencies
 libtest-mimic = "0.8"
 similar = "2.0"
