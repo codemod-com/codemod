@@ -1,0 +1,167 @@
+use anyhow::{Context, Result};
+use dirs::config_dir;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::fs;
+use std::path::PathBuf;
+
+use crate::auth::types::{AuthTokens, UserInfo};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Config {
+    pub default_registry: String,
+    pub registries: HashMap<String, RegistryConfig>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RegistryConfig {
+    pub auth_url: String,
+    pub token_url: String,
+    pub client_id: String,
+    pub scopes: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StoredAuth {
+    pub tokens: AuthTokens,
+    pub user: UserInfo,
+    pub registry: String,
+}
+
+pub struct TokenStorage {
+    config_dir: PathBuf,
+}
+
+impl TokenStorage {
+    pub fn new() -> Result<Self> {
+        let config_dir = config_dir().unwrap().join("codemod");
+
+        // Create config directory if it doesn't exist
+        if !config_dir.exists() {
+            fs::create_dir_all(&config_dir)
+                .with_context(|| format!("Failed to create config directory: {:?}", config_dir))?;
+        }
+
+        Ok(Self { config_dir })
+    }
+
+    pub fn load_config(&self) -> Result<Config> {
+        let config_path = self.config_dir.join("config.json");
+
+        if !config_path.exists() {
+            return Ok(self.default_config());
+        }
+
+        let content = fs::read_to_string(&config_path)
+            .with_context(|| format!("Failed to read config file: {:?}", config_path))?;
+
+        let config: Config =
+            serde_json::from_str(&content).context("Failed to parse config file")?;
+
+        Ok(config)
+    }
+
+    pub fn save_config(&self, config: &Config) -> Result<()> {
+        let config_path = self.config_dir.join("config.json");
+        let content = serde_json::to_string_pretty(config).context("Failed to serialize config")?;
+
+        fs::write(&config_path, content)
+            .with_context(|| format!("Failed to write config file: {:?}", config_path))?;
+
+        Ok(())
+    }
+
+    pub fn load_auth(&self, registry: &str) -> Result<Option<StoredAuth>> {
+        let auth_path = self.get_auth_path(registry);
+
+        if !auth_path.exists() {
+            return Ok(None);
+        }
+
+        let content = fs::read_to_string(&auth_path)
+            .with_context(|| format!("Failed to read auth file: {:?}", auth_path))?;
+
+        let auth: StoredAuth =
+            serde_json::from_str(&content).context("Failed to parse auth file")?;
+
+        Ok(Some(auth))
+    }
+
+    pub fn save_auth(&self, auth: &StoredAuth) -> Result<()> {
+        let auth_path = self.get_auth_path(&auth.registry);
+
+        // Create auth directory if it doesn't exist
+        if let Some(parent) = auth_path.parent() {
+            fs::create_dir_all(parent)
+                .with_context(|| format!("Failed to create auth directory: {:?}", parent))?;
+        }
+
+        let content =
+            serde_json::to_string_pretty(auth).context("Failed to serialize auth data")?;
+
+        fs::write(&auth_path, content)
+            .with_context(|| format!("Failed to write auth file: {:?}", auth_path))?;
+
+        Ok(())
+    }
+
+    pub fn remove_auth(&self, registry: &str) -> Result<()> {
+        let auth_path = self.get_auth_path(registry);
+
+        if auth_path.exists() {
+            fs::remove_file(&auth_path)
+                .with_context(|| format!("Failed to remove auth file: {:?}", auth_path))?;
+        }
+
+        Ok(())
+    }
+
+    pub fn clear_cache(&self) -> Result<()> {
+        let cache_dir = self.config_dir.join("cache");
+
+        if cache_dir.exists() {
+            fs::remove_dir_all(&cache_dir)
+                .with_context(|| format!("Failed to remove cache directory: {:?}", cache_dir))?;
+        }
+
+        Ok(())
+    }
+
+    fn get_auth_path(&self, registry: &str) -> PathBuf {
+        let auth_dir = self.config_dir.join("auth");
+        let filename = format!("{}.json", Self::sanitize_registry_name(registry));
+        auth_dir.join(filename)
+    }
+
+    fn sanitize_registry_name(registry: &str) -> String {
+        registry
+            .replace("://", "_")
+            .replace("/", "_")
+            .replace(":", "_")
+    }
+
+    fn default_config(&self) -> Config {
+        let mut registries = HashMap::new();
+
+        registries.insert(
+            "http://localhost:3000".to_string(),
+            RegistryConfig {
+                auth_url: "http://localhost:3000/api/auth/oauth2/authorize".to_string(),
+                token_url: "http://localhost:3000/api/auth/oauth2/token".to_string(),
+                client_id: "LaqxmrfBSiCAGzVywTqUxGgqgKVdzaLg".to_string(),
+                scopes: vec![
+                    "read".to_string(),
+                    "write".to_string(),
+                    "publish".to_string(),
+                    "email".to_string(),
+                    "profile".to_string(),
+                ],
+            },
+        );
+
+        Config {
+            default_registry: "http://localhost:3000".to_string(),
+            registries,
+        }
+    }
+}
