@@ -33,7 +33,7 @@ num_cpus = "1.16"
 thiserror = { workspace = true }
 
 # OIDC and HTTP dependencies
-reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+reqwest = { version = "0.11", features = ["json", "rustls-tls", "multipart"] }
 oauth2 = "4.4"
 url = "2.4"
 base64 = "0.22"
@@ -51,6 +51,12 @@ libtest-mimic = "0.8"
 similar = "2.0"
 notify = "8.0"
 ast-grep-language.workspace = true
+
+# Additional dependencies for registry commands
+urlencoding = "2.1"
+flate2 = "1.0"
+tar = "0.4"
+humantime = "2.1"
 
 [features]
 default = []

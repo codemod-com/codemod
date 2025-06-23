@@ -301,7 +301,7 @@ impl OidcClient {
 
     fn find_available_port(&self, start: u16, end: u16) -> Result<u16> {
         for port in start..=end {
-            if let Ok(_) = TcpListener::bind(("127.0.0.1", port)) {
+            if TcpListener::bind(("127.0.0.1", port)).is_ok() {
                 return Ok(port);
             }
         }
@@ -408,7 +408,7 @@ async fn handle_callback(
                             .header("Content-Type", "text/html")
                             .body(Body::from(html))
                             .unwrap());
-                    } else if params.get("error").is_some() {
+                    } else if params.contains_key("error") {
                         let error = params.get("error").unwrap();
                         let default_error = "Unknown error".to_string();
                         let error_description =

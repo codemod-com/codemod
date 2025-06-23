@@ -4,6 +4,7 @@ use clap::{Args, Parser, Subcommand};
 mod auth;
 mod commands;
 mod engine;
+mod workflow_runner;
 
 #[derive(Parser)]
 #[command(name = "codemod")]
@@ -39,6 +40,15 @@ enum Commands {
 
     /// Publish a workflow
     Publish(commands::publish::Command),
+
+    /// Search for packages in the registry
+    Search(commands::search::Command),
+
+    /// Run a codemod from the registry
+    Run(commands::run::Command),
+
+    /// Manage package cache
+    Cache(commands::cache::Command),
 }
 
 #[derive(Args, Debug)]
@@ -143,7 +153,16 @@ async fn main() -> Result<()> {
             commands::whoami::handler(args).await?;
         }
         Commands::Publish(args) => {
-            commands::publish::handler(args)?;
+            commands::publish::handler(args).await?;
+        }
+        Commands::Search(args) => {
+            commands::search::handler(args).await?;
+        }
+        Commands::Run(args) => {
+            commands::run::handler(&engine, args).await?;
+        }
+        Commands::Cache(args) => {
+            commands::cache::handler(args).await?;
         }
     }
 

@@ -61,16 +61,6 @@ impl TokenStorage {
         Ok(config)
     }
 
-    pub fn save_config(&self, config: &Config) -> Result<()> {
-        let config_path = self.config_dir.join("config.json");
-        let content = serde_json::to_string_pretty(config).context("Failed to serialize config")?;
-
-        fs::write(&config_path, content)
-            .with_context(|| format!("Failed to write config file: {:?}", config_path))?;
-
-        Ok(())
-    }
-
     pub fn load_auth(&self, registry: &str) -> Result<Option<StoredAuth>> {
         let auth_path = self.get_auth_path(registry);
 
@@ -125,6 +115,10 @@ impl TokenStorage {
         }
 
         Ok(())
+    }
+
+    pub fn get_auth_for_registry(&self, registry: &str) -> Result<Option<StoredAuth>> {
+        self.load_auth(registry)
     }
 
     fn get_auth_path(&self, registry: &str) -> PathBuf {
