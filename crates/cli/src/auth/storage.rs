@@ -136,12 +136,14 @@ impl TokenStorage {
 
     fn default_config(&self) -> Config {
         let mut registries = HashMap::new();
+        let registry_url =
+            std::env::var("CODEMOD_REGISTRY_URL").unwrap_or("https://app.codemod.com".to_string());
 
         registries.insert(
-            "http://localhost:3000".to_string(),
+            registry_url.to_string(),
             RegistryConfig {
-                auth_url: "http://localhost:3000/api/auth/oauth2/authorize".to_string(),
-                token_url: "http://localhost:3000/api/auth/oauth2/token".to_string(),
+                auth_url: format!("{}/api/auth/oauth2/authorize", registry_url),
+                token_url: format!("{}/api/auth/oauth2/token", registry_url),
                 client_id: "LaqxmrfBSiCAGzVywTqUxGgqgKVdzaLg".to_string(),
                 scopes: vec![
                     "read".to_string(),
@@ -154,7 +156,7 @@ impl TokenStorage {
         );
 
         Config {
-            default_registry: "http://localhost:3000".to_string(),
+            default_registry: registry_url.to_string(),
             registries,
         }
     }
