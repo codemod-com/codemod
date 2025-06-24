@@ -1,9 +1,11 @@
 use anyhow::{anyhow, Result};
 use clap::Args;
+use console::{style, Emoji};
+use inquire::{Confirm, Select, Text};
 use log::info;
 use std::fs;
-use std::io::{self, Write};
 use std::path::{Path, PathBuf};
+use std::process::Command as ProcessCommand;
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -52,10 +54,10 @@ pub struct Command {
 enum ProjectType {
     /// Shell command workflow codemod
     Shell,
-    /// JavaScript AST-grep codemod
-    JsAstgrep,
-    /// AST-grep YAML codemod
-    AstgrepYaml,
+    /// JavaScript ast-grep codemod
+    AstGrepJs,
+    /// YAML ast-grep codemod
+    AstGrepYaml,
 }
 
 struct ProjectConfig {
@@ -82,13 +84,16 @@ const SHELL_SETUP_SCRIPT: &str = include_str!("../templates/shell/scripts/setup.
 const SHELL_TRANSFORM_SCRIPT: &str = include_str!("../templates/shell/scripts/transform.sh");
 const SHELL_CLEANUP_SCRIPT: &str = include_str!("../templates/shell/scripts/cleanup.sh");
 
-// JS AST-grep project templates
+// JS ast-grep project templates
 const JS_PACKAGE_JSON_TEMPLATE: &str = include_str!("../templates/js-astgrep/package.json");
 const JS_APPLY_SCRIPT: &str = include_str!("../templates/js-astgrep/scripts/codemod.ts");
 const JS_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.js");
 const JS_TEST_EXPECTED: &str = include_str!("../templates/js-astgrep/tests/fixtures/expected.js");
-// AST-grep YAML project templates
+// ast-grep YAML project templates
 const ASTGREP_PATTERNS: &str = include_str!("../templates/astgrep-yaml/rules/config.yml");
+
+static ROCKET: Emoji<'_, '_> = Emoji("🚀 ", "");
+static CHECKMARK: Emoji<'_, '_> = Emoji("✓ ", "");
 
 pub fn handler(args: &Command) -> Result<()> {
     let (project_path, project_name) = if args.no_interactive {
@@ -111,7 +116,9 @@ pub fn handler(args: &Command) -> Result<()> {
         let project_path = if let Some(path) = &args.path {
             path.clone()
         } else {
-            let path_str = prompt_with_default("Project directory", "my-codemod")?;
+            let path_str = Text::new("Project directory:")
+                .with_default("my-codemod")
+                .prompt()?;
             PathBuf::from(path_str)
         };
 
@@ -157,13 +164,21 @@ pub fn handler(args: &Command) -> Result<()> {
     };
 
     create_project(&project_path, &config)?;
+
+    // Run post init commands
+    run_post_init_commands(&project_path, &config)?;
+
     print_next_steps(&project_path, &config)?;
 
     Ok(())
 }
 
 fn interactive_setup(project_name: &str, args: &Command) -> Result<ProjectConfig> {
-    println!("🚀 Creating a new codemod project");
+    println!(
+        "{} {}",
+        ROCKET,
+        style("Creating a new codemod project").bold()
+    );
     println!();
 
     // Project type selection
@@ -181,26 +196,43 @@ fn interactive_setup(project_name: &str, args: &Command) -> Result<ProjectConfig
     };
 
     // Project details
-    let name = prompt_with_default("Project name", project_name)?;
+    let name = if args.name.is_some() {
+        args.name.clone().unwrap()
+    } else {
+        Text::new("Project name:")
+            .with_default(project_name)
+            .prompt()?
+    };
+
     let description = if let Some(desc) = &args.description {
         desc.clone()
     } else {
-        prompt_with_default("Description", "Transform legacy code patterns")?
+        Text::new("Description:")
+            .with_default("Transform legacy code patterns")
+            .prompt()?
     };
 
     let author = if let Some(auth) = &args.author {
         auth.clone()
     } else {
-        prompt_with_default("Author", "Author <author@example.com>")?
+        Text::new("Author:")
+            .with_default("Author <author@example.com>")
+            .prompt()?
     };
 
     let license = if let Some(lic) = &args.license {
         lic.clone()
     } else {
-        prompt_with_default("License", "MIT")?
+        Text::new("License:").with_default("MIT").prompt()?
     };
 
-    let private = args.private || prompt_yes_no("Private package?", false)?;
+    let private = if args.private {
+        true
+    } else {
+        Confirm::new("Private package?")
+            .with_default(false)
+            .prompt()?
+    };
 
     Ok(ProjectConfig {
         name,
@@ -214,96 +246,56 @@ fn interactive_setup(project_name: &str, args: &Command) -> Result<ProjectConfig
 }
 
 fn select_project_type() -> Result<ProjectType> {
-    println!("? What type of codemod would you like to create?");
-    println!("  1) Shell command workflow codemod");
-    println!("  2) JavaScript AST-grep codemod");
-    println!("  3) AST-grep YAML codemod");
-    print!("> ");
-    io::stdout().flush()?;
+    let options = vec![
+        "Shell command workflow codemod",
+        "JavaScript ast-grep codemod",
+        "YAML ast-grep codemod",
+    ];
 
-    let mut input = String::new();
-    io::stdin().read_line(&mut input)?;
+    let selection =
+        Select::new("What type of codemod would you like to create?", options).prompt()?;
 
-    match input.trim() {
-        "1" => Ok(ProjectType::Shell),
-        "2" => Ok(ProjectType::JsAstgrep),
-        "3" => Ok(ProjectType::AstgrepYaml),
-        "" => Ok(ProjectType::Shell), // Default
-        _ => {
-            println!("Invalid selection, using Shell workflow");
-            Ok(ProjectType::Shell)
-        }
+    match selection {
+        "Shell command workflow codemod" => Ok(ProjectType::Shell),
+        "JavaScript ast-grep codemod" => Ok(ProjectType::AstGrepJs),
+        "YAML ast-grep codemod" => Ok(ProjectType::AstGrepYaml),
+        _ => Ok(ProjectType::Shell), // Default fallback
     }
 }
 
 fn select_language(project_type: &ProjectType) -> Result<String> {
     match project_type {
         ProjectType::Shell => {
-            println!("? Which language would you like to target?");
-            println!("  1) JavaScript/TypeScript");
-            println!("  2) Python");
-            println!("  3) Rust");
-            println!("  4) Go");
-            println!("  5) Java");
-            println!("  6) Other");
-            print!("> ");
-            io::stdout().flush()?;
+            let options = vec![
+                "JavaScript/TypeScript",
+                "Python",
+                "Rust",
+                "Go",
+                "Java",
+                "Other",
+            ];
 
-            let mut input = String::new();
-            io::stdin().read_line(&mut input)?;
+            let selection =
+                Select::new("Which language would you like to target?", options).prompt()?;
 
-            let language = match input.trim() {
-                "1" | "" => "javascript",
-                "2" => "python",
-                "3" => "rust",
-                "4" => "go",
-                "5" => "java",
-                "6" => {
-                    print!("Enter language name: ");
-                    io::stdout().flush()?;
-                    let mut custom = String::new();
-                    io::stdin().read_line(&mut custom)?;
-                    return Ok(custom.trim().to_string());
+            let language = match selection {
+                "JavaScript/TypeScript" => "javascript",
+                "Python" => "python",
+                "Rust" => "rust",
+                "Go" => "go",
+                "Java" => "java",
+                "Other" => {
+                    let custom = Text::new("Enter language name:").prompt()?;
+                    return Ok(custom);
                 }
                 _ => "javascript",
             };
 
             Ok(language.to_string())
         }
-        ProjectType::JsAstgrep | ProjectType::AstgrepYaml => {
-            Ok("javascript".to_string()) // Default for AST-grep projects
+        ProjectType::AstGrepJs | ProjectType::AstGrepYaml => {
+            Ok("javascript".to_string()) // Default for ast-grep projects
         }
-    }
-}
-
-fn prompt_with_default(prompt: &str, default: &str) -> Result<String> {
-    print!("? {} ({}): ", prompt, default);
-    io::stdout().flush()?;
-
-    let mut input = String::new();
-    io::stdin().read_line(&mut input)?;
-
-    let value = input.trim();
-    if value.is_empty() {
-        Ok(default.to_string())
-    } else {
-        Ok(value.to_string())
-    }
-}
-
-fn prompt_yes_no(prompt: &str, default: bool) -> Result<bool> {
-    let default_str = if default { "Y/n" } else { "y/N" };
-    print!("? {} ({}): ", prompt, default_str);
-    io::stdout().flush()?;
-
-    let mut input = String::new();
-    io::stdin().read_line(&mut input)?;
-
-    match input.trim().to_lowercase().as_str() {
-        "y" | "yes" => Ok(true),
-        "n" | "no" => Ok(false),
-        "" => Ok(default),
-        _ => Ok(default),
     }
 }
 
@@ -320,8 +312,8 @@ fn create_project(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     // Create project-specific structure
     match config.project_type {
         ProjectType::Shell => create_shell_project(project_path, config)?,
-        ProjectType::JsAstgrep => create_js_astgrep_project(project_path, config)?,
-        ProjectType::AstgrepYaml => create_astgrep_yaml_project(project_path, config)?,
+        ProjectType::AstGrepJs => create_js_astgrep_project(project_path, config)?,
+        ProjectType::AstGrepYaml => create_astgrep_yaml_project(project_path, config)?,
     }
 
     // Create common files
@@ -355,8 +347,8 @@ fn create_manifest(project_path: &Path, config: &ProjectConfig) -> Result<()> {
 fn create_workflow(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     let workflow_content = match config.project_type {
         ProjectType::Shell => SHELL_WORKFLOW_TEMPLATE,
-        ProjectType::JsAstgrep => JS_ASTGREP_WORKFLOW_TEMPLATE,
-        ProjectType::AstgrepYaml => ASTGREP_YAML_WORKFLOW_TEMPLATE,
+        ProjectType::AstGrepJs => JS_ASTGREP_WORKFLOW_TEMPLATE,
+        ProjectType::AstGrepYaml => ASTGREP_YAML_WORKFLOW_TEMPLATE,
     };
 
     fs::write(project_path.join("workflow.yaml"), workflow_content)?;
@@ -440,8 +432,8 @@ fn create_gitignore(project_path: &Path) -> Result<()> {
 fn create_readme(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     let test_command = match config.project_type {
         ProjectType::Shell => "bash scripts/transform.sh",
-        ProjectType::JsAstgrep => "npm test",
-        ProjectType::AstgrepYaml => "ast-grep test rules/",
+        ProjectType::AstGrepJs => "npm test",
+        ProjectType::AstGrepYaml => "ast-grep test rules/",
     };
 
     let readme_content = README_TEMPLATE
@@ -455,46 +447,117 @@ fn create_readme(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     Ok(())
 }
 
-fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
-    println!();
-    println!("✓ Created {} project", config.name);
-    println!("✓ Generated codemod.yaml manifest");
-    println!("✓ Generated workflow.yaml definition");
-    println!("✓ Created project structure");
-    println!();
-    println!("Next steps:");
-    println!("  cd {}", project_path.display());
-
+fn run_post_init_commands(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     match config.project_type {
-        ProjectType::JsAstgrep => {
-            println!("  npm install");
-            println!();
-            println!("  # Test your codemod");
-            println!("  npm test");
+        ProjectType::AstGrepJs => {
+            let package_manager = Select::new(
+                "Which package manager would you like to use?",
+                vec!["npm", "yarn", "pnpm"],
+            )
+            .prompt()?;
+
+            let output = ProcessCommand::new(package_manager)
+                .arg("install")
+                .current_dir(project_path)
+                .output();
+
+            println!("{} Installing dependencies...", style("⏳").yellow());
+
+            match output {
+                Ok(result) => {
+                    if result.status.success() {
+                        println!("{} Dependencies installed successfully", CHECKMARK);
+                    } else {
+                        let stderr = String::from_utf8_lossy(&result.stderr);
+                        println!(
+                            "{} Failed to install dependencies: {}",
+                            style("⚠").red(),
+                            stderr
+                        );
+                        println!(
+                            "  You can run {} manually later",
+                            style("npm install").cyan()
+                        );
+                    }
+                }
+                Err(e) => {
+                    println!("{} npm not found: {}", style("⚠").red(), e);
+                    println!(
+                        "  You can run {} manually later",
+                        style("npm install").cyan()
+                    );
+                }
+            }
         }
         ProjectType::Shell => {
-            println!("  # Make scripts executable");
-            println!("  chmod +x scripts/*.sh");
-            println!();
-            println!("  # Test your codemod");
-            println!("  bash scripts/transform.sh");
+            println!("{} Making scripts executable...", style("⏳").yellow());
+
+            let scripts_dir = project_path.join("scripts");
+            if let Ok(entries) = fs::read_dir(&scripts_dir) {
+                for entry in entries.flatten() {
+                    let path = entry.path();
+                    if path.extension().and_then(|s| s.to_str()) == Some("sh") {
+                        #[cfg(unix)]
+                        {
+                            use std::os::unix::fs::PermissionsExt;
+                            if let Ok(mut perms) = fs::metadata(&path).map(|m| m.permissions()) {
+                                perms.set_mode(0o755);
+                                if fs::set_permissions(&path, perms).is_ok() {
+                                    println!(
+                                        "{} Made {} executable",
+                                        CHECKMARK,
+                                        path.file_name().unwrap().to_string_lossy()
+                                    );
+                                }
+                            }
+                        }
+                        #[cfg(not(unix))]
+                        {
+                            println!(
+                                "{} {} (executable permission not set on non-Unix systems)",
+                                CHECKMARK,
+                                path.file_name().unwrap().to_string_lossy()
+                            );
+                        }
+                    }
+                }
+            }
         }
-        ProjectType::AstgrepYaml => {
-            println!("  # Test your rules");
-            println!("  ast-grep test rules/");
+        ProjectType::AstGrepYaml => {
+            // No post-init commands needed for YAML projects
         }
     }
 
+    Ok(())
+}
+
+fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     println!();
-    println!("  # Validate your workflow");
-    println!("  codemod validate -w workflow.yaml");
+    println!(
+        "{} Created {} project",
+        CHECKMARK,
+        style(&config.name).green().bold()
+    );
+    println!("{} Generated codemod.yaml manifest", CHECKMARK);
+    println!("{} Generated workflow.yaml definition", CHECKMARK);
+    println!("{} Created project structure", CHECKMARK);
     println!();
-    println!("  # Run your codemod");
-    println!("  codemod run -w workflow.yaml");
+    println!("{}", style("Next steps:").bold());
+    println!(
+        "  {}",
+        style(format!("cd {}", project_path.display())).cyan()
+    );
+
     println!();
-    println!("  # Publish when ready");
-    println!("  codemod login");
-    println!("  codemod publish");
+    println!("  {}", style("# Validate your workflow").dim());
+    println!("  {}", style("codemod validate -w workflow.yaml").cyan());
+    println!();
+    println!("  {}", style("# Run your codemod").dim());
+    println!("  {}", style("codemod run -w .").cyan());
+    println!();
+    println!("  {}", style("# Publish when ready").dim());
+    println!("  {}", style("codemod login").cyan());
+    println!("  {}", style("codemod publish").cyan());
 
     Ok(())
 }
