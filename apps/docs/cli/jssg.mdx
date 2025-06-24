@@ -1,0 +1,142 @@
+---
+title: 'jssg: JavaScript AST Grep'
+description: 'A powerful tool for running and testing JavaScript/TypeScript codemods, inspired by ast-grep.'
+icon: 'magnifying-glass'
+---
+
+JSSG (JavaScript AST-grep) is a JavaScript/TypeScript codemod runner and testing framework built into the Codemod CLI. It enables you to write codemods in JavaScript and apply them to codebases with powerful CLI and test automation support.
+
+## Running Codemods
+
+To run a JavaScript codemod on a target directory, use the `codemod jssg run` command:
+
+```bash
+codemod jssg run my-codemod.js ./src --language javascript
+```
+
+### Options
+
+<ResponseField name="--language <LANG>" type="string" required>
+  Target language (e.g., `javascript`, `typescript`).
+</ResponseField>
+
+<ResponseField name="--extensions <ext1,ext2>" type="string">
+  Comma-separated list of file extensions to process.
+</ResponseField>
+
+<ResponseField name="--no-gitignore" type="boolean">
+  Do not respect `.gitignore` files.
+</ResponseField>
+
+<ResponseField name="--include-hidden" type="boolean">
+  Include hidden files and directories in the scan.
+</ResponseField>
+
+<ResponseField name="--max-threads <N>" type="number">
+  Maximum number of concurrent threads to use.
+</ResponseField>
+
+<ResponseField name="--dry-run" type="boolean">
+  Perform a dry run to see the changes without applying them.
+</ResponseField>
+
+## Testing Framework
+
+The JSSG Testing Framework provides comprehensive testing capabilities for JavaScript codemods using before/after fixture files.
+
+### Quick Start
+
+1.  **Create your test directory.** A common structure includes `input` and `expected` files for each test case.
+
+    ```
+    tests/
+    ├── simple-transform/
+    │   ├── input.js
+    │   └── expected.js
+    └── multi-file-case/
+        ├── input/
+        │   ├── file1.js
+        │   └── file2.js
+        └── expected/
+            ├── file1.js
+            └── file2.js
+    ```
+
+2.  **Run the tests** using the `codemod jssg test` command.
+
+    ```bash
+    # Run tests for a codemod
+    codemod jssg test my-codemod.js --language javascript
+
+    # Update snapshots (creates or updates the `expected.js` files)
+    codemod jssg test my-codemod.js --language javascript --update-snapshots
+    ```
+
+### Required Arguments
+These options are required for running tests with JSSG.
+
+<ResponseField name="codemod_file" type="string" required>
+  Path to the codemod JavaScript file.
+</ResponseField>
+<ResponseField name="--language" type="string" required>
+  Target language (e.g., `javascript`, `typescript`).
+</ResponseField>
+
+### Test Discovery & Filtering
+Control which tests are discovered and run.
+
+<ResponseField name="--test-directory" type="string">
+  The directory containing your tests (default: `"tests"`).
+</ResponseField>
+<ResponseField name="--filter" type="string">
+  A pattern to run only tests whose names match the filter.
+</ResponseField>
+
+### Output & Reporting
+Options for controlling test output and reporting.
+
+<ResponseField name="--reporter" type="string">
+  The output format for test results. Can be `console`, `json`, or `terse`.
+</ResponseField>
+<ResponseField name="--verbose" type="boolean">
+  Show detailed output, including diffs for failed tests.
+</ResponseField>
+<ResponseField name="--context-lines" type="number">
+  The number of context lines to show in diffs (default: 3).
+</ResponseField>
+<ResponseField name="--ignore-whitespace" type="boolean">
+  Ignore whitespace differences when comparing test outputs.
+</ResponseField>
+
+### Execution Control
+Options for controlling how tests are executed.
+
+<ResponseField name="--timeout" type="number">
+  Test timeout in seconds (default: 30).
+</ResponseField>
+<ResponseField name="--max-threads" type="number">
+  Maximum number of concurrent threads to use for running tests.
+</ResponseField>
+<ResponseField name="--sequential" type="boolean">
+  Run tests sequentially instead of in parallel.
+</ResponseField>
+<ResponseField name="--fail-fast" type="boolean">
+  Stop the test run on the first failure.
+</ResponseField>
+
+### Snapshot & Error Management
+Options for managing test snapshots and expected errors.
+
+<ResponseField name="--update-snapshots, -u" type="boolean">
+  Create or update the `expected` files with the output of the codemod.
+</ResponseField>
+<ResponseField name="--expect-errors" type="string">
+  A comma-separated list of test patterns that are expected to fail.
+</ResponseField>
+
+### Development
+Development-focused options for rapid iteration.
+
+<ResponseField name="--watch" type="boolean">
+  Enable watch mode to automatically re-run tests when files change.
+</ResponseField> 

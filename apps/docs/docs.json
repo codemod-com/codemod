@@ -35,13 +35,16 @@
               "migrations",
               "insights",
               "codemod-studio",
-              "workflows"
+              "platform/workflows"
             ]
           },
           {
             "group": "OSS & Community",
             "pages": [
-              "deploying-codemods/cli",
+              {
+                "group": "CLI",
+                "pages": ["cli", "cli/workflows", "cli/jssg"]
+              },
               {
                 "group": "Building codemods",
                 "pages": [
