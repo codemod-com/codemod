@@ -2,6 +2,7 @@ use anyhow::Result;
 use clap::{Args, Parser, Subcommand};
 
 mod auth;
+mod auth_provider;
 mod commands;
 mod engine;
 mod workflow_runner;

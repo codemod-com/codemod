@@ -276,7 +276,7 @@ codemod login --username <username>
 
 ```bash
 $ codemod login
-? Registry URL: https://registry.butterflow.com (default)
+? Registry URL: https://app.butterflow.com(default)
 ? Username: john.doe
 ? Password: ********
 ? Organization (optional): my-org

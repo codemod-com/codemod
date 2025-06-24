@@ -1,4 +1,5 @@
 use anyhow::{anyhow, Result};
+use butterflow_core::utils::get_cache_dir;
 use clap::{Args, Subcommand};
 use log::info;
 use std::fs;
@@ -227,12 +228,6 @@ struct CachedVersion {
 struct PackageSpec {
     scope: Option<String>,
     name: String,
-}
-
-pub fn get_cache_dir() -> Result<PathBuf> {
-    let home_dir = dirs::data_dir().ok_or_else(|| anyhow!("Could not find home directory"))?;
-    let cache_dir = home_dir.join("codemod").join("cache").join("packages");
-    Ok(cache_dir)
 }
 
 fn calculate_cache_stats(cache_dir: &Path) -> Result<CacheStats> {

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use butterflow_models::step::{StepAction, UseAstGrep, UseJSAstGrep};
+use butterflow_models::step::{StepAction, UseAstGrep, UseCodemod, UseJSAstGrep};
 use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use chrono::Utc;
@@ -14,7 +14,8 @@ use tokio::sync::Mutex;
 use tokio::time;
 use uuid::Uuid;
 
-use crate::utils;
+use crate::registry::{AuthProvider, RegistryClient, RegistryConfig, ResolvedPackage};
+use crate::utils::{self, get_cache_dir};
 use butterflow_models::runtime::RuntimeType;
 use butterflow_models::{
     resolve_variables, DiffOperation, Error, FieldDiff, Node, Result, StateDiff, Task, TaskDiff,
@@ -1067,6 +1068,18 @@ impl Engine {
                 self.execute_js_ast_grep_step_with_dir(js_ast_grep, bundle_path.as_deref())
                     .await
             }
+            StepAction::Codemod(codemod) => {
+                Box::pin(self.execute_codemod_step(
+                    codemod,
+                    step_env,
+                    node,
+                    task,
+                    params,
+                    state,
+                    bundle_path,
+                ))
+                .await
+            }
         }
     }
 
@@ -1297,6 +1310,177 @@ impl Engine {
         // 2. Fail the step if there were errors during execution
         // 3. Write detailed logs for debugging
 
+        Ok(())
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    async fn execute_codemod_step(
+        &self,
+        codemod: &UseCodemod,
+        step_env: &Option<HashMap<String, String>>,
+        node: &Node,
+        task: &Task,
+        params: &HashMap<String, String>,
+        state: &HashMap<String, serde_json::Value>,
+        bundle_path: &Option<PathBuf>,
+    ) -> Result<()> {
+        info!("Executing codemod step: {}", codemod.source);
+
+        // For now, we'll create a simple auth provider that returns None
+        // The CLI will need to provide proper authentication
+        struct NoAuthProvider;
+        impl AuthProvider for NoAuthProvider {
+            fn get_auth_for_registry(
+                &self,
+                _registry_url: &str,
+            ) -> anyhow::Result<Option<crate::registry::RegistryAuth>> {
+                Ok(None)
+            }
+        }
+
+        let registry_config = RegistryConfig {
+            default_registry: "https://app.codemod.com".to_string(),
+            cache_dir: get_cache_dir()?,
+        };
+
+        let registry_client = RegistryClient::new(registry_config, Some(Box::new(NoAuthProvider)));
+
+        // Resolve the package (local path or registry package)
+        let resolved_package = registry_client
+            .resolve_package(&codemod.source, None, false)
+            .await
+            .map_err(|e| Error::Other(format!("Failed to resolve package: {}", e)))?;
+
+        info!(
+            "Resolved codemod package: {} -> {}",
+            codemod.source,
+            resolved_package.package_dir.display()
+        );
+
+        // Execute the resolved codemod workflow
+        self.run_codemod_workflow(
+            &resolved_package,
+            codemod,
+            step_env,
+            node,
+            task,
+            params,
+            state,
+            bundle_path,
+        )
+        .await
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    async fn run_codemod_workflow(
+        &self,
+        resolved_package: &ResolvedPackage,
+        codemod: &UseCodemod,
+        step_env: &Option<HashMap<String, String>>,
+        _node: &Node,
+        task: &Task,
+        params: &HashMap<String, String>,
+        state: &HashMap<String, serde_json::Value>,
+        bundle_path: &Option<PathBuf>,
+    ) -> Result<()> {
+        let workflow_path = resolved_package.package_dir.join("workflow.yaml");
+
+        if !workflow_path.exists() {
+            return Err(Error::Other(format!(
+                "Workflow file not found in codemod package: {}",
+                workflow_path.display()
+            )));
+        }
+
+        // Load the codemod workflow
+        let workflow_content = std::fs::read_to_string(&workflow_path)
+            .map_err(|e| Error::Other(format!("Failed to read workflow file: {}", e)))?;
+
+        let codemod_workflow: Workflow = serde_yaml::from_str(&workflow_content)
+            .map_err(|e| Error::Other(format!("Failed to parse workflow YAML: {}", e)))?;
+
+        // Prepare parameters for the codemod workflow
+        let mut codemod_params = params.clone();
+
+        // Add arguments as parameters if provided
+        if let Some(args) = &codemod.args {
+            for (i, arg) in args.iter().enumerate() {
+                codemod_params.insert(format!("arg_{}", i), arg.clone());
+
+                // Also try to parse key=value format
+                if let Some((key, value)) = arg.split_once('=') {
+                    codemod_params.insert(key.to_string(), value.to_string());
+                }
+            }
+        }
+
+        // Add environment variables from step configuration
+        if let Some(env) = &codemod.env {
+            for (key, value) in env {
+                codemod_params.insert(format!("env_{}", key), value.clone());
+            }
+        }
+
+        // Add step-level environment variables
+        if let Some(step_env) = step_env {
+            for (key, value) in step_env {
+                codemod_params.insert(format!("env_{}", key), value.clone());
+            }
+        }
+
+        // Resolve working directory
+        let working_dir = if let Some(wd) = &codemod.working_dir {
+            if wd.starts_with("/") {
+                PathBuf::from(wd)
+            } else if let Some(base) = bundle_path {
+                base.join(wd)
+            } else {
+                std::env::current_dir()
+                    .unwrap_or_else(|_| PathBuf::from("."))
+                    .join(wd)
+            }
+        } else {
+            // Default to current working directory
+            std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))
+        };
+
+        codemod_params.insert(
+            "working_dir".to_string(),
+            working_dir.to_string_lossy().to_string(),
+        );
+
+        info!(
+            "Running codemod workflow: {} with {} parameters",
+            resolved_package.spec.name,
+            codemod_params.len()
+        );
+
+        // Execute the codemod workflow synchronously by running its steps directly
+        // This avoids the recursive engine execution cycle
+        info!("Executing codemod workflow steps directly");
+
+        // Create a direct runner for executing the codemod steps
+        let runner: Box<dyn Runner> = Box::new(DirectRunner::new());
+
+        // Execute each node in the codemod workflow
+        for node in &codemod_workflow.nodes {
+            for step in &node.steps {
+                Box::pin(self.execute_step_action(
+                    runner.as_ref(),
+                    &step.action,
+                    &step.env,
+                    node,
+                    task, // Use the current task context
+                    &codemod_params,
+                    state,
+                    &codemod_workflow,
+                    &Some(resolved_package.package_dir.clone()),
+                ))
+                .await?;
+            }
+        }
+
+        info!("Codemod workflow completed successfully");
         Ok(())
     }
 

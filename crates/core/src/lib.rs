@@ -1,4 +1,5 @@
 pub mod engine;
+pub mod registry;
 pub mod utils;
 
 pub use butterflow_models::{

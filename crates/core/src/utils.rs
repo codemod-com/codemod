@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use butterflow_models::step::StepAction;
 use serde_yaml;
@@ -204,4 +204,11 @@ pub fn format_duration(seconds: u64) -> String {
     let seconds = seconds % 60;
 
     format!("{:02}:{:02}:{:02}", hours, minutes, seconds)
+}
+
+pub fn get_cache_dir() -> Result<PathBuf> {
+    let home_dir = dirs::data_dir()
+        .ok_or_else(|| Error::Other("Could not find home directory".to_string()))?;
+    let cache_dir = home_dir.join("codemod").join("cache").join("packages");
+    Ok(cache_dir)
 }

@@ -28,9 +28,14 @@ async-trait = { workspace = true }
 regex = { workspace = true }
 futures = { workspace = true }
 reqwest = { workspace = true }
+flate2 = { workspace = true }
+tar = { workspace = true }
+tempfile = { workspace = true }
+walkdir = { workspace = true }
+dirs = { workspace = true }
 
 [dev-dependencies]
-tempfile = "3.8"
+tempfile = { workspace = true }
 
 [features]
 default = []

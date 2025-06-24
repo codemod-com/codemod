@@ -43,7 +43,7 @@ ignore = { workspace = true, optional = true }
 serde_yaml = { workspace = true, optional = true }
 
 [dev-dependencies]
-tempfile = "3.8"
+tempfile = { workspace = true }
 
 [features]
 default = ["native", "real-fs"]
