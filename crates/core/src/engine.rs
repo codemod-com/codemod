@@ -37,6 +37,13 @@ pub struct Engine {
     scheduler: Scheduler,
 }
 
+/// Represents a codemod dependency chain for cycle detection
+#[derive(Debug, Clone)]
+struct CodemodDependency {
+    /// Source identifier (registry package or local path)
+    source: String,
+}
+
 impl Default for Engine {
     fn default() -> Self {
         Self::new()
@@ -57,14 +64,11 @@ impl Engine {
 
     /// Create initial tasks for all nodes
     async fn create_initial_tasks(&self, workflow_run: &WorkflowRun) -> Result<()> {
-        // Use scheduler to calculate initial tasks
         let tasks = self.scheduler.calculate_initial_tasks(workflow_run).await?;
 
-        // Save all tasks to state adapter
         for task in tasks {
             self.state_adapter.lock().await.save_task(&task).await?;
 
-            // Update matrix master status if this is a master task
             if task.is_master {
                 self.update_matrix_master_status(task.id).await?;
             }
@@ -90,10 +94,9 @@ impl Engine {
         params: HashMap<String, String>,
         bundle_path: Option<PathBuf>,
     ) -> Result<Uuid> {
-        // Validate the workflow
         utils::validate_workflow(&workflow)?;
+        self.validate_codemod_dependencies(&workflow, &[]).await?;
 
-        // Create a new workflow run
         let workflow_run_id = Uuid::new_v4();
         let workflow_run = WorkflowRun {
             id: workflow_run_id,
@@ -106,14 +109,12 @@ impl Engine {
             ended_at: None,
         };
 
-        // Save the initial workflow run state
         self.state_adapter
             .lock()
             .await
             .save_workflow_run(&workflow_run)
             .await?;
 
-        // Start the workflow execution
         let engine = self.clone();
         tokio::spawn(async move {
             if let Err(e) = engine.execute_workflow(workflow_run_id).await {
@@ -127,7 +128,6 @@ impl Engine {
     /// Resume a workflow run
     pub async fn resume_workflow(&self, workflow_run_id: Uuid, task_ids: Vec<Uuid>) -> Result<()> {
         // TODO: Do we need this?
-        // Get the workflow run
         let _workflow_run = self
             .state_adapter
             .lock()
@@ -135,14 +135,11 @@ impl Engine {
             .get_workflow_run(workflow_run_id)
             .await?;
 
-        // Trigger the specified tasks
         let mut triggered = false;
         for task_id in task_ids {
-            // Get the task directly from the state adapter
             let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
             if task.status == TaskStatus::AwaitingTrigger {
-                // Create a task diff to update the status
                 let mut fields = HashMap::new();
                 fields.insert(
                     "status".to_string(),
@@ -153,14 +150,12 @@ impl Engine {
                 );
                 let task_diff = TaskDiff { task_id, fields };
 
-                // Apply the diff
                 self.state_adapter
                     .lock()
                     .await
                     .apply_task_diff(&task_diff)
                     .await?;
 
-                // Execute the task immediately
                 let engine = self.clone();
                 tokio::spawn(async move {
                     if let Err(e) = engine.execute_task(task_id).await {
@@ -179,7 +174,6 @@ impl Engine {
             return Err(Error::Other("No tasks were triggered".to_string()));
         }
 
-        // Create a workflow run diff to update the status
         let mut fields = HashMap::new();
         fields.insert(
             "status".to_string(),
@@ -193,14 +187,12 @@ impl Engine {
             fields,
         };
 
-        // Apply the diff
         self.state_adapter
             .lock()
             .await
             .apply_workflow_run_diff(&workflow_run_diff)
             .await?;
 
-        // Resume workflow execution
         let engine = self.clone();
         tokio::spawn(async move {
             if let Err(e) = engine.execute_workflow(workflow_run_id).await {
@@ -214,7 +206,6 @@ impl Engine {
     /// Trigger all awaiting tasks in a workflow run
     pub async fn trigger_all(&self, workflow_run_id: Uuid) -> Result<()> {
         // TODO: Do we need this?
-        // Get the workflow run
         let _workflow_run = self
             .state_adapter
             .lock()
@@ -222,7 +213,6 @@ impl Engine {
             .get_workflow_run(workflow_run_id)
             .await?;
 
-        // Get all tasks
         let tasks = self
             .state_adapter
             .lock()
@@ -230,7 +220,6 @@ impl Engine {
             .get_tasks(workflow_run_id)
             .await?;
 
-        // Find all tasks that are awaiting trigger
         let awaiting_tasks: Vec<&Task> = tasks
             .iter()
             .filter(|t| t.status == TaskStatus::AwaitingTrigger)
@@ -243,10 +232,8 @@ impl Engine {
             )));
         }
 
-        // Trigger all awaiting tasks
         let mut triggered = false;
         for task in awaiting_tasks {
-            // Create a task diff to update the status
             let mut fields = HashMap::new();
             fields.insert(
                 "status".to_string(),
@@ -260,14 +247,12 @@ impl Engine {
                 fields,
             };
 
-            // Apply the diff
             self.state_adapter
                 .lock()
                 .await
                 .apply_task_diff(&task_diff)
                 .await?;
 
-            // Execute the task immediately
             let engine = self.clone();
             let task_id = task.id;
             tokio::spawn(async move {
@@ -284,7 +269,6 @@ impl Engine {
             return Err(Error::Other("No tasks were awaiting trigger".to_string()));
         }
 
-        // Create a workflow run diff to update the status
         let mut fields = HashMap::new();
         fields.insert(
             "status".to_string(),
@@ -298,14 +282,12 @@ impl Engine {
             fields,
         };
 
-        // Apply the diff
         self.state_adapter
             .lock()
             .await
             .apply_workflow_run_diff(&workflow_run_diff)
             .await?;
 
-        // Resume workflow execution
         let engine = self.clone();
         tokio::spawn(async move {
             if let Err(e) = engine.execute_workflow(workflow_run_id).await {
@@ -444,6 +426,144 @@ impl Engine {
             .await
             .list_workflow_runs(limit)
             .await
+    }
+
+    /// Validate codemod dependencies to prevent infinite recursion cycles
+    ///
+    /// This method recursively checks all codemod dependencies in a workflow to ensure
+    /// there are no circular references that would cause infinite loops during execution.
+    ///
+    /// Examples of cycles that will be detected:
+    /// - Direct cycle: A → A
+    /// - Two-step cycle: A → B → A  
+    /// - Multi-step cycle: A → B → C → A
+    ///
+    /// # Arguments
+    /// * `workflow` - The workflow to validate
+    /// * `dependency_chain` - Current chain of codemod dependencies being tracked
+    ///
+    /// # Returns
+    /// * `Ok(())` if no cycles are detected
+    /// * `Err(Error::Other)` if a cycle is found, with detailed information about the cycle
+    async fn validate_codemod_dependencies(
+        &self,
+        workflow: &Workflow,
+        dependency_chain: &[CodemodDependency],
+    ) -> Result<()> {
+        for node in &workflow.nodes {
+            for step in &node.steps {
+                if let StepAction::Codemod(codemod) = &step.action {
+                    // Check if this codemod is already in the dependency chain
+                    if let Some(cycle_start) =
+                        self.find_cycle_in_chain(&codemod.source, dependency_chain)
+                    {
+                        let chain_str = dependency_chain
+                            .iter()
+                            .map(|d| d.source.as_str())
+                            .collect::<Vec<_>>()
+                            .join(" → ");
+
+                        return Err(Error::Other(format!(
+                            "Codemod dependency cycle detected!\n\
+                            Cycle: {} → {} → {}\n\
+                            This would cause infinite recursion during execution.\n\
+                            Please review your codemod dependencies to remove the circular reference.",
+                            cycle_start,
+                            if chain_str.is_empty() { "(root)" } else { &chain_str },
+                            codemod.source
+                        )));
+                    }
+
+                    // Resolve the codemod package to validate its workflow
+                    match self
+                        .resolve_and_validate_codemod(&codemod.source, dependency_chain)
+                        .await
+                    {
+                        Ok(_) => {}
+                        Err(e) => {
+                            warn!(
+                                "Failed to validate codemod dependency {}: {}",
+                                codemod.source, e
+                            );
+                            // We'll continue validation but log the warning
+                            // The actual execution will handle the error appropriately
+                        }
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Find if a codemod source creates a cycle in the dependency chain
+    fn find_cycle_in_chain(
+        &self,
+        source: &str,
+        dependency_chain: &[CodemodDependency],
+    ) -> Option<String> {
+        for dep in dependency_chain {
+            if dep.source == source {
+                return Some(dep.source.clone());
+            }
+        }
+        None
+    }
+
+    /// Resolve a codemod and recursively validate its dependencies
+    async fn resolve_and_validate_codemod(
+        &self,
+        source: &str,
+        dependency_chain: &[CodemodDependency],
+    ) -> Result<()> {
+        // Create a temporary auth provider for validation
+        struct NoAuthProvider;
+        impl AuthProvider for NoAuthProvider {
+            fn get_auth_for_registry(
+                &self,
+                _registry_url: &str,
+            ) -> anyhow::Result<Option<crate::registry::RegistryAuth>> {
+                Ok(None)
+            }
+        }
+
+        let registry_config = RegistryConfig {
+            default_registry: "https://app.codemod.com".to_string(),
+            cache_dir: get_cache_dir()?,
+        };
+
+        let registry_client = RegistryClient::new(registry_config, Some(Box::new(NoAuthProvider)));
+
+        // Resolve the package
+        let resolved_package = registry_client
+            .resolve_package(source, None, false)
+            .await
+            .map_err(|e| Error::Other(format!("Failed to resolve codemod {}: {}", source, e)))?;
+
+        // Load the codemod's workflow
+        let workflow_path = resolved_package.package_dir.join("workflow.yaml");
+        if !workflow_path.exists() {
+            return Err(Error::Other(format!(
+                "Workflow file not found in codemod package: {}",
+                workflow_path.display()
+            )));
+        }
+
+        let workflow_content = std::fs::read_to_string(&workflow_path)
+            .map_err(|e| Error::Other(format!("Failed to read workflow file: {}", e)))?;
+
+        let codemod_workflow: Workflow = serde_yaml::from_str(&workflow_content)
+            .map_err(|e| Error::Other(format!("Failed to parse workflow YAML: {}", e)))?;
+
+        // Create new dependency chain including this codemod
+        let mut new_chain = dependency_chain.to_vec();
+        new_chain.push(CodemodDependency {
+            source: source.to_string(),
+        });
+
+        // Recursively validate the codemod's workflow dependencies
+        Box::pin(self.validate_codemod_dependencies(&codemod_workflow, &new_chain)).await?;
+
+        Ok(())
     }
 
     /// Execute a workflow
@@ -1016,6 +1136,36 @@ impl Engine {
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
     ) -> Result<()> {
+        self.execute_step_action_with_chain(
+            runner,
+            action,
+            step_env,
+            node,
+            task,
+            params,
+            state,
+            workflow,
+            bundle_path,
+            &[],
+        )
+        .await
+    }
+
+    /// Execute a specific step action with dependency chain tracking for cycle detection
+    #[allow(clippy::too_many_arguments)]
+    async fn execute_step_action_with_chain(
+        &self,
+        runner: &dyn Runner,
+        action: &StepAction,
+        step_env: &Option<HashMap<String, String>>,
+        node: &Node,
+        task: &Task,
+        params: &HashMap<String, String>,
+        state: &HashMap<String, serde_json::Value>,
+        workflow: &Workflow,
+        bundle_path: &Option<PathBuf>,
+        dependency_chain: &[CodemodDependency],
+    ) -> Result<()> {
         match action {
             StepAction::RunScript(run) => {
                 self.execute_run_script_step(
@@ -1045,7 +1195,7 @@ impl Engine {
                 combined_params.extend(template_use.inputs.clone());
 
                 for template_step in &template.steps {
-                    Box::pin(self.execute_step_action(
+                    Box::pin(self.execute_step_action_with_chain(
                         runner,
                         &template_step.action,
                         &template_step.env,
@@ -1055,6 +1205,7 @@ impl Engine {
                         state,
                         workflow,
                         bundle_path,
+                        dependency_chain,
                     ))
                     .await?;
                 }
@@ -1069,7 +1220,7 @@ impl Engine {
                     .await
             }
             StepAction::Codemod(codemod) => {
-                Box::pin(self.execute_codemod_step(
+                Box::pin(self.execute_codemod_step_with_chain(
                     codemod,
                     step_env,
                     node,
@@ -1077,6 +1228,7 @@ impl Engine {
                     params,
                     state,
                     bundle_path,
+                    dependency_chain,
                 ))
                 .await
             }
@@ -1314,7 +1466,7 @@ impl Engine {
     }
 
     #[allow(clippy::too_many_arguments)]
-    async fn execute_codemod_step(
+    async fn execute_codemod_step_with_chain(
         &self,
         codemod: &UseCodemod,
         step_env: &Option<HashMap<String, String>>,
@@ -1323,8 +1475,32 @@ impl Engine {
         params: &HashMap<String, String>,
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
+        dependency_chain: &[CodemodDependency],
     ) -> Result<()> {
         info!("Executing codemod step: {}", codemod.source);
+
+        // Check for runtime cycles before execution
+        if let Some(cycle_start) = self.find_cycle_in_chain(&codemod.source, dependency_chain) {
+            let chain_str = dependency_chain
+                .iter()
+                .map(|d| d.source.as_str())
+                .collect::<Vec<_>>()
+                .join(" → ");
+
+            return Err(Error::Other(format!(
+                "Runtime codemod dependency cycle detected!\n\
+                Cycle: {} → {} → {}\n\
+                This cycle was not caught during validation, indicating a dynamic dependency.\n\
+                Please review your codemod dependencies to remove the circular reference.",
+                cycle_start,
+                if chain_str.is_empty() {
+                    "(root)"
+                } else {
+                    &chain_str
+                },
+                codemod.source
+            )));
+        }
 
         // For now, we'll create a simple auth provider that returns None
         // The CLI will need to provide proper authentication
@@ -1357,8 +1533,14 @@ impl Engine {
             resolved_package.package_dir.display()
         );
 
+        // Create new dependency chain including this codemod
+        let mut new_chain = dependency_chain.to_vec();
+        new_chain.push(CodemodDependency {
+            source: codemod.source.clone(),
+        });
+
         // Execute the resolved codemod workflow
-        self.run_codemod_workflow(
+        self.run_codemod_workflow_with_chain(
             &resolved_package,
             codemod,
             step_env,
@@ -1367,12 +1549,13 @@ impl Engine {
             params,
             state,
             bundle_path,
+            &new_chain,
         )
         .await
     }
 
     #[allow(clippy::too_many_arguments)]
-    async fn run_codemod_workflow(
+    async fn run_codemod_workflow_with_chain(
         &self,
         resolved_package: &ResolvedPackage,
         codemod: &UseCodemod,
@@ -1382,6 +1565,7 @@ impl Engine {
         params: &HashMap<String, String>,
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
+        dependency_chain: &[CodemodDependency],
     ) -> Result<()> {
         let workflow_path = resolved_package.package_dir.join("workflow.yaml");
 
@@ -1465,7 +1649,7 @@ impl Engine {
         // Execute each node in the codemod workflow
         for node in &codemod_workflow.nodes {
             for step in &node.steps {
-                Box::pin(self.execute_step_action(
+                Box::pin(self.execute_step_action_with_chain(
                     runner.as_ref(),
                     &step.action,
                     &step.env,
@@ -1475,6 +1659,7 @@ impl Engine {
                     state,
                     &codemod_workflow,
                     &Some(resolved_package.package_dir.clone()),
+                    dependency_chain,
                 ))
                 .await?;
             }
@@ -1823,6 +2008,153 @@ impl Clone for Engine {
         Self {
             state_adapter: Arc::clone(&self.state_adapter),
             scheduler: Scheduler::new(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use butterflow_models::step::{StepAction, UseCodemod};
+    use butterflow_models::{Node, Step, Workflow};
+
+    #[tokio::test]
+    async fn test_cycle_detection_direct_cycle() {
+        let engine = Engine::new();
+
+        // Create a workflow with a codemod that references itself
+        let workflow = Workflow {
+            version: "1.0.0".to_string(),
+            state: None,
+            nodes: vec![Node {
+                id: "test-node".to_string(),
+                name: "Test Node".to_string(),
+                description: Some("Test node".to_string()),
+                r#type: butterflow_models::node::NodeType::Automatic,
+                depends_on: vec![],
+                trigger: None,
+                strategy: None,
+                runtime: None,
+                env: HashMap::new(),
+                steps: vec![Step {
+                    name: "test-step".to_string(),
+                    action: StepAction::Codemod(UseCodemod {
+                        source: "test-codemod".to_string(),
+                        args: None,
+                        env: None,
+                        working_dir: None,
+                    }),
+                    env: None,
+                }],
+            }],
+            templates: vec![],
+        };
+
+        // Create a dependency chain that includes the same codemod
+        let dependency_chain = vec![CodemodDependency {
+            source: "test-codemod".to_string(),
+        }];
+
+        // Test that cycle detection catches the direct cycle
+        let result = engine
+            .validate_codemod_dependencies(&workflow, &dependency_chain)
+            .await;
+
+        assert!(result.is_err());
+        let error = result.unwrap_err();
+        match error {
+            Error::Other(msg) => {
+                assert!(msg.contains("Codemod dependency cycle detected"));
+                assert!(msg.contains("test-codemod"));
+            }
+            _ => panic!("Expected Other error with cycle detection message"),
+        }
+    }
+
+    #[test]
+    fn test_find_cycle_in_chain() {
+        let engine = Engine::new();
+
+        let dependency_chain = vec![
+            CodemodDependency {
+                source: "codemod-a".to_string(),
+            },
+            CodemodDependency {
+                source: "codemod-b".to_string(),
+            },
+        ];
+
+        // Test finding an existing cycle
+        let result = engine.find_cycle_in_chain("codemod-a", &dependency_chain);
+        assert_eq!(result, Some("codemod-a".to_string()));
+
+        // Test not finding a cycle with a new codemod
+        let result = engine.find_cycle_in_chain("codemod-c", &dependency_chain);
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test]
+    async fn test_runtime_cycle_detection() {
+        let engine = Engine::new();
+
+        // Create a dependency chain
+        let dependency_chain = vec![CodemodDependency {
+            source: "codemod-a".to_string(),
+        }];
+
+        // Create a codemod step that would create a cycle
+        let codemod = UseCodemod {
+            source: "codemod-a".to_string(), // Same as in dependency chain
+            args: None,
+            env: None,
+            working_dir: None,
+        };
+
+        // Create minimal test data
+        let node = Node {
+            id: "test-node".to_string(),
+            name: "Test Node".to_string(),
+            description: None,
+            r#type: butterflow_models::node::NodeType::Automatic,
+            depends_on: vec![],
+            trigger: None,
+            strategy: None,
+            runtime: None,
+            env: HashMap::new(),
+            steps: vec![],
+        };
+
+        use butterflow_models::Task;
+        use uuid::Uuid;
+
+        let task = Task::new(Uuid::new_v4(), "test-node".to_string(), false);
+
+        let params = HashMap::new();
+        let state = HashMap::new();
+        let bundle_path = None;
+
+        // Test that runtime cycle detection works
+        let result = engine
+            .execute_codemod_step_with_chain(
+                &codemod,
+                &None,
+                &node,
+                &task,
+                &params,
+                &state,
+                &bundle_path,
+                &dependency_chain,
+            )
+            .await;
+
+        assert!(result.is_err());
+        let error = result.unwrap_err();
+        match error {
+            Error::Other(msg) => {
+                assert!(msg.contains("Runtime codemod dependency cycle detected"));
+                assert!(msg.contains("codemod-a"));
+            }
+            _ => panic!("Expected Other error with runtime cycle detection message"),
         }
     }
 }

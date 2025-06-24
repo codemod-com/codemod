@@ -360,6 +360,7 @@ impl RegistryClient {
         // Extract tar.gz
         let tar_gz = flate2::read::GzDecoder::new(package_data);
         let mut archive = tar::Archive::new(tar_gz);
+        println!("Extracting to: {}", temp_path.display());
         archive.unpack(temp_path)?;
 
         // Move to cache directory
@@ -368,26 +369,8 @@ impl RegistryClient {
         }
         fs::create_dir_all(cache_dir.parent().unwrap())?;
 
-        // Find the extracted directory (handle potential wrapper directories)
-        let extracted_dirs: Vec<_> = fs::read_dir(temp_path)?
-            .filter_map(|entry| {
-                let entry = entry.ok()?;
-                if entry.file_type().ok()?.is_dir() {
-                    Some(entry.path())
-                } else {
-                    None
-                }
-            })
-            .collect();
-
-        let source_dir = if extracted_dirs.len() == 1 {
-            &extracted_dirs[0]
-        } else {
-            temp_path
-        };
-
         // Copy to cache directory
-        copy_dir_recursively(source_dir, cache_dir)?;
+        copy_dir_recursively(temp_path, cache_dir)?;
         Ok(())
     }
 }
@@ -492,22 +475,21 @@ fn validate_package_structure(package_dir: &Path) -> Result<()> {
 }
 
 fn copy_dir_recursively(src: &Path, dst: &Path) -> Result<()> {
-    fs::create_dir_all(dst)?;
-
+    println!(
+        "Copying directory recursively from: {} to: {}",
+        src.display(),
+        dst.display()
+    );
     for entry in WalkDir::new(src) {
         let entry = entry?;
-        let relative_path = entry.path().strip_prefix(src)?;
+        let path = entry.path();
+        let relative_path = path.strip_prefix(src).unwrap();
         let dst_path = dst.join(relative_path);
-
         if entry.file_type().is_dir() {
             fs::create_dir_all(&dst_path)?;
         } else {
-            if let Some(parent) = dst_path.parent() {
-                fs::create_dir_all(parent)?;
-            }
-            fs::copy(entry.path(), &dst_path)?;
+            fs::copy(path, &dst_path)?;
         }
     }
-
     Ok(())
 }

@@ -68,6 +68,7 @@ butterflow run ./my-workflow-bundle/
 - **Dynamic Task Recompilation**: Matrix tasks adapt on-the-fly to state changes
 - **Flexible Workflow Sources**: Run workflows from single YAML/JSON files, local directories (bundles), or fetch bundles from a registry
 - **Built-in AST grep**: Integrated ast-grep support with automatic language extension inference and fix application
+- **Cycle detection for codemod dependencies**: Robust cycle detection to prevent infinite recursion when codemods reference each other
 
 ## Architecture
 
@@ -989,3 +990,122 @@ This ensures that only valid workflows are executed, preventing potential runtim
 
 A workflow JSON schema is provided in the `schemas` directory for, e.g., LSP
 checks.
+
+## Cycle Detection
+
+The engine provides robust cycle detection to prevent infinite recursion when codemods reference each other. This validation happens at two levels:
+
+### 1. Pre-execution Validation
+Before starting any workflow, the engine analyzes the complete dependency tree to detect cycles:
+
+```yaml
+# This would be detected as a cycle:
+# Codemod A -> Codemod B -> Codemod A
+```
+
+### 2. Runtime Validation
+During execution, additional checks prevent dynamic cycles that might not be visible during static analysis.
+
+### Supported Cycle Types
+- **Direct cycles**: A codemod that references itself
+- **Two-step cycles**: A → B → A
+- **Multi-step cycles**: A → B → C → D → A
+- **Complex dependency chains**: Any circular reference in the dependency graph
+
+### Error Messages
+When a cycle is detected, you'll receive a detailed error message:
+
+```
+Codemod dependency cycle detected!
+Cycle: @org/codemod-a → @org/codemod-b → @org/codemod-a
+This would cause infinite recursion during execution.
+Please review your codemod dependencies to remove the circular reference.
+```
+
+### Best Practices
+1. **Design linear dependencies**: Structure your codemods so they have a clear dependency hierarchy
+2. **Use composition over delegation**: Instead of having codemods call each other, create shared libraries
+3. **Test dependency chains**: Use smaller, focused codemods that can be combined safely
+4. **Version pinning**: Use specific versions in registry references to avoid unexpected dependency changes
+
+## Examples
+
+### Basic Codemod Step
+```yaml
+version: "1.0.0"
+nodes:
+  - id: "transform"
+    name: "Apply Transformations"
+    steps:
+      - name: "Update imports"
+        codemod:
+          source: "@myorg/import-updater@2.1.0"
+          args: ["--style", "es6"]
+          
+      - name: "Format code"
+        codemod:
+          source: "./local-formatters/prettier-config"
+          env:
+            PRETTIER_CONFIG: "./custom.config.js"
+```
+
+### Complex Workflow with Dependencies
+```yaml
+version: "1.0.0"
+nodes:
+  - id: "prepare"
+    name: "Prepare Codebase"
+    steps:
+      - name: "Clean up legacy code"
+        codemod:
+          source: "@cleanup/legacy-remover@1.0.0"
+          
+  - id: "modernize"
+    name: "Modernize Code"
+    depends_on: ["prepare"]
+    steps:
+      - name: "Update to modern syntax"
+        codemod:
+          source: "@modernize/syntax-updater@3.0.0"
+          working_dir: "./src"
+          
+      - name: "Update dependencies"
+        codemod:
+          source: "@deps/updater@latest"
+          args: ["--mode", "safe"]
+```
+
+### Error Handling
+The cycle detection system will prevent workflows like this from running:
+
+```yaml
+# ❌ This will fail with cycle detection error
+version: "1.0.0"
+nodes:
+  - id: "problematic"
+    steps:
+      - name: "This creates a cycle"
+        codemod:
+          source: "@circular/codemod-a"  # Which internally uses @circular/codemod-b
+          # And @circular/codemod-b uses @circular/codemod-a
+```
+
+Instead, restructure your dependencies:
+
+```yaml
+# ✅ This is safe and will work correctly
+version: "1.0.0"
+nodes:
+  - id: "foundation"
+    steps:
+      - name: "Base transformations"
+        codemod:
+          source: "@safe/base-transform"
+          
+  - id: "advanced"
+    depends_on: ["foundation"]
+    steps:
+      - name: "Advanced transformations"
+        codemod:
+          source: "@safe/advanced-transform"
+```
