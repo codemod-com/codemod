@@ -140,3 +140,38 @@ To run codemods, you can:
     
     Each case covers a distinct scenario, and together they cover a wide range of function types.
 4. **Balance Simplicity and Complexity**: While it's possible to create complex transformation logics that support all cases, simpler, more focused codemods are often more maintainable and easier to understand.
+
+### Example of a good Codemod AI prompt
+
+The following prompt generates [this codemod](https://app.codemod.com/studio?share_id=cb9b5202314548d682cbd7):
+
+````
+Replace explicit <React.Fragment> tags with shorthand fragments.
+
+Before:
+```
+<React.Fragment>
+  <Header />
+  <Main />
+</React.Fragment>
+```
+
+After:
+```
+<>
+  <Header />
+  <Main />
+</>
+```
+
+Note:
+- Transform only fragments **with no props**.  
+- Skip any <React.Fragment> that carries a prop such as `key`, `children`, etc.  
+- Do not alter indentation, surrounding code, or formatting beyond the tag swap.
+````
+
+<Tip>
+  **Why this is a good prompt?**
+
+  This prompt states one atomic transformation, shows concrete before/after examples, and spells out the minimal extra edits required—exactly what the *Clarity is Key* and “Balance Simplicity and Complexity” tips recommend.
+</Tip>
