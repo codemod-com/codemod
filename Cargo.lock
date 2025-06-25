@@ -903,6 +903,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "convert_case"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "baaaa0ecca5b51987b9423ccdc971514dd8b0bb7b4060b983d3664dad3f1f89f"
+dependencies = [
+ "unicode-segmentation",
+]
+
+[[package]]
 name = "core-foundation"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4033,7 +4042,7 @@ dependencies = [
 [[package]]
 name = "rquickjs"
 version = "0.9.0"
-source = "git+https://github.com/DelSkayn/rquickjs.git#271a718830da7caa2a717902b3aaf022c3b387f2"
+source = "git+https://github.com/DelSkayn/rquickjs.git#0bb7e5abfe2c709841282311c1478629094dbb61"
 dependencies = [
  "either",
  "indexmap 2.9.0",
@@ -4055,7 +4064,7 @@ dependencies = [
 [[package]]
 name = "rquickjs-core"
 version = "0.9.0"
-source = "git+https://github.com/DelSkayn/rquickjs.git#271a718830da7caa2a717902b3aaf022c3b387f2"
+source = "git+https://github.com/DelSkayn/rquickjs.git#0bb7e5abfe2c709841282311c1478629094dbb61"
 dependencies = [
  "async-lock",
  "chrono",
@@ -4073,7 +4082,7 @@ version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4d2eccd988a924a470a76fbd81a191b22d1f5f4f4619cf5662a8c1ab4ca1db7"
 dependencies = [
- "convert_case",
+ "convert_case 0.6.0",
  "fnv",
  "ident_case",
  "indexmap 2.9.0",
@@ -4087,9 +4096,9 @@ dependencies = [
 [[package]]
 name = "rquickjs-macro"
 version = "0.9.0"
-source = "git+https://github.com/DelSkayn/rquickjs.git#271a718830da7caa2a717902b3aaf022c3b387f2"
+source = "git+https://github.com/DelSkayn/rquickjs.git#0bb7e5abfe2c709841282311c1478629094dbb61"
 dependencies = [
- "convert_case",
+ "convert_case 0.8.0",
  "fnv",
  "ident_case",
  "indexmap 2.9.0",
@@ -4114,7 +4123,7 @@ dependencies = [
 [[package]]
 name = "rquickjs-sys"
 version = "0.9.0"
-source = "git+https://github.com/DelSkayn/rquickjs.git#271a718830da7caa2a717902b3aaf022c3b387f2"
+source = "git+https://github.com/DelSkayn/rquickjs.git#0bb7e5abfe2c709841282311c1478629094dbb61"
 dependencies = [
  "cc",
 ]
