@@ -20,7 +20,7 @@ const binary = process.platform === "win32" ? "codemod.exe" : "codemod";
 let pkgPath;
 try {
   pkgPath = path.dirname(
-    require.resolve(`@codemod/cli-${parts.join("-")}/package.json`),
+    require.resolve(`@codemod.com/cli-${parts.join("-")}/package.json`),
   );
 } catch (err) {
   // Fallback for development - look for local binary
@@ -38,7 +38,7 @@ try {
   } catch (err) {
     console.error("Failed to install codemod binary.");
     console.error("Platform:", process.platform, process.arch);
-    console.error("Expected package:", `@codemod/cli-${parts.join("-")}`);
+    console.error("Expected package:", `@codemod.com/cli-${parts.join("-")}`);
     process.exit(1);
   }
 }

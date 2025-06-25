@@ -1,5 +1,5 @@
 {
-  "name": "@codemod/cli-darwin-arm64",
+  "name": "@codemod.com/cli-darwin-arm64",
   "version": "0.0.0",
   "os": ["darwin"],
   "cpu": ["arm64"],
