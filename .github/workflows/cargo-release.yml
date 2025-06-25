@@ -273,9 +273,7 @@ jobs:
           done
           
           # Update optional dependencies versions in main package
-          sed -i 's/"@codemod\/cli-darwin-arm64": "0.0.0"/"@codemod\/cli-darwin-arm64": "${{ steps.version.outputs.version }}"/' crates/cli/npm/package.json
-          sed -i 's/"@codemod\/cli-darwin-x64": "0.0.0"/"@codemod\/cli-darwin-x64": "${{ steps.version.outputs.version }}"/' crates/cli/npm/package.json
-          sed -i 's/"@codemod\/cli-linux-x64-gnu": "0.0.0"/"@codemod\/cli-linux-x64-gnu": "${{ steps.version.outputs.version }}"/' crates/cli/npm/package.json
+          sed -i 's/"@codemod\.com\/cli-\([^"]*\)": "0\.0\.0"/"@codemod.com\/cli-\1": "${{ steps.version.outputs.version }}"/g' crates/cli/npm/package.json
 
       - name: Publish platform packages
         env:

@@ -1,11 +1,11 @@
 {
-  "name": "@codemod.com/cli-linux-x64-gnu",
+  "name": "@codemod.com/cli-linux-arm64-gnu",
   "version": "0.0.0",
   "os": ["linux"],
-  "cpu": ["x64"],
+  "cpu": ["arm64"],
   "libc": ["glibc"],
   "files": ["codemod"],
-  "description": "Codemod platform for semantic code transformations - Linux x64 binary",
+  "description": "Codemod platform for semantic code transformations - Linux ARM64 binary",
   "keywords": ["codemod", "ast", "transformation", "refactoring", "migration"],
   "license": "MIT",
   "engines": {
