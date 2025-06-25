@@ -19,5 +19,5 @@ uuid = { workspace = true }
 log = { workspace = true }
 async-trait = { workspace = true }
 reqwest = { workspace = true }
-dirs = "5.0"
+dirs = { workspace = true }
 chrono = { workspace = true }

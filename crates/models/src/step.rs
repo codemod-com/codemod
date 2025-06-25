@@ -37,6 +37,10 @@ pub enum StepAction {
     /// JavaScript AST grep execution
     #[serde(rename = "js-ast-grep")]
     JSAstGrep(UseJSAstGrep),
+
+    /// Execute another codemod
+    #[serde(rename = "codemod")]
+    Codemod(UseCodemod),
 }
 
 /// Represents a template use in a step
@@ -118,4 +122,26 @@ pub struct UseJSAstGrep {
     #[serde(default)]
     #[ts(optional, as = "Option<String>")]
     pub language: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
+#[serde(rename_all = "snake_case")]
+pub struct UseCodemod {
+    /// Codemod source identifier (registry package or local path)
+    pub source: String,
+
+    /// Command line arguments to pass to the codemod (optional)
+    #[serde(default)]
+    #[ts(optional, as = "Option<Vec<String>>")]
+    pub args: Option<Vec<String>>,
+
+    /// Environment variables to set for the codemod execution (optional)
+    #[serde(default)]
+    #[ts(optional, as = "Option<HashMap<String, String>>")]
+    pub env: Option<HashMap<String, String>>,
+
+    /// Working directory for codemod execution (optional, defaults to current directory)
+    #[serde(default)]
+    #[ts(optional, as = "Option<String>")]
+    pub working_dir: Option<String>,
 }

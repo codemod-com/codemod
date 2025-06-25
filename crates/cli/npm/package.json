@@ -1,0 +1,31 @@
+{
+  "name": "codemod",
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public",
+    "tag": "next"
+  },
+  "description": "Codemod platform for semantic code transformations",
+  "homepage": "https://codemod.com",
+  "repository": "https://github.com/codemod-com/codemod",
+  "engines": {
+    "node": ">= 16.0.0"
+  },
+  "keywords": ["codemod", "ast", "transformation", "refactoring", "migration"],
+  "files": ["codemod", "postinstall.js"],
+  "dependencies": {
+    "detect-libc": "^2.0.3"
+  },
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "optionalDependencies": {
+    "@codemod/cli-darwin-arm64": "0.0.0",
+    "@codemod/cli-darwin-x64": "0.0.0",
+    "@codemod/cli-linux-x64-gnu": "0.0.0"
+  },
+  "bin": {
+    "codemod": "codemod"
+  },
+  "license": "MIT"
+}

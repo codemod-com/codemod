@@ -404,6 +404,18 @@
           "required": [
             "js-ast-grep"
           ]
+        },
+        {
+          "description": "Execute another codemod",
+          "type": "object",
+          "properties": {
+            "codemod": {
+              "$ref": "#/$defs/UseCodemod"
+            }
+          },
+          "required": [
+            "codemod"
+          ]
         }
       ],
       "required": [
@@ -677,6 +689,48 @@
       },
       "required": [
         "config_file"
+      ]
+    },
+    "UseCodemod": {
+      "type": "object",
+      "properties": {
+        "args": {
+          "description": "Command line arguments to pass to the codemod (optional)",
+          "type": [
+            "array",
+            "null"
+          ],
+          "default": null,
+          "items": {
+            "type": "string"
+          }
+        },
+        "env": {
+          "description": "Environment variables to set for the codemod execution (optional)",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": null
+        },
+        "source": {
+          "description": "Codemod source identifier (registry package or local path)",
+          "type": "string"
+        },
+        "working_dir": {
+          "description": "Working directory for codemod execution (optional, defaults to current directory)",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "source"
       ]
     },
     "UseJSAstGrep": {
