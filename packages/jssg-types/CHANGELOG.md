@@ -1,5 +1,11 @@
 # @codemod.com/jssg-types
 
+## 1.0.3
+
+### Patch Changes
+
+- f5750be: Fix jssg-types included files in npm package
+
 ## 1.0.2
 
 ### Patch Changes
