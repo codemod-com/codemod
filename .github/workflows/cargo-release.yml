@@ -270,7 +270,7 @@ jobs:
           cp artifacts/x86_64-apple-darwin/codemod-darwin-x86_64 crates/cli/npm/platforms/darwin-x64/codemod
           cp artifacts/x86_64-unknown-linux-gnu/codemod-linux-x86_64-gnu crates/cli/npm/platforms/linux-x64-gnu/codemod
           cp artifacts/aarch64-unknown-linux-gnu/codemod-linux-aarch64-gnu crates/cli/npm/platforms/linux-arm64-gnu/codemod
-          cp artifacts/x86_64-pc-windows-msvc/codemod-windows-x86_64.exe crates/cli/npm/platforms/windows-x64/codemod.exe
+          cp artifacts/x86_64-pc-windows-msvc/codemod-windows-x86_64.exe crates/cli/npm/platforms/win32-x64-msvc/codemod.exe
           
           # Make binaries executable
           chmod +x crates/cli/npm/platforms/*/codemod
