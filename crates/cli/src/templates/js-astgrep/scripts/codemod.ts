@@ -1,5 +1,5 @@
 import type { SgRoot } from "codemod:ast-grep";
-import type JS from "@codemod.com/ast-grep-langs/javascript";
+import type JS from "codemod:ast-grep/langs/javascript";
 
 async function transform(root: SgRoot<JS>): Promise<string> {
   const rootNode = root.root();

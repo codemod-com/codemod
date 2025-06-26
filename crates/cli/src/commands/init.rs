@@ -87,6 +87,7 @@ const SHELL_CLEANUP_SCRIPT: &str = include_str!("../templates/shell/scripts/clea
 // JS ast-grep project templates
 const JS_PACKAGE_JSON_TEMPLATE: &str = include_str!("../templates/js-astgrep/package.json");
 const JS_APPLY_SCRIPT: &str = include_str!("../templates/js-astgrep/scripts/codemod.ts");
+const JS_TSCONFIG_TEMPLATE: &str = include_str!("../templates/js-astgrep/tsconfig.json");
 const JS_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.js");
 const JS_TEST_EXPECTED: &str = include_str!("../templates/js-astgrep/tests/fixtures/expected.js");
 // ast-grep YAML project templates
@@ -385,6 +386,9 @@ fn create_js_astgrep_project(project_path: &Path, config: &ProjectConfig) -> Res
     fs::create_dir_all(&scripts_dir)?;
 
     fs::write(scripts_dir.join("codemod.ts"), JS_APPLY_SCRIPT)?;
+
+    // Create tsconfig.json
+    fs::write(project_path.join("tsconfig.json"), JS_TSCONFIG_TEMPLATE)?;
 
     // Create tests
     create_js_tests(project_path, config)?;
