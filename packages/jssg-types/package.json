@@ -20,13 +20,7 @@
   },
   "sideEffects": false,
   "private": false,
-  "files": [
-    "./dist",
-    "!**/*.test.js",
-    "!**/*.test.d.ts",
-    "README.md",
-    "tsconfig.json"
-  ],
+  "files": ["./src"],
   "scripts": {
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
