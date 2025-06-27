@@ -8,10 +8,10 @@ JSSG (JavaScript `ast-grep`) is a JavaScript/TypeScript codemod runner and testi
 
 ## Running Codemods
 
-To run a JavaScript codemod on a target directory, use the `codemod jssg run` command:
+To run a JavaScript codemod on a target directory, use the `codemod@next jssg run` command:
 
 ```bash
-codemod jssg run my-codemod.js ./src --language javascript
+codemod@next jssg run my-codemod.js ./src --language javascript
 ```
 
 ### Options
@@ -62,14 +62,14 @@ The JSSG Testing Framework provides comprehensive testing capabilities for JavaS
             └── file2.js
     ```
 
-2.  **Run the tests** using the `codemod jssg test` command.
+2.  **Run the tests** using the `codemod@next jssg test` command.
 
     ```bash
     # Run tests for a codemod
-    codemod jssg test my-codemod.js --language javascript
+    codemod@next jssg test my-codemod.js --language javascript
 
     # Update snapshots (creates or updates the `expected.js` files)
-    codemod jssg test my-codemod.js --language javascript --update-snapshots
+    codemod@next jssg test my-codemod.js --language javascript --update-snapshots
     ```
 
 ### Required Arguments
