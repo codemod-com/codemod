@@ -70,8 +70,16 @@ pub async fn handler(args: &Command) -> Result<()> {
                     println!("  - {} ({})", org.name, org.role);
                 }
             }
-
             println!("\nYou can now publish packages using 'codemod publish'");
+            println!("\x1b[32m      __                  __                                    __         \x1b[0m");
+            println!("\x1b[32m     / /                 /\\ \\                                  /\\ \\        \x1b[0m");
+            println!("\x1b[32m    / /   ___     ___    \\_\\ \\      __     ___ ___      ___    \\_\\ \\       \x1b[0m");
+            println!("\x1b[32m   / /   /'___\\  / __`\\  /'_` \\   /'__`\\ /' __` __`\\   / __`\\  /'_` \\      \x1b[0m");
+            println!("\x1b[32m  / /   /\\ \\__/ /\\ \\L\\ \\/\\ \\L\\ \\ /\\  __/ /\\ \\/\\ \\/\\ \\ /\\ \\L\\ \\/\\ \\L\\ \\  __ \x1b[0m");
+            println!("\x1b[32m /_/    \\ \\____\\\\ \\____/\\ \\___,_\\\\ \\____\\\\ \\_\\ \\_\\ \\_\\\\ \\____/\\ \\___,_\\/\\_\\\x1b[0m");
+            println!("\x1b[32m/_/      \\/____/ \\/___/  \\/__,_ / \\/____/ \\/_/\\/_/\\/_/ \\/___/  \\/__,_ /\\/_/\x1b[0m");
+            println!("\x1b[32m                                                                           \x1b[0m");
+            println!("\x1b[32m                                                                           \x1b[0m");
             Ok(())
         }
         Err(e) => {

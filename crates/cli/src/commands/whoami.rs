@@ -34,6 +34,15 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     match oidc_client.get_auth_status()? {
         Some(stored_auth) => {
+            println!("\x1b[32m      __                  __                                    __         \x1b[0m");
+            println!("\x1b[32m     / /                 /\\ \\                                  /\\ \\        \x1b[0m");
+            println!("\x1b[32m    / /   ___     ___    \\_\\ \\      __     ___ ___      ___    \\_\\ \\       \x1b[0m");
+            println!("\x1b[32m   / /   /'___\\  / __`\\  /'_` \\   /'__`\\ /' __` __`\\   / __`\\  /'_` \\      \x1b[0m");
+            println!("\x1b[32m  / /   /\\ \\__/ /\\ \\L\\ \\/\\ \\L\\ \\ /\\  __/ /\\ \\/\\ \\/\\ \\ /\\ \\L\\ \\/\\ \\L\\ \\  __ \x1b[0m");
+            println!("\x1b[32m /_/    \\ \\____\\\\ \\____/\\ \\___,_\\\\ \\____\\\\ \\_\\ \\_\\ \\_\\\\ \\____/\\ \\___,_\\/\\_\\\x1b[0m");
+            println!("\x1b[32m/_/      \\/____/ \\/___/  \\/__,_ / \\/____/ \\/_/\\/_/\\/_/ \\/___/  \\/__,_ /\\/_/\x1b[0m");
+            println!("\x1b[32m                                                                           \x1b[0m");
+            println!("\x1b[32m                                                                           \x1b[0m");
             println!("✓ Logged in to: {}", registry_url);
             println!("Username: {}", stored_auth.user.username);
             println!("Email: {}", stored_auth.user.email);
