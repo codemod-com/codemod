@@ -1,6 +1,5 @@
 ---
-"@codemod-com/backend": major
-"codemod": major
+"codemod": patch
 "@codemod-com/api-types": patch
 ---
 
