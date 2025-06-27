@@ -58,8 +58,8 @@ catalogs:
       specifier: 5.22.4
       version: 5.22.4
     '@clerk/fastify':
-      specifier: 2.1.13
-      version: 2.1.13
+      specifier: 0.6.47
+      version: 0.6.47
     '@clerk/nextjs':
       specifier: 6.10.0
       version: 6.10.0
@@ -996,7 +996,7 @@ importers:
         version: 1.23.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@clerk/fastify':
         specifier: 'catalog:'
-        version: 2.1.13(fastify@4.28.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 0.6.47(fastify-plugin@4.5.1)(fastify@4.28.1)(react@18.2.0)
       '@codemod-com/auth':
         specifier: workspace:*
         version: link:../../packages/auth
@@ -3934,6 +3934,10 @@ packages:
   '@changesets/write@0.3.2':
     resolution: {integrity: sha512-kDxDrPNpUgsjDbWBvUo27PzKX4gqeKOlhibaOXDJA6kuBisGqNHv/HwGJrAu8U/dSf8ZEFIeHIPtvSlZI1kULw==}
 
+  '@clerk/backend@0.38.14':
+    resolution: {integrity: sha512-hejdtVIy5z5TABDASEJnigrbGnN15JYzJbTjnbpCO8n6Bw2B1DVfR1fsQZw1TaE9HSWh15UCZMjuvtYH0IHciQ==}
+    engines: {node: '>=14'}
+
   '@clerk/backend@1.23.5':
     resolution: {integrity: sha512-3HVYa1qiOIny+45V5UBwVfMRZDXl4deVfjFMPvmAYbAiNqY39TgtHdMnDsGZF09eOUnnpTu/6jV4doPLdmWHWg==}
     engines: {node: '>=18.17.0'}
@@ -3945,11 +3949,12 @@ packages:
       react: ^18.0.0 || ^19.0.0 || ^19.0.0-0
       react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-0
 
-  '@clerk/fastify@2.1.13':
-    resolution: {integrity: sha512-Df2wWs43GY4CKUJPhmBThStLTTbyYvGX3kFRtj9JSlRfu9qaxqKPOnlxeOwno3IP0HWLadGZ9u221Wm+r+dOVw==}
-    engines: {node: '>=20'}
+  '@clerk/fastify@0.6.47':
+    resolution: {integrity: sha512-rj9KkQFKN/98b28xxBKZIuzUIDdiLNl+C3SVrDWzHSs32Xm6Anqn7CM9IMCec1pXZ9RqMriSSoIOVfh138ZAYg==}
+    engines: {node: '>=14'}
     peerDependencies:
-      fastify: '>=5'
+      fastify: '>=4'
+      fastify-plugin: ^4.5.0
 
   '@clerk/nextjs@6.10.0':
     resolution: {integrity: sha512-s6srzAxMStgP2UBsgSNyWECt+c7s/Zq+/qLAk05O17HXTjb1ydmK/cGxJI5JS9MYv49Z88Ct3AL9CiUbGv/0bA==}
@@ -3958,6 +3963,14 @@ packages:
       next: ^13.5.4 || ^14.0.3 || ^15.0.0
       react: ^18.0.0 || ^19.0.0 || ^19.0.0-0
       react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-0
+
+  '@clerk/shared@1.4.2':
+    resolution: {integrity: sha512-R+OkzCtnNU7sn/F6dBfdY5lKs84TN785VZdBBefmyr7zsXcFEqbCcfQzyvgtIS28Ln5SifFEBoAyYR334IXO8w==}
+    peerDependencies:
+      react: '>=16'
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@clerk/shared@2.20.12':
     resolution: {integrity: sha512-uy9Z2h0VXbQ4xwjj8mKuQSwm8MEFTAec+3gu4MSTyc1WboaPfX3MnO3qjqJEwu/oQkakocVI0P3nViYbXokZtQ==}
@@ -3974,6 +3987,10 @@ packages:
   '@clerk/themes@2.2.10':
     resolution: {integrity: sha512-p6P/msypeSHgYVTjEOjKc+c8HUkSNZ6pQgLwkTTpPr8dttyiy1str5BkxSKQeI2mO6IAH3Lt6vFY4Ti/U+TKEQ==}
     engines: {node: '>=18.17.0'}
+
+  '@clerk/types@3.65.4':
+    resolution: {integrity: sha512-sDNt7kp/rYVUF+wJvLPlH+YMm/iKgtARVmTZBU0rgXKPrEKJA1vdmT2UCe4geO1lgqHCi1lXTzm2O90NCWC9yA==}
+    engines: {node: '>=14'}
 
   '@clerk/types@4.42.0':
     resolution: {integrity: sha512-SPBRHdP+ZggeudncbSj8KLOZ5PdVmtgZhL+tXremVJrETi9WHpf1UOYgnIHl+clp6GZC2IQM4tq57RSrHf0Oew==}
@@ -5706,6 +5723,17 @@ packages:
   '@opentelemetry/semantic-conventions@1.25.1':
     resolution: {integrity: sha512-ZDjMJJQRlyk8A1KZFCc+bCbsyrn1wTwdNt56F7twdfUfnHUZUq77/WfONCj8p72NZOyP7pNTdUWSTYC3GTbuuQ==}
     engines: {node: '>=14'}
+
+  '@peculiar/asn1-schema@2.3.15':
+    resolution: {integrity: sha512-QPeD8UA8axQREpgR5UTAfu2mqQmm97oUqahDtNdBcfj3qAnoXzFdQW+aNf/tD2WVXF8Fhmftxoj0eMIT++gX2w==}
+
+  '@peculiar/json-schema@1.1.12':
+    resolution: {integrity: sha512-coUfuoMeIB7B8/NMekxaDzLhaYmp0HZNPEjYRm9goRou8UZIC3z21s0sL9AWoCw4EG876QyO3kYrc61WNF9B/w==}
+    engines: {node: '>=8.0.0'}
+
+  '@peculiar/webcrypto@1.4.1':
+    resolution: {integrity: sha512-eK4C6WTNYxoI7JOabMoZICiyqRRtJB220bh0Mbj5RwRycleZf9BPyZoxsTvpP0FpmVS2aS13NKOuh5/tN3sIRw==}
+    engines: {node: '>=10.12.0'}
 
   '@phosphor-icons/react@2.1.6':
     resolution: {integrity: sha512-F963SJvCTk0Qm5SRTSHXP8bCIYgMAbSVZ73f5DoxjP2iG/yAzRdySzbs9kVPETYxvr0zwTY4DUTqUjB3vr8sVw==}
@@ -7719,6 +7747,9 @@ packages:
   '@types/node@16.18.101':
     resolution: {integrity: sha512-AAsx9Rgz2IzG8KJ6tXd6ndNkVcu+GYB6U/SnFAaokSPNx2N7dcIIfnighYUNumvj6YS2q39Dejz5tT0NCV7CWA==}
 
+  '@types/node@16.18.6':
+    resolution: {integrity: sha512-vmYJF0REqDyyU0gviezF/KHq/fYaUbFhkcNbQCuPGFQj6VTbXuHZoxs/Y7mutWe73C8AC6l9fFu8mSYiBAqkGA==}
+
   '@types/node@18.11.18':
     resolution: {integrity: sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==}
 
@@ -8522,6 +8553,10 @@ packages:
   asap@2.0.6:
     resolution: {integrity: sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==}
 
+  asn1js@3.0.6:
+    resolution: {integrity: sha512-UOCGPYbl0tv8+006qks/dTgV9ajs97X2p0FAbyS2iyCRrmLSRolDaHdp+v/CLgnzHc3fVB+CwYiUmei7ndFcgA==}
+    engines: {node: '>=12.0.0'}
+
   assert@2.1.0:
     resolution: {integrity: sha512-eLHpSK/Y4nhMJ07gDaAzoX/XAKS8PSaojml3M0DM4JpV1LAi5JOJ/p6H/XWrl8L+DzVEvVCW1z3vWAaB9oTsQw==}
 
@@ -9270,6 +9305,10 @@ packages:
     resolution: {integrity: sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==}
     engines: {node: '>= 0.6'}
 
+  cookie@0.5.0:
+    resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
+    engines: {node: '>= 0.6'}
+
   cookie@0.6.0:
     resolution: {integrity: sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==}
     engines: {node: '>= 0.6'}
@@ -9622,6 +9661,10 @@ packages:
 
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
+
+  deepmerge@4.2.2:
+    resolution: {integrity: sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==}
+    engines: {node: '>=0.10.0'}
 
   defaults@1.0.4:
     resolution: {integrity: sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==}
@@ -10314,9 +10357,6 @@ packages:
 
   fastify-plugin@4.5.1:
     resolution: {integrity: sha512-stRHYGeuqpEZTL1Ef0Ovr2ltazUT9g844X5z/zEBFLG8RYlpDiOCIG+ATvYEp+/zmc7sN29mcIMp8gvYplYPIQ==}
-
-  fastify-plugin@5.0.1:
-    resolution: {integrity: sha512-HCxs+YnRaWzCl+cWRYFnHmeRFyR5GVnJTAaCJQiYzQSDwK9MgJdyAsuL3nh0EWRCYMgQ5MeziymvmAhUHYHDUQ==}
 
   fastify@4.28.1:
     resolution: {integrity: sha512-kFWUtpNr4i7t5vY2EJPCN2KgMVpuqfU4NjnJNCgiNB900oiDeYqaNDRcAfeBbOF5hGixixxcKnOU4KN9z6QncQ==}
@@ -11528,6 +11568,10 @@ packages:
   js-cookie@2.2.1:
     resolution: {integrity: sha512-HvdH2LzI/EAZcUwA8+0nKNtWHqS+ZmijLA30RwZA0bo7ToCckjK5MkGhjED9KoRcXO6BaGI3I9UIzSA1FKFPOQ==}
 
+  js-cookie@3.0.1:
+    resolution: {integrity: sha512-+0rgsUXZu4ncpPxRL+lNEptWMOWl9etvPHc/koSRp6MPwpRYAhmk0dUG00J4bxVV3r9uUzfo24wW0knS07SKSw==}
+    engines: {node: '>=12'}
+
   js-cookie@3.0.5:
     resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
     engines: {node: '>=14'}
@@ -12738,6 +12782,9 @@ packages:
     resolution: {integrity: sha512-E2WEOVsgs7O16zsURJ/eH8BqhF029wGpEOnv7Urwdo2wmQanOACwJQh0devF9D9RhoZru0+9JXIS0dBXIAz+lA==}
     engines: {node: '>=18'}
 
+  node-fetch-native@1.0.1:
+    resolution: {integrity: sha512-VzW+TAk2wE4X9maiKMlT+GsPU4OMmR1U9CrHSmd3DFLn2IcZ9VJ6M6BBugGfYUnPCLSYxXdZy17M0BEJyhUTwg==}
+
   node-fetch@2.7.0:
     resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
     engines: {node: 4.x || >=6.0.0}
@@ -13832,6 +13879,13 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
+  pvtsutils@1.3.6:
+    resolution: {integrity: sha512-PLgQXQ6H2FWCaeRak8vvk1GW462lMxB5s3Jm673N82zI4vqtVUPuZdffdZbPDFRoU8kAhItWFtPCWiPpp4/EDg==}
+
+  pvutils@1.1.3:
+    resolution: {integrity: sha512-pMpnA0qRdFp32b1sJl1wOJNxZLQ2cbQx+k6tjNtZ8CpvVhNqEPRgivZ2WOUev2YMajecdH7ctUPDvEe87nariQ==}
+    engines: {node: '>=6.0.0'}
+
   qs@6.12.1:
     resolution: {integrity: sha512-zWmv4RSuB9r2mYQw3zxQuHWeU+42aKi1wWig/j4ele4ygELZ7PEO6MM7rim9oAQH2A5MWfsAVf/jPvTPgCbvUQ==}
     engines: {node: '>=0.6'}
@@ -14842,6 +14896,10 @@ packages:
 
   snake-case@3.0.4:
     resolution: {integrity: sha512-LAOh4z89bGQvl9pFfNF8V146i7o7/CqFPbqzYgP+yYzDIDeS9HaNFtXABamRW+AQzEVODcvE79ljJ+8a9YSdMg==}
+
+  snakecase-keys@5.4.4:
+    resolution: {integrity: sha512-YTywJG93yxwHLgrYLZjlC75moVEX04LZM4FHfihjHe1FCXm+QaLOFfSf535aXOAd0ArVQMWUAe8ZPm4VtWyXaA==}
+    engines: {node: '>=12'}
 
   snakecase-keys@8.0.1:
     resolution: {integrity: sha512-Sj51kE1zC7zh6TDlNNz0/Jn1n5HiHdoQErxO8jLtnyrkJW/M5PrI7x05uDgY3BO7OUQYKCvmeMurW6BPUdwEOw==}
@@ -16314,6 +16372,9 @@ packages:
   web-vitals@2.1.4:
     resolution: {integrity: sha512-sVWcwhU5mX6crfI5Vd2dC4qchyTqxV8URinzt25XqVh+bHEPGH4C3NPrNionCP7Obx59wrYEbNlw4Z8sjALzZg==}
 
+  webcrypto-core@1.8.1:
+    resolution: {integrity: sha512-P+x1MvlNCXlKbLSOY4cYrdreqPG5hbzkmawbcXLKN/mf6DZW0SdNNkZ+sjwsqVkI4A4Ko2sPZmkZtCKY58w83A==}
+
   webidl-conversions@7.0.0:
     resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
     engines: {node: '>=12'}
@@ -16807,8 +16868,8 @@ snapshots:
       '@aws-crypto/sha1-browser': 5.2.0
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/client-sso-oidc': 3.600.0
-      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
+      '@aws-sdk/client-sso-oidc': 3.600.0(@aws-sdk/client-sts@3.600.0)
+      '@aws-sdk/client-sts': 3.600.0
       '@aws-sdk/core': 3.598.0
       '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/middleware-bucket-endpoint': 3.598.0
@@ -16865,11 +16926,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.600.0':
+  '@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
+      '@aws-sdk/client-sts': 3.600.0
       '@aws-sdk/core': 3.598.0
       '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/middleware-host-header': 3.598.0
@@ -16908,6 +16969,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
+      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso@3.598.0':
@@ -16953,11 +17015,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)':
+  '@aws-sdk/client-sts@3.600.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/client-sso-oidc': 3.600.0
+      '@aws-sdk/client-sso-oidc': 3.600.0(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/core': 3.598.0
       '@aws-sdk/credential-provider-node': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/middleware-host-header': 3.598.0
@@ -16996,7 +17058,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
-      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/core@3.598.0':
@@ -17030,7 +17091,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.598.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
+      '@aws-sdk/client-sts': 3.600.0
       '@aws-sdk/credential-provider-env': 3.598.0
       '@aws-sdk/credential-provider-http': 3.598.0
       '@aws-sdk/credential-provider-process': 3.598.0
@@ -17088,7 +17149,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.598.0(@aws-sdk/client-sts@3.600.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.600.0(@aws-sdk/client-sso-oidc@3.600.0)
+      '@aws-sdk/client-sts': 3.600.0
       '@aws-sdk/types': 3.598.0
       '@smithy/property-provider': 3.1.2
       '@smithy/types': 3.2.0
@@ -17215,7 +17276,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.598.0(@aws-sdk/client-sso-oidc@3.600.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.600.0
+      '@aws-sdk/client-sso-oidc': 3.600.0(@aws-sdk/client-sts@3.600.0)
       '@aws-sdk/types': 3.598.0
       '@smithy/property-provider': 3.1.2
       '@smithy/shared-ini-file-loader': 3.1.2
@@ -18467,6 +18528,20 @@ snapshots:
       human-id: 1.0.2
       prettier: 2.8.8
 
+  '@clerk/backend@0.38.14(react@18.2.0)':
+    dependencies:
+      '@clerk/shared': 1.4.2(react@18.2.0)
+      '@clerk/types': 3.65.4
+      '@peculiar/webcrypto': 1.4.1
+      '@types/node': 16.18.6
+      cookie: 0.5.0
+      deepmerge: 4.2.2
+      node-fetch-native: 1.0.1
+      snakecase-keys: 5.4.4
+      tslib: 2.4.1
+    transitivePeerDependencies:
+      - react
+
   '@clerk/backend@1.23.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@clerk/shared': 2.20.12(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -18486,17 +18561,16 @@ snapshots:
       react-dom: 18.2.0(react@18.2.0)
       tslib: 2.4.1
 
-  '@clerk/fastify@2.1.13(fastify@4.28.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@clerk/fastify@0.6.47(fastify-plugin@4.5.1)(fastify@4.28.1)(react@18.2.0)':
     dependencies:
-      '@clerk/backend': 1.23.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@clerk/shared': 2.20.12(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@clerk/types': 4.42.0
+      '@clerk/backend': 0.38.14(react@18.2.0)
+      '@clerk/shared': 1.4.2(react@18.2.0)
+      '@clerk/types': 3.65.4
       cookies: 0.8.0
       fastify: 4.28.1
-      fastify-plugin: 5.0.1
+      fastify-plugin: 4.5.1
     transitivePeerDependencies:
       - react
-      - react-dom
 
   '@clerk/nextjs@6.10.0(next@14.2.28(@babel/core@7.24.7)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -18510,6 +18584,14 @@ snapshots:
       react-dom: 18.2.0(react@18.2.0)
       server-only: 0.0.1
       tslib: 2.4.1
+
+  '@clerk/shared@1.4.2(react@18.2.0)':
+    dependencies:
+      glob-to-regexp: 0.4.1
+      js-cookie: 3.0.1
+      swr: 2.2.0(react@18.2.0)
+    optionalDependencies:
+      react: 18.2.0
 
   '@clerk/shared@2.20.12(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -18527,6 +18609,10 @@ snapshots:
     dependencies:
       '@clerk/types': 4.42.0
       tslib: 2.4.1
+
+  '@clerk/types@3.65.4':
+    dependencies:
+      csstype: 3.1.1
 
   '@clerk/types@4.42.0':
     dependencies:
@@ -20079,6 +20165,24 @@ snapshots:
       '@opentelemetry/semantic-conventions': 1.25.1
 
   '@opentelemetry/semantic-conventions@1.25.1': {}
+
+  '@peculiar/asn1-schema@2.3.15':
+    dependencies:
+      asn1js: 3.0.6
+      pvtsutils: 1.3.6
+      tslib: 2.8.1
+
+  '@peculiar/json-schema@1.1.12':
+    dependencies:
+      tslib: 2.8.1
+
+  '@peculiar/webcrypto@1.4.1':
+    dependencies:
+      '@peculiar/asn1-schema': 2.3.15
+      '@peculiar/json-schema': 1.1.12
+      pvtsutils: 1.3.6
+      tslib: 2.8.1
+      webcrypto-core: 1.8.1
 
   '@phosphor-icons/react@2.1.6(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -22661,6 +22765,8 @@ snapshots:
 
   '@types/node@16.18.101': {}
 
+  '@types/node@16.18.6': {}
+
   '@types/node@18.11.18': {}
 
   '@types/node@18.11.9': {}
@@ -23734,6 +23840,12 @@ snapshots:
 
   asap@2.0.6: {}
 
+  asn1js@3.0.6:
+    dependencies:
+      pvtsutils: 1.3.6
+      pvutils: 1.1.3
+      tslib: 2.8.1
+
   assert@2.1.0:
     dependencies:
       call-bind: 1.0.7
@@ -24544,6 +24656,8 @@ snapshots:
 
   cookie@0.4.2: {}
 
+  cookie@0.5.0: {}
+
   cookie@0.6.0: {}
 
   cookie@1.0.2: {}
@@ -24975,6 +25089,8 @@ snapshots:
   deep-extend@0.6.0: {}
 
   deep-is@0.1.4: {}
+
+  deepmerge@4.2.2: {}
 
   defaults@1.0.4:
     dependencies:
@@ -25942,8 +26058,6 @@ snapshots:
   fastest-stable-stringify@2.0.2: {}
 
   fastify-plugin@4.5.1: {}
-
-  fastify-plugin@5.0.1: {}
 
   fastify@4.28.1:
     dependencies:
@@ -27211,6 +27325,8 @@ snapshots:
       nopt: 7.2.1
 
   js-cookie@2.2.1: {}
+
+  js-cookie@3.0.1: {}
 
   js-cookie@3.0.5: {}
 
@@ -28865,6 +28981,8 @@ snapshots:
       emojilib: 2.4.0
       skin-tone: 2.0.0
 
+  node-fetch-native@1.0.1: {}
+
   node-fetch@2.7.0:
     dependencies:
       whatwg-url: 14.0.0
@@ -29882,6 +30000,12 @@ snapshots:
   punycode.js@2.3.1: {}
 
   punycode@2.3.1: {}
+
+  pvtsutils@1.3.6:
+    dependencies:
+      tslib: 2.8.1
+
+  pvutils@1.1.3: {}
 
   qs@6.12.1:
     dependencies:
@@ -31224,6 +31348,12 @@ snapshots:
     dependencies:
       dot-case: 3.0.4
       tslib: 2.8.1
+
+  snakecase-keys@5.4.4:
+    dependencies:
+      map-obj: 4.3.0
+      snake-case: 3.0.4
+      type-fest: 2.19.0
 
   snakecase-keys@8.0.1:
     dependencies:
@@ -33144,6 +33274,14 @@ snapshots:
   web-streams-polyfill@4.0.0-beta.3: {}
 
   web-vitals@2.1.4: {}
+
+  webcrypto-core@1.8.1:
+    dependencies:
+      '@peculiar/asn1-schema': 2.3.15
+      '@peculiar/json-schema': 1.1.12
+      asn1js: 3.0.6
+      pvtsutils: 1.3.6
+      tslib: 2.8.1
 
   webidl-conversions@7.0.0: {}
 
