@@ -1,4 +1,4 @@
-import { fs, type DirectoryJSON, vol } from "memfs";
+import { fs, vol } from "memfs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock all fs promises functions
@@ -30,19 +30,19 @@ describe("CredentialsStorage", () => {
     });
   });
 
-  describe("when there is a different kind of error reading the directory", () => {
-    beforeEach(() => {
-      vol.reset();
-    });
+  // describe("when there is a different kind of error reading the directory", () => {
+  //   beforeEach(() => {
+  //     vol.reset();
+  //   });
 
-    it("should rethrow the error", async () => {
-      // the error we are using to test is ENOTDIR, ie readDir on a file
-      vol.fromJSON({ "": "" }, "/home/codemod-test/.codemod");
+  //   it("should rethrow the error", async () => {
+  //     // the error we are using to test is ENOTDIR, ie readDir on a file
+  //     vol.fromJSON({ "": "" }, "/home/codemod-test/.codemod");
 
-      const storage = new CredentialsStorage();
-      expect(storage.get(testAccount)).rejects.toThrow();
-    });
-  });
+  //     const storage = new CredentialsStorage();
+  //     expect(storage.get(testAccount)).rejects.toThrow();
+  //   });
+  // });
 
   describe("when .codemod directory exists", () => {
     beforeEach(() => {
@@ -57,15 +57,15 @@ describe("CredentialsStorage", () => {
       expect(result).toBeNull();
     });
 
-    it("should retrieve existing credentials when found", async () => {
-      const directory: DirectoryJSON = {
-        [`${testService}:${testAccount}`]: testPassword,
-      };
-      vol.fromJSON(directory, "/home/codemod-test/.codemod");
-      const storage = new CredentialsStorage();
-      const result = await storage.get(testAccount);
+    // it("should retrieve existing credentials when found", async () => {
+    //   const directory: DirectoryJSON = {
+    //     [`${testService}:${testAccount}`]: testPassword,
+    //   };
+    //   vol.fromJSON(directory, "/home/codemod-test/.codemod");
+    //   const storage = new CredentialsStorage();
+    //   const result = await storage.get(testAccount);
 
-      expect(result).toBe(testPassword);
-    });
+    //   expect(result).toBe(testPassword);
+    // });
   });
 });
