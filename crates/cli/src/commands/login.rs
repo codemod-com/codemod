@@ -3,6 +3,7 @@ use clap::Args;
 use log::{info, warn};
 
 use crate::auth::{OidcClient, TokenStorage};
+use crate::ascii_art::print_ascii_art;
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -70,8 +71,8 @@ pub async fn handler(args: &Command) -> Result<()> {
                     println!("  - {} ({})", org.name, org.role);
                 }
             }
-
             println!("\nYou can now publish packages using 'codemod publish'");
+            print_ascii_art();
             Ok(())
         }
         Err(e) => {
