@@ -1,14 +1,14 @@
-name: CI
+name: Rust CI
 on:
   push:
     branches: ["main"]
+    paths: ["crates/**"]
   pull_request:
     branches: ["main"]
+    paths: ["crates/**"]
 permissions:
   contents: read
 
-env:
-  TEST_PACKAGES: -p codemod -p codemod-sandbox -p butterflow-core -p butterflow-models -p butterflow-runners -p butterflow-scheduler -p butterflow-state
 
 jobs:
   lint:
@@ -24,7 +24,7 @@ jobs:
         id: toolchain
         with:
           components: clippy
-      - run: cargo clippy --tests --no-deps ${{ env.TEST_PACKAGES }} -- -D warnings
+      - run: cargo clippy --tests --no-deps -- -D warnings
 
   format:
     name: Format
@@ -53,7 +53,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         id: toolchain
       - name: Run tests
-        run: cargo test ${{ env.TEST_PACKAGES }}
+        run: cargo test
       - name: Check schema generation
         run: |
           # Generate schema

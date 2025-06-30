@@ -25,11 +25,11 @@ pub fn resolve_variables(
                 serde_json::to_string(matrix_values.unwrap().get(inner).unwrap()).unwrap()
             } else if let Some(name) = inner.strip_prefix("params.") {
                 params.get(name).cloned().ok_or_else(|| {
-                    Error::VariableResolution(format!("Parameter not found: {}", name))
+                    Error::VariableResolution(format!("Parameter not found: {name}"))
                 })?
             } else if let Some(name) = inner.strip_prefix("state.") {
                 let value = state.get(name).ok_or_else(|| {
-                    Error::VariableResolution(format!("State value not found: {}", name))
+                    Error::VariableResolution(format!("State value not found: {name}"))
                 })?;
                 serde_json::to_string(value).unwrap()
             } else {
