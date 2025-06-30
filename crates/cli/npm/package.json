@@ -22,7 +22,9 @@
   "optionalDependencies": {
     "@codemod.com/cli-darwin-arm64": "0.0.0",
     "@codemod.com/cli-darwin-x64": "0.0.0",
-    "@codemod.com/cli-linux-x64-gnu": "0.0.0"
+    "@codemod.com/cli-linux-arm64-gnu": "0.0.0",
+    "@codemod.com/cli-linux-x64-gnu": "0.0.0",
+    "@codemod.com/cli-win32-x64-msvc": "0.0.0"
   },
   "bin": {
     "codemod": "codemod"
