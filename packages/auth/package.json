@@ -1,7 +1,7 @@
 {
   "name": "@codemod-com/auth",
   "author": "Codemod, Inc.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The package that shares common auth plugin logic to be used across backend services.",
   "type": "module",
   "main": "./dist/index.js",
