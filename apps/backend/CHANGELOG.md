@@ -1,5 +1,11 @@
 # @codemod-com/backend
 
+## 0.0.173
+
+### Patch Changes
+
+- @codemod-com/auth@1.0.1
+
 ## 0.0.172
 
 ### Patch Changes

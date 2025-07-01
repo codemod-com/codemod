@@ -1,5 +1,11 @@
 # @codemod-com/auth-service
 
+## 0.0.20
+
+### Patch Changes
+
+- @codemod-com/auth@1.0.1
+
 ## 0.0.19
 
 ### Patch Changes
