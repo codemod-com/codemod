@@ -18,13 +18,13 @@ import {
   getEntryPath,
   tarInMemory,
 } from "@codemod-com/utilities";
+import { AxiosError } from "axios";
 import { version as cliVersion } from "#/../package.json";
 import { extractPrintableApiError, getCodemod, publish } from "#api.js";
 import { getCurrentUserOrLogin } from "#auth-utils.js";
 import { handleInitCliCommand } from "#commands/init.js";
 import type { TelemetryEvent } from "#telemetry.js";
 import { isFile } from "#utils/general.js";
-import { AxiosError } from "axios";
 
 const API_KEY = process.env.CODEMOD_API_KEY;
 
@@ -362,10 +362,7 @@ export const handlePublishCliCommand = async (options: {
     publishSpinner.succeed();
   } catch (error) {
     if (error instanceof AxiosError && error.response?.status === 410) {
-      return printer.printConsoleMessage(
-        "info",
-        options.deprecationWarning,
-      );
+      return printer.printConsoleMessage("info", options.deprecationWarning);
     }
     publishSpinner.fail();
 

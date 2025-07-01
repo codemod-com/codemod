@@ -241,7 +241,8 @@ export const publishHandler: RouteHandler<{
           "This endpoint is no longer supported. Please use the new CLI instead.",
         error: GONE,
       });
-    } else if (!semver.gt(version, latestVersion.version)) {
+    }
+    if (!semver.gt(version, latestVersion.version)) {
       return reply.code(400).send({
         error: CODEMOD_VERSION_EXISTS,
         errorText: `Codemod ${name} version ${version} is lower than the latest published or the same as the latest published version: ${latestVersion.version}`,

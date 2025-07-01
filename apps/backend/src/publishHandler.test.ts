@@ -3,11 +3,7 @@ import { createHash } from "node:crypto";
 import supertest from "supertest";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 
-import {
-  GONE,
-  NO_MAIN_FILE_FOUND,
-  UNAUTHORIZED,
-} from "@codemod-com/api-types";
+import { GONE, NO_MAIN_FILE_FOUND, UNAUTHORIZED } from "@codemod-com/api-types";
 import {
   type CodemodConfigInput,
   tarInMemory,
@@ -15,7 +11,6 @@ import {
 } from "@codemod-com/utilities";
 
 import { runServer } from "./server.js";
-import { environment } from "./util.js";
 
 const GET_USER_RETURN = {
   user: {
@@ -164,7 +159,7 @@ describe("/publish route", async () => {
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(expectedCode);
-        
+
     expect(response.body).toEqual({
       errorText:
         "This endpoint is no longer supported. Please use the new CLI instead.",
@@ -197,9 +192,9 @@ describe("/publish route", async () => {
           console.log(JSON.stringify(res.body, null, 2));
         }
       })
-      .expect("Content-Type", "application/json; charset=utf-8")
+      .expect("Content-Type", "application/json; charset=utf-8");
 
-    console.log("response.body",response.body);
+    console.log("response.body", response.body);
 
     const hashDigest = createHash("ripemd160")
       .update(codemodRcContents.name)
@@ -251,9 +246,9 @@ describe("/publish route", async () => {
           console.log(JSON.stringify(res.body, null, 2));
         }
       })
-      .expect("Content-Type", "application/json; charset=utf-8")
-      // .expect(expectedCode);
-      console.log("response.body", response.body);
+      .expect("Content-Type", "application/json; charset=utf-8");
+    // .expect(expectedCode);
+    console.log("response.body", response.body);
 
     expect(response.body).toEqual({
       name: codemodRcContents.name,

@@ -336,7 +336,7 @@ export const main = async () => {
             data: { uuid: args.id },
           });
         });
-            },
+      },
     )
     .command(
       "publish",
