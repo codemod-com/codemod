@@ -1,5 +1,11 @@
 # codemod
 
+## 0.18.7
+
+### Patch Changes
+
+- d6b318d: Release codemod CLI to the legacy channel
+
 ## 0.18.6
 
 ### Patch Changes
