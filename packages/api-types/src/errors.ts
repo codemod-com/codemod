@@ -1,4 +1,5 @@
 export const UNAUTHORIZED = "UNAUTHORIZED";
+export const GONE = "GONE";
 export const INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR";
 
 export const CODEMOD_NOT_FOUND = "CODEMOD_NOT_FOUND";

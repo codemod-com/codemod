@@ -17,8 +17,6 @@ import {
   handleListAPIKeysCommand,
 } from "#commands/api-keys.js";
 import { handleFeedbackCommand } from "#commands/feedback.js";
-import { handleInitCliCommand } from "#commands/init.js";
-import { handleLearnCliCommand } from "#commands/learn.js";
 import { handleListNamesCommand } from "#commands/list.js";
 import { handleLoginCliCommand } from "#commands/login.js";
 import { handleLogoutCliCommand } from "#commands/logout.js";
@@ -142,6 +140,34 @@ export const main = async () => {
     return console.log(version);
   }
 
+  const deprecationWarning = boxen(
+    `
+  ${chalk.bold.red("────────────────────────────────────────────────────────────────────────────")}
+  ${chalk.bold.red("🚨  Codemod CLI Deprecation Notice")}
+  ${chalk.bold.red("────────────────────────────────────────────────────────────────────────────")}
+  ${chalk.bold.yellow("You are using an outdated version of the Codemod CLI.")}
+
+  ${chalk.bold.yellow("This version is deprecated and no longer maintained.")}
+
+  ${chalk.bold.yellow(`We've ${chalk.bold.green("completely rewritten")} the CLI using modern technologies —`)}
+  ${chalk.bold.yellow(`including powerful support for ${chalk.bold.green("ast-grep")} and new features!`)}
+
+  ${chalk.bold.yellow("👉 To upgrade, simply run:")}
+  ${chalk.bold.cyan("npx codemod@next")}
+
+  ${chalk.bold.yellow("📘 Learn more and check the migration guide:")}
+  ${chalk.bold.cyan("https://go.codemod.com/cli-docs")}
+
+  ${chalk.bold.yellow("Thank you for upgrading and being part of the future of Codemod! 🚀")}
+  `,
+    {
+      padding: 1,
+      textAlignment: "center",
+      borderColor: "red",
+      borderStyle: "round",
+    },
+  );
+
   argvObject
     .scriptName("codemod")
     .usage("Usage: <command> [options]")
@@ -206,16 +232,9 @@ export const main = async () => {
           type: "string",
           description: "path to the file to be learned",
         }),
-      async (args) => {
-        const { executeCliCommand, printer } =
-          await initializeDependencies(args);
-
-        return executeCliCommand(() =>
-          handleLearnCliCommand({
-            printer,
-            target: args.target ?? null,
-          }),
-        );
+      async () => {
+        console.log(deprecationWarning);
+        return process.exit(0);
       },
     )
     .command(
@@ -344,6 +363,7 @@ export const main = async () => {
             telemetry: telemetryService,
             esm: args.esm,
             namespace: args.namespace,
+            deprecationWarning,
           });
         });
       },
@@ -398,18 +418,9 @@ export const main = async () => {
             type: "string",
             description: "Engine to initialize codemod with",
           }),
-      async (args) => {
-        const { executeCliCommand, printer } =
-          await initializeDependencies(args);
-
-        return executeCliCommand(() =>
-          handleInitCliCommand({
-            printer,
-            target: args.target ?? process.cwd(),
-            engine: args.engine,
-            esm: args.esm,
-          }),
-        );
+      async () => {
+        console.log(deprecationWarning);
+        return process.exit(0);
       },
     )
     .command(
@@ -425,7 +436,8 @@ export const main = async () => {
     );
 
   if (slicedArgv.length === 0) {
-    return argvObject.showHelp();
+    console.log(deprecationWarning);
+    return process.exit(0);
   }
 
   const argv = await argvObject.parse();
