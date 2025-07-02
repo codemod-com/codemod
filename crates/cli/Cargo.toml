@@ -37,7 +37,6 @@ urlencoding = "2.1"
 humantime = "2.1"
 inquire = "0.7"
 console = "0.15"
-indicatif = "0.17"
 
 # OIDC and HTTP dependencies
 reqwest = { version = "0.11", features = ["json", "rustls-tls", "multipart"] }
@@ -56,7 +55,6 @@ open = "5.0"
 # Testing framework dependencies
 libtest-mimic = "0.8"
 similar = "2.0"
-notify = "8.0"
 ast-grep-language.workspace = true
 
 

@@ -25,7 +25,6 @@ js-sys = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio = { workspace = true }
-async-trait = "0.1"
 chrono = "0.4"
 
 [features]
