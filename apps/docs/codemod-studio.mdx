@@ -27,7 +27,7 @@ This guide shows you how to build codemods using Codemod Studio. During this pro
 Test cases allow you to see how your codemod affects different code patterns. In Codemod Studio, you can:
 
 - Add test cases
-- Inspect a test case's `ast-grep`
+- Inspect a test case's abstract syntax tree (AST)
 - Inspect the diff view of how your codemod affects the test case
 - Inspect the matched code patterns
 
@@ -39,8 +39,7 @@ Test cases allow you to see how your codemod affects different code patterns. In
 ></video>
 
 ### Selecting language
-
-Under the hood, Codemod Studio uses [ast-grep](https://ast-grep.github.io/), a fast and polyglot tool for code structural search, lint, and rewriting at large-scale. ast-grep allows Codemod Studio to support building and transforming codemods with many languages.
+Codemod Studio runs on top of [ast-grep](https://ast-grep.github.io/), a lightning-fast tool for structural code search, linting, and rewriting across multiple languages.
 
 <video
   autoPlay
