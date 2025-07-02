@@ -70,12 +70,9 @@ impl OidcClient {
 
         // Find available port for callback server
         let callback_port = self.find_available_port(8090, 9000)?;
-        let redirect_uri = format!("http://localhost:{}/callback", callback_port);
+        let redirect_uri = format!("http://localhost:{callback_port}/callback");
 
-        info!(
-            "Starting local server on http://localhost:{}",
-            callback_port
-        );
+        info!("Starting local server on http://localhost:{callback_port}");
 
         // Start callback server
         let (tx, rx) = oneshot::channel::<CallbackData>();
@@ -102,15 +99,12 @@ impl OidcClient {
 
         // Open browser
         info!("Opening browser to authorize CLI access...");
-        info!(
-            "If the browser doesn't open automatically, visit: {}",
-            auth_url
-        );
+        info!("If the browser doesn't open automatically, visit: {auth_url}");
 
         if let Err(e) = open::that(auth_url.as_str()) {
-            warn!("Failed to open browser automatically: {}", e);
+            warn!("Failed to open browser automatically: {e}");
             println!("Please open the following URL in your browser:");
-            println!("{}", auth_url);
+            println!("{auth_url}");
         }
 
         // Wait for callback or server completion
@@ -332,7 +326,7 @@ impl OidcClient {
         let addr = SocketAddr::from(([127, 0, 0, 1], port));
         let server = Server::bind(&addr).serve(make_service);
 
-        debug!("Callback server listening on {}", addr);
+        debug!("Callback server listening on {addr}");
 
         if let Err(e) = server.await {
             return Err(anyhow!("Server error: {}", e));
@@ -428,12 +422,11 @@ async fn handle_callback(
                             </head>
                             <body>
                                 <div class="error">✗ Authentication Failed</div>
-                                <div class="info">Error: {} - {}</div>
+                                <div class="info">Error: {error} - {error_description}</div>
                                 <div class="info">You can close this browser tab and try again in the CLI.</div>
                             </body>
                             </html>
-                        "#,
-                            error, error_description
+                        "#
                         );
 
                         return Ok(Response::builder()

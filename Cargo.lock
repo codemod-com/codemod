@@ -185,9 +185,9 @@ checksum = "d92bec98840b8f03a5ff5413de5293bfcd8bf96467cf5452609f939ec6f5de16"
 
 [[package]]
 name = "ast-grep-config"
-version = "0.38.2"
+version = "0.38.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e7b542cc543e83abd36f261a74e0c14aab8d06e8bf7ca13d098220c16797f98"
+checksum = "c2757a908dde8557e88f410aa307d59b08efc6f7da1c518a6ce0c6f4bc3cf10a"
 dependencies = [
  "ast-grep-core",
  "bit-set",
@@ -201,9 +201,9 @@ dependencies = [
 
 [[package]]
 name = "ast-grep-core"
-version = "0.38.2"
+version = "0.38.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f5c2726c110932dd3953deb5fb7cdcb23dc60603e2146b871af786339b4825c"
+checksum = "79f9731e95d381ae2d8ee1244d21bbf3982840435341ab40260896a76e7e9763"
 dependencies = [
  "bit-set",
  "regex",
@@ -213,9 +213,9 @@ dependencies = [
 
 [[package]]
 name = "ast-grep-language"
-version = "0.38.2"
+version = "0.38.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b01a4d26db4cb4d3411fdba25af8b0cf1e07af8dcf494a0fd7a5472152bb9373"
+checksum = "0e32f2833a0fbfdb66e8fbb4de26c89384ab3d6616d2cf00ce3db1fd4de08c5e"
 dependencies = [
  "ast-grep-core",
  "ignore",
@@ -6171,9 +6171,9 @@ dependencies = [
 
 [[package]]
 name = "tree-sitter-bash"
-version = "0.23.3"
+version = "0.25.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "329a4d48623ac337d42b1df84e81a1c9dbb2946907c102ca72db158c1964a52e"
+checksum = "871b0606e667e98a1237ebdc1b0d7056e0aebfdc3141d12b399865d4cb6ed8a6"
 dependencies = [
  "cc",
  "tree-sitter-language",
@@ -6181,9 +6181,9 @@ dependencies = [
 
 [[package]]
 name = "tree-sitter-c"
-version = "0.23.4"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "afd2b1bf1585dc2ef6d69e87d01db8adb059006649dd5f96f31aa789ee6e9c71"
+checksum = "1a3aad8f0129083a59fe8596157552d2bb7148c492d44c21558d68ca1c722707"
 dependencies = [
  "cc",
  "tree-sitter-language",
@@ -6357,9 +6357,9 @@ dependencies = [
 
 [[package]]
 name = "tree-sitter-scala"
-version = "0.23.4"
+version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "efde5e68b4736e9eac17bfa296c6f104a26bffab363b365eb898c40a63c15d2f"
+checksum = "7516aeb3d1f40ede8e3045b163e86993b3434514dd06c34c0b75e782d9a0b251"
 dependencies = [
  "cc",
  "tree-sitter-language",

@@ -127,7 +127,7 @@ impl Engine {
         let engine = self.clone();
         tokio::spawn(async move {
             if let Err(e) = engine.execute_workflow(workflow_run_id).await {
-                error!("Workflow execution failed: {}", e);
+                error!("Workflow execution failed: {e}");
             }
         });
 
@@ -168,14 +168,14 @@ impl Engine {
                 let engine = self.clone();
                 tokio::spawn(async move {
                     if let Err(e) = engine.execute_task(task_id).await {
-                        error!("Task execution failed: {}", e);
+                        error!("Task execution failed: {e}");
                     }
                 });
 
                 triggered = true;
                 info!("Triggered task {} ({})", task_id, task.node_id);
             } else {
-                warn!("Task {} is not awaiting trigger", task_id);
+                warn!("Task {task_id} is not awaiting trigger");
             }
         }
 
@@ -205,7 +205,7 @@ impl Engine {
         let engine = self.clone();
         tokio::spawn(async move {
             if let Err(e) = engine.execute_workflow(workflow_run_id).await {
-                error!("Workflow execution failed: {}", e);
+                error!("Workflow execution failed: {e}");
             }
         });
 
@@ -236,8 +236,7 @@ impl Engine {
 
         if awaiting_tasks.is_empty() {
             return Err(Error::Other(format!(
-                "No tasks in workflow run {} are awaiting triggers",
-                workflow_run_id
+                "No tasks in workflow run {workflow_run_id} are awaiting triggers"
             )));
         }
 
@@ -266,7 +265,7 @@ impl Engine {
             let task_id = task.id;
             tokio::spawn(async move {
                 if let Err(e) = engine.execute_task(task_id).await {
-                    error!("Task execution failed: {}", e);
+                    error!("Task execution failed: {e}");
                 }
             });
 
@@ -300,7 +299,7 @@ impl Engine {
         let engine = self.clone();
         tokio::spawn(async move {
             if let Err(e) = engine.execute_workflow(workflow_run_id).await {
-                error!("Workflow execution failed: {}", e);
+                error!("Workflow execution failed: {e}");
             }
         });
 
@@ -322,8 +321,7 @@ impl Engine {
             && workflow_run.status != WorkflowStatus::AwaitingTrigger
         {
             return Err(Error::Other(format!(
-                "Workflow run {} is not running or awaiting triggers",
-                workflow_run_id
+                "Workflow run {workflow_run_id} is not running or awaiting triggers"
             )));
         }
 
@@ -546,7 +544,7 @@ impl Engine {
         let resolved_package = registry_client
             .resolve_package(source, None, false)
             .await
-            .map_err(|e| Error::Other(format!("Failed to resolve codemod {}: {}", source, e)))?;
+            .map_err(|e| Error::Other(format!("Failed to resolve codemod {source}: {e}")))?;
 
         // Load the codemod's workflow
         let workflow_path = resolved_package.package_dir.join("workflow.yaml");
@@ -558,10 +556,10 @@ impl Engine {
         }
 
         let workflow_content = std::fs::read_to_string(&workflow_path)
-            .map_err(|e| Error::Other(format!("Failed to read workflow file: {}", e)))?;
+            .map_err(|e| Error::Other(format!("Failed to read workflow file: {e}")))?;
 
         let codemod_workflow: Workflow = serde_yaml::from_str(&workflow_content)
-            .map_err(|e| Error::Other(format!("Failed to parse workflow YAML: {}", e)))?;
+            .map_err(|e| Error::Other(format!("Failed to parse workflow YAML: {e}")))?;
 
         // Create new dependency chain including this codemod
         let mut new_chain = dependency_chain.to_vec();
@@ -606,7 +604,7 @@ impl Engine {
             .apply_workflow_run_diff(&workflow_run_diff)
             .await?;
 
-        info!("Starting workflow run {}", workflow_run_id);
+        info!("Starting workflow run {workflow_run_id}");
 
         // Create tasks for all nodes if they don't exist yet
         let existing_tasks = self
@@ -643,10 +641,7 @@ impl Engine {
                 .recompile_matrix_tasks(workflow_run_id, &current_workflow_run, &current_tasks)
                 .await
             {
-                error!(
-                    "Failed during matrix task recompilation for run {}: {}",
-                    workflow_run_id, e
-                );
+                error!("Failed during matrix task recompilation for run {workflow_run_id}: {e}");
                 // Decide how to handle recompilation errors, e.g., fail the workflow?
                 // For now, we log and continue, but this might need refinement.
             }
@@ -775,7 +770,7 @@ impl Engine {
                     .apply_workflow_run_diff(&workflow_run_diff)
                     .await?;
 
-                info!("Workflow run {} is awaiting triggers", workflow_run_id);
+                info!("Workflow run {workflow_run_id} is awaiting triggers");
 
                 // Exit the execution loop, will be resumed when triggers are received
                 break;
@@ -799,7 +794,7 @@ impl Engine {
                 let task_id = task.id;
                 tokio::spawn(async move {
                     if let Err(e) = engine.execute_task(task_id).await {
-                        error!("Task execution failed: {}", e);
+                        error!("Task execution failed: {e}");
                     }
                 });
             }
@@ -871,10 +866,7 @@ impl Engine {
         workflow_run: &WorkflowRun,
         tasks: &[Task],
     ) -> Result<()> {
-        debug!(
-            "Starting matrix task recompilation for run {}",
-            workflow_run_id
-        );
+        debug!("Starting matrix task recompilation for run {workflow_run_id}");
 
         let state = self
             .state_adapter
@@ -897,7 +889,7 @@ impl Engine {
 
         // Mark tasks as WontDo
         for task_id in changes.tasks_to_mark_wont_do {
-            debug!("Marking task {} as WontDo", task_id);
+            debug!("Marking task {task_id} as WontDo");
             let mut fields = HashMap::new();
             fields.insert(
                 "status".to_string(),
@@ -916,14 +908,11 @@ impl Engine {
 
         // Update master task status
         for master_task_id in changes.master_tasks_to_update {
-            debug!("Updating master task {} status", master_task_id);
+            debug!("Updating master task {master_task_id} status");
             self.update_matrix_master_status(master_task_id).await?;
         }
 
-        debug!(
-            "Finished matrix task recompilation for run {}",
-            workflow_run_id
-        );
+        debug!("Finished matrix task recompilation for run {workflow_run_id}");
         Ok(())
     }
 
@@ -1287,7 +1276,7 @@ impl Engine {
                 &config_path.to_string_lossy(),
                 working_dir_ref,
             )
-            .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {}", e)))?
+            .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {e}")))?
         } else {
             execute_ast_grep_on_globs(
                 ast_grep.include.as_deref(),
@@ -1296,7 +1285,7 @@ impl Engine {
                 &config_path.to_string_lossy(),
                 working_dir_ref,
             )
-            .map_err(|e| Error::Other(format!("AST grep execution failed: {}", e)))?
+            .map_err(|e| Error::Other(format!("AST grep execution failed: {e}")))?
         };
 
         // Log the results
@@ -1411,14 +1400,14 @@ impl Engine {
         let language = if let Some(lang_str) = &js_ast_grep.language {
             let parsed_lang = lang_str
                 .parse()
-                .map_err(|e| Error::Other(format!("Invalid language '{}': {}", lang_str, e)))?;
+                .map_err(|e| Error::Other(format!("Invalid language '{lang_str}': {e}")))?;
             config = config.with_language(parsed_lang);
             parsed_lang
         } else {
             // Parse TypeScript as default
             let default_lang = "typescript"
                 .parse()
-                .map_err(|e| Error::Other(format!("Failed to parse default language: {}", e)))?;
+                .map_err(|e| Error::Other(format!("Failed to parse default language: {e}")))?;
             config = config.with_language(default_lang);
             default_lang
         };
@@ -1446,7 +1435,7 @@ impl Engine {
         let stats = engine
             .execute_on_directory(&js_file_path, &base_path)
             .await
-            .map_err(|e| Error::Other(format!("JavaScript execution failed: {}", e)))?;
+            .map_err(|e| Error::Other(format!("JavaScript execution failed: {e}")))?;
 
         info!("JS AST grep execution completed");
         info!("Modified files: {:?}", stats.files_modified);
@@ -1522,7 +1511,7 @@ impl Engine {
         let resolved_package = registry_client
             .resolve_package(&codemod.source, None, false)
             .await
-            .map_err(|e| Error::Other(format!("Failed to resolve package: {}", e)))?;
+            .map_err(|e| Error::Other(format!("Failed to resolve package: {e}")))?;
 
         info!(
             "Resolved codemod package: {} -> {}",
@@ -1575,10 +1564,10 @@ impl Engine {
 
         // Load the codemod workflow
         let workflow_content = std::fs::read_to_string(&workflow_path)
-            .map_err(|e| Error::Other(format!("Failed to read workflow file: {}", e)))?;
+            .map_err(|e| Error::Other(format!("Failed to read workflow file: {e}")))?;
 
         let codemod_workflow: Workflow = serde_yaml::from_str(&workflow_content)
-            .map_err(|e| Error::Other(format!("Failed to parse workflow YAML: {}", e)))?;
+            .map_err(|e| Error::Other(format!("Failed to parse workflow YAML: {e}")))?;
 
         // Prepare parameters for the codemod workflow
         let mut codemod_params = params.clone();
@@ -1586,7 +1575,7 @@ impl Engine {
         // Add arguments as parameters if provided
         if let Some(args) = &codemod.args {
             for (i, arg) in args.iter().enumerate() {
-                codemod_params.insert(format!("arg_{}", i), arg.clone());
+                codemod_params.insert(format!("arg_{i}"), arg.clone());
 
                 // Also try to parse key=value format
                 if let Some((key, value)) = arg.split_once('=') {
@@ -1598,14 +1587,14 @@ impl Engine {
         // Add environment variables from step configuration
         if let Some(env) = &codemod.env {
             for (key, value) in env {
-                codemod_params.insert(format!("env_{}", key), value.clone());
+                codemod_params.insert(format!("env_{key}"), value.clone());
             }
         }
 
         // Add step-level environment variables
         if let Some(step_env) = step_env {
             for (key, value) in step_env {
-                codemod_params.insert(format!("env_{}", key), value.clone());
+                codemod_params.insert(format!("env_{key}"), value.clone());
             }
         }
 
@@ -1744,7 +1733,7 @@ impl Engine {
             .save_task(&current_task)
             .await?;
 
-        debug!("Command output: {}", output);
+        debug!("Command output: {output}");
 
         let outputs = read_to_string(&step_outputs_path).await?;
 
@@ -1766,7 +1755,7 @@ impl Engine {
                 (k, DiffOperation::Update, v)
             } else {
                 // Malformed line, log and skip
-                warn!("Malformed state output line: {}", line);
+                warn!("Malformed state output line: {line}");
                 continue;
             };
 
@@ -1824,7 +1813,7 @@ impl Engine {
 
         // If there are no child tasks (e.g., state was empty or cleared), the master should reflect that.
         if child_tasks.is_empty() {
-            debug!("No child tasks found for master task {}, setting status to Completed (or Pending if master just created).", master_task_id);
+            debug!("No child tasks found for master task {master_task_id}, setting status to Completed (or Pending if master just created).");
             let final_status = if master_task.status == TaskStatus::Pending {
                 // If the master was just created and has no children yet (empty state)
                 // Keep it Pending until state potentially provides children.
@@ -1883,8 +1872,7 @@ impl Engine {
             };
 
             debug!(
-                "All child tasks for master {} are terminal. Setting master status to: {:?}",
-                master_task_id, final_status
+                "All child tasks for master {master_task_id} are terminal. Setting master status to: {final_status:?}"
             );
 
             let mut fields = HashMap::new();
@@ -1990,10 +1978,7 @@ impl Engine {
                 .apply_task_diff(&task_diff)
                 .await?;
         } else {
-            debug!(
-                "Master task {} status {:?} remains unchanged.",
-                master_task_id, new_status
-            );
+            debug!("Master task {master_task_id} status {new_status:?} remains unchanged.");
         }
 
         Ok(())

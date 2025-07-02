@@ -34,7 +34,7 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     match oidc_client.get_auth_status()? {
         Some(stored_auth) => {
-            println!("✓ Logged in to: {}", registry_url);
+            println!("✓ Logged in to: {registry_url}");
             println!("Username: {}", stored_auth.user.username);
             println!("Email: {}", stored_auth.user.email);
             println!("User ID: {}", stored_auth.user.id);
@@ -57,7 +57,7 @@ pub async fn handler(args: &Command) -> Result<()> {
                         let duration = expires_at - now;
                         let hours = duration.num_hours();
                         let minutes = duration.num_minutes() % 60;
-                        println!("Expires: in {}h {}m", hours, minutes);
+                        println!("Expires: in {hours}h {minutes}m");
                     } else {
                         println!("Expires: ⚠️  Token expired");
                     }
@@ -76,7 +76,7 @@ pub async fn handler(args: &Command) -> Result<()> {
             }
         }
         None => {
-            println!("✗ Not logged in to {}", registry_url);
+            println!("✗ Not logged in to {registry_url}");
             println!("\nRun 'codemod login' to authenticate");
             std::process::exit(1);
         }

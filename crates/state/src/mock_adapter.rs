@@ -74,10 +74,7 @@ impl StateAdapter for MockStateAdapter {
             .get(&workflow_run_id)
             .cloned()
             .ok_or_else(|| {
-                butterflow_models::Error::Other(format!(
-                    "Workflow run {} not found",
-                    workflow_run_id
-                ))
+                butterflow_models::Error::Other(format!("Workflow run {workflow_run_id} not found"))
             })
     }
 
@@ -125,7 +122,7 @@ impl StateAdapter for MockStateAdapter {
         self.tasks
             .get(&task_id)
             .cloned()
-            .ok_or_else(|| butterflow_models::Error::Other(format!("Task {} not found", task_id)))
+            .ok_or_else(|| butterflow_models::Error::Other(format!("Task {task_id} not found")))
     }
 
     async fn get_tasks(&self, workflow_run_id: Uuid) -> Result<Vec<Task>> {

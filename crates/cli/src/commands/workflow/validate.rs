@@ -60,14 +60,11 @@ fn validate_workflow(workflow_path: &Path) -> Result<()> {
         .iter()
         .filter(|n| n.strategy.is_some())
         .count();
-    info!("Matrix strategies: Valid ({} matrix nodes)", matrix_nodes);
+    info!("Matrix strategies: Valid ({matrix_nodes} matrix nodes)");
 
     // Count state schema definitions
     let state_schema_count = workflow.state.as_ref().map(|s| s.schema.len()).unwrap_or(0);
-    info!(
-        "State schema: Valid ({} schema definitions)",
-        state_schema_count
-    );
+    info!("State schema: Valid ({state_schema_count} schema definitions)");
 
     Ok(())
 }

@@ -191,7 +191,7 @@ impl RegistryClient {
 
         // Check if package is cached and valid
         let package_dir = if force_download || !is_package_cached(&package_cache_dir)? {
-            info!("Downloading package: {}@{}", source, version);
+            info!("Downloading package: {source}@{version}");
             self.download_and_extract_package(registry, &package_spec, &version, &package_cache_dir)
                 .await?
         } else {
@@ -256,8 +256,8 @@ impl RegistryClient {
             spec.name.clone()
         };
 
-        let url = format!("{}/api/v1/registry/packages/{}", registry_url, package_path);
-        debug!("Fetching package info from: {}", url);
+        let url = format!("{registry_url}/api/v1/registry/packages/{package_path}");
+        debug!("Fetching package info from: {url}");
 
         let mut request = self.client.get(&url);
 
@@ -328,12 +328,10 @@ impl RegistryClient {
             spec.name.clone()
         };
 
-        let download_url = format!(
-            "{}/api/v1/registry/packages/{}/download/{}",
-            registry_url, package_path, version
-        );
+        let download_url =
+            format!("{registry_url}/api/v1/registry/packages/{package_path}/download/{version}");
 
-        debug!("Downloading package from: {}", download_url);
+        debug!("Downloading package from: {download_url}");
 
         let mut request = self.client.get(&download_url);
 
@@ -492,7 +490,7 @@ pub fn format_package_spec(spec: &PackageSpec) -> String {
     };
 
     if let Some(version) = &spec.version {
-        format!("{}@{}", name, version)
+        format!("{name}@{version}")
     } else {
         name
     }

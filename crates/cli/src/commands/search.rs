@@ -104,10 +104,10 @@ pub async fn handler(args: &Command) -> Result<()> {
         .unwrap_or(&config.default_registry)
         .clone();
 
-    debug!("Searching packages in registry: {}", registry_url);
+    debug!("Searching packages in registry: {registry_url}");
 
     let client = reqwest::Client::new();
-    let mut url = format!("{}/api/v1/registry/search", registry_url);
+    let mut url = format!("{registry_url}/api/v1/registry/search");
     let mut query_params = Vec::new();
 
     if let Some(query) = &args.query {
@@ -145,7 +145,7 @@ pub async fn handler(args: &Command) -> Result<()> {
         url.push_str(&query_string);
     }
 
-    debug!("Search URL: {}", url);
+    debug!("Search URL: {url}");
 
     let mut request = client.get(&url);
 
@@ -202,10 +202,10 @@ fn print_table(result: &SearchResponse, args: &Command) -> Result<()> {
             package.name.clone()
         };
 
-        println!("📦 {}", scope_name);
+        println!("📦 {scope_name}");
 
         if let Some(description) = &package.description {
-            println!("   {}", description);
+            println!("   {description}");
         }
 
         print!(
@@ -215,7 +215,7 @@ fn print_table(result: &SearchResponse, args: &Command) -> Result<()> {
         );
 
         if let Some(version) = &package.latest_version {
-            print!(" 🏷️  Latest: {}", version);
+            print!(" 🏷️  Latest: {version}");
         }
 
         println!();
@@ -225,11 +225,11 @@ fn print_table(result: &SearchResponse, args: &Command) -> Result<()> {
         }
 
         if let Some(homepage) = &package.homepage {
-            println!("   🌐 Homepage: {}", homepage);
+            println!("   🌐 Homepage: {homepage}");
         }
 
         if let Some(repository) = &package.repository {
-            println!("   📁 Repository: {}", repository);
+            println!("   📁 Repository: {repository}");
         }
 
         println!("   👤 Author: {}", package.author);
@@ -246,7 +246,7 @@ fn print_table(result: &SearchResponse, args: &Command) -> Result<()> {
         println!("Showing {} of {} packages", shown, result.total);
 
         if shown < result.total {
-            println!("Use --from {} to see more results", shown);
+            println!("Use --from {shown} to see more results");
         }
     }
 

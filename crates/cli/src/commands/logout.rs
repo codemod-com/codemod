@@ -53,7 +53,7 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     // Check if logged in
     if oidc_client.get_auth_status()?.is_none() {
-        println!("✓ Not logged in to {}", registry_url);
+        println!("✓ Not logged in to {registry_url}");
         return Ok(());
     }
 

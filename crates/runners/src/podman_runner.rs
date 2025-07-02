@@ -30,7 +30,7 @@ impl Runner for PodmanRunner {
         // Create environment variables array
         let env_args: Vec<String> = env
             .iter()
-            .map(|(key, value)| format!("--env={}={}", key, value))
+            .map(|(key, value)| format!("--env={key}={value}"))
             .collect();
 
         // Create the podman command
@@ -46,7 +46,7 @@ impl Runner for PodmanRunner {
         // Execute the command
         let output = cmd
             .output()
-            .map_err(|e| Error::Runtime(format!("Failed to execute podman command: {}", e)))?;
+            .map_err(|e| Error::Runtime(format!("Failed to execute podman command: {e}")))?;
 
         // Check if the command succeeded
         if !output.status.success() {

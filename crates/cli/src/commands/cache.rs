@@ -124,11 +124,11 @@ async fn clear_cache(package: Option<&str>, all: bool) -> Result<()> {
         let package_dir = get_package_dir(&cache_dir, &package_spec);
 
         if package_dir.exists() {
-            info!("Clearing cache for package: {}", package_name);
+            info!("Clearing cache for package: {package_name}");
             fs::remove_dir_all(&package_dir)?;
-            println!("✓ Cache cleared for package: {}", package_name);
+            println!("✓ Cache cleared for package: {package_name}");
         } else {
-            println!("Package not found in cache: {}", package_name);
+            println!("Package not found in cache: {package_name}");
         }
     } else {
         return Err(anyhow!("Either specify a package name or use --all"));
@@ -361,7 +361,7 @@ fn print_package_detailed(package: &CachedPackage) -> Result<()> {
         package.name.clone()
     };
 
-    println!("📦 {}", package_name);
+    println!("📦 {package_name}");
     println!("   💾 Total size: {}", format_size(package.total_size));
     println!("   📋 Versions ({}):", package.versions.len());
 

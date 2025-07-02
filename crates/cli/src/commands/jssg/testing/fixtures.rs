@@ -142,7 +142,7 @@ impl TestCase {
 
     /// Check if this test case should expect errors (either from naming or explicit configuration)
     pub fn should_expect_error(&self, expect_error_patterns: &[String]) -> bool {
-        println!("expect_error_patterns: {:?}", expect_error_patterns);
+        println!("expect_error_patterns: {expect_error_patterns:?}");
         println!("self.should_error: {:?}", self.should_error);
         // Check explicit patterns first
         let pattern_match = expect_error_patterns
@@ -196,7 +196,7 @@ fn find_input_files(test_dir: &Path, language: SupportLang) -> Result<Vec<PathBu
 
     // Look for input.{ext} files
     for ext in &extensions {
-        let input_file = test_dir.join(format!("input{}", ext));
+        let input_file = test_dir.join(format!("input{ext}"));
         if input_file.exists() {
             candidates.push(input_file);
         }
@@ -259,7 +259,7 @@ fn collect_files_in_directory(
         if path.is_file() {
             // Check if the file has a matching extension
             if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
-                let ext_with_dot = format!(".{}", ext);
+                let ext_with_dot = format!(".{ext}");
                 if extensions.contains(&ext_with_dot.as_str()) {
                     files.push(TestFile::from_path(&path)?);
                 }

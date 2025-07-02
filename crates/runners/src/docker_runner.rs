@@ -30,7 +30,7 @@ impl Runner for DockerRunner {
         // Create environment variables array
         let env_args: Vec<String> = env
             .iter()
-            .map(|(key, value)| format!("--env={}={}", key, value))
+            .map(|(key, value)| format!("--env={key}={value}"))
             .collect();
 
         // Create a unique container name
@@ -51,7 +51,7 @@ impl Runner for DockerRunner {
         // Execute the command
         let output = cmd
             .output()
-            .map_err(|e| Error::Docker(format!("Failed to execute docker command: {}", e)))?;
+            .map_err(|e| Error::Docker(format!("Failed to execute docker command: {e}")))?;
 
         // Check if the command succeeded
         if !output.status.success() {
