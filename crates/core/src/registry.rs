@@ -1,4 +1,3 @@
-use anyhow::{anyhow, Result};
 use log::{debug, info};
 use reqwest;
 use serde::Deserialize;
@@ -7,7 +6,73 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use tempfile::TempDir;
+use thiserror::Error;
 use walkdir::WalkDir;
+
+#[derive(Error, Debug)]
+pub enum RegistryError {
+    #[error("Package is legacy: {package}")]
+    LegacyPackage { package: String },
+
+    #[error("Local package path does not exist: {path}")]
+    LocalPackageNotFound { path: String },
+
+    #[error("Local package path is not a directory: {path}")]
+    LocalPackageNotDirectory { path: String },
+
+    #[error("Package not found: {package}")]
+    PackageNotFound { package: String },
+
+    #[error("Access denied to package: {package}. You may need to login.")]
+    AccessDenied { package: String },
+
+    #[error("Failed to fetch package info ({status}): {message}")]
+    FetchPackageInfoFailed { status: u16, message: String },
+
+    #[error("Invalid scoped package name: {name}")]
+    InvalidScopedPackageName { name: String },
+
+    #[error("Version {version} not found for package {package}")]
+    VersionNotFound { version: String, package: String },
+
+    #[error("No version specified and no latest version available for package {package}")]
+    NoVersionAvailable { package: String },
+
+    #[error("Failed to download package ({status}): {message}")]
+    DownloadFailed { status: u16, message: String },
+
+    #[error("Failed to download package from CDN ({status}): {message}")]
+    CdnDownloadFailed { status: u16, message: String },
+
+    #[error("Downloaded data is not a valid gzip file. Expected magic bytes 1f 8b, got {magic}")]
+    InvalidGzipFile { magic: String },
+
+    #[error("CDN file is not a valid gzip file. Expected magic bytes 1f 8b, got {magic}")]
+    InvalidCdnGzipFile { magic: String },
+
+    #[error("Downloaded data is not a valid gzip file and not a JSON redirect. Expected gzip magic bytes 1f 8b, got {magic}")]
+    InvalidDownloadData { magic: String },
+
+    #[error("Invalid package: missing {file} in {path}")]
+    MissingPackageFile { file: String, path: String },
+
+    #[error("HTTP request failed")]
+    HttpError(#[from] reqwest::Error),
+
+    #[error("JSON parsing failed")]
+    JsonError(#[from] serde_json::Error),
+
+    #[error("File I/O error")]
+    IoError(#[from] std::io::Error),
+
+    #[error("Walkdir error")]
+    WalkdirError(#[from] walkdir::Error),
+
+    #[error("Auth provider error")]
+    AuthProviderError(#[from] Box<dyn std::error::Error>),
+}
+
+pub type Result<T> = std::result::Result<T, RegistryError>;
 
 #[derive(Debug, Clone)]
 pub struct AuthTokens {
@@ -27,11 +92,14 @@ pub struct RegistryConfig {
 }
 
 #[derive(Deserialize, Debug)]
-#[allow(dead_code)]
 struct PackageInfo {
+    #[allow(dead_code)]
     id: String,
+    #[allow(dead_code)]
     name: String,
+    #[allow(dead_code)]
     scope: Option<String>,
+    is_legacy: bool,
     latest_version: Option<String>,
     versions: HashMap<String, PackageVersion>,
 }
@@ -109,6 +177,12 @@ impl RegistryClient {
         // Get package information
         let package_info = self.get_package_info(registry, &package_spec).await?;
 
+        if package_info.is_legacy {
+            return Err(RegistryError::LegacyPackage {
+                package: format_package_spec(&package_spec),
+            });
+        }
+
         // Determine version to use
         let version = determine_version(&package_spec, &package_info)?;
 
@@ -139,11 +213,15 @@ impl RegistryClient {
         let path = PathBuf::from(source);
 
         if !path.exists() {
-            return Err(anyhow!("Local package path does not exist: {}", source));
+            return Err(RegistryError::LocalPackageNotFound {
+                path: source.to_string(),
+            });
         }
 
         if !path.is_dir() {
-            return Err(anyhow!("Local package path is not a directory: {}", source));
+            return Err(RegistryError::LocalPackageNotDirectory {
+                path: source.to_string(),
+            });
         }
 
         // Validate package structure
@@ -198,20 +276,20 @@ impl RegistryClient {
         if !response.status().is_success() {
             let status = response.status();
             if status == reqwest::StatusCode::NOT_FOUND {
-                return Err(anyhow!("Package not found: {}", format_package_spec(spec)));
+                return Err(RegistryError::PackageNotFound {
+                    package: format_package_spec(spec),
+                });
             } else if status == reqwest::StatusCode::FORBIDDEN {
-                return Err(anyhow!(
-                    "Access denied to package: {}. You may need to login.",
-                    format_package_spec(spec)
-                ));
+                return Err(RegistryError::AccessDenied {
+                    package: format_package_spec(spec),
+                });
             }
 
             let error_text = response.text().await.unwrap_or_default();
-            return Err(anyhow!(
-                "Failed to fetch package info ({}): {}",
-                status,
-                error_text
-            ));
+            return Err(RegistryError::FetchPackageInfoFailed {
+                status: status.into(),
+                message: error_text,
+            });
         }
 
         let package_info: PackageInfo = response.json().await?;
@@ -251,7 +329,7 @@ impl RegistryClient {
         };
 
         let download_url = format!(
-            "{}/api/v1/registry/packages/{}/{}/download",
+            "{}/api/v1/registry/packages/{}/download/{}",
             registry_url, package_path, version
         );
 
@@ -274,11 +352,10 @@ impl RegistryClient {
         if !response.status().is_success() {
             let status = response.status();
             let error_text = response.text().await.unwrap_or_default();
-            return Err(anyhow!(
-                "Failed to download package ({}): {}",
-                status,
-                error_text
-            ));
+            return Err(RegistryError::DownloadFailed {
+                status: status.into(),
+                message: error_text,
+            });
         }
 
         let package_data = response.bytes().await?;
@@ -309,11 +386,10 @@ impl RegistryClient {
                             if !actual_response.status().is_success() {
                                 let status = actual_response.status();
                                 let error_text = actual_response.text().await.unwrap_or_default();
-                                return Err(anyhow!(
-                                    "Failed to download package from CDN ({}): {}",
-                                    status,
-                                    error_text
-                                ));
+                                return Err(RegistryError::CdnDownloadFailed {
+                                    status: status.into(),
+                                    message: error_text,
+                                });
                             }
 
                             let actual_package_data = actual_response.bytes().await?;
@@ -322,10 +398,12 @@ impl RegistryClient {
                             if actual_package_data.len() >= 2 {
                                 let actual_magic = &actual_package_data[0..2];
                                 if actual_magic != [0x1f, 0x8b] {
-                                    return Err(anyhow!(
-                                        "CDN file is not a valid gzip file. Expected magic bytes 1f 8b, got {:02x} {:02x}",
-                                        actual_magic[0], actual_magic[1]
-                                    ));
+                                    return Err(RegistryError::InvalidCdnGzipFile {
+                                        magic: format!(
+                                            "{:02x} {:02x}",
+                                            actual_magic[0], actual_magic[1]
+                                        ),
+                                    });
                                 }
                             }
 
@@ -339,10 +417,9 @@ impl RegistryClient {
                 }
 
                 // If we get here, it's not a valid gzip file or JSON response
-                return Err(anyhow!(
-                    "Downloaded data is not a valid gzip file and not a JSON redirect. Expected gzip magic bytes 1f 8b, got {:02x} {:02x}",
-                    magic[0], magic[1]
-                ));
+                return Err(RegistryError::InvalidDownloadData {
+                    magic: format!("{:02x} {:02x}", magic[0], magic[1]),
+                });
             }
         }
 
@@ -392,7 +469,9 @@ pub fn parse_package_spec(package: &str) -> Result<PackageSpec> {
         if parts.len() == 2 {
             (Some(parts[0].to_string()), parts[1].to_string())
         } else {
-            return Err(anyhow!("Invalid scoped package name: {}", name_part));
+            return Err(RegistryError::InvalidScopedPackageName {
+                name: name_part.to_string(),
+            });
         }
     } else {
         (None, name_part.to_string())
@@ -424,19 +503,17 @@ fn determine_version(spec: &PackageSpec, package_info: &PackageInfo) -> Result<S
         if package_info.versions.contains_key(version) {
             Ok(version.clone())
         } else {
-            Err(anyhow!(
-                "Version {} not found for package {}",
-                version,
-                format_package_spec(spec)
-            ))
+            Err(RegistryError::VersionNotFound {
+                version: version.clone(),
+                package: format_package_spec(spec),
+            })
         }
     } else if let Some(latest) = &package_info.latest_version {
         Ok(latest.clone())
     } else {
-        Err(anyhow!(
-            "No version specified and no latest version available for package {}",
-            format_package_spec(spec)
-        ))
+        Err(RegistryError::NoVersionAvailable {
+            package: format_package_spec(spec),
+        })
     }
 }
 
@@ -457,17 +534,17 @@ fn validate_package_structure(package_dir: &Path) -> Result<()> {
     let workflow_yaml = package_dir.join("workflow.yaml");
 
     if !codemod_yaml.exists() {
-        return Err(anyhow!(
-            "Invalid package: missing codemod.yaml in {}",
-            package_dir.display()
-        ));
+        return Err(RegistryError::MissingPackageFile {
+            file: "codemod.yaml".to_string(),
+            path: package_dir.display().to_string(),
+        });
     }
 
     if !workflow_yaml.exists() {
-        return Err(anyhow!(
-            "Invalid package: missing workflow.yaml in {}",
-            package_dir.display()
-        ));
+        return Err(RegistryError::MissingPackageFile {
+            file: "workflow.yaml".to_string(),
+            path: package_dir.display().to_string(),
+        });
     }
 
     debug!("Package structure validated");

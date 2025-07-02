@@ -1,5 +1,7 @@
 use anyhow::Result;
-use butterflow_core::registry::{AuthProvider, AuthTokens, RegistryAuth};
+use butterflow_core::registry::{
+    AuthProvider, AuthTokens, RegistryAuth, RegistryError, Result as RegistryResult,
+};
 
 use crate::auth::TokenStorage;
 
@@ -16,7 +18,7 @@ impl CliAuthProvider {
 }
 
 impl AuthProvider for CliAuthProvider {
-    fn get_auth_for_registry(&self, registry_url: &str) -> Result<Option<RegistryAuth>> {
+    fn get_auth_for_registry(&self, registry_url: &str) -> RegistryResult<Option<RegistryAuth>> {
         match self.storage.get_auth_for_registry(registry_url) {
             Ok(Some(auth)) => Ok(Some(RegistryAuth {
                 tokens: AuthTokens {
@@ -25,7 +27,7 @@ impl AuthProvider for CliAuthProvider {
                 },
             })),
             Ok(None) => Ok(None),
-            Err(e) => Err(e),
+            Err(e) => Err(RegistryError::AuthProviderError(e.into())),
         }
     }
 }

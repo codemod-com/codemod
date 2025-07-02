@@ -3,11 +3,12 @@ use butterflow_core::utils::get_cache_dir;
 use clap::Args;
 use log::info;
 use std::path::{Path, PathBuf};
+use std::process::Command as ProcessCommand;
 
 use crate::auth_provider::CliAuthProvider;
 use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
 use butterflow_core::engine::Engine;
-use butterflow_core::registry::{RegistryClient, RegistryConfig};
+use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -65,9 +66,17 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     let registry_client = RegistryClient::new(registry_config, Some(Box::new(auth_provider)));
 
     // Resolve the package (local path or registry package)
-    let resolved_package = registry_client
+    let resolved_package = match registry_client
         .resolve_package(&args.package, Some(&registry_url), args.force)
-        .await?;
+        .await
+    {
+        Ok(package) => package,
+        Err(RegistryError::LegacyPackage { package }) => {
+            info!("Package {} is legacy, running npx codemod@legacy", package);
+            return run_legacy_codemod(args).await;
+        }
+        Err(e) => return Err(anyhow::anyhow!("Registry error: {}", e)),
+    };
 
     info!(
         "Resolved codemod package: {} -> {}",
@@ -86,6 +95,35 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     .await?;
 
     Ok(())
+}
+
+pub async fn run_legacy_codemod_with_raw_args(raw_args: &[String]) -> Result<()> {
+    let mut cmd = ProcessCommand::new("npx");
+    cmd.arg("codemod@legacy");
+    cmd.args(raw_args);
+
+    info!(
+        "Executing: npx codemod@legacy with args: {:?}",
+        cmd.get_args().collect::<Vec<_>>()
+    );
+
+    let status = cmd.status()?;
+
+    if !status.success() {
+        return Err(anyhow::anyhow!(
+            "Legacy codemod command failed with exit code: {:?}",
+            status.code()
+        ));
+    }
+
+    Ok(())
+}
+
+async fn run_legacy_codemod(args: &Command) -> Result<()> {
+    let mut legacy_args = vec![args.package.clone()];
+    legacy_args.push(args.path.to_string_lossy().to_string());
+    legacy_args.extend(args.args.iter().cloned());
+    run_legacy_codemod_with_raw_args(&legacy_args).await
 }
 
 async fn execute_codemod(

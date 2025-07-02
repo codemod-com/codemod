@@ -1,5 +1,6 @@
 use anyhow::Result;
 use clap::{Args, Parser, Subcommand};
+use log::info;
 
 mod auth;
 mod auth_provider;
@@ -134,7 +135,7 @@ async fn handle_implicit_run_command(
 
     // Construct arguments for clap parsing as if "run" was specified
     let mut full_args = vec!["codemod".to_string(), "run".to_string()];
-    full_args.extend(trailing_args);
+    full_args.extend(trailing_args.clone());
 
     // Re-parse the entire CLI with the run command included
     match Cli::try_parse_from(&full_args) {
@@ -146,8 +147,12 @@ async fn handle_implicit_run_command(
                 Ok(false)
             }
         }
-        Err(_) => {
-            // If parsing fails, it's probably not a valid package name or arguments
+        Err(e) => {
+            if e.kind() == clap::error::ErrorKind::UnknownArgument {
+                info!("Unknown argument, falling back to legacy codemod runner.");
+                commands::run::run_legacy_codemod_with_raw_args(&trailing_args).await?;
+                return Ok(true);
+            }
             Ok(false)
         }
     }

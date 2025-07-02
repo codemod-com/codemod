@@ -4,11 +4,10 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use butterflow_models::step::{StepAction, UseAstGrep, UseCodemod, UseJSAstGrep};
-use butterflow_scheduler::Scheduler;
-use butterflow_state::local_adapter::LocalStateAdapter;
+use crate::registry::Result as RegistryResult;
 use chrono::Utc;
 use log::{debug, error, info, warn};
+use std::path::Path;
 use tokio::fs::read_to_string;
 use tokio::sync::Mutex;
 use tokio::time;
@@ -17,6 +16,7 @@ use uuid::Uuid;
 use crate::registry::{AuthProvider, RegistryClient, RegistryConfig, ResolvedPackage};
 use crate::utils::{self, get_cache_dir};
 use butterflow_models::runtime::RuntimeType;
+use butterflow_models::step::{StepAction, UseAstGrep, UseCodemod, UseJSAstGrep};
 use butterflow_models::{
     resolve_variables, DiffOperation, Error, FieldDiff, Node, Result, StateDiff, Task, TaskDiff,
     TaskStatus, Workflow, WorkflowRun, WorkflowRunDiff, WorkflowStatus,
@@ -27,7 +27,16 @@ use butterflow_runners::docker_runner::DockerRunner;
 #[cfg(feature = "podman")]
 use butterflow_runners::podman_runner::PodmanRunner;
 use butterflow_runners::Runner;
+use butterflow_scheduler::Scheduler;
+use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
+use codemod_sandbox::sandbox::{
+    engine::{language_data::get_extensions_for_language, ExecutionConfig, ExecutionEngine},
+    filesystem::{RealFileSystem, WalkOptions},
+    loaders::FileSystemLoader,
+    resolvers::FileSystemResolver,
+};
+use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
 
 /// Workflow engine
 pub struct Engine {
@@ -521,7 +530,7 @@ impl Engine {
             fn get_auth_for_registry(
                 &self,
                 _registry_url: &str,
-            ) -> anyhow::Result<Option<crate::registry::RegistryAuth>> {
+            ) -> RegistryResult<Option<crate::registry::RegistryAuth>> {
                 Ok(None)
             }
         }
@@ -1240,8 +1249,6 @@ impl Engine {
         ast_grep: &UseAstGrep,
         bundle_path: Option<&std::path::Path>,
     ) -> Result<()> {
-        use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
-
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
             .map(|p| p.to_path_buf())
@@ -1329,16 +1336,6 @@ impl Engine {
         js_ast_grep: &UseJSAstGrep,
         bundle_path: Option<&std::path::Path>,
     ) -> Result<()> {
-        use codemod_sandbox::sandbox::{
-            engine::{
-                language_data::get_extensions_for_language, ExecutionConfig, ExecutionEngine,
-            },
-            filesystem::{RealFileSystem, WalkOptions},
-            loaders::FileSystemLoader,
-            resolvers::FileSystemResolver,
-        };
-        use std::{path::Path, sync::Arc};
-
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
             .map(|p| p.to_path_buf())
@@ -1509,7 +1506,7 @@ impl Engine {
             fn get_auth_for_registry(
                 &self,
                 _registry_url: &str,
-            ) -> anyhow::Result<Option<crate::registry::RegistryAuth>> {
+            ) -> RegistryResult<Option<crate::registry::RegistryAuth>> {
                 Ok(None)
             }
         }
