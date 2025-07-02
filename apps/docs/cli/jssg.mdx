@@ -4,20 +4,22 @@ description: 'A powerful tool for running and testing JavaScript/TypeScript code
 icon: 'magnifying-glass'
 ---
 
-JSSG (JavaScript `ast-grep`) is a JavaScript/TypeScript codemod runner and testing framework built into the Codemod CLI. It enables you to write codemods in JavaScript and apply them to codebases with powerful CLI and test automation support.
+jssg is a JavaScript/TypeScript toolkit that simplifies writing and testing ast-grep codemods. It’s built into the Codemod CLI, making it easy to run codemods from the command line and publish them to the registry. If you’ve used tools like jscodeshift, jssg will feel familiar—but with key advantages. Unlike jscodeshift, jssg is built on the robust and high-performance ast-grep engine, written in Rust and optimized for fast, large-scale code transformations. Most importantly, thanks to ast-grep’s tree-sitter foundation, jssg supports a wide range of languages—including custom ones.
 
 ## Running Codemods
 
-To run a JavaScript codemod on a target directory, use the `codemod@next jssg run` command:
+To run a jssg codemod on a target directory for a specific language like Java, use the following command:
 
 ```bash
-codemod@next jssg run my-codemod.js ./src --language javascript
+npx codemod@latest jssg run /path/to/my-codemod.js /path/to/target --language java
 ```
+
+Note: Although your jssg codemods are written in JS/TS, the target language can be something else.
 
 ### Options
 
 <ResponseField name="--language <LANG>" type="string" required>
-  Target language (e.g., `javascript`, `typescript`).
+  Target language (e.g., `javascript`, `typescript`, `python`, `java`, `cpp`, `php`, `kotlin`, etc.).
 </ResponseField>
 
 <ResponseField name="--extensions <ext1,ext2>" type="string">
@@ -37,12 +39,12 @@ codemod@next jssg run my-codemod.js ./src --language javascript
 </ResponseField>
 
 <ResponseField name="--dry-run" type="boolean">
-  Perform a dry run to see the changes without applying them.
+  Perform a dry-run to see the changes without applying them.
 </ResponseField>
 
 ## Testing Framework
 
-The JSSG Testing Framework provides comprehensive testing capabilities for JavaScript codemods using before/after fixture files.
+The jssg testing framework provides testing capabilities for jssg codemods using before/after fixture files.
 
 ### Quick Start
 
@@ -62,24 +64,24 @@ The JSSG Testing Framework provides comprehensive testing capabilities for JavaS
             └── file2.js
     ```
 
-2.  **Run the tests** using the `codemod@next jssg test` command.
+2.  **Run the tests** using the `npx codemod@latest jssg test` command.
 
     ```bash
     # Run tests for a codemod
-    codemod@next jssg test my-codemod.js --language javascript
+    npx codemod@latest jssg test /path/to/my-codemod.js --language javascript
 
     # Update snapshots (creates or updates the `expected.js` files)
-    codemod@next jssg test my-codemod.js --language javascript --update-snapshots
+    npx codemod@latest jssg test /path/to/my-codemod.js --language javascript --update-snapshots
     ```
 
 ### Required Arguments
-These options are required for running tests with JSSG.
+These options are required for running tests with jssg.
 
 <ResponseField name="codemod_file" type="string" required>
-  Path to the codemod JavaScript file.
+  Path to the jssg codemod file, which is a JS/TS file.
 </ResponseField>
 <ResponseField name="--language" type="string" required>
-  Target language (e.g., `javascript`, `typescript`).
+  Target language (e.g., `javascript`, `typescript`, `python`, `java`, `cpp`, `php`, `kotlin`, etc.).
 </ResponseField>
 
 ### Test Discovery & Filtering
