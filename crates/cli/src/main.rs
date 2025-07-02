@@ -19,8 +19,7 @@ struct Cli {
     #[arg(short, long)]
     verbose: bool,
 
-    /// Arguments for implicit run command (when no subcommand is provided)
-    #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+    #[arg(trailing_var_arg = true, allow_hyphen_values = true, hide = true)]
     trailing_args: Vec<String>,
 }
 
