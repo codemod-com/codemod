@@ -34,8 +34,7 @@ pub fn resolve_variables(
                 serde_json::to_string(value).unwrap()
             } else {
                 return Err(Error::VariableResolution(format!(
-                    "Unknown variable type: {}",
-                    inner
+                    "Unknown variable type: {inner}"
                 )));
             };
 
