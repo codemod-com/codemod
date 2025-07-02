@@ -1,5 +1,11 @@
 # codemod
 
+## 0.18.8
+
+### Patch Changes
+
+- b1ff177: Release to the legacy channel
+
 ## 0.18.7
 
 ### Patch Changes
