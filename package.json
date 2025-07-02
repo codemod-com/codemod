@@ -59,9 +59,7 @@
     "db:push": "turbo run db:push",
     "db:reset": "turbo run db:reset",
     "db:seed": "turbo run db:seed",
-    "db:studio": "turbo run db:studio",
-    "semantic-release": "semantic-release",
-    "commit": "git-cz"
+    "db:studio": "turbo run db:studio"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
@@ -76,7 +74,6 @@
     "cz-conventional-changelog": "catalog:",
     "husky": "catalog:",
     "lint-staged": "catalog:",
-    "semantic-release": "catalog:",
     "tsx": "^4.2.0",
     "turbo": "catalog:",
     "typescript": "^5.4.5",
