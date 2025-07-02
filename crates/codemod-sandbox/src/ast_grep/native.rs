@@ -120,17 +120,17 @@ fn execute_ast_grep_on_globs_with_options(
         let mut configs = Vec::new();
         for rule_value in json_rules {
             let yaml_string = serde_yaml::to_string(&rule_value).map_err(|e| {
-                AstGrepError::Config(format!("Failed to convert JSON to YAML: {}", e))
+                AstGrepError::Config(format!("Failed to convert JSON to YAML: {e}"))
             })?;
             let mut rules = from_yaml_string(&yaml_string, &Default::default())
-                .map_err(|e| AstGrepError::Config(format!("Failed to parse rule: {:?}", e)))?;
+                .map_err(|e| AstGrepError::Config(format!("Failed to parse rule: {e:?}")))?;
             configs.append(&mut rules);
         }
         configs
     } else {
         // Default to YAML with --- delimited documents
         from_yaml_string(&config_content, &Default::default())
-            .map_err(|e| AstGrepError::Config(format!("Failed to parse YAML rules: {:?}", e)))?
+            .map_err(|e| AstGrepError::Config(format!("Failed to parse YAML rules: {e:?}")))?
     };
 
     if rule_configs.is_empty() {
@@ -150,9 +150,9 @@ fn execute_ast_grep_on_globs_with_options(
         for ext in extensions {
             // Convert .ext to *.ext glob pattern
             if ext.starts_with('.') {
-                applicable_extensions.insert(format!("*{}", ext));
+                applicable_extensions.insert(format!("*{ext}"));
             } else {
-                applicable_extensions.insert(format!("*.{}", ext));
+                applicable_extensions.insert(format!("*.{ext}"));
             }
         }
     }
@@ -171,7 +171,7 @@ fn execute_ast_grep_on_globs_with_options(
                     // For generic patterns, add language-specific variants
                     for ext_pattern in &applicable_extensions {
                         if glob == "**" {
-                            enhanced.push(format!("**/{}", ext_pattern));
+                            enhanced.push(format!("**/{ext_pattern}"));
                         } else if glob == "*" {
                             enhanced.push(ext_pattern.clone());
                         } else {
@@ -265,7 +265,7 @@ fn build_globs(
     for glob in include_globs {
         builder
             .add(glob)
-            .map_err(|e| AstGrepError::Glob(format!("Invalid include glob '{}': {}", glob, e)))?;
+            .map_err(|e| AstGrepError::Glob(format!("Invalid include glob '{glob}': {e}")))?;
     }
 
     // Add exclude patterns (prefixed with !)
@@ -274,17 +274,17 @@ fn build_globs(
             let exclude_pattern = if glob.starts_with('!') {
                 glob.to_string()
             } else {
-                format!("!{}", glob)
+                format!("!{glob}")
             };
             builder.add(&exclude_pattern).map_err(|e| {
-                AstGrepError::Glob(format!("Invalid exclude glob '{}': {}", exclude_pattern, e))
+                AstGrepError::Glob(format!("Invalid exclude glob '{exclude_pattern}': {e}"))
             })?;
         }
     }
 
     builder
         .build()
-        .map_err(|e| AstGrepError::Glob(format!("Failed to build glob overrides: {}", e)))
+        .map_err(|e| AstGrepError::Glob(format!("Failed to build glob overrides: {e}")))
 }
 
 fn scan_file(
@@ -330,27 +330,29 @@ fn scan_content(
         let mut edit_infos: Vec<(usize, usize, Vec<u8>)> = Vec::new(); // (position, deleted_length, inserted_text)
 
         for (rule, node_match) in &scan_result.diffs {
-            if let Some(fixer) = rule.get_fixer().unwrap_or(None) {
-                let edit = node_match.make_edit(&rule.matcher, &fixer);
-                edit_infos.push((edit.position, edit.deleted_length, edit.inserted_text));
-
-                // Also record this as a match for reporting
-                let node = node_match.get_node();
-                let start_pos = node.start_pos();
-                let end_pos = node.end_pos();
-
-                matches.push(AstGrepMatch {
-                    file_path: file_path.to_string_lossy().to_string(),
-                    start_byte: node.range().start,
-                    end_byte: node.range().end,
-                    start_line: start_pos.line(),
-                    start_column: start_pos.column(node),
-                    end_line: end_pos.line(),
-                    end_column: end_pos.column(node),
-                    match_text: node.text().to_string(),
-                    rule_id: rule.id.clone(),
-                });
+            if let Ok(fixers) = rule.get_fixer() {
+                if let Some(fixer) = fixers.first() {
+                    let edit = node_match.make_edit(&rule.matcher, fixer);
+                    edit_infos.push((edit.position, edit.deleted_length, edit.inserted_text));
+                }
             }
+
+            // Also record this as a match for reporting
+            let node = node_match.get_node();
+            let start_pos = node.start_pos();
+            let end_pos = node.end_pos();
+
+            matches.push(AstGrepMatch {
+                file_path: file_path.to_string_lossy().to_string(),
+                start_byte: node.range().start,
+                end_byte: node.range().end,
+                start_line: start_pos.line(),
+                start_column: start_pos.column(node),
+                end_line: end_pos.line(),
+                end_column: end_pos.column(node),
+                match_text: node.text().to_string(),
+                rule_id: rule.id.clone(),
+            });
         }
 
         // Sort edits by position in reverse order (end to start)
@@ -404,7 +406,7 @@ fn scan_content(
             }
 
             new_content = String::from_utf8(result_bytes).map_err(|e| {
-                AstGrepError::Config(format!("Invalid UTF-8 after applying fixes: {}", e))
+                AstGrepError::Config(format!("Invalid UTF-8 after applying fixes: {e}"))
             })?;
             file_modified = true;
         }
@@ -480,14 +482,13 @@ fn detect_language(file_path: &Path) -> Result<SupportLang, AstGrepError> {
         "thrift" => "thrift",
         _ => {
             return Err(AstGrepError::Language(format!(
-                "Unsupported file extension: {}",
-                extension
+                "Unsupported file extension: {extension}"
             )));
         }
     };
 
     SupportLang::from_str(language_str)
-        .map_err(|_| AstGrepError::Language(format!("Language not supported: {}", language_str)))
+        .map_err(|_| AstGrepError::Language(format!("Language not supported: {language_str}")))
 }
 
 /// Backward compatibility function - converts paths to include globs
@@ -953,7 +954,7 @@ message: "Found var declaration"
 
         // Check that fixes were applied by reading the file
         let modified_content = fs::read_to_string(temp_path.join("test.js")).unwrap();
-        println!("Modified content:\n{}", modified_content);
+        println!("Modified content:\n{modified_content}");
 
         // Verify fixes were applied
         assert!(modified_content.contains("logger.info"));
@@ -1040,10 +1041,7 @@ message: "Found console.log statement in TSX"
             }
         }
 
-        println!(
-            "JS matches: {}, TS matches: {}, TSX matches: {}",
-            js_count, ts_count, tsx_count
-        );
+        println!("JS matches: {js_count}, TS matches: {ts_count}, TSX matches: {tsx_count}");
 
         assert!(js_count >= 2, "Should find matches in JS files");
         assert!(ts_count >= 1, "Should find matches in TS files");

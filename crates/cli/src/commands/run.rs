@@ -72,7 +72,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     {
         Ok(package) => package,
         Err(RegistryError::LegacyPackage { package }) => {
-            info!("Package {} is legacy, running npx codemod@legacy", package);
+            info!("Package {package} is legacy, running npx codemod@legacy");
             return run_legacy_codemod(args).await;
         }
         Err(e) => return Err(anyhow::anyhow!("Registry error: {}", e)),

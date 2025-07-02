@@ -42,9 +42,9 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
 
         if let Some(ended_at) = workflow_run.ended_at {
             match workflow_run.status {
-                WorkflowStatus::Completed => info!("  Completed: {}", ended_at),
-                WorkflowStatus::Failed => info!("  Failed: {}", ended_at),
-                WorkflowStatus::Canceled => info!("  Canceled: {}", ended_at),
+                WorkflowStatus::Completed => info!("  Completed: {ended_at}"),
+                WorkflowStatus::Failed => info!("  Failed: {ended_at}"),
+                WorkflowStatus::Canceled => info!("  Canceled: {ended_at}"),
                 _ => {}
             }
             let duration = ended_at.signed_duration_since(workflow_run.started_at);

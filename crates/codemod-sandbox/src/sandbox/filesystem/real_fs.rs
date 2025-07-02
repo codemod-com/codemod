@@ -85,7 +85,7 @@ impl FileSystem for RealFileSystem {
                         }
                     }
                     Err(err) => {
-                        eprintln!("Warning: Error walking directory: {}", err);
+                        eprintln!("Warning: Error walking directory: {err}");
                     }
                 }
             }
@@ -93,7 +93,7 @@ impl FileSystem for RealFileSystem {
         })
         .await
         .map_err(|err| FsError::Io {
-            message: format!("Failed to walk directory: {}", err),
+            message: format!("Failed to walk directory: {err}"),
         })?;
 
         Ok(file_paths)

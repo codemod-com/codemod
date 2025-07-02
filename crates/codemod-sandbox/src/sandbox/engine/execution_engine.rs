@@ -225,7 +225,7 @@ where
                 if let Some(include_globs) = &config.include_globs {
                     for glob in include_globs {
                         if let Err(e) = builder.add(glob) {
-                            eprintln!("Warning: Invalid include glob '{}': {}", glob, e);
+                            eprintln!("Warning: Invalid include glob '{glob}': {e}");
                         }
                     }
                 }
@@ -236,10 +236,10 @@ where
                         let exclude_pattern = if glob.starts_with('!') {
                             glob.to_string()
                         } else {
-                            format!("!{}", glob)
+                            format!("!{glob}")
                         };
                         if let Err(e) = builder.add(&exclude_pattern) {
-                            eprintln!("Warning: Invalid exclude glob '{}': {}", exclude_pattern, e);
+                            eprintln!("Warning: Invalid exclude glob '{exclude_pattern}': {e}");
                         }
                     }
                 }
@@ -247,7 +247,7 @@ where
                 match builder.build() {
                     Ok(overrides) => Some(overrides),
                     Err(e) => {
-                        eprintln!("Warning: Failed to build glob overrides: {}", e);
+                        eprintln!("Warning: Failed to build glob overrides: {e}");
                         None
                     }
                 }
@@ -337,7 +337,7 @@ where
                         }
                         Err(err) => {
                             error_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                            let error_msg = format!("Error walking directory: {}", err);
+                            let error_msg = format!("Error walking directory: {err}");
                             errors.lock().unwrap().push(error_msg);
                         }
                     }
@@ -357,7 +357,7 @@ where
         })
         .await
         .map_err(|e| ExecutionError::ThreadExecution {
-            message: format!("Directory processing failed: {:?}", e),
+            message: format!("Directory processing failed: {e:?}"),
         })?
     }
 
@@ -469,7 +469,7 @@ where
         // Initialize QuickJS runtime and context
         let runtime = AsyncRuntime::new().map_err(|e| ExecutionError::Runtime {
             source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                message: format!("Failed to create AsyncRuntime: {}", e),
+                message: format!("Failed to create AsyncRuntime: {e}"),
             },
         })?;
 
@@ -498,7 +498,7 @@ where
             .await
             .map_err(|e| ExecutionError::Runtime {
                 source: crate::sandbox::errors::RuntimeError::ContextCreationFailed {
-                    message: format!("Failed to create AsyncContext: {}", e),
+                    message: format!("Failed to create AsyncContext: {e}"),
                 },
             })?;
 
@@ -506,7 +506,7 @@ where
         let result: Result<Option<String>, ExecutionError> = async_with!(context => |ctx| {
             global_attachment.attach(&ctx).map_err(|e| ExecutionError::Runtime {
                 source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                    message: format!("Failed to attach global modules: {}", e),
+                    message: format!("Failed to attach global modules: {e}"),
                 },
             })?;
 
@@ -515,7 +515,7 @@ where
                     .catch(&ctx)
                     .map_err(|e| ExecutionError::Runtime {
                         source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                            message: format!("Failed to declare module: {}", e),
+                            message: format!("Failed to declare module: {e}"),
                         },
                     })?;
 
@@ -525,7 +525,7 @@ where
                     .set("CODEMOD_TARGET_FILE_PATH", file_path_str.as_ref())
                     .map_err(|e| ExecutionError::Runtime {
                         source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                            message: format!("Failed to set global variable: {}", e),
+                            message: format!("Failed to set global variable: {e}"),
                         },
                     })?;
 
@@ -537,7 +537,7 @@ where
                     .set("CODEMOD_LANGUAGE", language_str)
                     .map_err(|e| ExecutionError::Runtime {
                         source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                            message: format!("Failed to set language global variable: {}", e),
+                            message: format!("Failed to set language global variable: {e}"),
                         },
                     })?;
 
@@ -610,7 +610,7 @@ where
         match result {
             Ok(new_content) => Ok(ExecutionOutput::success(new_content, content)),
             Err(e) => {
-                println!("Error: {:?}", e);
+                println!("Error: {e:?}");
                 Ok(ExecutionOutput::error(e.to_string()))
             }
         }

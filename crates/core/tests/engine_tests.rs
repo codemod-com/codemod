@@ -1402,8 +1402,7 @@ message: "Found var declaration"
     // Assert the step executed successfully
     assert!(
         result.is_ok(),
-        "AST grep step should execute successfully: {:?}",
-        result
+        "AST grep step should execute successfully: {result:?}"
     );
 }
 
@@ -1467,8 +1466,7 @@ message: "Found interface declaration"
     // Assert the step executed successfully
     assert!(
         result.is_ok(),
-        "TypeScript AST grep step should execute successfully: {:?}",
-        result
+        "TypeScript AST grep step should execute successfully: {result:?}"
     );
 }
 
@@ -1549,8 +1547,7 @@ message: "Found console.log statement"
     // Should succeed even with no matches
     assert!(
         result.is_ok(),
-        "Should succeed even with no matches: {:?}",
-        result
+        "Should succeed even with no matches: {result:?}"
     );
 }
 
@@ -1621,8 +1618,7 @@ function helper() {
     // Assert the step executed successfully
     assert!(
         result.is_ok(),
-        "JS AST grep step should execute successfully: {:?}",
-        result
+        "JS AST grep step should execute successfully: {result:?}"
     );
 }
 
@@ -1698,8 +1694,7 @@ interface ApiResponse {
     // Assert the step executed successfully
     assert!(
         result.is_ok(),
-        "TypeScript JS AST grep step should execute successfully: {:?}",
-        result
+        "TypeScript JS AST grep step should execute successfully: {result:?}"
     );
 }
 
@@ -1753,8 +1748,7 @@ var count = 0;
     // Assert the step executed successfully
     assert!(
         result.is_ok(),
-        "Dry run JS AST grep step should execute successfully: {:?}",
-        result
+        "Dry run JS AST grep step should execute successfully: {result:?}"
     );
 }
 
@@ -1850,8 +1844,7 @@ build/
     // Assert the step executed successfully
     assert!(
         result.is_ok(),
-        "JS AST grep step with gitignore should execute successfully: {:?}",
-        result
+        "JS AST grep step with gitignore should execute successfully: {result:?}"
     );
 
     // Test without respecting gitignore
@@ -1875,8 +1868,7 @@ build/
     // Should also succeed
     assert!(
         result_no_gitignore.is_ok(),
-        "JS AST grep step without gitignore should execute successfully: {:?}",
-        result_no_gitignore
+        "JS AST grep step without gitignore should execute successfully: {result_no_gitignore:?}"
     );
 }
 
@@ -1926,8 +1918,7 @@ export default function transform(ast) {
     // Assert the step executed successfully
     assert!(
         result.is_ok(),
-        "JS AST grep step with hidden files should execute successfully: {:?}",
-        result
+        "JS AST grep step with hidden files should execute successfully: {result:?}"
     );
 }
 

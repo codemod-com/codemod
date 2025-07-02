@@ -204,7 +204,7 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     // Clean up temporary bundle
     if let Err(e) = fs::remove_file(&bundle_path) {
-        warn!("Failed to clean up temporary bundle: {}", e);
+        warn!("Failed to clean up temporary bundle: {e}");
     }
 
     Ok(())
@@ -313,7 +313,7 @@ fn create_package_bundle(
         }
     }
 
-    info!("Added {} files to bundle", file_count);
+    info!("Added {file_count} files to bundle");
 
     // Finish the tar archive and flush the gzip encoder
     let enc = tar.into_inner()?;
@@ -330,7 +330,7 @@ fn create_package_bundle(
         ));
     }
 
-    info!("Created bundle: {} ({} bytes)", bundle_name, bundle_size);
+    info!("Created bundle: {bundle_name} ({bundle_size} bytes)");
 
     // Move to a persistent location (both dry-run and regular publishing)
     let output_path = if dry_run {
@@ -374,22 +374,22 @@ fn should_include_file(file_path: &Path, package_root: &Path) -> bool {
     for pattern in EXCLUDED_PATTERNS {
         if pattern.ends_with('/') {
             if path_str.starts_with(pattern) {
-                debug!("Excluding directory: {} (matches {})", path_str, pattern);
+                debug!("Excluding directory: {path_str} (matches {pattern})");
                 return false;
             }
         } else if pattern.contains('*') {
             // Simple glob matching
             if *pattern == "*.pyc" && path_str.ends_with(".pyc") {
-                debug!("Excluding file: {} (matches {})", path_str, pattern);
+                debug!("Excluding file: {path_str} (matches {pattern})");
                 return false;
             }
         } else if path_str == *pattern {
-            debug!("Excluding file: {} (matches {})", path_str, pattern);
+            debug!("Excluding file: {path_str} (matches {pattern})");
             return false;
         }
     }
 
-    debug!("Including file: {}", path_str);
+    debug!("Including file: {path_str}");
     true
 }
 
@@ -411,7 +411,7 @@ async fn upload_package(
         manifest.name.clone()
     };
 
-    let url = format!("{}/api/v1/registry/packages/{}", registry_url, package_name);
+    let url = format!("{registry_url}/api/v1/registry/packages/{package_name}");
 
     // Read bundle file
     let bundle_data = fs::read(bundle_path)?;
@@ -427,11 +427,11 @@ async fn upload_package(
         )
         .text("manifest", manifest_json);
 
-    debug!("Uploading to: {}", url);
+    debug!("Uploading to: {url}");
 
     let response = client
         .post(&url)
-        .header("Authorization", format!("Bearer {}", access_token))
+        .header("Authorization", format!("Bearer {access_token}"))
         .header("User-Agent", "codemod-cli/1.0")
         .multipart(form)
         .send()

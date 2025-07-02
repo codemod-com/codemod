@@ -39,7 +39,7 @@ impl TokenStorage {
         // Create config directory if it doesn't exist
         if !config_dir.exists() {
             fs::create_dir_all(&config_dir)
-                .with_context(|| format!("Failed to create config directory: {:?}", config_dir))?;
+                .with_context(|| format!("Failed to create config directory: {config_dir:?}"))?;
         }
 
         Ok(Self { config_dir })
@@ -53,7 +53,7 @@ impl TokenStorage {
         }
 
         let content = fs::read_to_string(&config_path)
-            .with_context(|| format!("Failed to read config file: {:?}", config_path))?;
+            .with_context(|| format!("Failed to read config file: {config_path:?}"))?;
 
         let config: Config =
             serde_json::from_str(&content).context("Failed to parse config file")?;
@@ -69,7 +69,7 @@ impl TokenStorage {
         }
 
         let content = fs::read_to_string(&auth_path)
-            .with_context(|| format!("Failed to read auth file: {:?}", auth_path))?;
+            .with_context(|| format!("Failed to read auth file: {auth_path:?}"))?;
 
         let auth: StoredAuth =
             serde_json::from_str(&content).context("Failed to parse auth file")?;
@@ -83,14 +83,14 @@ impl TokenStorage {
         // Create auth directory if it doesn't exist
         if let Some(parent) = auth_path.parent() {
             fs::create_dir_all(parent)
-                .with_context(|| format!("Failed to create auth directory: {:?}", parent))?;
+                .with_context(|| format!("Failed to create auth directory: {parent:?}"))?;
         }
 
         let content =
             serde_json::to_string_pretty(auth).context("Failed to serialize auth data")?;
 
         fs::write(&auth_path, content)
-            .with_context(|| format!("Failed to write auth file: {:?}", auth_path))?;
+            .with_context(|| format!("Failed to write auth file: {auth_path:?}"))?;
 
         Ok(())
     }
@@ -100,7 +100,7 @@ impl TokenStorage {
 
         if auth_path.exists() {
             fs::remove_file(&auth_path)
-                .with_context(|| format!("Failed to remove auth file: {:?}", auth_path))?;
+                .with_context(|| format!("Failed to remove auth file: {auth_path:?}"))?;
         }
 
         Ok(())
@@ -111,7 +111,7 @@ impl TokenStorage {
 
         if cache_dir.exists() {
             fs::remove_dir_all(&cache_dir)
-                .with_context(|| format!("Failed to remove cache directory: {:?}", cache_dir))?;
+                .with_context(|| format!("Failed to remove cache directory: {cache_dir:?}"))?;
         }
 
         Ok(())
@@ -142,8 +142,8 @@ impl TokenStorage {
         registries.insert(
             registry_url.to_string(),
             RegistryConfig {
-                auth_url: format!("{}/api/auth/oauth2/authorize", registry_url),
-                token_url: format!("{}/api/auth/oauth2/token", registry_url),
+                auth_url: format!("{registry_url}/api/auth/oauth2/authorize"),
+                token_url: format!("{registry_url}/api/auth/oauth2/token"),
                 client_id: "LaqxmrfBSiCAGzVywTqUxGgqgKVdzaLg".to_string(),
                 scopes: vec![
                     "read".to_string(),

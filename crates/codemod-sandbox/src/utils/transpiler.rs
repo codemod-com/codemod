@@ -33,7 +33,7 @@ pub fn transpile(source: String) -> Result<Vec<u8>, Box<dyn std::error::Error>> 
     // Parse the TypeScript code
     let mut program = parser
         .parse_program()
-        .map_err(|err| format!("Failed to parse TypeScript: {:?}", err))?;
+        .map_err(|err| format!("Failed to parse TypeScript: {err:?}"))?;
 
     // Strip TypeScript types to convert to JavaScript
     program.visit_mut_with(&mut strip_type());
@@ -52,7 +52,7 @@ pub fn transpile(source: String) -> Result<Vec<u8>, Box<dyn std::error::Error>> 
 
         emitter
             .emit_program(&program)
-            .map_err(|err| format!("Failed to emit JavaScript: {}", err))?;
+            .map_err(|err| format!("Failed to emit JavaScript: {err}"))?;
     }
 
     Ok(buf)

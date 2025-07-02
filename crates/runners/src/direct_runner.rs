@@ -36,7 +36,7 @@ impl Runner for DirectRunner {
 
             // Write the script to the temporary file
             std::fs::write(&script_path, command).map_err(|e| {
-                Error::Runtime(format!("Failed to write script to temporary file: {}", e))
+                Error::Runtime(format!("Failed to write script to temporary file: {e}"))
             })?;
 
             // Make the script executable
@@ -44,12 +44,11 @@ impl Runner for DirectRunner {
             {
                 use std::os::unix::fs::PermissionsExt;
                 let mut perms = std::fs::metadata(&script_path)
-                    .map_err(|e| Error::Runtime(format!("Failed to get file permissions: {}", e)))?
+                    .map_err(|e| Error::Runtime(format!("Failed to get file permissions: {e}")))?
                     .permissions();
                 perms.set_mode(0o755);
-                std::fs::set_permissions(&script_path, perms).map_err(|e| {
-                    Error::Runtime(format!("Failed to set file permissions: {}", e))
-                })?;
+                std::fs::set_permissions(&script_path, perms)
+                    .map_err(|e| Error::Runtime(format!("Failed to set file permissions: {e}")))?;
             }
 
             // Create the command
@@ -63,7 +62,7 @@ impl Runner for DirectRunner {
             // Execute the command
             let output = cmd
                 .output()
-                .map_err(|e| Error::Runtime(format!("Failed to execute command: {}", e)))?;
+                .map_err(|e| Error::Runtime(format!("Failed to execute command: {e}")))?;
 
             // Clean up the temporary file
             std::fs::remove_file(&script_path).ok();
@@ -107,7 +106,7 @@ impl Runner for DirectRunner {
             // Execute the command
             let output = cmd
                 .output()
-                .map_err(|e| Error::Runtime(format!("Failed to execute command: {}", e)))?;
+                .map_err(|e| Error::Runtime(format!("Failed to execute command: {e}")))?;
 
             // Check if the command succeeded
             if !output.status.success() {

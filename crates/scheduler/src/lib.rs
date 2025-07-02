@@ -290,7 +290,7 @@ impl Scheduler {
                     }
                     Some(serde_json::Value::Object(_obj)) => {
                         // Object mapping not fully supported yet
-                        warn!("Matrix from_state for object key '{}' is not yet fully supported, skipping.", state_key);
+                        warn!("Matrix from_state for object key '{state_key}' is not yet fully supported, skipping.");
                         continue; // Skip this node
                     }
                     _ => {

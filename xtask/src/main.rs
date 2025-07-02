@@ -40,7 +40,7 @@ fn main() {
 
             let json_schema_path = schema_out_dir.join("workflow.json");
             let Ok(mut json_file) = File::create(&json_schema_path) else {
-                panic!("Cannot create file: {:?}", json_schema_path);
+                panic!("Cannot create file: {json_schema_path:?}");
             };
             to_writer_pretty(&mut json_file, &schema).unwrap();
         }

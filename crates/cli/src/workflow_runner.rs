@@ -29,7 +29,7 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
         .await
         .context("Failed to run workflow")?;
 
-    info!("Workflow started with ID: {}", workflow_run_id);
+    info!("Workflow started with ID: {workflow_run_id}");
 
     if config.wait_for_completion {
         wait_for_workflow_completion(engine, workflow_run_id.to_string()).await?;
@@ -75,17 +75,12 @@ pub async fn wait_for_workflow_completion(engine: &Engine, workflow_run_id: Stri
                     info!("- {} ({})", task.id, task.node_id);
                 }
                 info!("");
+                info!("Use 'butterflow status -i {workflow_run_id}' to check status");
                 info!(
-                    "Use 'butterflow status -i {}' to check status",
-                    workflow_run_id
+                    "Run 'butterflow resume -i {workflow_run_id} -t <TASK_ID>' to trigger a specific task"
                 );
                 info!(
-                    "Run 'butterflow resume -i {} -t <TASK_ID>' to trigger a specific task",
-                    workflow_run_id
-                );
-                info!(
-                    "Run 'butterflow resume -i {} --trigger-all' to trigger all awaiting tasks",
-                    workflow_run_id
+                    "Run 'butterflow resume -i {workflow_run_id} --trigger-all' to trigger all awaiting tasks"
                 );
                 break;
             }

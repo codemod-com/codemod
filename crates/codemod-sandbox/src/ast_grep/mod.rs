@@ -68,7 +68,7 @@ impl ModuleDef for AstGrepModule {
 
 fn parse_rjs(ctx: Ctx<'_>, lang: String, src: String) -> Result<SgRootRjs> {
     SgRootRjs::try_new(lang, src, None)
-        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {}", e)))
+        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {e}")))
 }
 
 fn parse_async_rjs(ctx: Ctx<'_>, lang: String, src: String) -> Result<SgRootRjs> {
@@ -81,15 +81,15 @@ fn parse_async_rjs(ctx: Ctx<'_>, lang: String, src: String) -> Result<SgRootRjs>
 
     // Call the same implementation as parse_rjs since the async setup should be done by now
     SgRootRjs::try_new(lang, src, None)
-        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {}", e)))
+        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {e}")))
 }
 
 #[cfg(feature = "native")]
 fn parse_file_rjs(ctx: Ctx<'_>, lang: String, file_path: String) -> Result<SgRootRjs> {
     let file_content = std::fs::read_to_string(file_path.clone())
-        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to read file: {}", e)))?;
+        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to read file: {e}")))?;
     SgRootRjs::try_new(lang, file_content, Some(file_path))
-        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {}", e)))
+        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {e}")))
 }
 
 // Corresponds to the `kind` function in wasm/lib.rs
@@ -111,7 +111,7 @@ fn kind_rjs(ctx: Ctx<'_>, lang: String, kind_name: String) -> Result<u16> {
     use std::str::FromStr;
 
     let lang = SupportLang::from_str(&lang)
-        .map_err(|e| Exception::throw_message(&ctx, &format!("Language error: {}", e)))?;
+        .map_err(|e| Exception::throw_message(&ctx, &format!("Language error: {e}")))?;
 
     let kind = lang
         .get_ts_language()

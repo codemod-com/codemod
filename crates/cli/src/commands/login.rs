@@ -30,7 +30,7 @@ pub async fn handler(args: &Command) -> Result<()> {
         .ok_or_else(|| anyhow!("Unknown registry: {}", registry_url))?
         .clone();
 
-    info!("Authenticating with registry: {}", registry_url);
+    info!("Authenticating with registry: {registry_url}");
 
     let oidc_client = OidcClient::new(registry_url.clone(), registry_config)?;
 
@@ -60,7 +60,7 @@ pub async fn handler(args: &Command) -> Result<()> {
     match oidc_client.login().await {
         Ok(auth) => {
             if let Some(scope) = &args.scope {
-                info!("Setting default publish scope to {}", scope);
+                info!("Setting default publish scope to {scope}");
                 // TODO: Save scope preference to config
             }
 
@@ -75,7 +75,7 @@ pub async fn handler(args: &Command) -> Result<()> {
             Ok(())
         }
         Err(e) => {
-            warn!("Authentication failed: {}", e);
+            warn!("Authentication failed: {e}");
             Err(anyhow!("Login failed: {}", e))
         }
     }

@@ -40,7 +40,7 @@ impl LocalStateAdapter {
 
         // Create the data directory if it doesn't exist
         fs::create_dir_all(&data_dir).unwrap_or_else(|e| {
-            eprintln!("Failed to create data directory: {}", e);
+            eprintln!("Failed to create data directory: {e}");
         });
 
         Self {
@@ -54,7 +54,7 @@ impl LocalStateAdapter {
     pub fn with_base_dir<P: AsRef<Path>>(base_dir: P) -> Self {
         // Create the base directory if it doesn't exist
         fs::create_dir_all(&base_dir).unwrap_or_else(|e| {
-            eprintln!("Failed to create base directory: {}", e);
+            eprintln!("Failed to create base directory: {e}");
         });
 
         Self {
@@ -68,21 +68,19 @@ impl LocalStateAdapter {
     fn workflow_run_path(&self, workflow_run_id: Uuid) -> PathBuf {
         self.base_dir
             .join("workflow_runs")
-            .join(format!("{}.json", workflow_run_id))
+            .join(format!("{workflow_run_id}.json"))
     }
 
     /// Get the path to a task file
     fn task_path(&self, task_id: Uuid) -> PathBuf {
-        self.base_dir
-            .join("tasks")
-            .join(format!("{}.json", task_id))
+        self.base_dir.join("tasks").join(format!("{task_id}.json"))
     }
 
     /// Get the path to a workflow state file
     fn state_path(&self, workflow_run_id: Uuid) -> PathBuf {
         self.base_dir
             .join("state")
-            .join(format!("{}.json", workflow_run_id))
+            .join(format!("{workflow_run_id}.json"))
     }
 
     /// Load a workflow run from disk
@@ -92,8 +90,7 @@ impl LocalStateAdapter {
         // Check if the file exists
         if !path.exists() {
             return Err(Error::Other(format!(
-                "Workflow run {} not found",
-                workflow_run_id
+                "Workflow run {workflow_run_id} not found"
             )));
         }
 
@@ -112,7 +109,7 @@ impl LocalStateAdapter {
 
         // Check if the file exists
         if !path.exists() {
-            return Err(Error::Other(format!("Task {} not found", task_id)));
+            return Err(Error::Other(format!("Task {task_id} not found")));
         }
 
         // Read the file

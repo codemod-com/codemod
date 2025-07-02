@@ -470,7 +470,7 @@ fn run_post_init_commands(project_path: &Path, config: &ProjectConfig) -> Result
             match output {
                 Ok(result) => {
                     if result.status.success() {
-                        println!("{} Dependencies installed successfully", CHECKMARK);
+                        println!("{CHECKMARK} Dependencies installed successfully");
                     } else {
                         let stderr = String::from_utf8_lossy(&result.stderr);
                         println!(
@@ -542,9 +542,9 @@ fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
         CHECKMARK,
         style(&config.name).green().bold()
     );
-    println!("{} Generated codemod.yaml manifest", CHECKMARK);
-    println!("{} Generated workflow.yaml definition", CHECKMARK);
-    println!("{} Created project structure", CHECKMARK);
+    println!("{CHECKMARK} Generated codemod.yaml manifest");
+    println!("{CHECKMARK} Generated workflow.yaml definition");
+    println!("{CHECKMARK} Created project structure");
     println!();
     println!("{}", style("Next steps:").bold());
     println!(
