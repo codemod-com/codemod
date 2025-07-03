@@ -1,0 +1,14 @@
+id: java-for-loop-to-streams
+language: java
+rule:
+  pattern: |
+    for ($TYPE $VAR : $COLLECTION) {
+      if ($CONDITION) {
+        $TARGET.add($EXPRESSION);
+      }
+    }
+fix: |
+  $COLLECTION.stream()
+      .filter($VAR -> $CONDITION)
+      .map($VAR -> $EXPRESSION)
+      .forEach(item -> $TARGET.add(item));
