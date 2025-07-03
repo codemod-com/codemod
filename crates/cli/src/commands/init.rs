@@ -420,10 +420,6 @@ fn create_astgrep_yaml_project(project_path: &Path, config: &ProjectConfig) -> R
     };
     fs::write(rules_dir.join("config.yml"), config_file)?;
 
-    // Create scripts directory
-    let scripts_dir = project_path.join("scripts");
-    fs::create_dir_all(&scripts_dir)?;
-
     // Create tests directory
     let tests_dir = project_path.join("tests");
     fs::create_dir_all(tests_dir.join("input"))?;
