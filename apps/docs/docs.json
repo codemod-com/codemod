@@ -41,10 +41,7 @@
           {
             "group": "OSS & Community",
             "pages": [
-              {
-                "group": "CLI",
-                "pages": ["cli", "cli/workflows", "cli/jssg"]
-              },
+              "deploying-codemods/cli",
               {
                 "group": "Building codemods",
                 "pages": [
