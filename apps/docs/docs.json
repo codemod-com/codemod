@@ -30,7 +30,13 @@
           },
           {
             "group": "Codemod Platform",
-            "pages": ["scanner", "migrations", "insights", "codemod-studio"]
+            "pages": [
+              "scanner",
+              "migrations",
+              "insights",
+              "codemod-studio",
+              "platform/workflows"
+            ]
           },
           {
             "group": "OSS & Community",
