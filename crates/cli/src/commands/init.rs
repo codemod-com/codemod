@@ -86,20 +86,28 @@ const SHELL_CLEANUP_SCRIPT: &str = include_str!("../templates/shell/scripts/clea
 
 // JS ast-grep project templates
 const JS_PACKAGE_JSON_TEMPLATE: &str = include_str!("../templates/js-astgrep/package.json");
-const JS_APPLY_SCRIPT_FOR_JAVASCRIPT: &str = include_str!("../templates/js-astgrep/scripts/codemod.js.ts");
-const JS_APPLY_SCRIPT_FOR_PYTHON: &str = include_str!("../templates/js-astgrep/scripts/codemod.py.ts");
-const JS_APPLY_SCRIPT_FOR_RUST: &str = include_str!("../templates/js-astgrep/scripts/codemod.rs.ts");
+const JS_APPLY_SCRIPT_FOR_JAVASCRIPT: &str =
+    include_str!("../templates/js-astgrep/scripts/codemod.js.ts");
+const JS_APPLY_SCRIPT_FOR_PYTHON: &str =
+    include_str!("../templates/js-astgrep/scripts/codemod.py.ts");
+const JS_APPLY_SCRIPT_FOR_RUST: &str =
+    include_str!("../templates/js-astgrep/scripts/codemod.rs.ts");
 const JS_APPLY_SCRIPT_FOR_GO: &str = include_str!("../templates/js-astgrep/scripts/codemod.go.ts");
-const JS_APPLY_SCRIPT_FOR_JAVA: &str = include_str!("../templates/js-astgrep/scripts/codemod.java.ts");
+const JS_APPLY_SCRIPT_FOR_JAVA: &str =
+    include_str!("../templates/js-astgrep/scripts/codemod.java.ts");
 const JS_TSCONFIG_TEMPLATE: &str = include_str!("../templates/js-astgrep/tsconfig.json");
 const JS_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.js");
 const JS_TEST_EXPECTED: &str = include_str!("../templates/js-astgrep/tests/fixtures/expected.js");
 // ast-grep YAML project templates
-const ASTGREP_PATTERNS_FOR_JAVASCRIPT: &str = include_str!("../templates/astgrep-yaml/rules/config.js.yml");
-const ASTGREP_PATTERNS_FOR_PYTHON: &str = include_str!("../templates/astgrep-yaml/rules/config.py.yml");
-const ASTGREP_PATTERNS_FOR_RUST: &str = include_str!("../templates/astgrep-yaml/rules/config.rs.yml");
+const ASTGREP_PATTERNS_FOR_JAVASCRIPT: &str =
+    include_str!("../templates/astgrep-yaml/rules/config.js.yml");
+const ASTGREP_PATTERNS_FOR_PYTHON: &str =
+    include_str!("../templates/astgrep-yaml/rules/config.py.yml");
+const ASTGREP_PATTERNS_FOR_RUST: &str =
+    include_str!("../templates/astgrep-yaml/rules/config.rs.yml");
 const ASTGREP_PATTERNS_FOR_GO: &str = include_str!("../templates/astgrep-yaml/rules/config.go.yml");
-const ASTGREP_PATTERNS_FOR_JAVA: &str = include_str!("../templates/astgrep-yaml/rules/config.java.yml");
+const ASTGREP_PATTERNS_FOR_JAVA: &str =
+    include_str!("../templates/astgrep-yaml/rules/config.java.yml");
 
 static ROCKET: Emoji<'_, '_> = Emoji("🚀 ", "");
 static CHECKMARK: Emoji<'_, '_> = Emoji("✓ ", "");
@@ -282,8 +290,7 @@ fn select_language() -> Result<String> {
         "Other",
     ];
 
-    let selection =
-        Select::new("Which language would you like to target?", options).prompt()?;
+    let selection = Select::new("Which language would you like to target?", options).prompt()?;
 
     let language = match selection {
         "JavaScript/TypeScript" => "javascript",
