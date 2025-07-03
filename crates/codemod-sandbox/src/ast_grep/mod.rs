@@ -8,6 +8,9 @@ pub mod wasm_lang;
 #[cfg(feature = "wasm")]
 pub mod wasm_utils;
 
+#[cfg(feature = "native")]
+pub mod native;
+
 #[cfg(not(feature = "wasm"))]
 use ast_grep_language::{LanguageExt, SupportLang};
 
@@ -20,6 +23,12 @@ use crate::rquickjs_compat::{prelude::Func, Class, Ctx, Exception, Object, Resul
 use sg_node::{SgNodeRjs, SgRootRjs};
 
 mod serde;
+
+#[cfg(feature = "native")]
+pub use native::{
+    execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes, execute_ast_grep_on_paths,
+    execute_ast_grep_on_paths_with_fixes,
+};
 
 #[allow(dead_code)]
 pub struct AstGrepModule;
@@ -59,7 +68,7 @@ impl ModuleDef for AstGrepModule {
 
 fn parse_rjs(ctx: Ctx<'_>, lang: String, src: String) -> Result<SgRootRjs> {
     SgRootRjs::try_new(lang, src, None)
-        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {}", e)))
+        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {e}")))
 }
 
 fn parse_async_rjs(ctx: Ctx<'_>, lang: String, src: String) -> Result<SgRootRjs> {
@@ -72,15 +81,15 @@ fn parse_async_rjs(ctx: Ctx<'_>, lang: String, src: String) -> Result<SgRootRjs>
 
     // Call the same implementation as parse_rjs since the async setup should be done by now
     SgRootRjs::try_new(lang, src, None)
-        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {}", e)))
+        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {e}")))
 }
 
 #[cfg(feature = "native")]
 fn parse_file_rjs(ctx: Ctx<'_>, lang: String, file_path: String) -> Result<SgRootRjs> {
     let file_content = std::fs::read_to_string(file_path.clone())
-        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to read file: {}", e)))?;
+        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to read file: {e}")))?;
     SgRootRjs::try_new(lang, file_content, Some(file_path))
-        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {}", e)))
+        .map_err(|e| Exception::throw_message(&ctx, &format!("Failed to parse: {e}")))
 }
 
 // Corresponds to the `kind` function in wasm/lib.rs
@@ -102,7 +111,7 @@ fn kind_rjs(ctx: Ctx<'_>, lang: String, kind_name: String) -> Result<u16> {
     use std::str::FromStr;
 
     let lang = SupportLang::from_str(&lang)
-        .map_err(|e| Exception::throw_message(&ctx, &format!("Language error: {}", e)))?;
+        .map_err(|e| Exception::throw_message(&ctx, &format!("Language error: {e}")))?;
 
     let kind = lang
         .get_ts_language()

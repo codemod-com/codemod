@@ -1,19 +1,26 @@
 use anyhow::Result;
 use clap::{Args, Parser, Subcommand};
+use log::info;
 
+mod auth;
+mod auth_provider;
 mod commands;
 mod engine;
+mod workflow_runner;
 
 #[derive(Parser)]
 #[command(name = "codemod")]
 #[command(about = "A self-hostable workflow engine for code transformations", long_about = None)]
 struct Cli {
     #[command(subcommand)]
-    command: Commands,
+    command: Option<Commands>,
 
     /// Verbose output
     #[arg(short, long)]
     verbose: bool,
+
+    #[arg(trailing_var_arg = true, allow_hyphen_values = true, hide = true)]
+    trailing_args: Vec<String>,
 }
 
 #[derive(Subcommand)]
@@ -30,8 +37,23 @@ enum Commands {
     /// Login to a registry
     Login(commands::login::Command),
 
+    /// Logout from a registry
+    Logout(commands::logout::Command),
+
+    /// Show current authentication status
+    Whoami(commands::whoami::Command),
+
     /// Publish a workflow
     Publish(commands::publish::Command),
+
+    /// Search for packages in the registry
+    Search(commands::search::Command),
+
+    /// Run a codemod from the registry
+    Run(commands::run::Command),
+
+    /// Manage package cache
+    Cache(commands::cache::Command),
 }
 
 #[derive(Args, Debug)]
@@ -75,6 +97,66 @@ enum JssgCommands {
     Test(commands::jssg::test::Command),
 }
 
+/// Check if a string looks like a package name that should be run
+fn is_package_name(arg: &str) -> bool {
+    // Check for scoped packages (@org/package)
+    if arg.starts_with('@') && arg.contains('/') {
+        return true;
+    }
+
+    // Check for package with version (@org/package@1.0.0 or package@1.0.0)
+    if arg.contains('@') && !arg.starts_with('@') {
+        return true;
+    }
+
+    // Check for simple package names (exclude known subcommands)
+    let known_commands = [
+        "workflow", "jssg", "init", "login", "logout", "whoami", "publish", "search", "run",
+        "cache",
+    ];
+
+    !known_commands.contains(&arg)
+}
+
+/// Handle implicit run command from trailing arguments
+async fn handle_implicit_run_command(
+    engine: &butterflow_core::engine::Engine,
+    trailing_args: Vec<String>,
+) -> Result<bool> {
+    if trailing_args.is_empty() {
+        return Ok(false);
+    }
+
+    let package = &trailing_args[0];
+    if !is_package_name(package) {
+        return Ok(false);
+    }
+
+    // Construct arguments for clap parsing as if "run" was specified
+    let mut full_args = vec!["codemod".to_string(), "run".to_string()];
+    full_args.extend(trailing_args.clone());
+
+    // Re-parse the entire CLI with the run command included
+    match Cli::try_parse_from(&full_args) {
+        Ok(new_cli) => {
+            if let Some(Commands::Run(run_args)) = new_cli.command {
+                commands::run::handler(engine, &run_args).await?;
+                Ok(true)
+            } else {
+                Ok(false)
+            }
+        }
+        Err(e) => {
+            if e.kind() == clap::error::ErrorKind::UnknownArgument {
+                info!("Unknown argument, falling back to legacy codemod runner.");
+                commands::run::run_legacy_codemod_with_raw_args(&trailing_args).await?;
+                return Ok(true);
+            }
+            Ok(false)
+        }
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     // Initialize logger
@@ -93,9 +175,9 @@ async fn main() -> Result<()> {
     // Create engine
     let engine = engine::create_engine()?;
 
-    // Handle command
+    // Handle command or implicit run
     match &cli.command {
-        Commands::Workflow(args) => match &args.command {
+        Some(Commands::Workflow(args)) => match &args.command {
             WorkflowCommands::Run(args) => {
                 commands::workflow::run::handler(&engine, args).await?;
             }
@@ -115,7 +197,7 @@ async fn main() -> Result<()> {
                 commands::workflow::cancel::handler(&engine, args).await?;
             }
         },
-        Commands::Jssg(args) => match &args.command {
+        Some(Commands::Jssg(args)) => match &args.command {
             JssgCommands::Run(args) => {
                 commands::jssg::run::handler(args).await?;
             }
@@ -123,14 +205,37 @@ async fn main() -> Result<()> {
                 commands::jssg::test::handler(args).await?;
             }
         },
-        Commands::Init(args) => {
+        Some(Commands::Init(args)) => {
             commands::init::handler(args)?;
         }
-        Commands::Login(args) => {
-            commands::login::handler(args)?;
+        Some(Commands::Login(args)) => {
+            commands::login::handler(args).await?;
         }
-        Commands::Publish(args) => {
-            commands::publish::handler(args)?;
+        Some(Commands::Logout(args)) => {
+            commands::logout::handler(args).await?;
+        }
+        Some(Commands::Whoami(args)) => {
+            commands::whoami::handler(args).await?;
+        }
+        Some(Commands::Publish(args)) => {
+            commands::publish::handler(args).await?;
+        }
+        Some(Commands::Search(args)) => {
+            commands::search::handler(args).await?;
+        }
+        Some(Commands::Run(args)) => {
+            commands::run::handler(&engine, args).await?;
+        }
+        Some(Commands::Cache(args)) => {
+            commands::cache::handler(args).await?;
+        }
+        None => {
+            // Try to parse as implicit run command
+            if !handle_implicit_run_command(&engine, cli.trailing_args).await? {
+                // No valid subcommand or package name provided, show help
+                eprintln!("No command provided. Use --help for usage information.");
+                std::process::exit(1);
+            }
         }
     }
 

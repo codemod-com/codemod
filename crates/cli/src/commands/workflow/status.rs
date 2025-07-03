@@ -43,7 +43,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     info!("Started: {}", workflow_run.started_at);
 
     if let Some(ended_at) = workflow_run.ended_at {
-        info!("Completed: {}", ended_at);
+        info!("Completed: {ended_at}");
         let duration = ended_at.signed_duration_since(workflow_run.started_at);
         info!(
             "Duration: {}",
@@ -92,7 +92,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
                     .as_ref()
                     .map(|m| {
                         m.iter()
-                            .map(|(k, v)| format!("{}: {}", k, v))
+                            .map(|(k, v)| format!("{k}: {v}"))
                             .collect::<Vec<_>>()
                             .join(", ")
                     })
@@ -132,7 +132,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
                 .as_ref()
                 .map(|m| {
                     m.iter()
-                        .map(|(k, v)| format!("{}: {}", k, v))
+                        .map(|(k, v)| format!("{k}: {v}"))
                         .collect::<Vec<_>>()
                         .join(", ")
                 })

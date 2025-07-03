@@ -531,7 +531,7 @@ fn test_validate_workflow_complex_cyclic_dependency() {
         Err(Error::CyclicDependency(cycle)) => {
             // The cycle detection might not include all nodes in the error message
             // It might just report the specific cycle it found first
-            println!("Detected cycle: {}", cycle);
+            println!("Detected cycle: {cycle}");
             assert!(cycle.contains("node_"));
         }
         _ => panic!("Expected CyclicDependency error"),
@@ -646,7 +646,7 @@ fn test_validate_workflow_self_dependency() {
     assert!(result.is_err());
     match result {
         Err(Error::CyclicDependency(cycle)) => {
-            println!("Detected cycle: {}", cycle);
+            println!("Detected cycle: {cycle}");
             assert!(cycle.contains("node1"));
         }
         _ => panic!("Expected CyclicDependency error"),

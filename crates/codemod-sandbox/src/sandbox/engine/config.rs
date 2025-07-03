@@ -29,6 +29,10 @@ where
     pub language: Option<SupportLang>,
     /// Extensions to use for execution
     pub extensions: Option<Vec<String>>,
+    /// Include glob patterns for files to process
+    pub include_globs: Option<Vec<String>>,
+    /// Exclude glob patterns for files to skip
+    pub exclude_globs: Option<Vec<String>>,
     /// Whether to dry run the execution
     pub dry_run: bool,
 }
@@ -54,6 +58,8 @@ where
             walk_options: WalkOptions::default(),
             language: None,
             extensions: None,
+            include_globs: None,
+            exclude_globs: None,
             dry_run: false,
         }
     }
@@ -90,6 +96,16 @@ where
 
     pub fn with_extensions(mut self, extensions: Vec<String>) -> Self {
         self.extensions = Some(extensions);
+        self
+    }
+
+    pub fn with_include_globs(mut self, include_globs: Vec<String>) -> Self {
+        self.include_globs = Some(include_globs);
+        self
+    }
+
+    pub fn with_exclude_globs(mut self, exclude_globs: Vec<String>) -> Self {
+        self.exclude_globs = Some(exclude_globs);
         self
     }
 

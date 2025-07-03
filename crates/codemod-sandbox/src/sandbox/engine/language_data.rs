@@ -11,9 +11,15 @@ pub fn create_language_extension_map() -> HashMap<SupportLang, Vec<&'static str>
     {
         use ast_grep_language::SupportLang::*;
 
-        map.insert(JavaScript, vec![".js", ".mjs", ".cjs"]);
-        map.insert(TypeScript, vec![".ts", ".mts", ".cts"]);
-        map.insert(Tsx, vec![".tsx", ".jsx"]);
+        map.insert(JavaScript, vec![".js", ".mjs", ".cjs", ".jsx"]);
+        map.insert(
+            TypeScript,
+            vec![".ts", ".mts", ".cts", ".js", ".mjs", ".cjs"],
+        );
+        map.insert(
+            Tsx,
+            vec![".tsx", ".jsx", ".ts", ".js", ".mjs", ".cjs", ".mts", ".cts"],
+        );
         map.insert(Bash, vec![".sh", ".bash", ".zsh", ".fish"]);
         map.insert(C, vec![".c", ".h"]);
         map.insert(CSharp, vec![".cs"]);

@@ -8,7 +8,7 @@ use crate::sandbox::filesystem::FileSystem;
 use crate::sandbox::loaders::ModuleLoader;
 use crate::sandbox::resolvers::ModuleResolver;
 use ast_grep_language::SupportLang;
-use ignore::{WalkBuilder, WalkState};
+use ignore::{overrides::OverrideBuilder, WalkBuilder, WalkState};
 use llrt_modules::module_builder::ModuleBuilder;
 use rquickjs_git::{async_with, AsyncContext, AsyncRuntime};
 use std::fmt;
@@ -207,7 +207,7 @@ where
         // Execute in a blocking context since WalkParallel is synchronous
         let target_dir = target_dir.to_path_buf();
         tokio::task::spawn_blocking(move || {
-            let mut walk_builder = WalkBuilder::new(target_dir);
+            let mut walk_builder = WalkBuilder::new(&target_dir);
             walk_builder
                 .git_ignore(config.walk_options.respect_gitignore)
                 .hidden(!config.walk_options.include_hidden)
@@ -215,6 +215,48 @@ where
 
             if let Some(max_depth) = config.walk_options.max_depth {
                 walk_builder.max_depth(Some(max_depth));
+            }
+
+            // Build glob overrides for include/exclude patterns
+            let globs = if config.include_globs.is_some() || config.exclude_globs.is_some() {
+                let mut builder = OverrideBuilder::new(&target_dir);
+
+                // Add include patterns
+                if let Some(include_globs) = &config.include_globs {
+                    for glob in include_globs {
+                        if let Err(e) = builder.add(glob) {
+                            eprintln!("Warning: Invalid include glob '{glob}': {e}");
+                        }
+                    }
+                }
+
+                // Add exclude patterns (prefixed with !)
+                if let Some(exclude_globs) = &config.exclude_globs {
+                    for glob in exclude_globs {
+                        let exclude_pattern = if glob.starts_with('!') {
+                            glob.to_string()
+                        } else {
+                            format!("!{glob}")
+                        };
+                        if let Err(e) = builder.add(&exclude_pattern) {
+                            eprintln!("Warning: Invalid exclude glob '{exclude_pattern}': {e}");
+                        }
+                    }
+                }
+
+                match builder.build() {
+                    Ok(overrides) => Some(overrides),
+                    Err(e) => {
+                        eprintln!("Warning: Failed to build glob overrides: {e}");
+                        None
+                    }
+                }
+            } else {
+                None
+            };
+
+            if let Some(overrides) = globs {
+                walk_builder.overrides(overrides);
             }
 
             walk_builder.build_parallel().run(|| {
@@ -231,8 +273,16 @@ where
                         Ok(entry) => {
                             let file_path = entry.path();
 
-                            if entry.file_type().is_some_and(|ft| ft.is_dir())
-                                || !ts_extensions
+                            // Skip directories
+                            if entry.file_type().is_some_and(|ft| ft.is_dir()) {
+                                return WalkState::Continue;
+                            }
+
+                            // If glob patterns are used, the walker already filtered files
+                            // If no glob patterns, use extension filtering
+                            if config.include_globs.is_none()
+                                && config.exclude_globs.is_none()
+                                && !ts_extensions
                                     .iter()
                                     .any(|ext| file_path.to_string_lossy().ends_with(ext))
                             {
@@ -287,7 +337,7 @@ where
                         }
                         Err(err) => {
                             error_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                            let error_msg = format!("Error walking directory: {}", err);
+                            let error_msg = format!("Error walking directory: {err}");
                             errors.lock().unwrap().push(error_msg);
                         }
                     }
@@ -299,10 +349,6 @@ where
             let unmodified = unmodified_count.load(std::sync::atomic::Ordering::Relaxed);
             let errors = error_count.load(std::sync::atomic::Ordering::Relaxed);
 
-            if modified + unmodified + errors == 0 {
-                return Err(ExecutionError::NoFilesFound);
-            }
-
             Ok(ExecutionStats {
                 files_modified: modified,
                 files_unmodified: unmodified,
@@ -311,7 +357,7 @@ where
         })
         .await
         .map_err(|e| ExecutionError::ThreadExecution {
-            message: format!("Directory processing failed: {:?}", e),
+            message: format!("Directory processing failed: {e:?}"),
         })?
     }
 
@@ -423,7 +469,7 @@ where
         // Initialize QuickJS runtime and context
         let runtime = AsyncRuntime::new().map_err(|e| ExecutionError::Runtime {
             source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                message: format!("Failed to create AsyncRuntime: {}", e),
+                message: format!("Failed to create AsyncRuntime: {e}"),
             },
         })?;
 
@@ -452,7 +498,7 @@ where
             .await
             .map_err(|e| ExecutionError::Runtime {
                 source: crate::sandbox::errors::RuntimeError::ContextCreationFailed {
-                    message: format!("Failed to create AsyncContext: {}", e),
+                    message: format!("Failed to create AsyncContext: {e}"),
                 },
             })?;
 
@@ -460,7 +506,7 @@ where
         let result: Result<Option<String>, ExecutionError> = async_with!(context => |ctx| {
             global_attachment.attach(&ctx).map_err(|e| ExecutionError::Runtime {
                 source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                    message: format!("Failed to attach global modules: {}", e),
+                    message: format!("Failed to attach global modules: {e}"),
                 },
             })?;
 
@@ -469,7 +515,7 @@ where
                     .catch(&ctx)
                     .map_err(|e| ExecutionError::Runtime {
                         source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                            message: format!("Failed to declare module: {}", e),
+                            message: format!("Failed to declare module: {e}"),
                         },
                     })?;
 
@@ -479,7 +525,19 @@ where
                     .set("CODEMOD_TARGET_FILE_PATH", file_path_str.as_ref())
                     .map_err(|e| ExecutionError::Runtime {
                         source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                            message: format!("Failed to set global variable: {}", e),
+                            message: format!("Failed to set global variable: {e}"),
+                        },
+                    })?;
+
+                // Set the language for the codemod
+                let language_str = config.language
+                    .map(|lang| lang.to_string())
+                    .unwrap_or_else(|| "typescript".to_string());
+                ctx.globals()
+                    .set("CODEMOD_LANGUAGE", language_str)
+                    .map_err(|e| ExecutionError::Runtime {
+                        source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                            message: format!("Failed to set language global variable: {e}"),
                         },
                     })?;
 
@@ -552,7 +610,7 @@ where
         match result {
             Ok(new_content) => Ok(ExecutionOutput::success(new_content, content)),
             Err(e) => {
-                println!("Error: {:?}", e);
+                println!("Error: {e:?}");
                 Ok(ExecutionOutput::error(e.to_string()))
             }
         }

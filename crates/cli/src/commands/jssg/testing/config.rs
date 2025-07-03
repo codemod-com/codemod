@@ -34,8 +34,7 @@ impl FromStr for ReporterType {
             "json" => Ok(ReporterType::Json),
             "terse" => Ok(ReporterType::Terse),
             _ => Err(format!(
-                "Invalid reporter type: {}. Valid options: console, json, terse",
-                s
+                "Invalid reporter type: {s}. Valid options: console, json, terse"
             )),
         }
     }

@@ -1,0 +1,17 @@
+{
+  "name": "{name}",
+  "version": "0.1.0",
+  "description": "{description}",
+  "type": "module",
+  "dependencies": {
+    "@ast-grep/cli": "^0.15.0",
+    "@ast-grep/napi": "^0.15.0"
+  },
+  "devDependencies": {
+    "@codemod.com/jssg-types": "^1.0.3"
+  },
+  "scripts": {
+    "test": "node tests/test.js",
+    "apply": "node scripts/apply-codemod.js"
+  }
+}

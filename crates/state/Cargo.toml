@@ -14,10 +14,9 @@ butterflow-models = { workspace = true }
 tokio = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-anyhow = { workspace = true }
 uuid = { workspace = true }
 log = { workspace = true }
 async-trait = { workspace = true }
 reqwest = { workspace = true }
-dirs = "5.0"
+dirs = { workspace = true }
 chrono = { workspace = true }

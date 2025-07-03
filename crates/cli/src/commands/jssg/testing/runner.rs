@@ -147,7 +147,7 @@ impl TestRunner {
             .into_iter()
             .map(|(name, result)| {
                 Trial::test(name, move || {
-                    result.map_err(|e| libtest_mimic::Failed::from(format!("{}", e)))
+                    result.map_err(|e| libtest_mimic::Failed::from(format!("{e}")))
                 })
             })
             .collect();
@@ -174,7 +174,7 @@ impl TestRunner {
     ) -> Result<()> {
         let should_expect_error = test_case.should_expect_error(&options.expect_errors);
 
-        println!("should_expect_error: {:?}", should_expect_error);
+        println!("should_expect_error: {should_expect_error:?}");
         // Check for missing expected files
         if let Err(TestError::NoExpectedFile {
             test_dir,
@@ -328,7 +328,7 @@ impl TestRunner {
                         similar::ChangeTag::Insert => "+",
                         similar::ChangeTag::Equal => " ",
                     };
-                    result.push_str(&format!("{}{}", sign, change));
+                    result.push_str(&format!("{sign}{change}"));
                 }
             }
         }
@@ -341,7 +341,7 @@ impl TestRunner {
                     similar::ChangeTag::Insert => "+",
                     similar::ChangeTag::Equal => " ",
                 };
-                result.push_str(&format!("{}{}", sign, change));
+                result.push_str(&format!("{sign}{change}"));
             }
         }
 

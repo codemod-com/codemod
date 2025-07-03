@@ -19,7 +19,7 @@ use butterflow_models::workflow::{Workflow, WorkflowRun};
 fn create_basic_node(id: &str, depends_on: Vec<&str>) -> Node {
     Node {
         id: id.to_string(),
-        name: format!("Node {}", id),
+        name: format!("Node {id}"),
         description: None,
         r#type: NodeType::Automatic,
         depends_on: depends_on.into_iter().map(String::from).collect(),
@@ -35,7 +35,7 @@ fn create_basic_node(id: &str, depends_on: Vec<&str>) -> Node {
         }),
         steps: vec![Step {
             name: "Step 1".to_string(),
-            action: StepAction::RunScript(format!("echo 'Running {}'", id)),
+            action: StepAction::RunScript(format!("echo 'Running {id}'")),
             env: None,
         }],
         env: HashMap::new(),
@@ -49,7 +49,7 @@ fn create_matrix_node_values(
 ) -> Node {
     Node {
         id: id.to_string(),
-        name: format!("Node {}", id),
+        name: format!("Node {id}"),
         description: None,
         r#type: NodeType::Automatic,
         depends_on: depends_on.into_iter().map(String::from).collect(),
@@ -69,7 +69,7 @@ fn create_matrix_node_values(
         }),
         steps: vec![Step {
             name: "Step 1".to_string(),
-            action: StepAction::RunScript(format!("echo 'Running matrix {}'", id)),
+            action: StepAction::RunScript(format!("echo 'Running matrix {id}'")),
             env: None,
         }],
         env: HashMap::new(),
@@ -79,7 +79,7 @@ fn create_matrix_node_values(
 fn create_matrix_node_from_state(id: &str, depends_on: Vec<&str>, state_key: &str) -> Node {
     Node {
         id: id.to_string(),
-        name: format!("Node {}", id),
+        name: format!("Node {id}"),
         description: None,
         r#type: NodeType::Automatic,
         depends_on: depends_on.into_iter().map(String::from).collect(),
@@ -99,7 +99,7 @@ fn create_matrix_node_from_state(id: &str, depends_on: Vec<&str>, state_key: &st
         }),
         steps: vec![Step {
             name: "Step 1".to_string(),
-            action: StepAction::RunScript(format!("echo 'Running matrix from state {}'", id)),
+            action: StepAction::RunScript(format!("echo 'Running matrix from state {id}'")),
             env: None,
         }],
         env: HashMap::new(),
@@ -114,7 +114,7 @@ fn create_manual_node(
 ) -> Node {
     Node {
         id: id.to_string(),
-        name: format!("Node {}", id),
+        name: format!("Node {id}"),
         description: None,
         r#type: node_type,
         depends_on: depends_on.into_iter().map(String::from).collect(),
@@ -130,7 +130,7 @@ fn create_manual_node(
         }),
         steps: vec![Step {
             name: "Step 1".to_string(),
-            action: StepAction::RunScript(format!("echo 'Running manual {}'", id)),
+            action: StepAction::RunScript(format!("echo 'Running manual {id}'")),
             env: None,
         }],
         env: HashMap::new(),

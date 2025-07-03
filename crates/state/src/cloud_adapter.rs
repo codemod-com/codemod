@@ -151,8 +151,7 @@ impl StateAdapter for CloudStateAdapter {
                     .await
                     .unwrap_or_else(|_| "Unknown error".to_string());
                 return Err(Error::Other(format!(
-                    "Failed to save workflow run: {}",
-                    error_text
+                    "Failed to save workflow run: {error_text}"
                 )));
             }
 
@@ -199,8 +198,7 @@ impl StateAdapter for CloudStateAdapter {
                 .await
                 .unwrap_or_else(|_| "Unknown error".to_string());
             return Err(Error::Other(format!(
-                "Failed to apply workflow run diff: {}",
-                error_text
+                "Failed to apply workflow run diff: {error_text}"
             )));
         }
 
@@ -231,8 +229,7 @@ impl StateAdapter for CloudStateAdapter {
                 .await
                 .unwrap_or_else(|_| "Unknown error".to_string());
             return Err(Error::Other(format!(
-                "Failed to get workflow run: {}",
-                error_text
+                "Failed to get workflow run: {error_text}"
             )));
         }
 
@@ -254,8 +251,7 @@ impl StateAdapter for CloudStateAdapter {
                 .await
                 .unwrap_or_else(|_| "Unknown error".to_string());
             return Err(Error::Other(format!(
-                "Failed to list workflow runs: {}",
-                error_text
+                "Failed to list workflow runs: {error_text}"
             )));
         }
 
@@ -306,7 +302,7 @@ impl StateAdapter for CloudStateAdapter {
                     .text()
                     .await
                     .unwrap_or_else(|_| "Unknown error".to_string());
-                return Err(Error::Other(format!("Failed to save task: {}", error_text)));
+                return Err(Error::Other(format!("Failed to save task: {error_text}")));
             }
 
             let sync_response: SyncResponse = response.json().await?;
@@ -352,8 +348,7 @@ impl StateAdapter for CloudStateAdapter {
                 .await
                 .unwrap_or_else(|_| "Unknown error".to_string());
             return Err(Error::Other(format!(
-                "Failed to apply task diff: {}",
-                error_text
+                "Failed to apply task diff: {error_text}"
             )));
         }
 
@@ -383,7 +378,7 @@ impl StateAdapter for CloudStateAdapter {
                 .text()
                 .await
                 .unwrap_or_else(|_| "Unknown error".to_string());
-            return Err(Error::Other(format!("Failed to get task: {}", error_text)));
+            return Err(Error::Other(format!("Failed to get task: {error_text}")));
         }
 
         let task = response.json().await?;
@@ -403,7 +398,7 @@ impl StateAdapter for CloudStateAdapter {
                 .text()
                 .await
                 .unwrap_or_else(|_| "Unknown error".to_string());
-            return Err(Error::Other(format!("Failed to get tasks: {}", error_text)));
+            return Err(Error::Other(format!("Failed to get tasks: {error_text}")));
         }
 
         let tasks: Vec<Task> = response.json().await?;
@@ -447,8 +442,7 @@ impl StateAdapter for CloudStateAdapter {
                 .await
                 .unwrap_or_else(|_| "Unknown error".to_string());
             return Err(Error::Other(format!(
-                "Failed to update state: {}",
-                error_text
+                "Failed to update state: {error_text}"
             )));
         }
 
@@ -492,8 +486,7 @@ impl StateAdapter for CloudStateAdapter {
                 .await
                 .unwrap_or_else(|_| "Unknown error".to_string());
             return Err(Error::Other(format!(
-                "Failed to apply state diff: {}",
-                error_text
+                "Failed to apply state diff: {error_text}"
             )));
         }
 
@@ -523,7 +516,7 @@ impl StateAdapter for CloudStateAdapter {
                 .text()
                 .await
                 .unwrap_or_else(|_| "Unknown error".to_string());
-            return Err(Error::Other(format!("Failed to get state: {}", error_text)));
+            return Err(Error::Other(format!("Failed to get state: {error_text}")));
         }
 
         let state: HashMap<String, Value> = response.json().await?;

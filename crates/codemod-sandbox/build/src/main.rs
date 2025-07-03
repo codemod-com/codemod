@@ -70,7 +70,7 @@ impl<'a> WasmBuilder<'a> {
 
     async fn execute_build_pipeline(&self) -> Result<()> {
         let package_name = "codemod-sandbox";
-        let wasm_filename = format!("{}.wasm", package_name);
+        let wasm_filename = format!("{package_name}.wasm");
 
         self.compile_wasm_package(package_name)
             .await
@@ -81,12 +81,12 @@ impl<'a> WasmBuilder<'a> {
             .context("Failed to generate bindings")?;
 
         // Execute post-processing tasks concurrently
-        let js_file = format!("{}_bg.js", package_name);
+        let js_file = format!("{package_name}_bg.js");
         let wasm_file = self
             .config
             .build_target_dir()?
             .join("wasm-bindgen")
-            .join(format!("{}_bg.wasm", package_name));
+            .join(format!("{package_name}_bg.wasm"));
 
         tokio::try_join!(
             self.transform_js_bindings(&js_file),
@@ -248,7 +248,7 @@ impl JsTransformer {
         transformed_lines.push("  [RAW_WASM]: wasm,".to_string());
 
         for symbol in exported_symbols {
-            transformed_lines.push(format!("  {},", symbol));
+            transformed_lines.push(format!("  {symbol},"));
         }
 
         transformed_lines.push("  Parser: Parser,".to_string());

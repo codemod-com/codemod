@@ -1,0 +1,28 @@
+version: "1"
+name: "Test Language Extension Inference"
+description: "Test workflow demonstrating automatic language extension inference"
+
+nodes:
+  - id: test-no-include
+    name: "Test with No Include (Auto-infer)"
+    type: automatic
+    runtime:
+      type: direct
+    steps:
+      - name: "Auto-infer languages from rules"
+        ast-grep:
+          # No include field - should auto-infer from rule languages
+          config_file: "examples/ast-grep-config.yaml"
+
+  - id: test-generic-glob
+    name: "Test with Generic Glob Enhancement"
+    type: automatic
+    runtime:
+      type: direct
+    depends_on: ["test-no-include"]
+    steps:
+      - name: "Enhance generic glob with language extensions"
+        ast-grep:
+          include:
+            - "**" # Generic glob - should be enhanced with .js, .mjs, .cjs extensions
+          config_file: "examples/ast-grep-config.yaml"

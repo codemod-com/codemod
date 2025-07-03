@@ -106,7 +106,7 @@ impl<'js> SgRootRjs<'js> {
         #[cfg(not(feature = "wasm"))]
         {
             let lang = SupportLang::from_str(&lang_str)
-                .map_err(|e| format!("Unsupported language: {}. Error: {}", lang_str, e))?;
+                .map_err(|e| format!("Unsupported language: {lang_str}. Error: {e}"))?;
             let grep = AstGrep::new(src, lang);
             Ok(SgRootRjs {
                 inner_arc: Arc::new(grep),

@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "codemod-next@*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.1.0)'
+        required: true
+        type: string
 
 jobs:
   build:
@@ -14,25 +20,19 @@ jobs:
         include:
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
-            binary_name: butterflow-linux-x86_64
-          # - os: self-hosted
-          #   target: aarch64-unknown-linux-gnu
-          #   binary_name: butterflow-linux-aarch64
+            binary_name: codemod-linux-x86_64-gnu
+          - os: ubuntu-22.04-arm
+            target: aarch64-unknown-linux-gnu
+            binary_name: codemod-linux-aarch64-gnu
           - os: macos-latest
             target: aarch64-apple-darwin
-            binary_name: butterflow-darwin-aarch64
+            binary_name: codemod-darwin-aarch64
           - os: macos-latest
             target: x86_64-apple-darwin
-            binary_name: butterflow-darwin-x86_64
-          # - os: windows-latest
-          #   target: x86_64-pc-windows-msvc
-          #   binary_name: butterflow-windows-x86_64.exe
-          # - os: windows-latest
-          #   target: i686-pc-windows-msvc
-          #   binary_name: butterflow-windows-i686.exe
-          # - os: windows-latest
-          #   target: aarch64-pc-windows-msvc
-          #   binary_name: butterflow-windows-aarch64.exe
+            binary_name: codemod-darwin-x86_64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary_name: codemod-windows-x86_64.exe
 
     steps:
       - uses: actions/checkout@v4
@@ -148,6 +148,7 @@ jobs:
     name: Generate Changelog
     runs-on: ubuntu-22.04
     needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     outputs:
       changelog: ${{ steps.git-cliff.outputs.content }}
     steps:
@@ -199,6 +200,7 @@ jobs:
     name: Create Release
     needs: [build, changelog]
     runs-on: ubuntu-22.04
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
     steps:
@@ -220,3 +222,87 @@ jobs:
             aarch64-pc-windows-msvc/*
             aarch64-unknown-linux-gnu/*
           generate_release_notes: true
+
+  release_npm:
+    name: Release NPM Package
+    needs: [build]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Extract version from tag or input
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            # Use manual input version for workflow_dispatch
+            VERSION="${{ github.event.inputs.version }}"
+            NPM_TAG="alpha"
+          else
+            # Extract version from tag (e.g., codemod-next@0.1.0 -> 0.1.0-next.1)
+            VERSION=$(echo "${{ github.ref_name }}" | sed 's/codemod-next@//')
+            NPM_TAG="next"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "npm_tag=$NPM_TAG" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+          echo "NPM Tag: $NPM_TAG"
+
+      - name: Setup npm packages with binaries
+        run: |
+          # Create directories if they don't exist
+          mkdir -p crates/cli/npm/platforms/darwin-arm64
+          mkdir -p crates/cli/npm/platforms/darwin-x64  
+          mkdir -p crates/cli/npm/platforms/linux-x64-gnu
+          
+          # Copy binaries to platform packages
+          cp artifacts/aarch64-apple-darwin/codemod-darwin-aarch64 crates/cli/npm/platforms/darwin-arm64/codemod
+          cp artifacts/x86_64-apple-darwin/codemod-darwin-x86_64 crates/cli/npm/platforms/darwin-x64/codemod
+          cp artifacts/x86_64-unknown-linux-gnu/codemod-linux-x86_64-gnu crates/cli/npm/platforms/linux-x64-gnu/codemod
+          cp artifacts/aarch64-unknown-linux-gnu/codemod-linux-aarch64-gnu crates/cli/npm/platforms/linux-arm64-gnu/codemod
+          cp artifacts/x86_64-pc-windows-msvc/codemod-windows-x86_64.exe crates/cli/npm/platforms/win32-x64-msvc/codemod.exe
+          
+          # Make binaries executable
+          chmod +x crates/cli/npm/platforms/*/codemod
+
+      - name: Update package versions
+        run: |
+          # Update main package version
+          sed -i 's/"version": "0.0.0"/"version": "${{ steps.version.outputs.version }}"/' crates/cli/npm/package.json
+          
+          # Update platform package versions
+          for platform in crates/cli/npm/platforms/*/package.json; do
+            sed -i 's/"version": "0.0.0"/"version": "${{ steps.version.outputs.version }}"/' "$platform"
+          done
+          
+          # Update optional dependencies versions in main package
+          sed -i 's/"@codemod\.com\/cli-\([^"]*\)": "0\.0\.0"/"@codemod.com\/cli-\1": "${{ steps.version.outputs.version }}"/g' crates/cli/npm/package.json
+
+      - name: Publish platform packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # Publish each platform package
+          for platform in crates/cli/npm/platforms/*/; do
+            echo "Publishing $(basename $platform)..."
+            cd "$platform"
+            npm publish
+            cd - > /dev/null
+          done
+
+      - name: Publish main package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cd crates/cli/npm
+          npm publish --tag ${{ steps.version.outputs.npm_tag }}

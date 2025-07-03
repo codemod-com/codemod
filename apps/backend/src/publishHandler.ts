@@ -12,6 +12,7 @@ import {
   CODEMOD_CONFIG_INVALID,
   CODEMOD_NAME_TAKEN,
   CODEMOD_VERSION_EXISTS,
+  GONE,
   INTERNAL_SERVER_ERROR,
   NO_CODEMOD_TO_PUBLISH,
   NO_CONFIG_FILE_FOUND,
@@ -234,7 +235,14 @@ export const publishHandler: RouteHandler<{
       take: 1,
     });
 
-    if (latestVersion !== null && !semver.gt(version, latestVersion.version)) {
+    if (latestVersion === null) {
+      return reply.code(410).send({
+        errorText:
+          "This endpoint is no longer supported. Please use the new CLI instead.",
+        error: GONE,
+      });
+    }
+    if (!semver.gt(version, latestVersion.version)) {
       return reply.code(400).send({
         error: CODEMOD_VERSION_EXISTS,
         errorText: `Codemod ${name} version ${version} is lower than the latest published or the same as the latest published version: ${latestVersion.version}`,

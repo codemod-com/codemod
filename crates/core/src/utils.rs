@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use butterflow_models::step::StepAction;
 use serde_yaml;
@@ -21,8 +21,7 @@ pub fn parse_workflow_file<P: AsRef<Path>>(path: P) -> Result<Workflow> {
                 Err(json_err) => {
                     // Both parsing attempts failed
                     Err(Error::WorkflowValidation(format!(
-                        "Failed to parse workflow file. YAML error: {}, JSON error: {}",
-                        yaml_err, json_err
+                        "Failed to parse workflow file. YAML error: {yaml_err}, JSON error: {json_err}"
                     )))
                 }
             }
@@ -142,13 +141,13 @@ fn dfs_cycle_detect<'a>(
         for &neighbor in neighbors {
             if in_progress.contains(neighbor) {
                 // Found a cycle
-                let mut cycle = format!("{} → {}", node, neighbor);
+                let mut cycle = format!("{node} → {neighbor}");
                 let mut current = neighbor;
                 while current != node {
                     for &n in graph.keys() {
                         if let Some(deps) = graph.get(n) {
                             if deps.contains(&current) {
-                                cycle = format!("{} → {}", n, cycle);
+                                cycle = format!("{n} → {cycle}");
                                 current = n;
                                 break;
                             }
@@ -181,8 +180,7 @@ pub fn parse_params(params: &[String]) -> Result<HashMap<String, String>> {
         let parts: Vec<&str> = param.splitn(2, '=').collect();
         if parts.len() != 2 {
             return Err(Error::Other(format!(
-                "Invalid parameter format: {}. Expected format: key=value",
-                param
+                "Invalid parameter format: {param}. Expected format: key=value"
             )));
         }
 
@@ -203,5 +201,12 @@ pub fn format_duration(seconds: u64) -> String {
     let minutes = (seconds % 3600) / 60;
     let seconds = seconds % 60;
 
-    format!("{:02}:{:02}:{:02}", hours, minutes, seconds)
+    format!("{hours:02}:{minutes:02}:{seconds:02}")
+}
+
+pub fn get_cache_dir() -> Result<PathBuf> {
+    let home_dir = dirs::data_dir()
+        .ok_or_else(|| Error::Other("Could not find home directory".to_string()))?;
+    let cache_dir = home_dir.join("codemod").join("cache").join("packages");
+    Ok(cache_dir)
 }

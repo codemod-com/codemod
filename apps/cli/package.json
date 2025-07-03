@@ -4,7 +4,7 @@
   "imports": {
     "#*": "./src/*"
   },
-  "version": "0.18.5",
+  "version": "0.18.8",
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,
@@ -86,7 +86,8 @@
   "license": "Apache License, Version 2.0",
   "files": ["./dist/index.cjs", "LICENSE", "README.md"],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "tag": "legacy"
   },
   "dependencies": {
     "@ast-grep/cli": "catalog:",

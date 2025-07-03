@@ -1,9 +1,10 @@
 // https://github.com/prisma/prisma/issues/1787 hangs at prisma issues from 2019
 
 generator client {
-  provider      = "prisma-client-js"
-  engineType    = "binary"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  engineType      = "binary"
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
 }
 
 generator json {
@@ -13,6 +14,7 @@ generator json {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URI")
+  schemas  = ["legacy"]
 }
 
 model Codemod {
@@ -39,6 +41,8 @@ model Codemod {
   labels           String[]         @default([])
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @default(now()) @updatedAt
+
+  @@schema("legacy")
 }
 
 model CodemodVersion {
@@ -64,6 +68,8 @@ model CodemodVersion {
   codemod                  Codemod  @relation(fields: [codemodId], references: [id], onDelete: Cascade)
   createdAt                DateTime @default(now())
   updatedAt                DateTime @default(now()) @updatedAt
+
+  @@schema("legacy")
 }
 
 model Tag {
@@ -74,6 +80,8 @@ model Tag {
   displayName    String   @db.VarChar(255)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @default(now()) @updatedAt
+
+  @@schema("legacy")
 }
 
 model UserLoginIntent {
@@ -81,6 +89,8 @@ model UserLoginIntent {
   token     String?  @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  @@schema("legacy")
 }
 
 model CodeDiff {
@@ -91,11 +101,15 @@ model CodeDiff {
   after     String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  @@schema("legacy")
 }
 
 model ApiKey {
   externalId String @db.VarChar(32)
   uuid       String @db.VarChar(36)
   keyId      String @db.VarChar(32)
+
   @@id([uuid, keyId])
+  @@schema("legacy")
 }

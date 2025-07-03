@@ -1,7 +1,7 @@
 {
   "name": "@codemod-com/api-types",
   "author": "Codemod, Inc.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The API types package that was created to avoid circular dependencies between database and utilities packages",
   "type": "module",
   "main": "./dist/index.js",

@@ -1,0 +1,27 @@
+version: "1"
+nodes:
+  - id: setup
+    name: Setup Environment
+    type: automatic
+    steps:
+      - id: init
+        name: Initialize
+        run: ./scripts/setup.sh
+
+  - id: transform
+    name: Apply Transformations
+    type: automatic
+    depends_on: [setup]
+    steps:
+      - id: apply
+        name: Apply Changes
+        run: ./scripts/transform.sh
+
+  - id: cleanup
+    name: Cleanup
+    type: automatic
+    depends_on: [transform]
+    steps:
+      - id: clean
+        name: Clean temporary files
+        run: ./scripts/cleanup.sh
