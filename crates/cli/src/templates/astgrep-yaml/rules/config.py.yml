@@ -1,0 +1,9 @@
+# Codemod Studio uses ast-grep to match and rewrite code.
+# https://ast-grep.github.io/guide/rule-config.html#rule
+id: python2-to-python3-except-clause
+language: python
+rule:
+  pattern: ","
+  inside:
+    kind: except_clause
+fix: " as"

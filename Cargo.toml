@@ -7,7 +7,7 @@ members = [
     "crates/state",
     "crates/codemod-sandbox",
     "crates/codemod-sandbox/build",
-    "xtask",
+    "xtask"
 ]
 resolver = "2"
 

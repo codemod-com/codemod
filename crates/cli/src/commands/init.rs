@@ -86,12 +86,20 @@ const SHELL_CLEANUP_SCRIPT: &str = include_str!("../templates/shell/scripts/clea
 
 // JS ast-grep project templates
 const JS_PACKAGE_JSON_TEMPLATE: &str = include_str!("../templates/js-astgrep/package.json");
-const JS_APPLY_SCRIPT: &str = include_str!("../templates/js-astgrep/scripts/codemod.ts");
+const JS_APPLY_SCRIPT_FOR_JAVASCRIPT: &str = include_str!("../templates/js-astgrep/scripts/codemod.js.ts");
+const JS_APPLY_SCRIPT_FOR_PYTHON: &str = include_str!("../templates/js-astgrep/scripts/codemod.py.ts");
+const JS_APPLY_SCRIPT_FOR_RUST: &str = include_str!("../templates/js-astgrep/scripts/codemod.rs.ts");
+const JS_APPLY_SCRIPT_FOR_GO: &str = include_str!("../templates/js-astgrep/scripts/codemod.go.ts");
+const JS_APPLY_SCRIPT_FOR_JAVA: &str = include_str!("../templates/js-astgrep/scripts/codemod.java.ts");
 const JS_TSCONFIG_TEMPLATE: &str = include_str!("../templates/js-astgrep/tsconfig.json");
 const JS_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.js");
 const JS_TEST_EXPECTED: &str = include_str!("../templates/js-astgrep/tests/fixtures/expected.js");
 // ast-grep YAML project templates
-const ASTGREP_PATTERNS: &str = include_str!("../templates/astgrep-yaml/rules/config.yml");
+const ASTGREP_PATTERNS_FOR_JAVASCRIPT: &str = include_str!("../templates/astgrep-yaml/rules/config.js.yml");
+const ASTGREP_PATTERNS_FOR_PYTHON: &str = include_str!("../templates/astgrep-yaml/rules/config.py.yml");
+const ASTGREP_PATTERNS_FOR_RUST: &str = include_str!("../templates/astgrep-yaml/rules/config.rs.yml");
+const ASTGREP_PATTERNS_FOR_GO: &str = include_str!("../templates/astgrep-yaml/rules/config.go.yml");
+const ASTGREP_PATTERNS_FOR_JAVA: &str = include_str!("../templates/astgrep-yaml/rules/config.java.yml");
 
 static ROCKET: Emoji<'_, '_> = Emoji("🚀 ", "");
 static CHECKMARK: Emoji<'_, '_> = Emoji("✓ ", "");
@@ -193,7 +201,7 @@ fn interactive_setup(project_name: &str, args: &Command) -> Result<ProjectConfig
     let language = if let Some(lang) = &args.language {
         lang.clone()
     } else {
-        select_language(&project_type)?
+        select_language()?
     };
 
     // Project details
@@ -264,40 +272,33 @@ fn select_project_type() -> Result<ProjectType> {
     }
 }
 
-fn select_language(project_type: &ProjectType) -> Result<String> {
-    match project_type {
-        ProjectType::Shell => {
-            let options = vec![
-                "JavaScript/TypeScript",
-                "Python",
-                "Rust",
-                "Go",
-                "Java",
-                "Other",
-            ];
+fn select_language() -> Result<String> {
+    let options = vec![
+        "JavaScript/TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "Java",
+        "Other",
+    ];
 
-            let selection =
-                Select::new("Which language would you like to target?", options).prompt()?;
+    let selection =
+        Select::new("Which language would you like to target?", options).prompt()?;
 
-            let language = match selection {
-                "JavaScript/TypeScript" => "javascript",
-                "Python" => "python",
-                "Rust" => "rust",
-                "Go" => "go",
-                "Java" => "java",
-                "Other" => {
-                    let custom = Text::new("Enter language name:").prompt()?;
-                    return Ok(custom);
-                }
-                _ => "javascript",
-            };
-
-            Ok(language.to_string())
+    let language = match selection {
+        "JavaScript/TypeScript" => "javascript",
+        "Python" => "python",
+        "Rust" => "rust",
+        "Go" => "go",
+        "Java" => "java",
+        "Other" => {
+            let custom = Text::new("Enter language name:").prompt()?;
+            return Ok(custom);
         }
-        ProjectType::AstGrepJs | ProjectType::AstGrepYaml => {
-            Ok("javascript".to_string()) // Default for ast-grep projects
-        }
-    }
+        _ => "javascript",
+    };
+
+    Ok(language.to_string())
 }
 
 fn create_project(project_path: &Path, config: &ProjectConfig) -> Result<()> {
@@ -385,7 +386,15 @@ fn create_js_astgrep_project(project_path: &Path, config: &ProjectConfig) -> Res
     let scripts_dir = project_path.join("scripts");
     fs::create_dir_all(&scripts_dir)?;
 
-    fs::write(scripts_dir.join("codemod.ts"), JS_APPLY_SCRIPT)?;
+    let codemod_script = match config.language.as_str() {
+        "javascript" => JS_APPLY_SCRIPT_FOR_JAVASCRIPT.to_string(),
+        "python" => JS_APPLY_SCRIPT_FOR_PYTHON.to_string(),
+        "rust" => JS_APPLY_SCRIPT_FOR_RUST.to_string(),
+        "go" => JS_APPLY_SCRIPT_FOR_GO.to_string(),
+        "java" => JS_APPLY_SCRIPT_FOR_JAVA.to_string(),
+        _ => JS_APPLY_SCRIPT_FOR_JAVASCRIPT.to_string(),
+    };
+    fs::write(scripts_dir.join("codemod.ts"), codemod_script.as_str())?;
 
     // Create tsconfig.json
     fs::write(project_path.join("tsconfig.json"), JS_TSCONFIG_TEMPLATE)?;
@@ -396,12 +405,20 @@ fn create_js_astgrep_project(project_path: &Path, config: &ProjectConfig) -> Res
     Ok(())
 }
 
-fn create_astgrep_yaml_project(project_path: &Path, _config: &ProjectConfig) -> Result<()> {
+fn create_astgrep_yaml_project(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     // Create rules directory
     let rules_dir = project_path.join("rules");
     fs::create_dir_all(&rules_dir)?;
 
-    fs::write(rules_dir.join("config.yml"), ASTGREP_PATTERNS)?;
+    let config_file = match config.language.as_str() {
+        "javascript" => ASTGREP_PATTERNS_FOR_JAVASCRIPT,
+        "python" => ASTGREP_PATTERNS_FOR_PYTHON,
+        "rust" => ASTGREP_PATTERNS_FOR_RUST,
+        "go" => ASTGREP_PATTERNS_FOR_GO,
+        "java" => ASTGREP_PATTERNS_FOR_JAVA,
+        _ => ASTGREP_PATTERNS_FOR_JAVASCRIPT,
+    };
+    fs::write(rules_dir.join("config.yml"), config_file)?;
 
     // Create scripts directory
     let scripts_dir = project_path.join("scripts");
