@@ -8,18 +8,17 @@ The Codemod command-line interface (CLI) allows you to interact with Codemod pla
 The Codemod CLI accepts a variety of subcommands and options to explore, publish, and run codemods.
 
 <Warning>
-The legacy Codemod CLI is **deprecated and no longer maintained**.
+  The legacy Codemod CLI is **deprecated and no longer maintained**.
 
-We've **completely rewritten** the CLI using modern technologies — including powerful support for `ast-grep` and new features.
+  We've **completely rewritten** the CLI using modern technologies — including powerful support for `ast-grep` and new features.
 
-**To use the new CLI:**
+  **To use the new CLI:**
 
-```
-npx codemod@next
-```
+  ```
+  npx codemod@next
+  ```
 
-Read the new CLI docs [here ->](/cli)
-
+  Read the new CLI docs [here -\>](/cli)
 </Warning>
 
 <Note>
@@ -89,6 +88,18 @@ This command has special flags available to it that can be combined together to 
 </Tabs>
 
 ### `codemod publish`
+
+<Warning>
+  You can no longer publish **new codemods** using the legacy CLI.
+
+  You may still publish **new versions** of codemods that were already published using the legacy CLI.
+
+  To publish new codemods, use the new CLI:
+
+  ```
+  npx codemod@next publish
+  ```
+</Warning>
 
 Can be used to publish a codemod to Codemod Registry.
 
