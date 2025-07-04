@@ -5,7 +5,8 @@ use codemod_sandbox::sandbox::{
     filesystem::{RealFileSystem, WalkOptions},
     resolvers::OxcResolver,
 };
-use std::{path::Path, sync::Arc};
+use codemod_sandbox::tree_sitter::SupportedLanguage;
+use std::{path::Path, str::FromStr, sync::Arc};
 
 use crate::dirty_git_check;
 use codemod_sandbox::utils::project_discovery::find_tsconfig;
@@ -104,8 +105,12 @@ pub async fn handler(args: &Command) -> Result<()> {
         }
     }
 
-    if let Some(language) = &args.language {
-        config = config.with_language(language.parse()?);
+    if let Some(language) = args.language.as_ref() {
+        config = config.with_language(
+            SupportedLanguage::from_str(language).unwrap_or(SupportedLanguage::Typescript),
+        );
+    } else {
+        config = config.with_language(SupportedLanguage::Typescript);
     }
 
     if let Some(extensions) = &args.extensions {

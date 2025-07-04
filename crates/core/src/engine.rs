@@ -30,6 +30,7 @@ use butterflow_runners::Runner;
 use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
+use codemod_sandbox::tree_sitter::SupportedLanguage;
 use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
 use codemod_sandbox::{
     sandbox::{
@@ -42,6 +43,7 @@ use codemod_sandbox::{
     },
     utils::project_discovery::find_tsconfig,
 };
+use std::str::FromStr;
 use std::sync::OnceLock;
 
 pub static GLOBAL_STATS: OnceLock<Mutex<ExecutionStats>> = OnceLock::new();
@@ -1403,30 +1405,25 @@ impl Engine {
         }
 
         // Set language first to get default extensions
-        let language = if let Some(lang_str) = &js_ast_grep.language {
-            let parsed_lang = lang_str
-                .parse()
-                .map_err(|e| Error::Other(format!("Invalid language '{lang_str}': {e}")))?;
-            config = config.with_language(parsed_lang);
-            parsed_lang
+        if let Some(lang_str) = &js_ast_grep.language {
+            config = config.with_language(
+                SupportedLanguage::from_str(lang_str).unwrap_or(SupportedLanguage::Typescript),
+            );
         } else {
             // Parse TypeScript as default
-            let default_lang = "typescript"
-                .parse()
-                .map_err(|e| Error::Other(format!("Failed to parse default language: {e}")))?;
-            config = config.with_language(default_lang);
-            default_lang
-        };
+            config = config.with_language(SupportedLanguage::Typescript);
+        }
 
         // Handle include/exclude patterns with proper glob support
         if let Some(include_patterns) = &js_ast_grep.include {
             config = config.with_include_globs(include_patterns.clone());
         } else {
             // When include is None, use default extensions for the language
-            let default_extensions = get_extensions_for_language(language)
-                .into_iter()
-                .map(|ext| ext.trim_start_matches('.').to_string())
-                .collect();
+            let default_extensions =
+                get_extensions_for_language(config.language.unwrap().to_string().as_str())
+                    .into_iter()
+                    .map(|ext| ext.trim_start_matches('.').to_string())
+                    .collect();
             config = config.with_extensions(default_extensions);
         }
 
