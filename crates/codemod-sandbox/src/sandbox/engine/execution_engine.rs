@@ -7,7 +7,7 @@ use crate::sandbox::errors::ExecutionError;
 use crate::sandbox::filesystem::FileSystem;
 use crate::sandbox::loaders::ModuleLoader;
 use crate::sandbox::resolvers::ModuleResolver;
-use ast_grep_language::SupportLang;
+use crate::tree_sitter::{load_tree_sitter, SupportedLanguage};
 use ignore::{overrides::OverrideBuilder, WalkBuilder, WalkState};
 use llrt_modules::module_builder::ModuleBuilder;
 use rquickjs_git::{async_with, AsyncContext, AsyncRuntime};
@@ -188,7 +188,15 @@ where
                 .unwrap_or(4)
         });
 
-        let language = self.config.language.unwrap_or(SupportLang::TypeScript);
+        let language = load_tree_sitter(
+            self.config
+                .language
+                .as_ref()
+                .unwrap_or(&SupportedLanguage::Typescript),
+            self.config.extensions.as_ref().unwrap_or(&vec![]),
+        )
+        .await
+        .unwrap();
 
         let config = Arc::clone(&self.config);
         let modified_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
@@ -198,7 +206,7 @@ where
         let script_path = Arc::new(script_path.to_path_buf());
         let ts_extensions =
             Arc::new(self.config.extensions.as_ref().cloned().unwrap_or_else(|| {
-                get_extensions_for_language(language)
+                get_extensions_for_language(language.name())
                     .into_iter()
                     .map(|s| s.to_string())
                     .collect()
@@ -530,7 +538,7 @@ where
                     })?;
 
                 // Set the language for the codemod
-                let language_str = config.language
+                let language_str = config.language.as_ref()
                     .map(|lang| lang.to_string())
                     .unwrap_or_else(|| "typescript".to_string());
                 ctx.globals()

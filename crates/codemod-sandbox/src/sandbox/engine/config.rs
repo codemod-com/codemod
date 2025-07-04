@@ -1,8 +1,7 @@
-use ast_grep_language::SupportLang;
-
 use crate::sandbox::filesystem::{FileSystem, WalkOptions};
 use crate::sandbox::loaders::ModuleLoader;
 use crate::sandbox::resolvers::ModuleResolver;
+use crate::tree_sitter::SupportedLanguage;
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -26,7 +25,7 @@ where
     /// Options for directory walking
     pub walk_options: WalkOptions,
     /// Language to use for execution
-    pub language: Option<SupportLang>,
+    pub language: Option<SupportedLanguage>,
     /// Extensions to use for execution
     pub extensions: Option<Vec<String>>,
     /// Include glob patterns for files to process
@@ -89,7 +88,7 @@ where
         self
     }
 
-    pub fn with_language(mut self, language: SupportLang) -> Self {
+    pub fn with_language(mut self, language: SupportedLanguage) -> Self {
         self.language = Some(language);
         self
     }
