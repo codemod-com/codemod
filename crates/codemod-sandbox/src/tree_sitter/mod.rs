@@ -4,11 +4,11 @@ use reqwest;
 use serde::{Deserialize, Serialize};
 use std::{env, fmt, str::FromStr};
 
-pub async fn load_tree_sitter(
-    language: &SupportedLanguage,
-    extensions: &Vec<String>,
-) -> Result<DynamicLang, String> {
-    let os = if env::consts::OS == "macos" {
+use crate::sandbox::engine::language_data::get_extensions_for_language;
+
+pub async fn load_tree_sitter(language: &SupportedLanguage) -> Result<DynamicLang, String> {
+    let extensions = get_extensions_for_language(language.to_string().as_str());
+    let os: &'static str = if env::consts::OS == "macos" {
         "darwin"
     } else if env::consts::OS == "windows" {
         "win32"
@@ -62,7 +62,7 @@ pub async fn load_tree_sitter(
             symbol: format!("tree_sitter_{}", language.to_string()),
             meta_var_char: Some('$'),
             expando_char: Some('$'),
-            extensions: extensions.clone(),
+            extensions: extensions.into_iter().map(|s| s.to_string()).collect(),
         }])
         .map_err(|e| format!("Failed to register Rust language: {}", e))?;
     }

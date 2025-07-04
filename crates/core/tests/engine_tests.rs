@@ -1791,6 +1791,8 @@ message: "Found console.log statement"
         )
         .await;
 
+    println!("result 123: {result:?}");
+
     // Should succeed even with no matches
     assert!(
         result.is_ok(),

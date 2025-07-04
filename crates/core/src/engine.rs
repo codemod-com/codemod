@@ -1273,6 +1273,7 @@ impl Engine {
                 &config_path.to_string_lossy(),
                 working_dir_ref,
             )
+            .await
             .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {e}")))?
         } else {
             execute_ast_grep_on_globs(
@@ -1282,6 +1283,7 @@ impl Engine {
                 &config_path.to_string_lossy(),
                 working_dir_ref,
             )
+            .await
             .map_err(|e| Error::Other(format!("AST grep execution failed: {e}")))?
         };
 
