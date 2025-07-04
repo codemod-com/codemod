@@ -30,6 +30,7 @@ butterflow-runners = { path = "crates/runners" }
 butterflow-scheduler = { path = "crates/scheduler" }
 codemod-sandbox = { path = "crates/codemod-sandbox" }
 
+ast-grep-language = "0.38.5"
 anyhow = "1.0"
 async-trait = "0.1"
 chrono = { version = "0.4", features = ["serde"] }
@@ -52,6 +53,7 @@ tokio = { version = "1.36", features = ["full"] }
 uuid = { version = "1.6", features = ["v4", "serde"] }
 walkdir = "2.4"
 ast-grep-dynamic = "0.38.6"
+
 
 wasm-bindgen = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
 wasm-bindgen-cli-support = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }

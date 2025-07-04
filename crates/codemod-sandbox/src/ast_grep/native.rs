@@ -2,49 +2,22 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
+use crate::sandbox::engine::language_data::get_extensions_for_language;
+use crate::tree_sitter::{load_tree_sitter, SupportedLanguage};
 use ast_grep_config::{from_yaml_string, CombinedScan, RuleConfig};
 use ast_grep_core::tree_sitter::StrDoc;
 use ast_grep_core::AstGrep;
-use ast_grep_dynamic::DynamicLang;
+use ast_grep_dynamic::{DynamicLang, Registration};
+use dirs::data_local_dir;
+use futures::future::join_all;
 use ignore::{
     overrides::{Override, OverrideBuilder},
     WalkBuilder,
 };
+use serde::Deserialize;
 use serde_json;
+use std::{env, fmt};
 use thiserror::Error;
-
-use crate::sandbox::engine::language_data::get_extensions_for_language;
-
-/// Convert DynamicLang to its string representation
-fn dynamic_lang_to_string(lang: DynamicLang) -> String {
-    // This matches the string representations used in detect_language function
-    match lang {
-        l if l == DynamicLang::from_str("javascript").unwrap() => "javascript".to_string(),
-        l if l == DynamicLang::from_str("typescript").unwrap() => "typescript".to_string(),
-        l if l == DynamicLang::from_str("tsx").unwrap() => "tsx".to_string(),
-        l if l == DynamicLang::from_str("python").unwrap() => "python".to_string(),
-        l if l == DynamicLang::from_str("rust").unwrap() => "rust".to_string(),
-        l if l == DynamicLang::from_str("go").unwrap() => "go".to_string(),
-        l if l == DynamicLang::from_str("java").unwrap() => "java".to_string(),
-        l if l == DynamicLang::from_str("c").unwrap() => "c".to_string(),
-        l if l == DynamicLang::from_str("cpp").unwrap() => "cpp".to_string(),
-        l if l == DynamicLang::from_str("csharp").unwrap() => "csharp".to_string(),
-        l if l == DynamicLang::from_str("php").unwrap() => "php".to_string(),
-        l if l == DynamicLang::from_str("ruby").unwrap() => "ruby".to_string(),
-        l if l == DynamicLang::from_str("swift").unwrap() => "swift".to_string(),
-        l if l == DynamicLang::from_str("kotlin").unwrap() => "kotlin".to_string(),
-        l if l == DynamicLang::from_str("scala").unwrap() => "scala".to_string(),
-        l if l == DynamicLang::from_str("html").unwrap() => "html".to_string(),
-        l if l == DynamicLang::from_str("css").unwrap() => "css".to_string(),
-        l if l == DynamicLang::from_str("json").unwrap() => "json".to_string(),
-        l if l == DynamicLang::from_str("yaml").unwrap() => "yaml".to_string(),
-        l if l == DynamicLang::from_str("bash").unwrap() => "bash".to_string(),
-        l if l == DynamicLang::from_str("lua").unwrap() => "lua".to_string(),
-        l if l == DynamicLang::from_str("elixir").unwrap() => "elixir".to_string(),
-        l if l == DynamicLang::from_str("haskell").unwrap() => "haskell".to_string(),
-        _ => "unknown".to_string(),
-    }
-}
 
 #[derive(Error, Debug)]
 pub enum AstGrepError {
@@ -88,7 +61,7 @@ pub struct AstGrepMatch {
 ///
 /// # Returns
 /// Vector of matches found across all files
-pub fn execute_ast_grep_on_globs(
+pub async fn execute_ast_grep_on_globs(
     include_globs: Option<&[String]>,
     exclude_globs: Option<&[String]>,
     base_path: Option<&str>,
@@ -103,10 +76,11 @@ pub fn execute_ast_grep_on_globs(
         working_dir,
         false,
     )
+    .await
 }
 
 /// Execute ast-grep on the given globs with option to apply fixes
-pub fn execute_ast_grep_on_globs_with_fixes(
+pub async fn execute_ast_grep_on_globs_with_fixes(
     include_globs: Option<&[String]>,
     exclude_globs: Option<&[String]>,
     base_path: Option<&str>,
@@ -121,9 +95,15 @@ pub fn execute_ast_grep_on_globs_with_fixes(
         working_dir,
         true,
     )
+    .await
 }
 
-fn execute_ast_grep_on_globs_with_options(
+#[derive(Debug, Deserialize)]
+struct Rule {
+    language: String,
+}
+
+async fn execute_ast_grep_on_globs_with_options(
     include_globs: Option<&[String]>,
     exclude_globs: Option<&[String]>,
     base_path: Option<&str>,
@@ -159,7 +139,56 @@ fn execute_ast_grep_on_globs_with_options(
         }
         configs
     } else {
-        // Default to YAML with --- delimited documents
+        println!("config_content: {:?}", config_content.split("---").count());
+        let splits = config_content.split("---");
+        let futures = splits.map(|content| async move {
+            let parsed = serde_yaml::Deserializer::from_str(&content).into_iter();
+            println!("parsed:");
+            let rule = Rule::deserialize(parsed)
+                .map_err(|e| AstGrepError::Config(format!("Failed to parse rule: {e:?}")));
+            println!("rule: {:?}", rule);
+
+            if let Ok(rule) = rule {
+                println!(
+                    "if {}",
+                    !DynamicLang::all_langs()
+                        .iter()
+                        .any(|lang| lang.name() == rule.language)
+                );
+                println!(
+                    "DynamicLang::all_langs(): {:?}",
+                    DynamicLang::all_langs()
+                        .iter()
+                        .map(|lang| lang.name())
+                        .collect::<Vec<_>>()
+                );
+                if !DynamicLang::all_langs()
+                    .iter()
+                    .any(|lang| lang.name() == rule.language)
+                {
+                    println!("loading tree-sitter language: {:?}", rule.language);
+                    let _ = load_tree_sitter(&SupportedLanguage::from_str(&rule.language).unwrap())
+                        .await
+                        .map_err(|e| {
+                            AstGrepError::Config(format!(
+                                "Failed to load tree-sitter language: {e:?}"
+                            ))
+                        });
+                } else {
+                    println!("language already loaded: {:?}", rule.language);
+                }
+            }
+        });
+
+        join_all(futures).await;
+
+        println!(
+            "DynamicLang::all_langs(): {:?}",
+            DynamicLang::all_langs()
+                .iter()
+                .map(|lang| lang.name())
+                .collect::<Vec<_>>()
+        );
         from_yaml_string::<DynamicLang>(&config_content, &Default::default())
             .map_err(|e| AstGrepError::Config(format!("Failed to parse YAML rules: {e:?}")))?
     };
@@ -175,10 +204,10 @@ fn execute_ast_grep_on_globs_with_options(
     }
 
     // Get extensions for all rule languages
-    let mut applicable_extensions = std::collections::HashSet::new();
+    let mut applicable_extensions: std::collections::HashSet<String> =
+        std::collections::HashSet::new();
     for lang in &rule_languages {
-        let lang_str = dynamic_lang_to_string(*lang);
-        let extensions = get_extensions_for_language(&lang_str);
+        let extensions = get_extensions_for_language(lang.name());
         for ext in extensions {
             // Convert .ext to *.ext glob pattern
             if ext.starts_with('.') {
@@ -271,8 +300,11 @@ fn execute_ast_grep_on_globs_with_options(
     for entry in walker {
         let entry = entry.map_err(|e| AstGrepError::Io(std::io::Error::other(e)))?;
 
+        println!("SCAN FILE entry: {:?}", entry.path());
         if entry.file_type().is_some_and(|ft| ft.is_file()) {
-            let matches = scan_file(entry.path(), &combined_scan, &rule_configs, apply_fixes)?;
+            let matches = scan_file(entry.path(), &combined_scan, &rule_configs, apply_fixes)
+                .await
+                .map_err(|e| AstGrepError::Io(std::io::Error::other(e)))?;
             all_matches.extend(matches);
         }
     }
@@ -319,34 +351,43 @@ fn build_globs(
         .map_err(|e| AstGrepError::Glob(format!("Failed to build glob overrides: {e}")))
 }
 
-fn scan_file(
+async fn scan_file(
     file_path: &Path,
-    combined_scan: &CombinedScan<DynamicLang>,
-    rule_configs: &[RuleConfig<DynamicLang>],
+    combined_scan: &CombinedScan<'_, DynamicLang>,
+    _rule_configs: &[RuleConfig<DynamicLang>],
     apply_fixes: bool,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     let content = fs::read_to_string(file_path)?;
-    let language = detect_language(file_path)?;
+    let language = detect_language(file_path).map_err(|e| AstGrepError::Language(e.to_string()))?;
+
+    println!("language at SCAN FILE FYNC: {:?}", language);
 
     scan_content(
         &content,
         file_path,
         language,
         combined_scan,
-        rule_configs,
+        _rule_configs,
         apply_fixes,
     )
+    .await
 }
 
-fn scan_content(
+async fn scan_content(
     content: &str,
     file_path: &Path,
-    language: DynamicLang,
-    combined_scan: &CombinedScan<DynamicLang>,
+    language: SupportedLanguage,
+    combined_scan: &CombinedScan<'_, DynamicLang>,
     _rule_configs: &[RuleConfig<DynamicLang>],
     apply_fixes: bool,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    let doc = StrDoc::new(content, language);
+    println!("language at SCAN CONTENT: {:?}", language);
+    println!("extensions");
+
+    let dynamic_lang = DynamicLang::from_str(&language.to_string()).unwrap();
+    println!("extensions loaded");
+
+    let doc = StrDoc::new(content, dynamic_lang);
     let root = AstGrep::doc(doc);
 
     // Scan with separate_fix=true when applying fixes to get diffs
@@ -473,7 +514,7 @@ fn scan_content(
     Ok(matches)
 }
 
-fn detect_language(file_path: &Path) -> Result<DynamicLang, AstGrepError> {
+fn detect_language(file_path: &Path) -> Result<SupportedLanguage, AstGrepError> {
     let extension = file_path
         .extension()
         .and_then(|ext| ext.to_str())
@@ -519,26 +560,26 @@ fn detect_language(file_path: &Path) -> Result<DynamicLang, AstGrepError> {
         }
     };
 
-    DynamicLang::from_str(language_str)
+    SupportedLanguage::from_str(language_str)
         .map_err(|_| AstGrepError::Language(format!("Language not supported: {language_str}")))
 }
 
 /// Backward compatibility function - converts paths to include globs
-pub fn execute_ast_grep_on_paths(
+pub async fn execute_ast_grep_on_paths(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs(Some(paths), None, None, config_file, working_dir)
+    execute_ast_grep_on_globs(Some(paths), None, None, config_file, working_dir).await
 }
 
 /// Backward compatibility function - converts paths to include globs with fixes
-pub fn execute_ast_grep_on_paths_with_fixes(
+pub async fn execute_ast_grep_on_paths_with_fixes(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs_with_fixes(Some(paths), None, None, config_file, working_dir)
+    execute_ast_grep_on_globs_with_fixes(Some(paths), None, None, config_file, working_dir).await
 }
 
 #[cfg(test)]
@@ -565,19 +606,33 @@ mod tests {
     #[test]
     fn test_detect_language() {
         // Test various file extensions
-        // Test that we can detect various languages
-        assert!(detect_language(Path::new("test.js")).is_ok());
-        assert!(detect_language(Path::new("test.ts")).is_ok());
-        assert!(detect_language(Path::new("test.tsx")).is_ok());
-        assert!(detect_language(Path::new("test.py")).is_ok());
-        assert!(detect_language(Path::new("test.rs")).is_ok());
+        assert_eq!(
+            detect_language(Path::new("test.js")).unwrap().to_string(),
+            "JavaScript"
+        );
+        assert_eq!(
+            detect_language(Path::new("test.ts")).unwrap().to_string(),
+            "TypeScript"
+        );
+        assert_eq!(
+            detect_language(Path::new("test.tsx")).unwrap().to_string(),
+            "Tsx"
+        );
+        assert_eq!(
+            detect_language(Path::new("test.py")).unwrap().to_string(),
+            "Python"
+        );
+        assert_eq!(
+            detect_language(Path::new("test.rs")).unwrap().to_string(),
+            "Rust"
+        );
 
         // Test error case
         assert!(detect_language(Path::new("test.unknown")).is_err());
     }
 
-    #[test]
-    fn test_execute_ast_grep_on_globs_with_javascript() {
+    #[tokio::test]
+    async fn test_execute_ast_grep_on_globs_with_javascript() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -614,6 +669,7 @@ message: "Found var declaration"
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
+        .await
         .unwrap();
 
         // Should find console.log and var declaration
@@ -638,8 +694,8 @@ message: "Found var declaration"
         assert!(!var_matches.is_empty(), "Should find var declaration match");
     }
 
-    #[test]
-    fn test_execute_ast_grep_on_globs_with_typescript() {
+    #[tokio::test]
+    async fn test_execute_ast_grep_on_globs_with_typescript() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -678,6 +734,7 @@ message: "Found console.log statement"
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
+        .await
         .unwrap();
 
         // Should find function declaration and console.log
@@ -695,8 +752,8 @@ message: "Found console.log statement"
         }
     }
 
-    #[test]
-    fn test_execute_ast_grep_on_multiple_files() {
+    #[tokio::test]
+    async fn test_execute_ast_grep_on_multiple_files() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -722,6 +779,7 @@ message: "Found console.log statement"
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
+        .await
         .unwrap();
 
         // Should find console.log in both JS files but not the Python file
@@ -738,8 +796,8 @@ message: "Found console.log statement"
         assert_eq!(js_matches.len(), 2, "Should find exactly 2 JS matches");
     }
 
-    #[test]
-    fn test_execute_ast_grep_with_json_config() {
+    #[tokio::test]
+    async fn test_execute_ast_grep_with_json_config() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -769,6 +827,7 @@ message: "Found console.log statement"
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
+        .await
         .unwrap();
 
         assert!(
@@ -777,8 +836,8 @@ message: "Found console.log statement"
         );
     }
 
-    #[test]
-    fn test_execute_ast_grep_no_matches() {
+    #[tokio::test]
+    async fn test_execute_ast_grep_no_matches() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -802,6 +861,7 @@ message: "Found console.log statement"
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
+        .await
         .unwrap();
 
         // Should find no matches
@@ -813,8 +873,8 @@ message: "Found console.log statement"
         );
     }
 
-    #[test]
-    fn test_execute_ast_grep_nonexistent_file() {
+    #[tokio::test]
+    async fn test_execute_ast_grep_nonexistent_file() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -833,7 +893,8 @@ rule:
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-        );
+        )
+        .await;
 
         // Should return empty results, not error
         assert!(result.is_ok());
@@ -841,8 +902,8 @@ rule:
         assert_eq!(matches.len(), 0);
     }
 
-    #[test]
-    fn test_execute_ast_grep_with_recursive_glob() {
+    #[tokio::test]
+    async fn test_execute_ast_grep_with_recursive_glob() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -874,6 +935,7 @@ message: "Found console.log statement"
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
+        .await
         .unwrap();
 
         // Should find console.log in all JS files but not in .tsx or .md files
@@ -900,6 +962,7 @@ message: "Found console.log statement"
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
+        .await
         .unwrap();
 
         // Should find console.log in src/ JS files only (not tests/)
@@ -919,8 +982,8 @@ message: "Found console.log statement"
         }
     }
 
-    #[test]
-    fn test_execute_ast_grep_with_fixes() {
+    #[tokio::test]
+    async fn test_execute_ast_grep_with_fixes() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -964,6 +1027,7 @@ message: "Found var declaration"
             "rules.yaml",
             Some(temp_path),
         )
+        .await
         .unwrap();
 
         // Should find matches
@@ -981,8 +1045,8 @@ message: "Found var declaration"
         assert!(!modified_content.contains("var userCount"));
     }
 
-    #[test]
-    fn test_automatic_language_extension_inference() {
+    #[tokio::test]
+    async fn test_automatic_language_extension_inference() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -1023,6 +1087,7 @@ message: "Found console.log statement in TSX"
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
+        .await
         .unwrap();
 
         // Debug: print all matches
@@ -1075,8 +1140,8 @@ message: "Found console.log statement in TSX"
         }
     }
 
-    #[test]
-    fn test_generic_glob_enhancement() {
+    #[tokio::test]
+    async fn test_generic_glob_enhancement() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -1103,6 +1168,7 @@ message: "Found console.log statement"
             config_path.to_str().unwrap(),
             Some(temp_path),
         )
+        .await
         .unwrap();
 
         // Should find matches in JS files only, not TS, MD, or PY

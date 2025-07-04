@@ -193,7 +193,6 @@ where
                 .language
                 .as_ref()
                 .unwrap_or(&SupportedLanguage::Typescript),
-            self.config.extensions.as_ref().unwrap_or(&vec![]),
         )
         .await
         .unwrap();
