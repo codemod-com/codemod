@@ -67,7 +67,7 @@
     "@codemod-com/tsconfig": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@total-typescript/ts-reset": "catalog:",
-    "@types/node": "^20.5.1",
+    "@types/node": "^22.15.35",
     "@vitest/coverage-v8": "catalog:",
     "commitizen": "catalog:",
     "concurrently": "catalog:",
