@@ -95,6 +95,11 @@ const JS_APPLY_SCRIPT_FOR_RUST: &str =
 const JS_APPLY_SCRIPT_FOR_GO: &str = include_str!("../templates/js-astgrep/scripts/codemod.go.ts");
 const JS_APPLY_SCRIPT_FOR_JAVA: &str =
     include_str!("../templates/js-astgrep/scripts/codemod.java.ts");
+const JS_APPLY_SCRIPT_FOR_TSX: &str = include_str!("../templates/js-astgrep/scripts/codemod.tsx.ts");
+const JS_APPLY_SCRIPT_FOR_CSS: &str = include_str!("../templates/js-astgrep/scripts/codemod.css.ts");
+const JS_APPLY_SCRIPT_FOR_HTML: &str = include_str!("../templates/js-astgrep/scripts/codemod.html.ts");
+const JS_APPLY_SCRIPT_FOR_KOTLIN: &str = include_str!("../templates/js-astgrep/scripts/codemod.kt.ts");
+
 const JS_TSCONFIG_TEMPLATE: &str = include_str!("../templates/js-astgrep/tsconfig.json");
 const JS_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.js");
 const JS_TEST_EXPECTED: &str = include_str!("../templates/js-astgrep/tests/fixtures/expected.js");
@@ -108,6 +113,10 @@ const ASTGREP_PATTERNS_FOR_RUST: &str =
 const ASTGREP_PATTERNS_FOR_GO: &str = include_str!("../templates/astgrep-yaml/rules/config.go.yml");
 const ASTGREP_PATTERNS_FOR_JAVA: &str =
     include_str!("../templates/astgrep-yaml/rules/config.java.yml");
+const ASTGREP_PATTERNS_FOR_CSS: &str = include_str!("../templates/astgrep-yaml/rules/config.css.yml");
+const ASTGREP_PATTERNS_FOR_HTML: &str = include_str!("../templates/astgrep-yaml/rules/config.html.yml");
+const ASTGREP_PATTERNS_FOR_KOTLIN: &str = include_str!("../templates/astgrep-yaml/rules/config.kt.yml");
+const ASTGREP_PATTERNS_FOR_TSX: &str = include_str!("../templates/astgrep-yaml/rules/config.tsx.yml");
 
 static ROCKET: Emoji<'_, '_> = Emoji("🚀 ", "");
 static CHECKMARK: Emoji<'_, '_> = Emoji("✓ ", "");
@@ -287,6 +296,10 @@ fn select_language() -> Result<String> {
         "Rust",
         "Go",
         "Java",
+        "TSX",
+        "CSS",
+        "HTML",
+        "Kotlin",
         "Other",
     ];
 
@@ -298,6 +311,10 @@ fn select_language() -> Result<String> {
         "Rust" => "rust",
         "Go" => "go",
         "Java" => "java",
+        "TSX" => "tsx",
+        "CSS" => "css",
+        "HTML" => "html",
+        "Kotlin" => "kotlin",
         "Other" => {
             let custom = Text::new("Enter language name:").prompt()?;
             return Ok(custom);
@@ -399,6 +416,11 @@ fn create_js_astgrep_project(project_path: &Path, config: &ProjectConfig) -> Res
         "rust" => JS_APPLY_SCRIPT_FOR_RUST.to_string(),
         "go" => JS_APPLY_SCRIPT_FOR_GO.to_string(),
         "java" => JS_APPLY_SCRIPT_FOR_JAVA.to_string(),
+        "typescript" => JS_APPLY_SCRIPT_FOR_JAVASCRIPT.to_string(),
+        "css" => JS_APPLY_SCRIPT_FOR_CSS.to_string(),
+        "html" => JS_APPLY_SCRIPT_FOR_HTML.to_string(),
+        "kotlin" => JS_APPLY_SCRIPT_FOR_KOTLIN.to_string(),
+        "tsx" => JS_APPLY_SCRIPT_FOR_TSX.to_string(),
         _ => JS_APPLY_SCRIPT_FOR_JAVASCRIPT.to_string(),
     };
     fs::write(scripts_dir.join("codemod.ts"), codemod_script.as_str())?;
@@ -423,6 +445,11 @@ fn create_astgrep_yaml_project(project_path: &Path, config: &ProjectConfig) -> R
         "rust" => ASTGREP_PATTERNS_FOR_RUST,
         "go" => ASTGREP_PATTERNS_FOR_GO,
         "java" => ASTGREP_PATTERNS_FOR_JAVA,
+        "typescript" => ASTGREP_PATTERNS_FOR_JAVASCRIPT,
+        "css" => ASTGREP_PATTERNS_FOR_CSS,
+        "html" => ASTGREP_PATTERNS_FOR_HTML,
+        "kotlin" => ASTGREP_PATTERNS_FOR_KOTLIN,
+        "tsx" => ASTGREP_PATTERNS_FOR_TSX,
         _ => ASTGREP_PATTERNS_FOR_JAVASCRIPT,
     };
     fs::write(rules_dir.join("config.yml"), config_file)?;

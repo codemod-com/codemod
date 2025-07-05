@@ -100,6 +100,9 @@ pub enum SupportedLanguage {
     Go,
     Java,
     Tsx,
+    Css,
+    Html,
+    Kotlin,
 }
 
 impl fmt::Display for SupportedLanguage {
@@ -112,6 +115,9 @@ impl fmt::Display for SupportedLanguage {
             SupportedLanguage::Go => "go",
             SupportedLanguage::Java => "java",
             SupportedLanguage::Tsx => "tsx",
+            SupportedLanguage::Css => "css",
+            SupportedLanguage::Html => "html",
+            SupportedLanguage::Kotlin => "kotlin",
         };
         write!(f, "{}", name)
     }
@@ -129,6 +135,9 @@ impl FromStr for SupportedLanguage {
             "go" => Ok(SupportedLanguage::Go),
             "java" => Ok(SupportedLanguage::Java),
             "tsx" => Ok(SupportedLanguage::Tsx),
+            "css" => Ok(SupportedLanguage::Css),
+            "html" => Ok(SupportedLanguage::Html),
+            "kotlin" => Ok(SupportedLanguage::Kotlin),
             _ => Err(format!("Unsupported language: {}", s)),
         }
     }
