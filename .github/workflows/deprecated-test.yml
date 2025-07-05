@@ -54,12 +54,7 @@ jobs:
         run: pnpm build --filter codemod --filter @codemod-com/jscodeshift-utils
 
       - name: Run unit tests
-        run: |
-          if [[ ${{ matrix.os }} == "windows-latest" ]]; then
-            pnpm test:win
-          else
-            pnpm build --filter @codemod-com/backend && pnpm test
-          fi
+        run: pnpm build --filter @codemod-com/backend && pnpm test
         shell: bash
         env:
           DATABASE_URI: ${{ secrets.DATABASE_URI }}
