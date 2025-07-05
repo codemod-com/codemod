@@ -187,9 +187,10 @@ where
                 .map(|n| n.get())
                 .unwrap_or(4)
         });
-        let language = load_tree_sitter(
-            &[self.config.language.unwrap_or(SupportedLanguage::Typescript)],
-        )
+        let language = load_tree_sitter(&[self
+            .config
+            .language
+            .unwrap_or(SupportedLanguage::Typescript)])
         .await
         .unwrap()[0];
 

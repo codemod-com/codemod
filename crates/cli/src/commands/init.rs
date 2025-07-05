@@ -95,10 +95,14 @@ const JS_APPLY_SCRIPT_FOR_RUST: &str =
 const JS_APPLY_SCRIPT_FOR_GO: &str = include_str!("../templates/js-astgrep/scripts/codemod.go.ts");
 const JS_APPLY_SCRIPT_FOR_JAVA: &str =
     include_str!("../templates/js-astgrep/scripts/codemod.java.ts");
-const JS_APPLY_SCRIPT_FOR_TSX: &str = include_str!("../templates/js-astgrep/scripts/codemod.tsx.ts");
-const JS_APPLY_SCRIPT_FOR_CSS: &str = include_str!("../templates/js-astgrep/scripts/codemod.css.ts");
-const JS_APPLY_SCRIPT_FOR_HTML: &str = include_str!("../templates/js-astgrep/scripts/codemod.html.ts");
-const JS_APPLY_SCRIPT_FOR_KOTLIN: &str = include_str!("../templates/js-astgrep/scripts/codemod.kt.ts");
+const JS_APPLY_SCRIPT_FOR_TSX: &str =
+    include_str!("../templates/js-astgrep/scripts/codemod.tsx.ts");
+const JS_APPLY_SCRIPT_FOR_CSS: &str =
+    include_str!("../templates/js-astgrep/scripts/codemod.css.ts");
+const JS_APPLY_SCRIPT_FOR_HTML: &str =
+    include_str!("../templates/js-astgrep/scripts/codemod.html.ts");
+const JS_APPLY_SCRIPT_FOR_KOTLIN: &str =
+    include_str!("../templates/js-astgrep/scripts/codemod.kt.ts");
 
 const JS_TSCONFIG_TEMPLATE: &str = include_str!("../templates/js-astgrep/tsconfig.json");
 const JS_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.js");
@@ -113,10 +117,14 @@ const ASTGREP_PATTERNS_FOR_RUST: &str =
 const ASTGREP_PATTERNS_FOR_GO: &str = include_str!("../templates/astgrep-yaml/rules/config.go.yml");
 const ASTGREP_PATTERNS_FOR_JAVA: &str =
     include_str!("../templates/astgrep-yaml/rules/config.java.yml");
-const ASTGREP_PATTERNS_FOR_CSS: &str = include_str!("../templates/astgrep-yaml/rules/config.css.yml");
-const ASTGREP_PATTERNS_FOR_HTML: &str = include_str!("../templates/astgrep-yaml/rules/config.html.yml");
-const ASTGREP_PATTERNS_FOR_KOTLIN: &str = include_str!("../templates/astgrep-yaml/rules/config.kt.yml");
-const ASTGREP_PATTERNS_FOR_TSX: &str = include_str!("../templates/astgrep-yaml/rules/config.tsx.yml");
+const ASTGREP_PATTERNS_FOR_CSS: &str =
+    include_str!("../templates/astgrep-yaml/rules/config.css.yml");
+const ASTGREP_PATTERNS_FOR_HTML: &str =
+    include_str!("../templates/astgrep-yaml/rules/config.html.yml");
+const ASTGREP_PATTERNS_FOR_KOTLIN: &str =
+    include_str!("../templates/astgrep-yaml/rules/config.kt.yml");
+const ASTGREP_PATTERNS_FOR_TSX: &str =
+    include_str!("../templates/astgrep-yaml/rules/config.tsx.yml");
 
 static ROCKET: Emoji<'_, '_> = Emoji("🚀 ", "");
 static CHECKMARK: Emoji<'_, '_> = Emoji("✓ ", "");

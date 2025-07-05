@@ -76,7 +76,7 @@ impl<'js> SgRootRjs<'js> {
     }
 }
 
-impl<'js> SgRootRjs<'js> {
+impl SgRootRjs<'_> {
     pub fn try_new(
         lang_str: String,
         src: String,

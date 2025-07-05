@@ -15,8 +15,8 @@ use butterflow_models::trigger::TriggerType;
 use butterflow_models::{DiffOperation, FieldDiff, TaskDiff};
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
-use uuid::Uuid;
 use serial_test::serial;
+use uuid::Uuid;
 
 // Helper function to create a simple test workflow
 fn create_test_workflow() -> Workflow {

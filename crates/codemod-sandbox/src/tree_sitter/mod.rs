@@ -15,7 +15,7 @@ struct ReadyLang {
 
 pub async fn load_tree_sitter(languages: &[SupportedLanguage]) -> Result<Vec<DynamicLang>, String> {
     let mut ready_langs = HashSet::new();
-    println!("languages at load_tree_sitter: {:?}", languages);
+    println!("languages at load_tree_sitter: {languages:?}");
     for language in languages {
         let extensions = get_extensions_for_language(language.to_string().as_str());
         let os: &'static str = if env::consts::OS == "macos" {
@@ -44,50 +44,56 @@ pub async fn load_tree_sitter(languages: &[SupportedLanguage]) -> Result<Vec<Dyn
             "so"
         };
         let lib_path = data_local_dir().unwrap().join(format!(
-            "codemod/tree_sitter/{}/{}-{}.{}",
-            language.to_string(),
-            os,
-            arch,
-            extension
+            "codemod/tree_sitter/{language}/{os}-{arch}.{extension}"
         ));
         if !lib_path.exists() {
             if let Some(parent) = lib_path.parent() {
                 std::fs::create_dir_all(parent)
-                    .map_err(|e| format!("Failed to create directory: {}", e))?;
+                    .map_err(|e| format!("Failed to create directory: {e}"))?;
             }
-            let url = format!("https://tree-sitter-parsers.s3.us-east-1.amazonaws.com/tree-sitter/parsers/tree-sitter-{}/latest/{}-{}.{}", language.to_string(), os, arch, extension);
+            let url = format!("https://tree-sitter-parsers.s3.us-east-1.amazonaws.com/tree-sitter/parsers/tree-sitter-{language}/latest/{os}-{arch}.{extension}");
             let response = reqwest::get(url)
                 .await
-                .map_err(|e| format!("Failed to download: {}", e))?;
+                .map_err(|e| format!("Failed to download: {e}"))?;
             let body = response
                 .bytes()
                 .await
-                .map_err(|e| format!("Failed to read response: {}", e))?;
-            std::fs::write(&lib_path, body).map_err(|e| format!("Failed to write file: {}", e))?;
-        }    
+                .map_err(|e| format!("Failed to read response: {e}"))?;
+            std::fs::write(&lib_path, body).map_err(|e| format!("Failed to write file: {e}"))?;
+        }
         ready_langs.insert(ReadyLang {
             language: *language,
             extensions: extensions.iter().map(|s| s.to_string()).collect(),
             lib_path: lib_path.clone(),
         });
     }
-    println!("ready_langs: {:?}", ready_langs.iter().map(|lang| lang.language).collect::<Vec<_>>());
-    let registrations: Vec<Registration> = ready_langs.iter().map(|lang| Registration {
-        lang_name: lang.language.to_string(),
-        lib_path: lang.lib_path.clone(),
-        symbol: format!("tree_sitter_{}", lang.language.to_string()),
-        meta_var_char: Some('$'),
-        expando_char: Some('$'),
-        extensions: lang.extensions.iter().map(|s| s.to_string()).collect(),
-    }).collect();
-    
+    println!(
+        "ready_langs: {:?}",
+        ready_langs
+            .iter()
+            .map(|lang| lang.language)
+            .collect::<Vec<_>>()
+    );
+    let registrations: Vec<Registration> = ready_langs
+        .iter()
+        .map(|lang| Registration {
+            lang_name: lang.language.to_string(),
+            lib_path: lang.lib_path.clone(),
+            symbol: format!("tree_sitter_{}", lang.language),
+            meta_var_char: Some('$'),
+            expando_char: Some('$'),
+            extensions: lang.extensions.iter().map(|s| s.to_string()).collect(),
+        })
+        .collect();
+
     unsafe {
         DynamicLang::register(registrations)
-            .map_err(|e| format!("Failed to register Rust language: {}", e))?;
+            .map_err(|e| format!("Failed to register Rust language: {e}"))?;
     }
-    Ok(ready_langs.into_iter().map(|lang| {
-        DynamicLang::from_str(&lang.language.to_string()).unwrap()
-    }).collect())
+    Ok(ready_langs
+        .into_iter()
+        .map(|lang| DynamicLang::from_str(&lang.language.to_string()).unwrap())
+        .collect())
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
@@ -119,7 +125,7 @@ impl fmt::Display for SupportedLanguage {
             SupportedLanguage::Html => "html",
             SupportedLanguage::Kotlin => "kotlin",
         };
-        write!(f, "{}", name)
+        write!(f, "{name}")
     }
 }
 
@@ -138,7 +144,7 @@ impl FromStr for SupportedLanguage {
             "css" => Ok(SupportedLanguage::Css),
             "html" => Ok(SupportedLanguage::Html),
             "kotlin" => Ok(SupportedLanguage::Kotlin),
-            _ => Err(format!("Unsupported language: {}", s)),
+            _ => Err(format!("Unsupported language: {s}")),
         }
     }
 }

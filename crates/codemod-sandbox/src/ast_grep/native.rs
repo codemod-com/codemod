@@ -138,18 +138,16 @@ async fn execute_ast_grep_on_globs_with_options(
     } else {
         let mut languages = Vec::new();
         for content in config_content.split("---") {
-            let parsed = serde_yaml::Deserializer::from_str(&content).into_iter();
+            let parsed = serde_yaml::Deserializer::from_str(content);
             let rule = Rule::deserialize(parsed)
                 .map_err(|e| AstGrepError::Config(format!("Failed to parse rule: {e:?}")))?;
 
             languages.push(SupportedLanguage::from_str(&rule.language).unwrap());
         }
 
-        load_tree_sitter(&languages)
-            .await
-            .map_err(|e| {
-                AstGrepError::Config(format!("Failed to load tree-sitter language: {e:?}"))
-            })?;
+        load_tree_sitter(&languages).await.map_err(|e| {
+            AstGrepError::Config(format!("Failed to load tree-sitter language: {e:?}"))
+        })?;
 
         from_yaml_string::<DynamicLang>(&config_content, &Default::default())
             .map_err(|e| AstGrepError::Config(format!("Failed to parse YAML rules: {e:?}")))?
@@ -322,7 +320,7 @@ async fn scan_file(
     let content = fs::read_to_string(file_path)?;
     let language = detect_language(file_path).map_err(|e| AstGrepError::Language(e.to_string()))?;
 
-    println!("language at SCAN FILE FYNC: {:?}", language);
+    println!("language at SCAN FILE FYNC: {language:?}");
 
     scan_content(
         &content,
@@ -343,10 +341,16 @@ async fn scan_content(
     _rule_configs: &[RuleConfig<DynamicLang>],
     apply_fixes: bool,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    println!("language at SCAN CONTENT: {:?}", language);
+    println!("language at SCAN CONTENT: {language:?}");
     println!("extensions");
 
-    println!("DynamicLang::all_langs() language.to_string(): {:?}", DynamicLang::all_langs().iter().map(|lang| lang.name()).collect::<Vec<_>>());
+    println!(
+        "DynamicLang::all_langs() language.to_string(): {:?}",
+        DynamicLang::all_langs()
+            .iter()
+            .map(|lang| lang.name())
+            .collect::<Vec<_>>()
+    );
     let dynamic_lang = DynamicLang::from_str(&language.to_string()).unwrap();
     println!("extensions loaded");
 
@@ -548,9 +552,9 @@ pub async fn execute_ast_grep_on_paths_with_fixes(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serial_test::serial;
     use std::fs;
     use tempfile::TempDir;
-    use serial_test::serial;
 
     fn create_test_file(dir: &Path, name: &str, content: &str) -> PathBuf {
         let file_path = dir.join(name);
@@ -719,7 +723,7 @@ message: "Found console.log statement"
     }
 
     #[tokio::test]
-#[serial]
+    #[serial]
     async fn test_execute_ast_grep_on_multiple_files() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -764,7 +768,7 @@ message: "Found console.log statement"
     }
 
     #[tokio::test]
-#[serial]
+    #[serial]
     async fn test_execute_ast_grep_with_json_config() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -805,7 +809,7 @@ message: "Found console.log statement"
     }
 
     #[tokio::test]
-#[serial]
+    #[serial]
     async fn test_execute_ast_grep_no_matches() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -843,7 +847,7 @@ message: "Found console.log statement"
     }
 
     #[tokio::test]
-#[serial]
+    #[serial]
     async fn test_execute_ast_grep_nonexistent_file() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -873,7 +877,7 @@ rule:
     }
 
     #[tokio::test]
-#[serial]
+    #[serial]
     async fn test_execute_ast_grep_with_recursive_glob() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -954,7 +958,7 @@ message: "Found console.log statement"
     }
 
     #[tokio::test]
-#[serial]
+    #[serial]
     async fn test_execute_ast_grep_with_fixes() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -1114,7 +1118,7 @@ message: "Found console.log statement in TSX"
     }
 
     #[tokio::test]
-#[serial]
+    #[serial]
     async fn test_generic_glob_enhancement() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
