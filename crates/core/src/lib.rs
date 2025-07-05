@@ -1,7 +1,7 @@
 pub mod engine;
+pub mod error;
 pub mod registry;
 pub mod utils;
-pub mod error;
 
 pub use butterflow_models::{
     Error, Node, Result, StateSchema, StateSchemaItems, StateSchemaProperty, StateSchemaType, Task,

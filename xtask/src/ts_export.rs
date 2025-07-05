@@ -11,7 +11,7 @@ struct Visit<'a> {
     type_names: &'a mut HashSet<String>,
 }
 
-impl<'a> TypeVisitor for Visit<'a> {
+impl TypeVisitor for Visit<'_> {
     fn visit<T: TS + 'static + ?Sized>(&mut self) {
         if T::output_path().is_none() {
             return;
