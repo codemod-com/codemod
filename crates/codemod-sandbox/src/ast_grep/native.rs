@@ -7,16 +7,13 @@ use crate::tree_sitter::{load_tree_sitter, SupportedLanguage};
 use ast_grep_config::{from_yaml_string, CombinedScan, RuleConfig};
 use ast_grep_core::tree_sitter::StrDoc;
 use ast_grep_core::AstGrep;
-use ast_grep_dynamic::{DynamicLang, Registration};
-use dirs::data_local_dir;
-use futures::future::join_all;
+use ast_grep_dynamic::DynamicLang;
 use ignore::{
     overrides::{Override, OverrideBuilder},
     WalkBuilder,
 };
 use serde::Deserialize;
 use serde_json;
-use std::{env, fmt};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -139,56 +136,21 @@ async fn execute_ast_grep_on_globs_with_options(
         }
         configs
     } else {
-        println!("config_content: {:?}", config_content.split("---").count());
-        let splits = config_content.split("---");
-        let futures = splits.map(|content| async move {
+        let mut languages = Vec::new();
+        for content in config_content.split("---") {
             let parsed = serde_yaml::Deserializer::from_str(&content).into_iter();
-            println!("parsed:");
             let rule = Rule::deserialize(parsed)
-                .map_err(|e| AstGrepError::Config(format!("Failed to parse rule: {e:?}")));
-            println!("rule: {:?}", rule);
+                .map_err(|e| AstGrepError::Config(format!("Failed to parse rule: {e:?}")))?;
 
-            if let Ok(rule) = rule {
-                println!(
-                    "if {}",
-                    !DynamicLang::all_langs()
-                        .iter()
-                        .any(|lang| lang.name() == rule.language)
-                );
-                println!(
-                    "DynamicLang::all_langs(): {:?}",
-                    DynamicLang::all_langs()
-                        .iter()
-                        .map(|lang| lang.name())
-                        .collect::<Vec<_>>()
-                );
-                if !DynamicLang::all_langs()
-                    .iter()
-                    .any(|lang| lang.name() == rule.language)
-                {
-                    println!("loading tree-sitter language: {:?}", rule.language);
-                    let _ = load_tree_sitter(&SupportedLanguage::from_str(&rule.language).unwrap())
-                        .await
-                        .map_err(|e| {
-                            AstGrepError::Config(format!(
-                                "Failed to load tree-sitter language: {e:?}"
-                            ))
-                        });
-                } else {
-                    println!("language already loaded: {:?}", rule.language);
-                }
-            }
-        });
+            languages.push(SupportedLanguage::from_str(&rule.language).unwrap());
+        }
 
-        join_all(futures).await;
+        load_tree_sitter(&languages)
+            .await
+            .map_err(|e| {
+                AstGrepError::Config(format!("Failed to load tree-sitter language: {e:?}"))
+            })?;
 
-        println!(
-            "DynamicLang::all_langs(): {:?}",
-            DynamicLang::all_langs()
-                .iter()
-                .map(|lang| lang.name())
-                .collect::<Vec<_>>()
-        );
         from_yaml_string::<DynamicLang>(&config_content, &Default::default())
             .map_err(|e| AstGrepError::Config(format!("Failed to parse YAML rules: {e:?}")))?
     };
@@ -384,6 +346,7 @@ async fn scan_content(
     println!("language at SCAN CONTENT: {:?}", language);
     println!("extensions");
 
+    println!("DynamicLang::all_langs() language.to_string(): {:?}", DynamicLang::all_langs().iter().map(|lang| lang.name()).collect::<Vec<_>>());
     let dynamic_lang = DynamicLang::from_str(&language.to_string()).unwrap();
     println!("extensions loaded");
 
@@ -587,6 +550,7 @@ mod tests {
     use super::*;
     use std::fs;
     use tempfile::TempDir;
+    use serial_test::serial;
 
     fn create_test_file(dir: &Path, name: &str, content: &str) -> PathBuf {
         let file_path = dir.join(name);
@@ -608,23 +572,23 @@ mod tests {
         // Test various file extensions
         assert_eq!(
             detect_language(Path::new("test.js")).unwrap().to_string(),
-            "JavaScript"
+            SupportedLanguage::Javascript.to_string()
         );
         assert_eq!(
             detect_language(Path::new("test.ts")).unwrap().to_string(),
-            "TypeScript"
+            SupportedLanguage::Typescript.to_string()
         );
         assert_eq!(
             detect_language(Path::new("test.tsx")).unwrap().to_string(),
-            "Tsx"
+            SupportedLanguage::Tsx.to_string()
         );
         assert_eq!(
             detect_language(Path::new("test.py")).unwrap().to_string(),
-            "Python"
+            SupportedLanguage::Python.to_string()
         );
         assert_eq!(
             detect_language(Path::new("test.rs")).unwrap().to_string(),
-            "Rust"
+            SupportedLanguage::Rust.to_string()
         );
 
         // Test error case
@@ -632,6 +596,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial]
     async fn test_execute_ast_grep_on_globs_with_javascript() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -695,6 +660,7 @@ message: "Found var declaration"
     }
 
     #[tokio::test]
+    #[serial]
     async fn test_execute_ast_grep_on_globs_with_typescript() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -753,6 +719,7 @@ message: "Found console.log statement"
     }
 
     #[tokio::test]
+#[serial]
     async fn test_execute_ast_grep_on_multiple_files() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -797,6 +764,7 @@ message: "Found console.log statement"
     }
 
     #[tokio::test]
+#[serial]
     async fn test_execute_ast_grep_with_json_config() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -837,6 +805,7 @@ message: "Found console.log statement"
     }
 
     #[tokio::test]
+#[serial]
     async fn test_execute_ast_grep_no_matches() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -874,6 +843,7 @@ message: "Found console.log statement"
     }
 
     #[tokio::test]
+#[serial]
     async fn test_execute_ast_grep_nonexistent_file() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -903,6 +873,7 @@ rule:
     }
 
     #[tokio::test]
+#[serial]
     async fn test_execute_ast_grep_with_recursive_glob() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -983,6 +954,7 @@ message: "Found console.log statement"
     }
 
     #[tokio::test]
+#[serial]
     async fn test_execute_ast_grep_with_fixes() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -1046,6 +1018,7 @@ message: "Found var declaration"
     }
 
     #[tokio::test]
+    #[serial]
     async fn test_automatic_language_extension_inference() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
@@ -1141,6 +1114,7 @@ message: "Found console.log statement in TSX"
     }
 
     #[tokio::test]
+#[serial]
     async fn test_generic_glob_enhancement() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
