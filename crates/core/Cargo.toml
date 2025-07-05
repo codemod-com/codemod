@@ -31,9 +31,11 @@ tar = { workspace = true }
 tempfile = { workspace = true }
 walkdir = { workspace = true }
 dirs = { workspace = true }
+ast-grep-dynamic.workspace = true
 
 [dev-dependencies]
 tempfile = { workspace = true }
+serial_test = "3.2.0"
 
 [features]
 default = []

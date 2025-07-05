@@ -2,6 +2,7 @@ use anyhow::Result;
 use libtest_mimic::{run, Trial};
 use similar::TextDiff;
 use std::path::{Path, PathBuf};
+use std::str::FromStr;
 use std::sync::Arc;
 use tokio::time::timeout;
 
@@ -9,13 +10,13 @@ use crate::commands::jssg::testing::{
     config::TestOptions,
     fixtures::{TestCase, TestError, TestFile},
 };
-use ast_grep_language::SupportLang;
 use codemod_sandbox::sandbox::{
     engine::{ExecutionConfig, ExecutionEngine},
     filesystem::RealFileSystem,
     loaders::FileSystemLoader,
     resolvers::FileSystemResolver,
 };
+use codemod_sandbox::tree_sitter::SupportedLanguage;
 
 #[derive(Debug, Clone)]
 pub struct TestSummary {
@@ -85,7 +86,8 @@ impl TestRunner {
 
     async fn run_tests_once(&mut self, codemod_path: &Path, language: &str) -> Result<TestSummary> {
         // Parse language
-        let language_enum: SupportLang = language.parse()?;
+        let language_enum: SupportedLanguage =
+            SupportedLanguage::from_str(language).unwrap_or(SupportedLanguage::Typescript);
 
         // Discover test cases
         let test_cases = TestCase::discover_in_directory(&self.test_directory, language_enum)
