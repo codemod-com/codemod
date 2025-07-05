@@ -187,15 +187,11 @@ where
                 .map(|n| n.get())
                 .unwrap_or(4)
         });
-
         let language = load_tree_sitter(
-            self.config
-                .language
-                .as_ref()
-                .unwrap_or(&SupportedLanguage::Typescript),
+            &[self.config.language.unwrap_or(SupportedLanguage::Typescript)],
         )
         .await
-        .unwrap();
+        .unwrap()[0];
 
         let config = Arc::clone(&self.config);
         let modified_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));

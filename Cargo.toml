@@ -30,7 +30,6 @@ butterflow-runners = { path = "crates/runners" }
 butterflow-scheduler = { path = "crates/scheduler" }
 codemod-sandbox = { path = "crates/codemod-sandbox" }
 
-ast-grep-language = "0.38.5"
 anyhow = "1.0"
 async-trait = "0.1"
 chrono = { version = "0.4", features = ["serde"] }

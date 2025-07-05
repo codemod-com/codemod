@@ -43,8 +43,8 @@ ignore = { workspace = true, optional = true }
 serde_yaml = { workspace = true, optional = true }
 dirs.workspace = true
 reqwest.workspace = true
-ast-grep-language = { workspace = true, default-features = true, optional = true }
 futures.workspace = true
+serial_test = "3.2.0"
 
 [dev-dependencies]
 tempfile = { workspace = true }
@@ -74,7 +74,6 @@ native = [
   "rquickjs-git/full-async",
   "tokio",
   "serde_yaml",
-  "ast-grep-language",
 ]
 real-fs = ["tokio", "ignore"]
 mock-fs = []
