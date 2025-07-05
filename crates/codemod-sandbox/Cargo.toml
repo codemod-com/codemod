@@ -43,7 +43,6 @@ ignore = { workspace = true, optional = true }
 serde_yaml = { workspace = true, optional = true }
 dirs.workspace = true
 reqwest.workspace = true
-futures.workspace = true
 serial_test = "3.2.0"
 
 [dev-dependencies]
