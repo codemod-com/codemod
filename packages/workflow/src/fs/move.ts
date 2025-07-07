@@ -103,7 +103,7 @@ const renameImport = async (
       ),
       pathPosix.basename(newAbsoluteImportPath),
     );
-    if (!relativePath.startsWith(".")) {
+    if (!relativePath.startsWith("./")) {
       relativePath = `./${relativePath}`;
     }
 
