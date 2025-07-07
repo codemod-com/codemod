@@ -1,24 +1,29 @@
+export type RuntimeType = "direct" | "docker" | "podman";
+export type UseAstGrep = {
+  /**
+   * Include globs for files to search (optional, defaults to language-specific extensions)
+   */
+  include?: Array<string>;
+  /**
+   * Exclude globs for files to skip (optional)
+   */
+  exclude?: Array<string>;
+  /**
+   * Base path for resolving relative globs (optional, defaults to current working directory)
+   */
+  base_path?: string;
+  /**
+   * Path to the ast-grep config file (.yaml)
+   */
+  config_file: string;
+};
 export type JsonValue =
   | number
   | string
   | boolean
   | Array<JsonValue>
-  | Record<string, JsonValue>
+  | { [key in string]?: JsonValue }
   | null;
-export type Strategy = {
-  /**
-   * Type of strategy
-   */
-  type: StrategyType;
-  /**
-   * Matrix values (for matrix strategy)
-   */
-  values?: Array<Record<string, JsonValue>>;
-  /**
-   * State key to get matrix values from (for matrix strategy)
-   */
-  from_state?: string | null;
-};
 export type TemplateUse = {
   /**
    * Template ID to use
@@ -27,7 +32,147 @@ export type TemplateUse = {
   /**
    * Inputs to pass to the template
    */
-  inputs?: Record<string, string>;
+  inputs?: { [key in string]?: string };
+};
+export type Template = {
+  /**
+   * Unique identifier for the template
+   */
+  id: string;
+  /**
+   * Human-readable name
+   */
+  name: string;
+  /**
+   * Detailed description of what the template does
+   */
+  description?: string | null;
+  /**
+   * Container runtime configuration
+   */
+  runtime?: Runtime | null;
+  /**
+   * Inputs for the template
+   */
+  inputs: Array<TemplateInput>;
+  /**
+   * Steps to execute within the template
+   */
+  steps: Array<Step>;
+  /**
+   * Outputs from the template
+   */
+  outputs?: Array<TemplateOutput>;
+  /**
+   * Environment variables to inject into the container
+   */
+  env?: { [key in string]?: string };
+};
+export type TaskStatus =
+  | "Pending"
+  | "Running"
+  | "Completed"
+  | "Failed"
+  | "AwaitingTrigger"
+  | "Blocked"
+  | "WontDo";
+export type UseCodemod = {
+  /**
+   * Codemod source identifier (registry package or local path)
+   */
+  source: string;
+  /**
+   * Command line arguments to pass to the codemod (optional)
+   */
+  args?: Array<string>;
+  /**
+   * Environment variables to set for the codemod execution (optional)
+   */
+  env?: { [key in string]?: string };
+  /**
+   * Working directory for codemod execution (optional, defaults to current directory)
+   */
+  working_dir?: string;
+};
+export type WorkflowStatus =
+  | "Pending"
+  | "Running"
+  | "Completed"
+  | "Failed"
+  | "AwaitingTrigger"
+  | "Canceled";
+export type StrategyType = "matrix";
+export type TriggerType = "automatic" | "manual";
+export type StateSchemaProperty = {
+  /**
+   * Type of the property
+   */
+  type: StateSchemaType;
+  /**
+   * Description of the property
+   */
+  description?: string | null;
+};
+export type WorkflowRunDiff = {
+  /**
+   * The ID of the workflow run
+   */
+  workflow_run_id: string;
+  /**
+   * The fields to update
+   */
+  fields: { [key in string]?: FieldDiff };
+};
+export type StateSchemaType =
+  | "array"
+  | "object"
+  | "string"
+  | "number"
+  | "boolean";
+export type WorkflowState = {
+  /**
+   * Schema definitions
+   */
+  schema: Array<StateSchema>;
+};
+export type TemplateInput = {
+  /**
+   * Name of the input
+   */
+  name: string;
+  /**
+   * Type of the input (string, number, boolean)
+   */
+  type: string;
+  /**
+   * Whether the input is required
+   */
+  required?: boolean;
+  /**
+   * Description of the input
+   */
+  description: string | null;
+  /**
+   * Default value for the input
+   */
+  default: string | null;
+};
+export type FieldDiff = {
+  /**
+   * The operation to perform
+   */
+  operation: DiffOperation;
+  /**
+   * The new value (for Add and Update operations)
+   */
+  value: JsonValue | null;
+};
+export type DiffOperation = "Add" | "Update" | "Remove" | "Append";
+export type Trigger = {
+  /**
+   * Type of trigger
+   */
+  type: TriggerType;
 };
 export type Node = {
   /**
@@ -69,95 +214,7 @@ export type Node = {
   /**
    * Environment variables to inject into the container
    */
-  env?: Record<string, string>;
-};
-export type TemplateInput = {
-  /**
-   * Name of the input
-   */
-  name: string;
-  /**
-   * Type of the input (string, number, boolean)
-   */
-  type: string;
-  /**
-   * Whether the input is required
-   */
-  required?: boolean;
-  /**
-   * Description of the input
-   */
-  description: string | null;
-  /**
-   * Default value for the input
-   */
-  default: string | null;
-};
-export type TemplateOutput = {
-  /**
-   * Name of the output
-   */
-  name: string;
-  /**
-   * Value of the output
-   */
-  value: string;
-  /**
-   * Description of the output
-   */
-  description: string | null;
-};
-export type Trigger = {
-  /**
-   * Type of trigger
-   */
-  type: TriggerType;
-};
-export type WorkflowRunDiff = {
-  /**
-   * The ID of the workflow run
-   */
-  workflow_run_id: string;
-  /**
-   * The fields to update
-   */
-  fields: Record<string, FieldDiff>;
-};
-export type Workflow = {
-  /**
-   * Version of the workflow format
-   */
-  version: string;
-  /**
-   * State schema definition
-   */
-  state?: WorkflowState | null;
-  /**
-   * Templates for reusable components
-   */
-  templates?: Array<Template>;
-  /**
-   * Nodes in the workflow
-   */
-  nodes: Array<Node>;
-};
-export type StateSchema = {
-  /**
-   * Name of the state schema
-   */
-  name: string;
-  /**
-   * Type of the state schema
-   */
-  type: StateSchemaType;
-  /**
-   * For array types, the schema of the items
-   */
-  items?: StateSchemaItems | null;
-  /**
-   * Description of the state schema
-   */
-  description?: string | null;
+  env?: { [key in string]?: string };
 };
 export type StateSchemaItems = {
   /**
@@ -167,84 +224,60 @@ export type StateSchemaItems = {
   /**
    * For object types, the properties of the object
    */
-  properties?: Record<string, StateSchemaProperty> | null;
+  properties?: { [key in string]?: StateSchemaProperty } | null;
 };
-export type TaskStatus =
-  | "Pending"
-  | "Running"
-  | "Completed"
-  | "Failed"
-  | "AwaitingTrigger"
-  | "Blocked"
-  | "WontDo";
-export type TaskDiff = {
+export type UseJSAstGrep = {
   /**
-   * The ID of the task
+   * Path to the JavaScript file to execute
    */
-  task_id: string;
+  js_file: string;
   /**
-   * The fields to update
+   * Include globs for files to search (optional, defaults to language-specific extensions)
    */
-  fields: Record<string, FieldDiff>;
+  include?: Array<string>;
+  /**
+   * Exclude globs for files to skip (optional)
+   */
+  exclude?: Array<string>;
+  /**
+   * Base path for resolving relative globs (optional, defaults to current working directory)
+   */
+  base_path?: string;
+  /**
+   * Don't respect .gitignore files (optional, defaults to false)
+   */
+  no_gitignore?: boolean;
+  /**
+   * Include hidden files and directories (optional, defaults to false)
+   */
+  include_hidden?: boolean;
+  /**
+   * Set maximum number of concurrent threads (optional, defaults to CPU cores)
+   */
+  max_threads?: number;
+  /**
+   * Perform a dry run without making changes (optional, defaults to false)
+   */
+  dry_run?: boolean;
+  /**
+   * Language to process (optional)
+   */
+  language?: string;
 };
-export type Runtime = {
+export type Strategy = {
   /**
-   * Type of runtime
+   * Type of strategy
    */
-  type: RuntimeType;
+  type: StrategyType;
   /**
-   * Container image (for Docker and Podman)
+   * Matrix values (for matrix strategy)
    */
-  image?: string | null;
+  values?: Array<{ [key in string]?: JsonValue }>;
   /**
-   * Working directory inside the container
+   * State key to get matrix values from (for matrix strategy)
    */
-  working_dir?: string | null;
-  /**
-   * User to run as inside the container
-   */
-  user?: string | null;
-  /**
-   * Network mode for the container
-   */
-  network?: string | null;
-  /**
-   * Additional container options
-   */
-  options?: Array<string> | null;
+  from_state?: string | null;
 };
-export type DiffOperation = "Add" | "Update" | "Remove" | "Append";
-export type FieldDiff = {
-  /**
-   * The operation to perform
-   */
-  operation: DiffOperation;
-  /**
-   * The new value (for Add and Update operations)
-   */
-  value: JsonValue | null;
-};
-export type StateDiff = {
-  /**
-   * The ID of the workflow run
-   */
-  workflow_run_id: string;
-  /**
-   * The fields to update
-   */
-  fields: Record<string, FieldDiff>;
-};
-export type StateSchemaProperty = {
-  /**
-   * Type of the property
-   */
-  type: StateSchemaType;
-  /**
-   * Description of the property
-   */
-  description?: string | null;
-};
-export type StrategyType = "matrix";
 export type Task = {
   /**
    * Unique identifier for the task
@@ -273,7 +306,7 @@ export type Task = {
   /**
    * For matrix tasks, the matrix values
    */
-  matrix_values?: Record<string, JsonValue> | null;
+  matrix_values?: { [key in string]?: JsonValue } | null;
   /**
    * Start time of the task
    */
@@ -291,56 +324,74 @@ export type Task = {
    */
   logs: Array<string>;
 };
-export type WorkflowStatus =
-  | "Pending"
-  | "Running"
-  | "Completed"
-  | "Failed"
-  | "AwaitingTrigger"
-  | "Canceled";
-export type NodeType = "automatic" | "manual";
-export type Template = {
+export type TemplateOutput = {
   /**
-   * Unique identifier for the template
-   */
-  id: string;
-  /**
-   * Human-readable name
+   * Name of the output
    */
   name: string;
   /**
-   * Detailed description of what the template does
+   * Value of the output
    */
-  description?: string | null;
+  value: string;
   /**
-   * Container runtime configuration
+   * Description of the output
    */
-  runtime?: Runtime | null;
-  /**
-   * Inputs for the template
-   */
-  inputs: Array<TemplateInput>;
-  /**
-   * Steps to execute within the template
-   */
-  steps: Array<Step>;
-  /**
-   * Outputs from the template
-   */
-  outputs?: Array<TemplateOutput>;
-  /**
-   * Environment variables to inject into the container
-   */
-  env?: Record<string, string>;
+  description: string | null;
 };
-export type RuntimeType = "direct" | "docker" | "podman";
-export type WorkflowState = {
+export type StateDiff = {
   /**
-   * Schema definitions
+   * The ID of the workflow run
    */
-  schema: Array<StateSchema>;
+  workflow_run_id: string;
+  /**
+   * The fields to update
+   */
+  fields: { [key in string]?: FieldDiff };
 };
-export type TriggerType = "automatic" | "manual";
+export type Runtime = {
+  /**
+   * Type of runtime
+   */
+  type: RuntimeType;
+  /**
+   * Container image (for Docker and Podman)
+   */
+  image?: string | null;
+  /**
+   * Working directory inside the container
+   */
+  working_dir?: string | null;
+  /**
+   * User to run as inside the container
+   */
+  user?: string | null;
+  /**
+   * Network mode for the container
+   */
+  network?: string | null;
+  /**
+   * Additional container options
+   */
+  options?: Array<string> | null;
+};
+export type Workflow = {
+  /**
+   * Version of the workflow format
+   */
+  version: string;
+  /**
+   * State schema definition
+   */
+  state?: WorkflowState | null;
+  /**
+   * Templates for reusable components
+   */
+  templates?: Array<Template>;
+  /**
+   * Nodes in the workflow
+   */
+  nodes: Array<Node>;
+};
 export type Step = {
   /**
    * Human-readable name
@@ -349,14 +400,32 @@ export type Step = {
   /**
    * Environment variables specific to this step
    */
-  env?: Record<string, string>;
-} & ({ use: TemplateUse } | { run: string });
-export type StateSchemaType =
-  | "array"
-  | "object"
-  | "string"
-  | "number"
-  | "boolean";
+  env?: { [key in string]?: string };
+} & (
+  | { use: TemplateUse }
+  | { run: string }
+  | { "ast-grep": UseAstGrep }
+  | { "js-ast-grep": UseJSAstGrep }
+  | { codemod: UseCodemod }
+);
+export type StateSchema = {
+  /**
+   * Name of the state schema
+   */
+  name: string;
+  /**
+   * Type of the state schema
+   */
+  type: StateSchemaType;
+  /**
+   * For array types, the schema of the items
+   */
+  items?: StateSchemaItems | null;
+  /**
+   * Description of the state schema
+   */
+  description?: string | null;
+};
 export type WorkflowRun = {
   /**
    * Unique identifier for the workflow run
@@ -373,7 +442,7 @@ export type WorkflowRun = {
   /**
    * Parameters passed to the workflow
    */
-  params: Record<string, string>;
+  params: { [key in string]?: string };
   /**
    * Tasks created for this workflow run
    */
@@ -386,4 +455,19 @@ export type WorkflowRun = {
    * End time of the workflow run (if completed or failed)
    */
   ended_at?: string | null;
+  /**
+   * The absolute path to the root directory of the workflow bundle
+   */
+  bundle_path?: string | null;
+};
+export type NodeType = "automatic" | "manual";
+export type TaskDiff = {
+  /**
+   * The ID of the task
+   */
+  task_id: string;
+  /**
+   * The fields to update
+   */
+  fields: { [key in string]?: FieldDiff };
 };

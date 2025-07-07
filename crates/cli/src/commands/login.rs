@@ -2,8 +2,8 @@ use anyhow::{anyhow, Result};
 use clap::Args;
 use log::{info, warn};
 
-use crate::auth::{OidcClient, TokenStorage};
 use crate::ascii_art::print_ascii_art;
+use crate::auth::{OidcClient, TokenStorage};
 
 #[derive(Args, Debug)]
 pub struct Command {
