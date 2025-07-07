@@ -1,5 +1,13 @@
 # codemod
 
+## 0.18.9
+
+### Patch Changes
+
+- 865a8b2: Fix a bug in relative path detection
+- Updated dependencies [865a8b2]
+  - @codemod.com/workflow@0.0.32
+
 ## 0.18.8
 
 ### Patch Changes
