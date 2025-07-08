@@ -429,10 +429,8 @@ Manage and execute workflow YAMLs.
 ```bash
 npx codemod@next workflow run -w <workflow.yaml|directory> [--param key=value]
 ```
-| Option                  | Type     | Description                                 |
-|-------------------------|----------|---------------------------------------------|
-| -w, --workflow &lt;PATH&gt;   | string   | Path to workflow file or directory. (required) |
-| --param &lt;KEY=VALUE&gt;     | string   | Workflow parameters (format: key=value).    |
+- `-w, --workflow <PATH>` (string) — Path to workflow file or directory. (required)
+- `--param <KEY=VALUE>` (string) — Workflow parameters (format: key=value).
 
 <ResponseField name="workflow resume">
   Resume a paused workflow.
@@ -440,11 +438,9 @@ npx codemod@next workflow run -w <workflow.yaml|directory> [--param key=value]
 ```bash
 npx codemod@next workflow resume -i <ID> [-t <TASK>] [--trigger-all]
 ```
-| Option              | Type     | Description                                      |
-|---------------------|----------|--------------------------------------------------|
-| -i, --id &lt;ID&gt;       | string   | Workflow run ID. (required)                      |
-| -t, --task &lt;TASK&gt;   | string   | Task ID to trigger (can be specified multiple times). |
-| --trigger-all       | boolean  | Trigger all awaiting tasks.                      |
+- `-i, --id <ID>` (string) — Workflow run ID. (required)
+- `-t, --task <TASK>` (string) — Task ID to trigger (can be specified multiple times).
+- `--trigger-all` (boolean) — Trigger all awaiting tasks.
 
 <ResponseField name="workflow validate">
   Validate a workflow file.
@@ -452,9 +448,7 @@ npx codemod@next workflow resume -i <ID> [-t <TASK>] [--trigger-all]
 ```bash
 npx codemod@next workflow validate -w <workflow.yaml>
 ```
-| Option                | Type     | Description                |
-|-----------------------|----------|----------------------------|
-| -w, --workflow &lt;FILE&gt; | string   | Path to workflow file. (required) |
+- `-w, --workflow <FILE>` (string) — Path to workflow file. (required)
 
 | Check                       | Ensures                                 |
 |-----------------------------|-----------------------------------------|
@@ -477,9 +471,7 @@ npx codemod@next workflow validate -w <workflow.yaml>
 ```bash
 npx codemod@next workflow status -i <ID>
 ```
-| Option         | Type     | Description           |
-|---------------|----------|-----------------------|
-| -i, --id &lt;ID&gt; | string   | Workflow run ID. (required) |
+- `-i, --id <ID>` (string) — Workflow run ID. (required)
 
 <ResponseField name="workflow list">
   List workflow runs.
@@ -487,9 +479,7 @@ npx codemod@next workflow status -i <ID>
 ```bash
 npx codemod@next workflow list [-l <LIMIT>]
 ```
-| Option           | Type     | Description                        |
-|------------------|----------|------------------------------------|
-| -l, --limit &lt;LIMIT&gt; | number   | Number of workflow runs to show. (default: 10) |
+- `-l, --limit <LIMIT>` (number) — Number of workflow runs to show. (default: 10)
 
 <ResponseField name="workflow cancel">
   Cancel a workflow run.
@@ -497,9 +487,7 @@ npx codemod@next workflow list [-l <LIMIT>]
 ```bash
 npx codemod@next workflow cancel -i <ID>
 ```
-| Option         | Type     | Description           |
-|---------------|----------|-----------------------|
-| -i, --id &lt;ID&gt; | string   | Workflow run ID. (required) |
+- `-i, --id <ID>` (string) — Workflow run ID. (required)
 
 ---
 
@@ -700,9 +688,7 @@ npx codemod@next cache info
 ```bash
 npx codemod@next cache list [--detailed]
 ```
-| Option      | Type     | Description           |
-|-------------|----------|-----------------------|
-| --detailed  | boolean  | Show package details. |
+- `--detailed` (boolean) — Show package details.
 
 <ResponseField name="cache clear">
   Clear cache for specific package.
@@ -710,10 +696,8 @@ npx codemod@next cache list [--detailed]
 ```bash
 npx codemod@next cache clear [PACKAGE] [--all]
 ```
-| Option      | Type     | Description                                 |
-|-------------|----------|---------------------------------------------|
-| [PACKAGE]   | string   | Package name (e.g., @org/package or package).|
-| --all       | boolean  | Clear all cached packages.                  |
+- `[PACKAGE]` (string) — Package name (e.g., @org/package or package).
+- `--all` (boolean) — Clear all cached packages.
 
 <ResponseField name="cache prune">
   Prune old or unused cache entries.
@@ -721,10 +705,8 @@ npx codemod@next cache clear [PACKAGE] [--all]
 ```bash
 npx codemod@next cache prune [--max-age <MAX_AGE>] [--dry-run]
 ```
-| Option           | Type     | Description                                 |
-|------------------|----------|---------------------------------------------|
-| --max-age &lt;MAX_AGE&gt; | number   | Maximum age in days to keep. (default: 30)   |
-| --dry-run        | boolean  | Dry run - show what would be removed.        |
+- `--max-age <MAX_AGE>` (number) — Maximum age in days to keep. (default: 30)
+- `--dry-run` (boolean) — Dry run - show what would be removed.
 
 ## Roadmap
 
