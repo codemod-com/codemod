@@ -43,22 +43,52 @@ Codemod Workflows are self-hostable automations designed for running large-scale
     ```
     example-codemod/
     ├── .gitignore
-    ├── README.md
-    ├── codemod.yaml
-    ├── workflow.yaml
+    ├── README.md           # Project usage and development instructions
+    ├── codemod.yaml        # Codemod metadata and registry info
+    ├── workflow.yaml       # Workflow definition for running the codemod
     ├── rules/
-    │   └── config.yml
-    ├── scripts/
+    │   └── config.yml      # Example ast-grep rules
+    ├── scripts/            # (empty) for custom scripts
     └── tests/
-        ├── input/
-        └── expected/
+        ├── input/          # (empty) for test fixtures
+        └── expected/       # (empty) for test fixtures
     ```
-    - `README.md`: Project usage and development instructions
-    - `codemod.yaml`: Codemod metadata and registry info
-    - `workflow.yaml`: Workflow definition for running the codemod
-    - `rules/config.yml`: Example ast-grep rules
-    - `scripts/`: (empty) for custom scripts
-    - `tests/input/` and `tests/expected/`: (empty) for test fixtures
+  </Step>
+  <Step title="Understand the example workflow">
+    The generated `workflow.yaml` defines a simple workflow that applies an AST-grep rule to all TypeScript files in the `src/` directory (excluding test files):
+
+    ```yaml
+    id: example-codemod
+    version: "1"
+    nodes:
+      - id: apply-rules
+        name: Apply AST-grep Rules
+        steps:
+          - name: "Scan TypeScript files only"
+            ast-grep:
+              include:
+                - "**/*.ts"
+                - "**/*.tsx"
+              exclude:
+                - "**/*.test.ts"
+                - "**/*.spec.ts"
+              base_path: "src"
+              config_file: "rules/config.yml"
+    ```
+
+    The referenced `rules/config.yml` contains an example rule:
+
+    ```yaml
+    id: replace-console-log
+    language: tsx
+    rule:
+      any:
+        - pattern: console.log($ARG)
+    fix:
+      logger.log($ARG)
+    ```
+
+    This rule will replace all `console.log(...)` calls with `logger.log(...)` in your TypeScript/TSX files.
   </Step>
   <Step title="Validate & run your workflow">
     ```bash
@@ -69,9 +99,6 @@ Codemod Workflows are self-hostable automations designed for running large-scale
   </Step>
 </Steps>
 
-<Info>
-Registry identifiers such as `my-registry/react-mods:latest` are on the roadmap.
-</Info>
 
 ---
 
