@@ -23,7 +23,14 @@ Codemod Workflows are self-hostable automations designed for running large-scale
 <Steps>
   <Step title="Install">
     ```bash
-    cargo install codemod-cli
+    # Clone the repository
+    git clone https://github.com/codemod-com/codemod.git
+    cd codemod
+
+    # Build the project
+    cargo build --release
+
+    # The executable will be available at target/release/codemod
     ```
   </Step>
   <Step title="Create a minimal workflow">
