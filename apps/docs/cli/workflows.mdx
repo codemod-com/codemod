@@ -40,9 +40,9 @@ Codemod Workflows are self-hostable automations designed for running large-scale
   </Step>
   <Step title="Validate & run">
     ```bash
-    codemod@next validate -w workflow.yaml
-    codemod@next run      -w workflow.yaml
-    codemod@next run      ./my-workflow/   # run a bundle folder
+    npx codemod@next workflow validate -w workflow.yaml
+    npx codemod@next workflow run -w workflow.yaml
+    npx codemod@next workflow run ./my-workflow/   # run a bundle folder
     ```
   </Step>
 </Steps>
@@ -62,15 +62,15 @@ my-workflow/
 └─ rules/
 ```
 
-The folder—called a **workflow bundle**—is the root when you run `codemod@next run ./my-workflow/`. `$CODEMOD_PATH` points here inside every task.
+The folder—called a **workflow bundle**—is the root when you run `npx codemod@next workflow run ./my-workflow/`. `$CODEMOD_PATH` points here inside every task.
 
 <Accordion title="Workflow Bundle & Loading Workflows">
 A <b>workflow bundle</b> is a directory containing your <code>workflow.yaml</code> and any scripts, rules, or assets referenced by your workflow.
 
-- When you run <code>codemod@next run ./my-workflow/</code>, the directory is used as the root for all relative paths.
+- When you run <code>npx codemod@next workflow run ./my-workflow/</code>, the directory is used as the root for all relative paths.
 - You can also run a workflow directly from a file:
   <br/>
-  <code>codemod@next run -w workflow.yaml</code>
+  <code>npx codemod@next workflow run -w workflow.yaml</code>
 
 <Info>
 Registry support (run workflows from remote sources) is planned for the future.
@@ -247,11 +247,11 @@ Manual tasks are assigned unique UUIDs. You can resume:
 
 - All paused tasks:
   ```bash
-  codemod@next resume -i <run-id> --trigger-all
+  npx codemod@next workflow resume -i <run-id> --trigger-all
   ```
 - A specific task:
   ```bash
-  codemod@next resume -i <run-id> -t <task-uuid>
+  npx codemod@next workflow resume -i <run-id> -t <task-uuid>
   ```
 </Accordion>
 
@@ -311,8 +311,10 @@ You'll see:
 ✗ Workflow definition is invalid
 Error: Cyclic dependency detected: a → b → a
 ```
+<Info>
+This error is shown when you run `npx codemod@next workflow validate` or `npx codemod@next workflow run` on a workflow with a cyclic dependency.
+</Info>
 </Accordion>
-
 </AccordionGroup>
 
 ---
@@ -614,108 +616,3 @@ Search for packages in the registry.
 ```bash
 npx codemod@next search [QUERY] [options]
 ```
-<ResponseField name="[QUERY]" type="string">
-  Search query.
-</ResponseField>
-<ResponseField name="--language <LANGUAGE>" type="string">
-  Filter by programming language.
-</ResponseField>
-<ResponseField name="--framework <FRAMEWORK>" type="string">
-  Filter by framework.
-</ResponseField>
-<ResponseField name="--category <CATEGORY>" type="string">
-  Filter by category.
-</ResponseField>
-<ResponseField name="--size <SIZE>" type="number" default="20">
-  Number of results to return.
-</ResponseField>
-<ResponseField name="--from <FROM>" type="number" default="0">
-  Pagination offset.
-</ResponseField>
-<ResponseField name="--scope <SCOPE>" type="string">
-  Filter by organization scope.
-</ResponseField>
-<ResponseField name="--registry <REGISTRY>" type="string">
-  Registry URL.
-</ResponseField>
-<ResponseField name="--format <FORMAT>" type="string" default="table">
-  Output format (`table`, `json`, `yaml`).
-</ResponseField>
-
----
-
-### `codemod@next run`
-
-Run a codemod from the registry.
-```bash
-npx codemod@next run <PACKAGE> [PATH] [-- <ARGS>...]
-```
-<ResponseField name="<PACKAGE>" type="string" required>
-  Package name with optional version (e.g., @org/package@1.0.0).
-</ResponseField>
-<ResponseField name="[PATH]" type="string">
-  Target directory to run the codemod on (default: current directory).
-</ResponseField>
-<ResponseField name="[ARGS]..." type="string">
-  Additional arguments to pass to the codemod.
-</ResponseField>
-<ResponseField name="--registry <REGISTRY>" type="string">
-  Registry URL.
-</ResponseField>
-<ResponseField name="--force" type="boolean">
-  Force re-download even if cached.
-</ResponseField>
-<ResponseField name="--dry-run" type="boolean">
-  Dry run mode - don't make actual changes.
-</ResponseField>
-
----
-
-### `codemod@next cache`
-
-Manage package cache.
-
-<ResponseField name="cache info">
-  Show cache information and statistics.
-</ResponseField>
-```bash
-npx codemod@next cache info
-```
-
-<ResponseField name="cache list">
-  List cached packages.
-</ResponseField>
-```bash
-npx codemod@next cache list [--detailed]
-```
-- `--detailed` (boolean) — Show package details.
-
-<ResponseField name="cache clear">
-  Clear cache for specific package.
-</ResponseField>
-```bash
-npx codemod@next cache clear [PACKAGE] [--all]
-```
-- `[PACKAGE]` (string) — Package name (e.g., @org/package or package).
-- `--all` (boolean) — Clear all cached packages.
-
-<ResponseField name="cache prune">
-  Prune old or unused cache entries.
-</ResponseField>
-```bash
-npx codemod@next cache prune [--max-age <MAX_AGE>] [--dry-run]
-```
-- `--max-age <MAX_AGE>` (number) — Maximum age in days to keep. (default: 30)
-- `--dry-run` (boolean) — Dry run - show what would be removed.
-
-## Roadmap
-
-<Update description="Container runtime support">
-  Support for <code>runtime: docker</code> and other container runtimes, allowing tasks to run in isolated environments.
-</Update>
-<Update description="Parameter flags">
-  Ability to pass parameters to workflows via <code>--param key=value</code> flags.
-</Update>
-<Update description="Nested matrix strategies">
-  Support for matrix strategies within matrix strategies, enabling more complex task fan-out.
-</Update>
