@@ -16,47 +16,91 @@ Codemod Workflows are self-hostable automations designed for running large-scale
 - **Parallel scheduling** — independent nodes run when dependencies allow  
 - **Host-shell execution** — commands run directly on your machine (container runtimes on the roadmap)
 
+Codemod Workflows can be run using [Codemod CLI](cli/cli-reference) or [Codemod Platform](https://app.codemod.com/workflows/create/).
+
 ---
 
 ## Quick Start
 
 <Steps>
-  <Step title="Install">
+  <Step title="Create a new codemod project">
     ```bash
-    # Clone the repository
-    git clone https://github.com/codemod-com/codemod.git
-    cd codemod
+    npx codemod@next init
+    ```
+    When creating a new codemod project, you'll be prompted for:
+    - **Project directory**
+    - **Codemod type:**
+      - Shell command workflow codemod
+      - JavaScript ast-grep codemod
+      - YAML ast-grep codemod
+    - **Project name**
+    - **Description**
+    - **Author**
+    - **License type**
+    - **If your codemod is private**
 
-    # Build the project
-    cargo build --release
-
-    # The executable will be available at target/release/codemod
+    This will create a new folder with all the necessary files and structure for your chosen codemod type.
+  </Step>
+  <Step title="Explore the generated project">
+    ```
+    example-codemod/
+    ├── .gitignore
+    ├── README.md           # Project usage and development instructions
+    ├── codemod.yaml        # Codemod metadata and registry info
+    ├── workflow.yaml       # Workflow definition for running the codemod
+    ├── rules/
+    │   └── config.yml      # Example ast-grep rules
+    ├── scripts/            # (empty) for custom scripts
+    └── tests/
+        ├── input/          # (empty) for test fixtures
+        └── expected/       # (empty) for test fixtures
     ```
   </Step>
-  <Step title="Create a minimal workflow">
-    ```yaml workflow.yaml
+  <Step title="Understand the example workflow">
+    The generated `workflow.yaml` defines a simple workflow that applies an AST-grep rule to all TypeScript files in the `src/` directory (excluding test files):
+
+    ```yaml
+    id: example-codemod
     version: "1"
     nodes:
-      - id: hello
-        name: Hello World
-        type: automatic
+      - id: apply-rules
+        name: Apply AST-grep Rules
         steps:
-          - name: Say hello
-            run: echo "Hello, World!"
+          - name: "Scan TypeScript files only"
+            ast-grep:
+              include:
+                - "**/*.ts"
+                - "**/*.tsx"
+              exclude:
+                - "**/*.test.ts"
+                - "**/*.spec.ts"
+              base_path: "src"
+              config_file: "rules/config.yml"
     ```
+
+    The referenced `rules/config.yml` contains an example rule:
+
+    ```yaml
+    id: replace-console-log
+    language: tsx
+    rule:
+      any:
+        - pattern: console.log($ARG)
+    fix:
+      logger.log($ARG)
+    ```
+
+    This rule will replace all `console.log(...)` calls with `logger.log(...)` in your TypeScript/TSX files.
   </Step>
-  <Step title="Validate & run">
+  <Step title="Validate & run your workflow">
     ```bash
-    codemod@next validate -w workflow.yaml
-    codemod@next run      -w workflow.yaml
-    codemod@next run      ./my-workflow/   # run a bundle folder
+    npx codemod@next workflow validate -w workflow.yaml
+    npx codemod@next workflow run -w workflow.yaml
     ```
+    This will check your workflow for errors and then run it locally.
   </Step>
 </Steps>
 
-<Info>
-Registry identifiers such as `my-registry/react-mods:latest` are on the roadmap.
-</Info>
 
 ---
 
@@ -69,15 +113,15 @@ my-workflow/
 └─ rules/
 ```
 
-The folder—called a **workflow bundle**—is the root when you run `codemod@next run ./my-workflow/`. `$CODEMOD_PATH` points here inside every task.
+The folder—called a **workflow bundle**—is the root when you run `npx codemod@next workflow run ./my-workflow/`. `$CODEMOD_PATH` points here inside every task.
 
 <Accordion title="Workflow Bundle & Loading Workflows">
 A <b>workflow bundle</b> is a directory containing your <code>workflow.yaml</code> and any scripts, rules, or assets referenced by your workflow.
 
-- When you run <code>codemod@next run ./my-workflow/</code>, the directory is used as the root for all relative paths.
+- When you run <code>npx codemod@next workflow run ./my-workflow/</code>, the directory is used as the root for all relative paths.
 - You can also run a workflow directly from a file:
   <br/>
-  <code>codemod@next run -w workflow.yaml</code>
+  <code>npx codemod@next workflow run -w workflow.yaml</code>
 
 <Info>
 Registry support (run workflows from remote sources) is planned for the future.
@@ -254,11 +298,11 @@ Manual tasks are assigned unique UUIDs. You can resume:
 
 - All paused tasks:
   ```bash
-  codemod@next resume -i <run-id> --trigger-all
+  npx codemod@next workflow resume -i <run-id> --trigger-all
   ```
 - A specific task:
   ```bash
-  codemod@next resume -i <run-id> -t <task-uuid>
+  npx codemod@next workflow resume -i <run-id> -t <task-uuid>
   ```
 </Accordion>
 
@@ -318,8 +362,10 @@ You'll see:
 ✗ Workflow definition is invalid
 Error: Cyclic dependency detected: a → b → a
 ```
+<Info>
+This error is shown when you run `npx codemod@next workflow validate` or `npx codemod@next workflow run` on a workflow with a cyclic dependency.
+</Info>
 </Accordion>
-
 </AccordionGroup>
 
 ---
@@ -407,122 +453,6 @@ In matrix tasks, each object key becomes an environment variable (e.g., `$team`,
 
 ---
 
-## CLI Commands
-
-Codemod CLI is accessible using the `codemod@next` command. Please note that once the legacy Codemod CLI is deprecated, using the `@next` specifier will no longer be required.
-
-### `codemod@next init`
-Initialize a new Codemod workflow project with interactive setup. Scaffolds rules, scripts, and tests for AST-grep or blank workflows.
-
-<ResponseField name="--name <NAME>" type="string">
-  Set the project name (defaults to directory name).
-</ResponseField>
-<ResponseField name="--force" type="boolean">
-  Overwrite existing files if they exist.
-</ResponseField>
-<ResponseField name="[directory]" type="string">
-  Target directory path (defaults to current directory).
-</ResponseField>
-
-### `codemod@next run`
-Execute a workflow from a file, bundle directory, or registry.
-
-<ResponseField name="-w, --workflow <FILE>" type="string">
-  Path to the workflow definition file.
-</ResponseField>
-<ResponseField name="[file|directory|registry]" type="string">
-  Path to workflow file, bundle directory, or registry identifier.
-</ResponseField>
-
-### `codemod@next resume`
-Resume a paused workflow or trigger manual tasks.
-
-<ResponseField name="-i, --id <UUID>" type="string" required>
-  Workflow run ID to resume.
-</ResponseField>
-<ResponseField name="-t, --task <UUID>" type="string">
-  Specific task UUID to trigger.
-</ResponseField>
-<ResponseField name="--trigger-all" type="boolean">
-  Trigger all tasks in AwaitingTrigger state.
-</ResponseField>
-
-### `codemod@next validate`
-Validate a workflow definition or bundle without executing it. Checks for schema errors, cyclic dependencies, and more.
-
-<ResponseField name="-w, --workflow <FILE>" type="string">
-  Path to the workflow definition file.
-</ResponseField>
-<ResponseField name="[directory]" type="string">
-  Path to workflow bundle directory.
-</ResponseField>
-
-`codemod@next validate` catches issues before execution:
-
-| Check | Ensures |
-|-------|---------|
-| Schema validation           | YAML matches spec |
-| Unique IDs                  | Node & template IDs unique |
-| Dependency validation       | Every `depends_on` exists |
-| Cyclic dependency detection | DAG has no cycles |
-| Template references         | All `template:` IDs exist |
-| Matrix validation           | `from_state` matches schema |
-| State schema validation     | `state.schema` is valid |
-| Variable syntax             | `${{…}}` uses `params`, `env`, `state` |
-
----
-
-### `codemod@next login`
-Authenticate with a Codemod registry to publish and manage codemods.
-
-<ResponseField name="--registry <URL>" type="string">
-  Registry URL (defaults to official registry).
-</ResponseField>
-<ResponseField name="--token <TOKEN>" type="string">
-  Authentication token (for non-interactive login, e.g., CI/CD).
-</ResponseField>
-<ResponseField name="--username <USERNAME>" type="string">
-  Username for interactive login.
-</ResponseField>
-<ResponseField name="--scope <SCOPE>" type="string">
-  Organization or user scope for publishing.
-</ResponseField>
-
-### `codemod@next publish`
-Publish a codemod to a registry for sharing and reuse.
-
-<ResponseField name="--version <VERSION>" type="string">
-  Explicit version (overrides manifest version).
-</ResponseField>
-<ResponseField name="--registry <URL>" type="string">
-  Target registry URL.
-</ResponseField>
-<ResponseField name="--tag <TAG>" type="string">
-  Tag for the release (e.g., `beta`, `latest`).
-</ResponseField>
-<ResponseField name="--access <LEVEL>" type="string">
-  Access level (`public` or `private`).
-</ResponseField>
-<ResponseField name="--dry-run" type="boolean">
-  Validate and pack without uploading.
-</ResponseField>
-<ResponseField name="--force" type="boolean">
-  Override existing version (use with caution).
-</ResponseField>
-<ResponseField name="[directory]" type="string">
-  Path to the codemod directory to publish (defaults to current directory).
-</ResponseField>
-
-### `codemod@next graph`
-Render DAG image.
-
-<ResponseField name="-w <file>" type="string" required>
-  Path to the workflow file.
-</ResponseField>
-<ResponseField name="-o <png>" type="string" required>
-  Output PNG file for the DAG image.
-</ResponseField>
-
 ## Roadmap
 
 <Update description="Container runtime support">
@@ -534,3 +464,14 @@ Render DAG image.
 <Update description="Nested matrix strategies">
   Support for matrix strategies within matrix strategies, enabling more complex task fan-out.
 </Update>
+
+## Next Steps
+
+<CardGroup>
+  <Card title="Codemod CLI Reference" href="/cli/cli-reference" icon="terminal">
+    Explore the full command and option reference for Codemod CLI.
+  </Card>
+  <Card title="jssg: JavaScript ast-grep" href="/cli/jssg" icon="js">
+    Perform fast, AST-based searches & transformations using a grep-like interface.
+  </Card>
+</CardGroup>
