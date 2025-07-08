@@ -21,29 +21,51 @@ Codemod Workflows are self-hostable automations designed for running large-scale
 ## Quick Start
 
 <Steps>
-  <Step title="Install">
+  <Step title="Create a new codemod project">
     ```bash
     npx codemod@next init
     ```
+    When creating a new codemod project, you'll be prompted for:
+    - **Project directory**
+    - **Codemod type:**
+      - Shell command workflow codemod
+      - JavaScript ast-grep codemod
+      - YAML ast-grep codemod
+    - **Project name**
+    - **Description**
+    - **Author**
+    - **License type**
+    - **If your codemod is private**
+
+    This will create a new folder with all the necessary files and structure for your chosen codemod type.
   </Step>
-  <Step title="Create a minimal workflow">
-    ```yaml workflow.yaml
-    version: "1"
-    nodes:
-      - id: hello
-        name: Hello World
-        type: automatic
-        steps:
-          - name: Say hello
-            run: echo "Hello, World!"
+  <Step title="Explore the generated project">
     ```
+    example-codemod/
+    ├── .gitignore
+    ├── README.md
+    ├── codemod.yaml
+    ├── workflow.yaml
+    ├── rules/
+    │   └── config.yml
+    ├── scripts/
+    └── tests/
+        ├── input/
+        └── expected/
+    ```
+    - `README.md`: Project usage and development instructions
+    - `codemod.yaml`: Codemod metadata and registry info
+    - `workflow.yaml`: Workflow definition for running the codemod
+    - `rules/config.yml`: Example ast-grep rules
+    - `scripts/`: (empty) for custom scripts
+    - `tests/input/` and `tests/expected/`: (empty) for test fixtures
   </Step>
-  <Step title="Validate & run">
+  <Step title="Validate & run your workflow">
     ```bash
     npx codemod@next workflow validate -w workflow.yaml
     npx codemod@next workflow run -w workflow.yaml
-    npx codemod@next workflow run ./my-workflow/   # run a bundle folder
     ```
+    This will check your workflow for errors and then run it locally.
   </Step>
 </Steps>
 
@@ -575,7 +597,6 @@ npx codemod@next whoami [--registry <REGISTRY>] [--detailed]
 <ResponseField name="--detailed" type="boolean">
   Show detailed information including token scopes.
 </ResponseField>
-
 
 ### `codemod@next publish`
 
