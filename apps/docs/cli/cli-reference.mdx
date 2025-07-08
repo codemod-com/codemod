@@ -1,0 +1,216 @@
+---
+title: 'Codemod CLI'
+description: 'Orchestrate large-scale code migrations with Codemod CLI.'
+icon: 'terminal'
+---
+
+Codemod CLI (new) is accessible using the `npx codemod@next` command. The following commands and options are available:
+
+- `workflow` — Manage workflows (see subcommands below)
+- `jssg` — JavaScript ast-grep execution (see subcommands below)
+- `init` — Initialize a new workflow project
+- `login` — Login to a registry
+- `logout` — Logout from a registry
+- `whoami` — Show current authentication status
+- `publish` — Publish a workflow
+- `search` — Search for packages in the registry
+- `run` — Run a codemod from the registry
+- `cache` — Manage package cache (see subcommands below)
+
+---
+
+### `codemod@next workflow`
+
+Manage and execute workflow YAMLs.
+
+<ResponseField name="workflow run">
+  Run a workflow.
+</ResponseField>
+```bash
+npx codemod@next workflow run -w <workflow.yaml|directory> [--param key=value]
+```
+- `-w, --workflow <PATH>` (string) — Path to workflow file or directory. (required)
+- `--param <KEY=VALUE>` (string) — Workflow parameters (format: key=value).
+
+<ResponseField name="workflow resume">
+  Resume a paused workflow.
+</ResponseField>
+```bash
+npx codemod@next workflow resume -i <ID> [-t <TASK>] [--trigger-all]
+```
+- `-i, --id <ID>` (string) — Workflow run ID. (required)
+- `-t, --task <TASK>` (string) — Task ID to trigger (can be specified multiple times).
+- `--trigger-all` (boolean) — Trigger all awaiting tasks.
+
+<ResponseField name="workflow validate">
+  Validate a workflow file.
+</ResponseField>
+```bash
+npx codemod@next workflow validate -w <workflow.yaml>
+```
+- `-w, --workflow <FILE>` (string) — Path to workflow file. (required)
+
+| Check                       | Ensures                                 |
+|-----------------------------|-----------------------------------------|
+| Schema validation           | YAML matches the workflow spec           |
+| Unique IDs                  | Node & template IDs are unique           |
+| Dependency validation       | Every `depends_on` exists                |
+| Cyclic dependency detection | DAG has no cycles                        |
+| Template references         | All `template:` IDs exist                |
+| Matrix validation           | `from_state` matches schema              |
+| State schema validation     | `state.schema` is valid                  |
+| Variable syntax             | `${{…}}` uses `params`, `env`, `state`   |
+
+<Info>
+  <b>Why validate?</b> Validation catches issues before execution, saving time and preventing runtime errors.
+</Info>
+
+<ResponseField name="workflow status">
+  Show workflow run status.
+</ResponseField>
+```bash
+npx codemod@next workflow status -i <ID>
+```
+- `-i, --id <ID>` (string) — Workflow run ID. (required)
+
+<ResponseField name="workflow list">
+  List workflow runs.
+</ResponseField>
+```bash
+npx codemod@next workflow list [-l <LIMIT>]
+```
+- `-l, --limit <LIMIT>` (number) — Number of workflow runs to show. (default: 10)
+
+<ResponseField name="workflow cancel">
+  Cancel a workflow run.
+</ResponseField>
+```bash
+npx codemod@next workflow cancel -i <ID>
+```
+- `-i, --id <ID>` (string) — Workflow run ID. (required)
+
+---
+
+### `codemod@next jssg`
+
+See [this page](/cli/jssg) for full details and options for running and testing jssg codemods.
+
+---
+
+### `codemod@next init`
+
+Initialize a new workflow project.
+```bash
+npx codemod@next init [PATH] [options]
+```
+<ResponseField name="[PATH]" type="string">
+  Project directory name.
+</ResponseField>
+<ResponseField name="--name <NAME>" type="string">
+  Project name (defaults to directory name).
+</ResponseField>
+<ResponseField name="--project-type <PROJECT_TYPE>" type="string">
+  Project type: `shell`, `ast-grep-js`, `ast-grep-yaml`.
+</ResponseField>
+<ResponseField name="--language <LANGUAGE>" type="string">
+  Target language.
+</ResponseField>
+<ResponseField name="--description <DESCRIPTION>" type="string">
+  Project description.
+</ResponseField>
+<ResponseField name="--author <AUTHOR>" type="string">
+  Author name and email.
+</ResponseField>
+<ResponseField name="--license <LICENSE>" type="string">
+  License.
+</ResponseField>
+<ResponseField name="--private" type="boolean">
+  Make package private.
+</ResponseField>
+<ResponseField name="--force" type="boolean">
+  Overwrite existing files.
+</ResponseField>
+<ResponseField name="--no-interactive" type="boolean">
+  Use defaults without prompts.
+</ResponseField>
+
+---
+
+### `codemod@next login`
+
+Login to a registry.
+```bash
+npx codemod@next login [--registry <REGISTRY>] [--scope <SCOPE>]
+```
+<ResponseField name="--registry <REGISTRY>" type="string">
+  Registry URL.
+</ResponseField>
+<ResponseField name="--scope <SCOPE>" type="string">
+  Organization or user scope for publishing.
+</ResponseField>
+
+---
+
+### `codemod@next logout`
+
+Logout from a registry.
+```bash
+npx codemod@next logout [--registry <REGISTRY>] [--all]
+```
+<ResponseField name="--registry <REGISTRY>" type="string">
+  Registry URL to logout from.
+</ResponseField>
+<ResponseField name="--all" type="boolean">
+  Logout from all registries.
+</ResponseField>
+
+---
+
+### `codemod@next whoami`
+
+Show current authentication status.
+```bash
+npx codemod@next whoami [--registry <REGISTRY>] [--detailed]
+```
+<ResponseField name="--registry <REGISTRY>" type="string">
+  Registry URL to check.
+</ResponseField>
+<ResponseField name="--detailed" type="boolean">
+  Show detailed information including token scopes.
+</ResponseField>
+
+---
+
+### `codemod@next publish`
+
+Publish a workflow to a registry.
+```bash
+npx codemod@next publish [PATH] [options]
+```
+<ResponseField name="[PATH]" type="string">
+  Path to codemod directory.
+</ResponseField>
+<ResponseField name="--version <VERSION>" type="string">
+  Explicit version override.
+</ResponseField>
+<ResponseField name="--registry <REGISTRY>" type="string">
+  Target registry URL.
+</ResponseField>
+<ResponseField name="--tag <TAG>" type="string">
+  Tag for the release.
+</ResponseField>
+<ResponseField name="--access <ACCESS>" type="string">
+  Access level (`public`, `private`).
+</ResponseField>
+<ResponseField name="--dry-run" type="boolean">
+  Validate and pack without uploading.
+</ResponseField>
+
+---
+
+### `codemod@next search`
+
+Search for packages in the registry.
+```bash
+npx codemod@next search [QUERY] [options]
+``` 
