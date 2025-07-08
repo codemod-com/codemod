@@ -1,0 +1,17 @@
+schema_version: "1.0"
+name: "test-codemod"
+version: "0.1.0"
+description: "a simple test codemod"
+author: "mohab@codemod.com"
+license: "MIT"
+workflow: "workflow.yaml"
+category: "migration"
+
+targets:
+  languages: ["javascript"]
+
+keywords: ["transformation", "migration"]
+
+registry:
+  access: "private"
+  visibility: "private"
