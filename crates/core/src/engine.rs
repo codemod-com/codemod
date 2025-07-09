@@ -235,9 +235,42 @@ impl Engine {
             .collect();
 
         if awaiting_tasks.is_empty() {
-            return Err(Error::Other(format!(
-                "No tasks in workflow run {workflow_run_id} are awaiting triggers"
-            )));
+            // Check if all tasks are complete
+            let active_tasks = tasks.iter().any(|t| {
+                matches!(
+                    t.status,
+                    TaskStatus::Pending | TaskStatus::Running | TaskStatus::AwaitingTrigger
+                )
+            });
+
+            // If no tasks are active, mark the workflow as completed
+            if !active_tasks {
+                let mut fields = HashMap::new();
+                fields.insert(
+                    "status".to_string(),
+                    FieldDiff {
+                        operation: DiffOperation::Update,
+                        value: Some(serde_json::to_value(WorkflowStatus::Completed)?),
+                    },
+                );
+                let workflow_run_diff = WorkflowRunDiff {
+                    workflow_run_id,
+                    fields,
+                };
+
+                self.state_adapter
+                    .lock()
+                    .await
+                    .apply_workflow_run_diff(&workflow_run_diff)
+                    .await?;
+
+                info!("Workflow run {workflow_run_id} is now complete");
+                return Ok(());
+            }
+
+            // If we reached here, it means the workflow is still running but no tasks need triggers
+            info!("No tasks in workflow run {workflow_run_id} are awaiting triggers");
+            return Ok(());
         }
 
         let mut triggered = false;
@@ -273,8 +306,10 @@ impl Engine {
             info!("Triggered task {} ({})", task.id, task.node_id);
         }
 
+        // If no tasks were triggered, it means they're all done or in progress
+        // We don't need to error out, just return successfully
         if !triggered {
-            return Err(Error::Other("No tasks were awaiting trigger".to_string()));
+            return Ok(());
         }
 
         let mut fields = HashMap::new();
@@ -442,7 +477,7 @@ impl Engine {
     ///
     /// Examples of cycles that will be detected:
     /// - Direct cycle: A → A
-    /// - Two-step cycle: A → B → A  
+    /// - Two-step cycle: A → B → A
     /// - Multi-step cycle: A → B → C → A
     ///
     /// # Arguments
@@ -797,58 +832,6 @@ impl Engine {
                         error!("Task execution failed: {e}");
                     }
                 });
-            }
-
-            // Check for tasks that have failed dependencies and mark them as WontDo
-            for task in &tasks_after_recompilation {
-                if task.status != TaskStatus::Pending {
-                    continue;
-                }
-
-                // Get the node for this task
-                let node = current_workflow_run
-                    .workflow
-                    .nodes
-                    .iter()
-                    .find(|n| n.id == task.node_id);
-
-                if let Some(node) = node {
-                    // Check if any dependency has failed
-                    let has_failed_dependency = node.depends_on.iter().any(|dep_id| {
-                        tasks_after_recompilation
-                            .iter()
-                            .filter(|t| t.node_id == *dep_id)
-                            .any(|t| t.status == TaskStatus::Failed)
-                    });
-
-                    if has_failed_dependency {
-                        debug!(
-                            "Marking task {} as WontDo due to failed dependency",
-                            task.id
-                        );
-
-                        // Create a task diff to mark as WontDo
-                        let mut fields = HashMap::new();
-                        fields.insert(
-                            "status".to_string(),
-                            FieldDiff {
-                                operation: DiffOperation::Update,
-                                value: Some(serde_json::to_value(TaskStatus::WontDo)?),
-                            },
-                        );
-                        let task_diff = TaskDiff {
-                            task_id: task.id,
-                            fields,
-                        };
-
-                        // Apply the diff
-                        self.state_adapter
-                            .lock()
-                            .await
-                            .apply_task_diff(&task_diff)
-                            .await?;
-                    }
-                }
             }
 
             // Wait a bit before checking again
@@ -1712,6 +1695,14 @@ impl Engine {
                 .to_str()
                 .expect("File path should be valid UTF-8")
                 .to_string(),
+        );
+
+        // Add task and workflow run IDs
+        env.insert(String::from("CODEMOD_TASK_ID"), task.id.to_string());
+
+        env.insert(
+            String::from("CODEMOD_WORKFLOW_RUN_ID"),
+            task.workflow_run_id.to_string(),
         );
 
         // Resolve variables

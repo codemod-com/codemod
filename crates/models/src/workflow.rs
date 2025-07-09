@@ -66,7 +66,7 @@ pub struct WorkflowRun {
     pub ended_at: Option<DateTime<Utc>>,
 
     /// The absolute path to the root directory of the workflow bundle
-    #[ts(skip)]
+    #[ts(optional=nullable)]
     pub bundle_path: Option<PathBuf>,
 }
 

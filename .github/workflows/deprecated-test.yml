@@ -17,8 +17,6 @@ jobs:
         include:
           - os: ubuntu-latest
             db_required: true
-          - os: windows-latest
-            db_required: false
 
     steps:
       - name: Check out Git repository

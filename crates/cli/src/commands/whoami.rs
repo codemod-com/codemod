@@ -2,8 +2,8 @@ use anyhow::{anyhow, Result};
 use chrono::Utc;
 use clap::Args;
 
-use crate::auth::{OidcClient, TokenStorage};
 use crate::ascii_art::print_ascii_art;
+use crate::auth::{OidcClient, TokenStorage};
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -36,7 +36,7 @@ pub async fn handler(args: &Command) -> Result<()> {
     match oidc_client.get_auth_status()? {
         Some(stored_auth) => {
             print_ascii_art();
-            println!("✓ Logged in to: {}", registry_url);
+            println!("✓ Logged in to: {registry_url}");
             println!("Username: {}", stored_auth.user.username);
             println!("Email: {}", stored_auth.user.email);
             println!("User ID: {}", stored_auth.user.id);
