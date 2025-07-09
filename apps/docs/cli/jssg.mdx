@@ -8,13 +8,20 @@ jssg is a JavaScript/TypeScript toolkit that simplifies writing and testing ast-
 
 ## Running Codemods
 
-To run a jssg codemod on a target directory for a specific language like Java, use the following command:
-
+To run a jssg codemod, use the following command:
 ```bash
-npx codemod@latest jssg run /path/to/my-codemod.js /path/to/target --language java
+npx codemod@next jssg run [codemod_file] [target_directory] [options]
 ```
 
-Note: Although your jssg codemods are written in JS/TS, the target language can be something else.
+For example, to run an jssg codemod on a directory using Java:
+
+```bash
+npx codemod@next jssg run /path/to/my-codemod.js /path/to/target --language java
+```
+
+<Tip>
+Although your jssg codemods are written in JS/TS, the target language can be something else.
+</Tip>
 
 ### Options
 
@@ -64,14 +71,14 @@ The jssg testing framework provides testing capabilities for jssg codemods using
             └── file2.js
     ```
 
-2.  **Run the tests** using the `npx codemod@latest jssg test` command.
+2.  **Run the tests** using the `npx codemod@next jssg test` command.
 
     ```bash
     # Run tests for a codemod
-    npx codemod@latest jssg test /path/to/my-codemod.js --language javascript
+    npx codemod@next jssg test /path/to/my-codemod.js --language javascript
 
     # Update snapshots (creates or updates the `expected.js` files)
-    npx codemod@latest jssg test /path/to/my-codemod.js --language javascript --update-snapshots
+    npx codemod@next jssg test /path/to/my-codemod.js --language javascript --update-snapshots
     ```
 
 ### Required Arguments
@@ -130,7 +137,7 @@ Options for controlling how tests are executed.
 Options for managing test snapshots and expected errors.
 
 <ResponseField name="--update-snapshots, -u" type="boolean">
-  Create or update the `expected` files with the output of the codemod.
+  Create or update the `expected` files with the output of the codemod. (`-u` is a shorthand for `--update-snapshots`)
 </ResponseField>
 <ResponseField name="--expect-errors" type="string">
   A comma-separated list of test patterns that are expected to fail.

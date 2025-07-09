@@ -40,29 +40,7 @@
           },
           {
             "group": "OSS & Community",
-            "pages": [
-              "deploying-codemods/cli",
-              {
-                "group": "Building codemods",
-                "pages": [
-                  {
-                    "group": "Codemod packages",
-                    "pages": [
-                      "building-codemods/package-requirements",
-                      "building-codemods/build-package"
-                    ]
-                  },
-                  "building-codemods/codemod2"
-                ]
-              },
-              {
-                "group": "Sharing codemods",
-                "pages": [
-                  "codemod-registry/introduction",
-                  "sharing/publishing-codemods"
-                ]
-              }
-            ]
+            "pages": ["deploying-codemods/cli"]
           },
           {
             "group": "Quick Links",

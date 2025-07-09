@@ -2,6 +2,7 @@ use anyhow::{anyhow, Result};
 use clap::Args;
 use log::{info, warn};
 
+use crate::ascii_art::print_ascii_art;
 use crate::auth::{OidcClient, TokenStorage};
 
 #[derive(Args, Debug)]
@@ -70,8 +71,8 @@ pub async fn handler(args: &Command) -> Result<()> {
                     println!("  - {} ({})", org.name, org.role);
                 }
             }
-
             println!("\nYou can now publish packages using 'codemod publish'");
+            print_ascii_art();
             Ok(())
         }
         Err(e) => {

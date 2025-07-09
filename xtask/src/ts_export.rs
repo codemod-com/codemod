@@ -1,4 +1,4 @@
-use regex::Regex;
+// use regex::Regex;
 use std::{
     any::TypeId,
     collections::{HashMap, HashSet},
@@ -47,6 +47,7 @@ pub fn export_recursive<T: TS + 'static + ?Sized>(
 }
 
 fn replace_object_with_record(string: &str) -> String {
-    let re = Regex::new(r"\{\s*\[key in (\w+)\]\?:\s*(\w+)\s*}").unwrap();
-    re.replace(string, "Record<$1, $2>").to_string()
+    string.to_string()
+    // let re = Regex::new(r"\{\s*\[key in (\w+)\]\?:\s*(\w+)\s*}").unwrap();
+    // re.replace(string, "Record<$1, $2>").to_string()
 }

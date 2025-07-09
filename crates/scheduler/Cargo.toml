@@ -29,4 +29,4 @@ chrono = "0.4"
 
 [features]
 default = []
-wasm = ["uuid/js", "wasm-bindgen", "wasm-bindgen-futures", "js-sys"]
+wasm = ["uuid/js", "wasm-bindgen", "wasm-bindgen-futures", "js-sys", "serde-wasm-bindgen"]

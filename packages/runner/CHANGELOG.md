@@ -1,5 +1,12 @@
 # @codemod-com/runner
 
+## 1.3.9
+
+### Patch Changes
+
+- Updated dependencies [865a8b2]
+  - @codemod.com/workflow@0.0.32
+
 ## 1.3.8
 
 ### Patch Changes

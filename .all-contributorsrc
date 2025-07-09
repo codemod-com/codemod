@@ -420,6 +420,17 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "AugustinMauroy",
+      "name": "Augustin Mauroy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/97875033?v=4",
+      "profile": "http://augustinmauroy.github.io/",
+      "contributions": [
+        "code",
+        "bug",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
