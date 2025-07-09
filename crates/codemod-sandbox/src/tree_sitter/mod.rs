@@ -1,4 +1,4 @@
-use ast_grep_dynamic::{DynamicLang, Registration};
+use ast_grep_codemod_dynamic_lang::{DynamicLang, Registration};
 use dirs::data_local_dir;
 use reqwest;
 use serde::{Deserialize, Serialize};

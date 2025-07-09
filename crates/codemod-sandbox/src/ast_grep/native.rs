@@ -4,10 +4,10 @@ use std::str::FromStr;
 
 use crate::sandbox::engine::language_data::get_extensions_for_language;
 use crate::tree_sitter::{load_tree_sitter, SupportedLanguage};
+use ast_grep_codemod_dynamic_lang::DynamicLang;
 use ast_grep_config::{from_yaml_string, CombinedScan, RuleConfig};
 use ast_grep_core::tree_sitter::StrDoc;
 use ast_grep_core::AstGrep;
-use ast_grep_dynamic::DynamicLang;
 use ignore::{
     overrides::{Override, OverrideBuilder},
     WalkBuilder,

@@ -39,13 +39,13 @@ web-tree-sitter-sg = { git = "https://github.com/mohebifar/tree-sitter-wasm.git"
 serde-wasm-bindgen = { version = "0.6", optional = true }
 ast-grep-core = { version = "0.38.6", default-features = false, optional = true }
 ast-grep-config = { version = "0.38.6", default-features = false, optional = true }
-ast-grep-dynamic = { workspace = true, default-features = true, optional = true }
 llrt_modules = { path = "../../submodules/llrt/llrt_modules", default-features = true, optional = true }
 ignore = { workspace = true, optional = true }
 serde_yaml = { workspace = true, optional = true }
 dirs.workspace = true
 reqwest.workspace = true
 serial_test = "3.2.0"
+ast-grep-codemod-dynamic-lang = { version = "1.0.0-rc.6", path = "../ast-grep-codemod-dynamic-lang" }
 
 [dev-dependencies]
 tempfile = { workspace = true }
@@ -69,7 +69,6 @@ native = [
   "real-fs",
   "ast-grep-core/tree-sitter",
   "ast-grep-config/tree-sitter",
-  "ast-grep-dynamic",
   "llrt_modules",
   "rquickjs-git",
   "rquickjs-git/full-async",

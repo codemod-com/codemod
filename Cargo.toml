@@ -8,7 +8,8 @@ members = [
     "crates/codemod-sandbox",
     "crates/codemod-sandbox/build",
     "crates/telemetry",
-    "xtask"
+    "xtask",
+    "crates/ast-grep-codemod-dynamic-lang"
 ]
 resolver = "2"
 
@@ -53,8 +54,6 @@ thiserror = "2.0"
 tokio = { version = "1.36", features = ["full"] }
 uuid = { version = "1.6", features = ["v4", "serde"] }
 walkdir = "2.4"
-ast-grep-dynamic = "0.38.6"
-
 
 wasm-bindgen = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }
 wasm-bindgen-cli-support = { git = "https://github.com/mohebifar/wasm-bindgen.git", branch = "wasi" }

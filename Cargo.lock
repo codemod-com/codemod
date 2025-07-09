@@ -184,6 +184,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d92bec98840b8f03a5ff5413de5293bfcd8bf96467cf5452609f939ec6f5de16"
 
 [[package]]
+name = "ast-grep-codemod-dynamic-lang"
+version = "1.0.0-rc.6"
+dependencies = [
+ "ast-grep-core",
+ "ignore",
+ "libloading",
+ "serde",
+ "serde_yaml",
+ "target-triple",
+ "thiserror 2.0.12",
+ "tree-sitter",
+]
+
+[[package]]
 name = "ast-grep-config"
 version = "0.38.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -207,21 +221,6 @@ checksum = "79f9731e95d381ae2d8ee1244d21bbf3982840435341ab40260896a76e7e9763"
 dependencies = [
  "bit-set",
  "regex",
- "thiserror 2.0.12",
- "tree-sitter",
-]
-
-[[package]]
-name = "ast-grep-dynamic"
-version = "0.38.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf7ff88b95e38a49522827c9a94835d427fc29b41397fa3cca1b8b627a2a55c0"
-dependencies = [
- "ast-grep-core",
- "ignore",
- "libloading",
- "serde",
- "target-triple",
  "thiserror 2.0.12",
  "tree-sitter",
 ]
@@ -481,7 +480,6 @@ dependencies = [
 name = "butterflow-core"
 version = "1.0.0-rc.15"
 dependencies = [
- "ast-grep-dynamic",
  "async-trait",
  "butterflow-models",
  "butterflow-runners",
@@ -802,9 +800,9 @@ dependencies = [
 name = "codemod-sandbox"
 version = "1.0.0-rc.15"
 dependencies = [
+ "ast-grep-codemod-dynamic-lang",
  "ast-grep-config",
  "ast-grep-core",
- "ast-grep-dynamic",
  "bytes",
  "dirs",
  "ignore",
@@ -6169,9 +6167,9 @@ dependencies = [
 
 [[package]]
 name = "tree-sitter"
-version = "0.25.4"
+version = "0.25.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69aff09fea9a41fb061ae6b206cb87cac1b8db07df31be3ba271fbc26760f213"
+checksum = "a7cf18d43cbf0bfca51f657132cc616a5097edc4424d538bae6fa60142eaf9f0"
 dependencies = [
  "cc",
  "regex",
