@@ -260,7 +260,6 @@ async fn execute_ast_grep_on_globs_with_options(
     for entry in walker {
         let entry = entry.map_err(|e| AstGrepError::Io(std::io::Error::other(e)))?;
 
-        println!("SCAN FILE entry: {:?}", entry.path());
         if entry.file_type().is_some_and(|ft| ft.is_file()) {
             let matches = scan_file(entry.path(), &combined_scan, &rule_configs, apply_fixes)
                 .await
@@ -320,8 +319,6 @@ async fn scan_file(
     let content = fs::read_to_string(file_path)?;
     let language = detect_language(file_path).map_err(|e| AstGrepError::Language(e.to_string()))?;
 
-    println!("language at SCAN FILE FYNC: {language:?}");
-
     scan_content(
         &content,
         file_path,
@@ -341,18 +338,7 @@ async fn scan_content(
     _rule_configs: &[RuleConfig<DynamicLang>],
     apply_fixes: bool,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    println!("language at SCAN CONTENT: {language:?}");
-    println!("extensions");
-
-    println!(
-        "DynamicLang::all_langs() language.to_string(): {:?}",
-        DynamicLang::all_langs()
-            .iter()
-            .map(|lang| lang.name())
-            .collect::<Vec<_>>()
-    );
     let dynamic_lang = DynamicLang::from_str(&language.to_string()).unwrap();
-    println!("extensions loaded");
 
     let doc = StrDoc::new(content, dynamic_lang);
     let root = AstGrep::doc(doc);
