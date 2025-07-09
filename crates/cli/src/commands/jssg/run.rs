@@ -6,7 +6,8 @@ use codemod_sandbox::sandbox::{
     loaders::FileSystemLoader,
     resolvers::FileSystemResolver,
 };
-use std::{path::Path, sync::Arc};
+use codemod_sandbox::tree_sitter::SupportedLanguage;
+use std::{path::Path, str::FromStr, sync::Arc};
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -81,8 +82,12 @@ pub async fn handler(args: &Command) -> Result<()> {
         }
     }
 
-    if let Some(language) = &args.language {
-        config = config.with_language(language.parse()?);
+    if let Some(language) = args.language.as_ref() {
+        config = config.with_language(
+            SupportedLanguage::from_str(language).unwrap_or(SupportedLanguage::Typescript),
+        );
+    } else {
+        config = config.with_language(SupportedLanguage::Typescript);
     }
 
     if let Some(extensions) = &args.extensions {
