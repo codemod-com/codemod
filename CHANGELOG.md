@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+
+## [codemod-next@1.0.0-rc.8] - 2025-07-09
+
+### 🚀 Features
+
+- *(engine)* Initialize environment variables from parent process
+
+### ⚙️ Miscellaneous Tasks
+
+- *(bump)* Bump codemod crates version to v1.0.0-rc.8 (#1592)
+
 ## [codemod-next@1.0.0-rc.7] - 2025-07-09
 
 ### 🚀 Features
