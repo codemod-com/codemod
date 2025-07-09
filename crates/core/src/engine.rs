@@ -148,7 +148,12 @@ impl Engine {
         for task_id in task_ids {
             let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
-            if task.status == TaskStatus::AwaitingTrigger {
+            // If the task is awaiting trigger we can trigger it
+            // OR if it is in a terminal state, we can trigger it again
+            if task.status == TaskStatus::AwaitingTrigger
+                || task.status == TaskStatus::Completed
+                || task.status == TaskStatus::Failed
+            {
                 let mut fields = HashMap::new();
                 fields.insert(
                     "status".to_string(),
