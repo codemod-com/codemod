@@ -8,7 +8,7 @@ use ast_grep_core::{AstGrep, Node, NodeMatch};
 use crate::rquickjs_compat as rquickjs_git;
 
 #[cfg(not(feature = "wasm"))]
-use ast_grep_dynamic::DynamicLang;
+use ast_grep_codemod_dynamic_lang::DynamicLang;
 
 use crate::rquickjs_compat::{
     class, class::Trace, methods, Ctx, Exception, JsLifetime, Result, Value,
