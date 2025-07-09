@@ -57,10 +57,9 @@ Codemod Workflows can be run using [Codemod CLI](cli/cli-reference) or [Codemod 
     ```
   </Step>
   <Step title="Understand the example workflow">
-    The generated `workflow.yaml` defines a simple workflow that applies an AST-grep rule to all TypeScript files in the `src/` directory (excluding test files):
+    The generated `workflow.yaml` (when you choose the YAML-based ast-grep codemod for JavaScript/TypeScript) defines a simple workflow that applies an AST-grep rule to all TypeScript files in the `src/` directory (excluding test files):
 
     ```yaml
-    id: example-codemod
     version: "1"
     nodes:
       - id: apply-rules
@@ -82,15 +81,16 @@ Codemod Workflows can be run using [Codemod CLI](cli/cli-reference) or [Codemod 
 
     ```yaml
     id: replace-console-log
-    language: tsx
+    language: javascript
     rule:
       any:
         - pattern: console.log($ARG)
+        - pattern: console.debug($ARG)
     fix:
       logger.log($ARG)
     ```
 
-    This rule will replace all `console.log(...)` calls with `logger.log(...)` in your TypeScript/TSX files.
+    This rule will replace all `console.log(...)` and `console.debug(...)` calls with `logger.log(...)` in your TypeScript/JavaScript files.
   </Step>
   <Step title="Validate & run your workflow">
     ```bash
@@ -98,6 +98,12 @@ Codemod Workflows can be run using [Codemod CLI](cli/cli-reference) or [Codemod 
     npx codemod@next workflow run -w workflow.yaml
     ```
     This will check your workflow for errors and then run it locally.
+
+    <Info>
+    The `workflow validate` command checks syntax and schema compliance, but not logical correctness. Always test your workflows with real data to ensure they behave as expected. 
+    
+    Learn more about validating workflows [here](/cli/cli-reference#workflow-validate).
+    </Info>
   </Step>
 </Steps>
 
@@ -152,6 +158,7 @@ A workflow has four top-level keys:
 ## Shared State
 
 ```yaml
+version: "1"
 state:
   schema:
     - name: shards
@@ -161,6 +168,7 @@ state:
         properties:
           team:    { type: string }
           shardId: { type: string }
+nodes: []
 ```
 
 ---
@@ -168,6 +176,7 @@ state:
 ## Templates
 
 ```yaml
+version: "1"
 templates:
   - id: checkout-repo
     name: Checkout Repository
@@ -184,16 +193,9 @@ templates:
 
 Templates can define required or optional inputs, which are referenced in their steps.
 
-To use a template in a node step:
-
-```yaml
-steps:
-  - name: Checkout
-    uses:
-      - template: checkout-repo
-        inputs:
-          repo_url: ${{params.repo_url}}
-```
+<Info>
+Template usage in node steps is planned for future releases. For now, templates serve as reusable workflow components that can be referenced in documentation and examples.
+</Info>
 
 ---
 
@@ -202,6 +204,7 @@ steps:
 ### Nodes
 
 ```yaml
+version: "1"
 nodes:
   - id: build
     name: Build
@@ -255,6 +258,16 @@ nodes:
 ## Matrix Strategy
 
 ```yaml
+version: "1"
+state:
+  schema:
+    - name: shards
+      type: array
+      items:
+        type: object
+        properties:
+          team: { type: string }
+          shardId: { type: string }
 nodes:
   - id: matrix-codemod
     name: Matrix Codemod
@@ -283,6 +296,7 @@ Matrix nodes have a <b>master task</b> that tracks the status of all generated t
 ## Manual Trigger
 
 ```yaml
+version: "1"
 nodes:
   - id: manual-approval
     name: Manual Approval
@@ -351,9 +365,17 @@ If your workflow has a cycle:
 ```yaml
 nodes:
   - id: a
+    name: Task A
     depends_on: [b]
+    steps:
+      - name: Task A
+        run: echo "Task A"
   - id: b
+    name: Task B
     depends_on: [a]
+    steps:
+      - name: Task B
+        run: echo "Task B"
 ```
 
 You'll see:
@@ -371,6 +393,8 @@ This error is shown when you run `npx codemod@next workflow validate` or `npx co
 ---
 
 ## End-to-End Example
+
+This comprehensive workflow demonstrates state management, templates, matrix strategies, and manual triggers:
 
 ```yaml
 version: "1"
@@ -413,6 +437,15 @@ nodes:
       - name: PR
         run: codemodctl pr create
 ```
+
+**What this workflow does:**
+
+1. **State Management**: Defines a `shards` array to store team and shard information
+2. **Template Reuse**: Creates a reusable `checkout-repo` template for cloning repositories
+3. **Dynamic State**: The `make-shards` node populates the state with shard data
+4. **Matrix Execution**: The `matrix-codemod` node creates parallel tasks for each shard
+5. **Manual Gates**: Requires approval before running the codemod on each shard
+6. **Multi-step Tasks**: Each matrix task runs both the codemod and creates a PR
 
 ---
 

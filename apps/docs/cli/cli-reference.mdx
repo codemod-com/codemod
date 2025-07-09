@@ -23,38 +23,47 @@ Codemod CLI (new) is accessible using the `npx codemod@next` command. The follow
 
 Manage and execute workflow YAMLs.
 
-<ResponseField name="workflow run">
-  Run a workflow.
-</ResponseField>
+#### `workflow run`
+
+Run a workflow.
 
 ```bash
 npx codemod@next workflow run -w <workflow.yaml|directory> [--param key=value]
 ```
-
-- `-w, --workflow <PATH>` (string) — Path to workflow file or directory. (required)
-- `--param <KEY=VALUE>` (string) — Workflow parameters (format: key=value).
-
-<ResponseField name="workflow resume">
-  Resume a paused workflow.
+<ResponseField name="-w, --workflow <PATH>" type="string" required>
+  Path to workflow file or directory.
 </ResponseField>
+<ResponseField name="--param <KEY=VALUE>" type="string">
+  Workflow parameters (format: key=value).
+</ResponseField>
+
+#### `workflow resume`
+
+Resume a paused workflow.
 
 ```bash
 npx codemod@next workflow resume -i <ID> [-t <TASK>] [--trigger-all]
 ```
-
-- `-i, --id <ID>` (string) — Workflow run ID. (required)
-- `-t, --task <TASK>` (string) — Task ID to trigger (can be specified multiple times).
-- `--trigger-all` (boolean) — Trigger all awaiting tasks.
-
-<ResponseField name="workflow validate">
-  Validate a workflow file.
+<ResponseField name="-i, --id <ID>" type="string" required>
+  Workflow run ID.
 </ResponseField>
+<ResponseField name="-t, --task <TASK>" type="string">
+  Task ID to trigger (can be specified multiple times).
+</ResponseField>
+<ResponseField name="--trigger-all" type="boolean">
+  Trigger all awaiting tasks.
+</ResponseField>
+
+#### `workflow validate`
+
+Validate a workflow file.
 
 ```bash
 npx codemod@next workflow validate -w <workflow.yaml>
 ```
-
-- `-w, --workflow <FILE>` (string) — Path to workflow file. (required)
+<ResponseField name="-w, --workflow <FILE>" type="string" required>
+  Path to workflow file.
+</ResponseField>
 
 | Check                       | Ensures                                |
 | --------------------------- | -------------------------------------- |
@@ -68,44 +77,52 @@ npx codemod@next workflow validate -w <workflow.yaml>
 | Variable syntax             | `${{…}}` uses `params`, `env`, `state` |
 
 <Info>
-  <b>
   Why validate?
-  </b>
 
    Validation catches issues before execution, saving time and preventing runtime errors.
 </Info>
 
-<ResponseField name="workflow status">
-  Show workflow run status.
-</ResponseField>
+<Accordion title="Validation vs. Logical Correctness">
+  The `workflow validate` command ensures your YAML is syntactically correct and follows the schema, but it cannot verify:
+
+  - **Logical correctness**: Whether your workflow does what you intend
+  - **Runtime behavior**: How your workflow behaves with real data
+  - **Dependencies**: Whether external files/scripts exist
+  - **State consistency**: Whether state updates are logically sound
+  </Accordion>
+
+#### `workflow status`
+
+Show workflow run status.
 
 ```bash
 npx codemod@next workflow status -i <ID>
 ```
-
-- `-i, --id <ID>` (string) — Workflow run ID. (required)
-
-<ResponseField name="workflow list">
-  List workflow runs.
+<ResponseField name="-i, --id <ID>" type="string" required>
+  Workflow run ID.
 </ResponseField>
+
+#### `workflow list`
+
+List workflow runs.
 
 ```bash
 npx codemod@next workflow list [-l <LIMIT>]
 ```
-
-- `-l, --limit <LIMIT>` (number) — Number of workflow runs to show. (default: 10)
-
-<ResponseField name="workflow cancel">
-  Cancel a workflow run.
+<ResponseField name="-l, --limit <LIMIT>" type="number">
+  Number of workflow runs to show. (default: 10)
 </ResponseField>
+
+#### `workflow cancel`
+
+Cancel a workflow run.
 
 ```bash
 npx codemod@next workflow cancel -i <ID>
 ```
-
-- `-i, --id <ID>` (string) — Workflow run ID. (required)
-
----
+<ResponseField name="-i, --id <ID>" type="string" required>
+  Workflow run ID.
+</ResponseField>
 
 ### `codemod@next jssg`
 
