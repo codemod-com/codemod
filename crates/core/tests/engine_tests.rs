@@ -819,6 +819,45 @@ fn create_variable_resolution_workflow() -> Workflow {
     }
 }
 
+// Helper function to create a workflow that tests environment variables
+fn create_env_vars_test_workflow() -> Workflow {
+    Workflow {
+        version: "1".to_string(),
+        state: None,
+        templates: vec![],
+        nodes: vec![Node {
+            id: "env-test-node".to_string(),
+            name: "Environment Variables Test Node".to_string(),
+            description: Some("Test node for environment variables".to_string()),
+            r#type: NodeType::Automatic,
+            depends_on: vec![],
+            trigger: None,
+            strategy: None,
+            runtime: Some(Runtime {
+                r#type: RuntimeType::Direct,
+                image: None,
+                working_dir: None,
+                user: None,
+                network: None,
+                options: None,
+            }),
+            steps: vec![Step {
+                name: "Test Environment Variables".to_string(),
+                action: StepAction::RunScript(
+                    r#"echo "CODEMOD_TASK_ID=$CODEMOD_TASK_ID"
+echo "CODEMOD_WORKFLOW_RUN_ID=$CODEMOD_WORKFLOW_RUN_ID"
+echo "task_id_set=$(if [ -n "$CODEMOD_TASK_ID" ]; then echo "true"; else echo "false"; fi)"
+echo "workflow_run_id_set=$(if [ -n "$CODEMOD_WORKFLOW_RUN_ID" ]; then echo "true"; else echo "false"; fi)"
+echo "task_id_valid=$(if [ "$CODEMOD_TASK_ID" != "" ] && [ ${#CODEMOD_TASK_ID} -eq 36 ]; then echo "true"; else echo "false"; fi)"
+echo "workflow_run_id_valid=$(if [ "$CODEMOD_WORKFLOW_RUN_ID" != "" ] && [ ${#CODEMOD_WORKFLOW_RUN_ID} -eq 36 ]; then echo "true"; else echo "false"; fi)""#.to_string(),
+                ),
+                env: None,
+            }],
+            env: HashMap::new(),
+        }],
+    }
+}
+
 #[tokio::test]
 async fn test_matrix_recompilation_with_direct_adapter() {
     // Create a mock state adapter
@@ -1166,6 +1205,214 @@ async fn test_workflow_with_params() {
 
     // Check that the parameters were saved
     assert_eq!(workflow_run.params.get("test_param").unwrap(), "test_value");
+}
+
+#[tokio::test]
+async fn test_codemod_environment_variables() {
+    let state_adapter = Box::new(MockStateAdapter::new());
+    let engine = Engine::with_state_adapter(state_adapter);
+
+    let workflow = create_env_vars_test_workflow();
+    let params = HashMap::new();
+
+    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+
+    // Allow some time for the workflow to complete
+    tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+
+    // Get the workflow run
+    let workflow_run = engine.get_workflow_run(workflow_run_id).await.unwrap();
+
+    // Check that the workflow run completed successfully
+    assert!(
+        workflow_run.status == WorkflowStatus::Running
+            || workflow_run.status == WorkflowStatus::Completed
+    );
+
+    // Get the tasks
+    let tasks = engine.get_tasks(workflow_run_id).await.unwrap();
+
+    // Find the environment test task
+    let env_test_task = tasks.iter().find(|t| t.node_id == "env-test-node").unwrap();
+
+    // Check that the task has completed successfully or is running
+    assert!(
+        env_test_task.status == TaskStatus::Completed
+            || env_test_task.status == TaskStatus::Running
+    );
+
+    // If the task completed, check the logs for the environment variables
+    if env_test_task.status == TaskStatus::Completed {
+        // The task should have logs showing the environment variables
+        assert!(!env_test_task.logs.is_empty(), "Task should have logs");
+
+        let log_output = env_test_task.logs.join("\n");
+
+        // Check that CODEMOD_TASK_ID is set and matches the task ID
+        assert!(
+            log_output.contains(&format!("CODEMOD_TASK_ID={}", env_test_task.id)),
+            "CODEMOD_TASK_ID should be set to the task ID"
+        );
+
+        // Check that CODEMOD_WORKFLOW_RUN_ID is set and matches the workflow run ID
+        assert!(
+            log_output.contains(&format!("CODEMOD_WORKFLOW_RUN_ID={workflow_run_id}")),
+            "CODEMOD_WORKFLOW_RUN_ID should be set to the workflow run ID"
+        );
+
+        // Check that the validation scripts confirm the variables are set
+        assert!(
+            log_output.contains("task_id_set=true"),
+            "CODEMOD_TASK_ID should be detected as set"
+        );
+        assert!(
+            log_output.contains("workflow_run_id_set=true"),
+            "CODEMOD_WORKFLOW_RUN_ID should be detected as set"
+        );
+
+        // Check that the UUIDs are valid format (36 characters)
+        assert!(
+            log_output.contains("task_id_valid=true"),
+            "CODEMOD_TASK_ID should be a valid UUID format"
+        );
+        assert!(
+            log_output.contains("workflow_run_id_valid=true"),
+            "CODEMOD_WORKFLOW_RUN_ID should be a valid UUID format"
+        );
+    }
+}
+
+#[tokio::test]
+async fn test_codemod_environment_variables_in_matrix() {
+    let state_adapter = Box::new(MockStateAdapter::new());
+    let engine = Engine::with_state_adapter(state_adapter);
+
+    // Create a matrix workflow that tests environment variables
+    let workflow = Workflow {
+        version: "1".to_string(),
+        state: None,
+        templates: vec![],
+        nodes: vec![
+            Node {
+                id: "setup-node".to_string(),
+                name: "Setup Node".to_string(),
+                description: Some("Setup node".to_string()),
+                r#type: NodeType::Automatic,
+                depends_on: vec![],
+                trigger: None,
+                strategy: None,
+                runtime: Some(Runtime {
+                    r#type: RuntimeType::Direct,
+                    image: None,
+                    working_dir: None,
+                    user: None,
+                    network: None,
+                    options: None,
+                }),
+                steps: vec![Step {
+                    name: "Setup".to_string(),
+                    action: StepAction::RunScript("echo 'Setup complete'".to_string()),
+                    env: None,
+                }],
+                env: HashMap::new(),
+            },
+            Node {
+                id: "matrix-env-test-node".to_string(),
+                name: "Matrix Environment Test Node".to_string(),
+                description: Some("Test environment variables in matrix".to_string()),
+                r#type: NodeType::Automatic,
+                depends_on: vec!["setup-node".to_string()],
+                trigger: None,
+                strategy: Some(Strategy {
+                    r#type: butterflow_models::strategy::StrategyType::Matrix,
+                    values: Some(vec![
+                        HashMap::from([(
+                            "region".to_string(),
+                            serde_json::to_value("us-east").unwrap(),
+                        )]),
+                        HashMap::from([(
+                            "region".to_string(),
+                            serde_json::to_value("eu-west").unwrap(),
+                        )]),
+                    ]),
+                    from_state: None,
+                }),
+                runtime: Some(Runtime {
+                    r#type: RuntimeType::Direct,
+                    image: None,
+                    working_dir: None,
+                    user: None,
+                    network: None,
+                    options: None,
+                }),
+                steps: vec![Step {
+                    name: "Test Environment Variables in Matrix".to_string(),
+                    action: StepAction::RunScript(
+                        r#"echo "Matrix region: $region"
+echo "CODEMOD_TASK_ID: $CODEMOD_TASK_ID"
+echo "CODEMOD_WORKFLOW_RUN_ID: $CODEMOD_WORKFLOW_RUN_ID"
+echo "env_vars_in_matrix=true""#
+                            .to_string(),
+                    ),
+                    env: None,
+                }],
+                env: HashMap::new(),
+            },
+        ],
+    };
+
+    let params = HashMap::new();
+
+    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+
+    // Allow some time for the workflow to complete
+    tokio::time::sleep(tokio::time::Duration::from_millis(1000)).await;
+
+    // Get the tasks
+    let tasks = engine.get_tasks(workflow_run_id).await.unwrap();
+
+    // Find the matrix tasks (should be at least 2 for the 2 regions)
+    let matrix_tasks: Vec<&Task> = tasks
+        .iter()
+        .filter(|t| t.node_id == "matrix-env-test-node" && !t.is_master)
+        .collect();
+
+    // Should have matrix tasks for each region
+    assert!(
+        matrix_tasks.len() >= 2,
+        "Should have matrix tasks for each region"
+    );
+
+    // Check that each matrix task has the environment variables set correctly
+    for matrix_task in matrix_tasks {
+        if matrix_task.status == TaskStatus::Completed {
+            assert!(!matrix_task.logs.is_empty(), "Matrix task should have logs");
+
+            let log_output = matrix_task.logs.join("\n");
+
+            // Check that CODEMOD_TASK_ID is set to this specific matrix task's ID
+            assert!(
+                log_output.contains(&format!("CODEMOD_TASK_ID: {}", matrix_task.id)),
+                "CODEMOD_TASK_ID should be set to the matrix task ID in matrix task {}",
+                matrix_task.id
+            );
+
+            // Check that CODEMOD_WORKFLOW_RUN_ID is set correctly
+            assert!(
+                log_output.contains(&format!("CODEMOD_WORKFLOW_RUN_ID: {workflow_run_id}")),
+                "CODEMOD_WORKFLOW_RUN_ID should be set correctly in matrix task {}",
+                matrix_task.id
+            );
+
+            // Check that the matrix variable is also present
+            assert!(
+                log_output.contains("Matrix region:")
+                    && (log_output.contains("us-east") || log_output.contains("eu-west")),
+                "Matrix region should be set in matrix task {}",
+                matrix_task.id
+            );
+        }
+    }
 }
 
 #[tokio::test]

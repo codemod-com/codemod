@@ -1697,6 +1697,14 @@ impl Engine {
                 .to_string(),
         );
 
+        // Add task and workflow run IDs
+        env.insert(String::from("CODEMOD_TASK_ID"), task.id.to_string());
+
+        env.insert(
+            String::from("CODEMOD_WORKFLOW_RUN_ID"),
+            task.workflow_run_id.to_string(),
+        );
+
         // Resolve variables
         let resolved_command = resolve_variables(run, params, state, task.matrix_values.as_ref())?;
 
