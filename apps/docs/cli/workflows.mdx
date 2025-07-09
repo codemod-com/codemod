@@ -168,6 +168,7 @@ state:
         properties:
           team:    { type: string }
           shardId: { type: string }
+nodes: []
 ```
 
 ---
@@ -192,16 +193,9 @@ templates:
 
 Templates can define required or optional inputs, which are referenced in their steps.
 
-To use a template in a node step:
-
-```yaml
-steps:
-  - name: Checkout
-    uses:
-      - template: checkout-repo
-        inputs:
-          repo_url: ${{params.repo_url}}
-```
+<Info>
+Template usage in node steps is planned for future releases. For now, templates serve as reusable workflow components that can be referenced in documentation and examples.
+</Info>
 
 ---
 
@@ -371,9 +365,17 @@ If your workflow has a cycle:
 ```yaml
 nodes:
   - id: a
+    name: Task A
     depends_on: [b]
+    steps:
+      - name: Task A
+        run: echo "Task A"
   - id: b
+    name: Task B
     depends_on: [a]
+    steps:
+      - name: Task B
+        run: echo "Task B"
 ```
 
 You'll see:
