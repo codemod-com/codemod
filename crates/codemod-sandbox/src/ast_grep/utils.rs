@@ -1,10 +1,10 @@
 // #[cfg(feature = "wasm")]
 // use crate::ast_grep::wasm_lang::WasmLang as SupportLang;
 use crate::rquickjs_compat::{Ctx, Exception, FromJs, Result, Value};
+#[cfg(not(feature = "wasm"))]
+use ast_grep_codemod_dynamic_lang::DynamicLang;
 use ast_grep_config::{DeserializeEnv, RuleCore, SerializableRuleCore};
 use ast_grep_core::{matcher::KindMatcher, Pattern};
-#[cfg(not(feature = "wasm"))]
-use ast_grep_dynamic::DynamicLang;
 
 use super::serde::JsValue;
 

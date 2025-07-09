@@ -12,7 +12,7 @@ pub mod wasm_utils;
 pub mod native;
 
 #[cfg(not(feature = "wasm"))]
-use ast_grep_dynamic::DynamicLang;
+use ast_grep_codemod_dynamic_lang::DynamicLang;
 
 use ast_grep_core::language::Language;
 

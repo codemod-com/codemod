@@ -55,7 +55,6 @@ open = "5.0"
 # Testing framework dependencies
 libtest-mimic = "0.8"
 similar = "2.0"
-ast-grep-dynamic = { workspace = true }
 
 
 [features]
