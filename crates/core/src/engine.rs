@@ -1651,8 +1651,8 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
     ) -> Result<()> {
-        // Prepare environment variables
-        let mut env = HashMap::new();
+        // Start with a copy of the parent process's environment
+        let mut env: HashMap<String, String> = std::env::vars().collect();
 
         // Add node environment variables
         for (key, value) in &node.env {
