@@ -15,7 +15,6 @@ struct ReadyLang {
 
 pub async fn load_tree_sitter(languages: &[SupportedLanguage]) -> Result<Vec<DynamicLang>, String> {
     let mut ready_langs = HashSet::new();
-    println!("languages at load_tree_sitter: {languages:?}");
     for language in languages {
         let extensions = get_extensions_for_language(language.to_string().as_str());
         let os: &'static str = if env::consts::OS == "macos" {
@@ -67,13 +66,6 @@ pub async fn load_tree_sitter(languages: &[SupportedLanguage]) -> Result<Vec<Dyn
             lib_path: lib_path.clone(),
         });
     }
-    println!(
-        "ready_langs: {:?}",
-        ready_langs
-            .iter()
-            .map(|lang| lang.language)
-            .collect::<Vec<_>>()
-    );
     let registrations: Vec<Registration> = ready_langs
         .iter()
         .map(|lang| Registration {
