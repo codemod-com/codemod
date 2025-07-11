@@ -589,6 +589,10 @@ fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
         .cyan()
     );
     println!();
+    println!("  {}", style("# Publish when ready").dim());
+    println!("  {}", style(format!("cd {}", project_path.display())).cyan());
+    println!("  {}", style("codemod login").cyan());
+    println!("  {}", style("codemod publish").cyan());
 
     Ok(())
 }
