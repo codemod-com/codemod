@@ -570,10 +570,10 @@ fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
 
     println!();
     println!("  {}", style("# Validate your workflow").dim());
-    println!("  {}", style(format!("npx codemod@latest validate -w {}/workflow.yaml", project_path.display())).cyan());
+    println!("  {}", style(format!("npx codemod@next validate -w {}/workflow.yaml", project_path.display())).cyan());
     println!();
     println!("  {}", style("# Run your codemod").dim());
-    println!("  {}", style(format!("npx codemod@latest run -w {}/workflow.yaml", project_path.display())).cyan());
+    println!("  {}", style(format!("npx codemod@next run -w {}/workflow.yaml", project_path.display())).cyan());
     println!();
 
     Ok(())
