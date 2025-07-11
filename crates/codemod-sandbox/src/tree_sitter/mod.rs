@@ -50,7 +50,8 @@ pub async fn load_tree_sitter(languages: &[SupportedLanguage]) -> Result<Vec<Dyn
                 std::fs::create_dir_all(parent)
                     .map_err(|e| format!("Failed to create directory: {e}"))?;
             }
-            let url = format!("https://tree-sitter-parsers.s3.us-east-1.amazonaws.com/tree-sitter/parsers/tree-sitter-{language}/latest/{os}-{arch}.{extension}");
+            let base_url = std::env::var("TREE_SITTER_BASE_URL").unwrap_or_else(|_| "https://tree-sitter-parsers.s3.us-east-1.amazonaws.com".to_string());
+            let url = format!("{base_url}/tree-sitter/parsers/tree-sitter-{language}/latest/{os}-{arch}.{extension}");
             let response = reqwest::get(url)
                 .await
                 .map_err(|e| format!("Failed to download: {e}"))?;
