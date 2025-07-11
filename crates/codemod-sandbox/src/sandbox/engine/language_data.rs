@@ -14,7 +14,7 @@ pub fn create_language_extension_map() -> HashMap<&'static str, Vec<&'static str
             vec![".ts", ".mts", ".cts", ".js", ".mjs", ".cjs"],
         );
         map.insert(
-            "typescript",
+            "tsx",
             vec![".tsx", ".jsx", ".ts", ".js", ".mjs", ".cjs", ".mts", ".cts"],
         );
         map.insert("bash", vec![".sh", ".bash", ".zsh", ".fish"]);
