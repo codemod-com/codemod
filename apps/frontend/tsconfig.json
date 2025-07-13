@@ -39,7 +39,6 @@
     "plugins": [{ "name": "next" }]
   },
   "include": [
-    ".eslintrc.cjs",
     "next-env.d.ts",
     "reset.d.ts",
     "../../../txt.d.ts",

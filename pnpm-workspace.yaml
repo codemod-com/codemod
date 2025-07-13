@@ -58,8 +58,6 @@ catalog:
   cva: npm:class-variance-authority@^0.7.0
   diff: ^5.1.0
   dotenv: ^16.4.5
-  eslint: 8.56.0
-  eslint-config-next: 14.1.0
   fastify: 4.28.1
   glob: ^10.4.5
   husky: ^8.0.3
