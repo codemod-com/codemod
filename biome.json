@@ -17,9 +17,7 @@
       ".next",
       ".vscode",
       "build-ncc",
-      "generated",
-      "*.py",
-      "./apps/ai/**"
+      "generated"
     ],
     "rules": {
       "suspicious": {
