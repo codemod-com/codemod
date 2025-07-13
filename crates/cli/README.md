@@ -2,6 +2,10 @@
 
 The Codemod CLI is a command-line interface for running and managing Butterflow workflows - a lightweight, self-hostable workflow engine designed for running large-scale code transformation jobs.
 
+> **NOTE**: This CLI is currently in alpha and may change over time. So be careful when using it in production environments.
+> For more information read the [blog post announcing the CLI](https://codemod.com/blog/new-codemod-cli).
+> And any feedback is welcome!
+
 ## Installation
 
 ### Building from Source
@@ -15,6 +19,12 @@ cd codemod
 cargo build --release
 
 # The executable will be available at target/release/codemod
+```
+
+### From npm registry
+
+```bash
+npm install -g codemod@next
 ```
 
 ## Quick Start
@@ -454,6 +464,8 @@ When running from a registry, Butterflow:
 3. Validates the manifest and workflow
 4. Executes with the bundle directory as the base path
 
+For your information the defautl registry is `https://app.codemod.com/`. and you can visualize codemods on the [Codemod Registry webapp](https://app.codemod.com/registry).
+
 ## Workflow Bundles
 
 A workflow bundle is a directory containing:
@@ -639,7 +651,7 @@ JSSG is a JavaScript/TypeScript codemod runner and testing framework inspired by
 To run a JavaScript codemod on a target directory:
 
 ```bash
-cbc jssg run my-codemod.js ./src --language javascript
+codemod jssg run my-codemod.js ./src --language javascript
 ```
 
 **Options:**
@@ -650,12 +662,12 @@ cbc jssg run my-codemod.js ./src --language javascript
 - `--max-threads <N>`: Maximum number of concurrent threads
 - `--dry-run`: Perform a dry run without making changes
 
-See `cbc jssg run --help` for all options.
+See `codemod jssg run --help` for all options.
 
 ### Example
 
 ```bash
-cbc jssg run my-codemod.js ./src --language javascript --dry-run
+codemod jssg run my-codemod.js ./src --language javascript --dry-run
 ```
 
 ---
@@ -693,19 +705,19 @@ tests/
 
 ```bash
 # Basic test run
-cbc jssg test my-codemod.js --language javascript
+codemod jssg test my-codemod.js --language javascript
 
 # With custom test directory
-cbc jssg test my-codemod.js --language typescript --test-directory ./my-tests
+codemod jssg test my-codemod.js --language typescript --test-directory ./my-tests
 
 # Update snapshots (create/update expected files)
-cbc jssg test my-codemod.js --language javascript --update-snapshots
+codemod jssg test my-codemod.js --language javascript --update-snapshots
 
 # Verbose output with detailed diffs
-cbc jssg test my-codemod.js --language javascript --verbose
+codemod jssg test my-codemod.js --language javascript --verbose
 
 # Watch mode (re-run tests on file changes)
-cbc jssg test my-codemod.js --language javascript --watch
+codemod jssg test my-codemod.js --language javascript --watch
 ```
 
 ## CLI Options
@@ -774,11 +786,11 @@ The framework automatically detects input files based on language extensions:
 ### Missing Expected Files
 ```bash
 # Error: No expected file found
-cbc jssg test my-codemod.js --language javascript
+codemod jssg test my-codemod.js --language javascript
 # Error: No expected file found for input.js in tests/my-test. Run with --update-snapshots to create it.
 
 # Solution: Create expected files
-cbc jssg test my-codemod.js --language javascript --update-snapshots
+codemod jssg test my-codemod.js --language javascript --update-snapshots
 # Created expected file for my-test/input.js
 ```
 
@@ -793,7 +805,7 @@ cbc jssg test my-codemod.js --language javascript --update-snapshots
 ### Expected Test Failures
 ```bash
 # Test cases that should fail
-cbc jssg test my-codemod.js --language javascript --expect-errors "error-case,invalid-syntax"
+codemod jssg test my-codemod.js --language javascript --expect-errors "error-case,invalid-syntax"
 ```
 
 ## Output Formats
@@ -815,7 +827,7 @@ test result: FAILED. 1 passed; 1 failed; 0 ignored
 
 ### JSON
 ```bash
-cbc jssg test my-codemod.js --language javascript --reporter json
+codemod jssg test my-codemod.js --language javascript --reporter json
 ```
 
 ```json
@@ -838,7 +850,7 @@ cbc jssg test my-codemod.js --language javascript --reporter json
 
 ### Terse
 ```bash
-cbc jssg test my-codemod.js --language javascript --reporter terse
+codemod jssg test my-codemod.js --language javascript --reporter terse
 ```
 
 ```
@@ -853,40 +865,40 @@ failures:
 ### Snapshot Management
 ```bash
 # Create initial snapshots
-cbc jssg test my-codemod.js --language javascript --update-snapshots
+codemod jssg test my-codemod.js --language javascript --update-snapshots
 
 # Update specific test snapshots
-cbc jssg test my-codemod.js --language javascript --filter "specific-test" --update-snapshots
+codemod jssg test my-codemod.js --language javascript --filter "specific-test" --update-snapshots
 ```
 
 ### Test Filtering
 ```bash
 # Run tests matching pattern
-cbc jssg test my-codemod.js --language javascript --filter "transform"
+codemod jssg test my-codemod.js --language javascript --filter "transform"
 
 # Run specific test
-cbc jssg test my-codemod.js --language javascript --filter "my-specific-test"
+codemod jssg test my-codemod.js --language javascript --filter "my-specific-test"
 ```
 
 ### Performance Tuning
 ```bash
 # Limit concurrent threads
-cbc jssg test my-codemod.js --language javascript --max-threads 2
+codemod jssg test my-codemod.js --language javascript --max-threads 2
 
 # Run sequentially for debugging
-cbc jssg test my-codemod.js --language javascript --sequential
+codemod jssg test my-codemod.js --language javascript --sequential
 
 # Set custom timeout
-cbc jssg test my-codemod.js --language javascript --timeout 60
+codemod jssg test my-codemod.js --language javascript --timeout 60
 ```
 
 ### Diff Customization
 ```bash
 # More context in diffs
-cbc jssg test my-codemod.js --language javascript --context-lines 5
+codemod jssg test my-codemod.js --language javascript --context-lines 5
 
 # Ignore whitespace differences
-cbc jssg test my-codemod.js --language javascript --ignore-whitespace
+codemod jssg test my-codemod.js --language javascript --ignore-whitespace
 ```
 
 ## Integration with Development Workflow
@@ -895,7 +907,7 @@ cbc jssg test my-codemod.js --language javascript --ignore-whitespace
 ```yaml
 # GitHub Actions example
 - name: Run codemod tests
-  run: cbc jssg test my-codemod.js --language javascript --reporter json
+  run: codemod jssg test my-codemod.js --language javascript --reporter json
 ```
 
 ### IDE Integration
@@ -904,7 +916,7 @@ The framework outputs standard test results that can be consumed by IDEs and tes
 ### Watch Mode Development
 ```bash
 # Continuous testing during development
-cbc jssg test my-codemod.js --language javascript --watch --verbose
+codemod jssg test my-codemod.js --language javascript --watch --verbose
 ```
 
 ## Best Practices
@@ -928,7 +940,7 @@ cbc jssg test my-codemod.js --language javascript --watch --verbose
 ### Debug Mode
 ```bash
 # Verbose output for debugging
-cbc jssg test my-codemod.js --language javascript --verbose --sequential
+codemod jssg test my-codemod.js --language javascript --verbose --sequential
 ```
 
 This framework provides a robust foundation for testing JavaScript codemods with familiar tooling and comprehensive features.
