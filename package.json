@@ -64,6 +64,7 @@
     "@biomejs/biome": "catalog:",
     "@changesets/cli": "2.29.5",
     "@types/node": "catalog:",
+    "@vitest/coverage-v8": "2.1.9",
     "commitizen": "4.3.1",
     "cz-conventional-changelog": "3.3.0",
     "husky": "catalog:",
