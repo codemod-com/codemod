@@ -13,12 +13,8 @@
   "devDependencies": {
     "@codemod-com/api-types": "workspace:*",
     "@codemod-com/tsconfig": "workspace:*",
-    "@types/node": "20.10.5",
-    "dotenv-cli": "catalog:",
-    "esbuild": "^0.19.12",
-    "esbuild-plugin-copy": "catalog:",
-    "ts-node": "10.9.2",
-    "tsx": "^4.7.1"
+    "@types/node": "catalog:",
+    "esbuild": "^0.19.12"
   },
   "dependencies": {
     "@clerk/backend": "catalog:",
@@ -35,8 +31,5 @@
     "fastify": "catalog:",
     "valibot": "catalog:"
   },
-  "type": "module",
-  "peerDependencies": {
-    "fastify-plugin": "4.5.1"
-  }
+  "type": "module"
 }

@@ -1,5 +1,5 @@
 {
-  "extends": ["next", "prettier"],
+  "extends": ["next"],
   "rules": {
     "@next/next/no-img-element": "off"
   }

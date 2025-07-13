@@ -25,8 +25,5 @@
     "noUncheckedIndexedAccess": true,
     "noPropertyAccessFromIndexSignature": false
   },
-  "exclude": ["node_modules/**/*", "dist/**/*"],
-  "ts-node": {
-    "transpileOnly": true
-  }
+  "exclude": ["node_modules/**/*", "dist/**/*"]
 }

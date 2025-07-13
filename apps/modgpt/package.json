@@ -16,20 +16,15 @@
     "@fastify/multipart": "catalog:",
     "@fastify/rate-limit": "catalog:",
     "ai": "2.2.29",
-    "axios": "catalog:",
     "chatgpt": "catalog:",
     "dotenv": "catalog:",
     "fastify": "catalog:",
     "openai-edge": "catalog:",
     "replicate": "catalog:",
-    "ts-node": "^10.9.2",
-    "ts-node-dev": "catalog:",
     "valibot": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "20.10.5",
-    "esbuild": "^0.21.1",
-    "fastify-plugin": "catalog:",
-    "nodemon": "^3.1.7"
+    "@types/node": "catalog:",
+    "esbuild": "^0.21.1"
   }
 }

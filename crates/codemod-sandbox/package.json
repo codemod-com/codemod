@@ -15,7 +15,7 @@
     "prepack": "pnpm run build",
     "build:rs": "cd ../.. && cargo run -p codemod-sandbox-build --color=always -- -r --optimize",
     "copy-runtime-files": "pnpm run build:rs && tsx scripts/copy-runtime-files.ts",
-    "generate-type-declarations": "tsx scripts/generate-type-declarations.ts",
+    "generate-type-declarations": "node --experimental-strip-types scripts/generate-type-declarations.ts",
     "build:tsc": "pnpm run generate-type-declarations && tsc --project tsconfig.build.json --pretty",
     "build:runtime": "pnpm run copy-runtime-files",
     "build": "pnpm run build:runtime && pnpm run build:tsc",
@@ -32,7 +32,6 @@
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "^22.0.0",
     "eslint": "^8.57.1",
-    "tsx": "^4.19.3",
     "typescript": "^5.8.3"
   },
   "dependencies": {

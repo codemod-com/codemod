@@ -24,11 +24,9 @@
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/node": "20.8.5",
+    "@types/node": "catalog:",
     "memfs": "^4.6.0",
     "glob": "catalog:",
-    "ts-node": "10.9.1",
-    "vitest": "^1.0.1",
-    "@vitest/coverage-v8": "catalog:"
+    "vitest": "^1.0.1"
   }
 }
