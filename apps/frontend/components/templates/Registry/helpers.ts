@@ -37,7 +37,7 @@ export function getAutomationFrameworkTitles(
 ): string[] {
   const fw = automation?.frameworks?.length
     ? automation.frameworks
-    : automation?.applicability?.from?.map(([framework]) => framework) ?? [];
+    : (automation?.applicability?.from?.map(([framework]) => framework) ?? []);
   return fw.map((fw) => fw.replace(/@/g, ""));
 }
 

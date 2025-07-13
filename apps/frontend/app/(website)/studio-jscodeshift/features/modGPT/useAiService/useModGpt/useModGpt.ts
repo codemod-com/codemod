@@ -13,7 +13,11 @@ export const useModGPT = ({
   initialMessages,
   id,
   engine,
-}: { initialMessages: Message[]; id?: string; engine: LLMEngine }) => {
+}: {
+  initialMessages: Message[];
+  id?: string;
+  engine: LLMEngine;
+}) => {
   const { setCurrentCommand } = useModStore();
 
   const [token, setToken] = useState<string | null>(null);

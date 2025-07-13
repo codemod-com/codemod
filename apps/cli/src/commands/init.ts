@@ -92,8 +92,8 @@ export const handleInitCliCommand = async (options: {
 
   const argvEngine = safeParse(allEnginesSchema, engine);
   const inferredCodemodEngine = isSourceAFile
-    ? (await detectCodemodEngine(source as string)) ??
-      (argvEngine.success ? argvEngine.output : undefined)
+    ? ((await detectCodemodEngine(source as string)) ??
+      (argvEngine.success ? argvEngine.output : undefined))
     : undefined;
 
   const userAnswers = await inquirer.prompt<{

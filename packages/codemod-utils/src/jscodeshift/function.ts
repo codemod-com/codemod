@@ -29,7 +29,7 @@ export const getFunctionName = (
   j.VariableDeclarator.check(path.parent.value) &&
   j.Identifier.check(path.parent.value.id)
     ? path.parent.value.id.name
-    : path.value.id?.name ?? null;
+    : (path.value.id?.name ?? null);
 
 /**
  * Checks if a function-like node is exported as the default export from the module.

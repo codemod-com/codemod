@@ -217,7 +217,10 @@ export const RunOptions = () => {
 function InstructionsContent({
   pm,
   codemodName,
-}: { pm: "pnpm" | "npm"; codemodName: string | null }) {
+}: {
+  pm: "pnpm" | "npm";
+  codemodName: string | null;
+}) {
   const npxDialect = useMemo(() => {
     if (pm === "pnpm") {
       return "pnpx" as const;

@@ -114,11 +114,7 @@ export const LanguageSwitchAnimation = ({
   );
 };
 
-export default function Cursor({
-  onCompleted,
-}: {
-  onCompleted: () => void;
-}) {
+export default function Cursor({ onCompleted }: { onCompleted: () => void }) {
   const [language, setLanguage] = useState("🇺🇸");
   const parentRef = React.useRef<HTMLDivElement>(null);
 

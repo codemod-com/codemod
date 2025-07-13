@@ -42,7 +42,10 @@ const stateMapping = [
 export const Timeline = ({
   step,
   isAnimating,
-}: { step: number; isAnimating: boolean }) => {
+}: {
+  step: number;
+  isAnimating: boolean;
+}) => {
   const currentStep =
     !isAnimating && step === 3
       ? 3

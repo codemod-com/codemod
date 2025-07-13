@@ -11,7 +11,11 @@ export const toInitialStates = ({
   before,
   after,
   name,
-}: { before: string; after: string; name: string }) => ({
+}: {
+  before: string;
+  after: string;
+  name: string;
+}) => ({
   name,
   before: getSnippetInitialState(before),
   after: getSnippetInitialState(after),

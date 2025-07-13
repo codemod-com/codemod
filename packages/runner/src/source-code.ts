@@ -57,17 +57,19 @@ export const getRunConfig = async (
       typeof module.exports === "function"
         ? module.exports
         : module.exports.__esModule
-          ? module.exports.default ??
+          ? (module.exports.default ??
             module.exports.transform ??
             module.exports.handleSourceFile ??
             module.exports.repomod ??
             module.exports.filemod ??
             module.exports.workflow ??
-            null
+            null)
           : null;
 
     runConfig.parser =
-      typeof module.exports === "object" ? module.exports.parser ?? null : null;
+      typeof module.exports === "object"
+        ? (module.exports.parser ?? null)
+        : null;
   } catch (err) {
     // ESM
     try {
@@ -86,13 +88,13 @@ export const getRunConfig = async (
         runConfig.transformer =
           typeof module.default === "function"
             ? module.default
-            : module.default ??
+            : (module.default ??
               module.transform ??
               module.handleSourceFile ??
               module.repomod ??
               module.filemod ??
               module.workflow ??
-              null;
+              null);
 
         runConfig.parser = module.parser ?? null;
 

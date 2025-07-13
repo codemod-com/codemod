@@ -29,7 +29,10 @@ export const useInitialMss = () => {
 export const useSaveMssgsToLocalStorage = ({
   isLoading,
   messages,
-}: { isLoading: boolean; messages: Message[] }) => {
+}: {
+  isLoading: boolean;
+  messages: Message[];
+}) => {
   useEffect(() => {
     if (isLoading) {
       return;

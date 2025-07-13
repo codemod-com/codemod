@@ -4,11 +4,7 @@ import { Pre } from "codehike/code";
 import { className } from "./classname";
 import { tokenTransitions } from "./token-transitions";
 
-export function CodeSwitcher({
-  info,
-}: {
-  info: HighlightedCode;
-}) {
+export function CodeSwitcher({ info }: { info: HighlightedCode }) {
   return (
     <div className="relative h-full">
       <code className="absolute right-2 top-1 z-10 code rounded-[4px] border border-black/10 bg-black/5 py-0 px-[4px] !text-[10px] backdrop-blur-md dark:border-white/10">
