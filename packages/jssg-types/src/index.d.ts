@@ -1,5 +1,5 @@
 declare module "codemod:ast-grep" {
-  export { SgRoot } from "@codemod.com/jssg-types/main";
+  export * from "@codemod.com/jssg-types/main";
 }
 
 declare module "codemod:ast-grep/langs/angular" {
