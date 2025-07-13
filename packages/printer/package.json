@@ -24,17 +24,17 @@
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/cli-progress": "catalog:",
+    "@types/cli-progress": "^3.11.6",
     "@types/node": "catalog:",
     "vitest": "^1.0.1"
   },
   "dependencies": {
     "@codemod-com/api-types": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "boxen": "catalog:",
+    "boxen": "^8.0.1",
     "chalk": "5.4.1",
-    "cli-progress": "catalog:",
-    "ora": "catalog:",
+    "cli-progress": "^3.12.0",
+    "ora": "^8.2.0",
     "valibot": "catalog:",
     "wrap-ansi": "catalog:"
   }

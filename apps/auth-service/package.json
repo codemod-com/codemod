@@ -18,11 +18,10 @@
   },
   "dependencies": {
     "@clerk/backend": "catalog:",
-    "@clerk/fastify": "catalog:",
+    "@clerk/fastify": "^2.4.5",
     "@codemod-com/auth": "workspace:*",
     "@codemod-com/database": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@fastify/busboy": "catalog:",
     "@fastify/cors": "catalog:",
     "@fastify/rate-limit": "catalog:",
     "@unkey/api": "catalog:",

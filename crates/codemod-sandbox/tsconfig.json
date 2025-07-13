@@ -3,6 +3,7 @@
     "composite": true,
     "allowJs": true,
     "outDir": "./dist",
+    "skipLibCheck": true,
     "lib": ["ES2022", "DOM"]
   },
   "include": ["js/**/*", "tests/**/*", "scripts/**/*", "js/factory.js"],

@@ -25,7 +25,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/node": "catalog:",
-    "memfs": "^4.6.0",
+    "memfs": "^4.17.2",
     "glob": "catalog:",
     "vitest": "^1.0.1"
   }

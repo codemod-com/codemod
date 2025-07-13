@@ -4,29 +4,16 @@ packages:
   - "!**/.next/**"
 
 catalog:
-  "@ariakit/react": ^0.4.6
-  "@artsy/fresnel": ^7.1.4
+  "@babel/core": ^7.24.7
   "@ast-grep/cli": ^0.32.0
   "@ast-grep/napi": ^0.32.0
-  "@aws-sdk/client-s3": ^3.549.0
-  "@aws-sdk/s3-request-presigner": ^3.549.0
   "@biomejs/biome": ^1.6.4
   "@clerk/backend": 1.23.5
-  "@clerk/clerk-react": 5.22.4
-  "@clerk/fastify": 0.6.47
-  "@clerk/nextjs": 6.23.3
-  "@clerk/themes": 2.2.10
   "@faker-js/faker": ^8.4.1
-  "@fastify/busboy": ^2.1.1
   "@fastify/cors": 8.5.0
   "@fastify/multipart": ^8.1.0
   "@fastify/rate-limit": 9.0.1
-  "@hookform/resolvers": ^3.3.2
-  "@next/third-parties": ^15.1.6
   "@octokit/rest": ^20.0.2
-  "@phosphor-icons/react": ^2.0.10
-  "@portabletext/react": ^3.0.11
-  "@portabletext/types": ^2.0.8
   "@radix-ui/react-alert-dialog": ^1.0.4
   "@radix-ui/react-avatar": ^1.0.4
   "@radix-ui/react-dialog": ^1.0.4
@@ -40,40 +27,12 @@ catalog:
   "@radix-ui/react-tabs": ^1.0.4
   "@radix-ui/react-toast": ^1.1.5
   "@radix-ui/react-tooltip": ^1.0.6
-  "@reduxjs/toolkit": ^1.9.5
-  "@sanity/client": ^6.21.0
-  "@sanity/code-input": ^4.1.3
-  "@sanity/orderable-document-list": ^1.2.1
-  "@sanity/preview-url-secret": ^1.6.3
-  "@sanity/react-loader": ^1.8.5
-  "@sanity/table": ^1.1.2
-  "@sanity/vision": ^3.29.1
-  "@sindresorhus/slugify": ^2.2.1
-  "@slack/web-api": ^7.2.0
-  "@swc/wasm-web": ^1.6.7
-  "@t3-oss/env-nextjs": ^0.7.1
-  "@tailwindcss/typography": 0.5.10
-  "@testing-library/dom": ^9.0.0
-  "@testing-library/jest-dom": ^5.16.5
-  "@testing-library/react": ^13.4.0
-  "@testing-library/user-event": ^13.5.0
-  "@tinloof/sanity-studio": ^1.0.0
-  "@tinloof/sanity-web": ^0.1.0
-  "@tippyjs/react": ^4.2.6
-  "@tiptap/extension-code-block-lowlight": ^2.1.8
-  "@tiptap/pm": ^2.1.8
-  "@tiptap/react": ^2.1.8
-  "@tiptap/starter-kit": ^2.1.8
-  "@types/blessed": ^0.1.25
-  "@types/cli-progress": ^3.11.5
   "@types/diff": ^5.0.3
-  "@types/git-url-parse": ^9.0.3
   "@types/glob": ^8.0.0
   "@types/inquirer": ^9.0.7
   "@types/node": ^22 # use lasted 22 version
   "@types/pako": ^2.0.0
-  "@types/prettyjson": ^0.0.33
-  "@types/ramda": ^0.29.12
+
   "@types/react-dom": ^18.0.11
   "@types/react-syntax-highlighter": ^15.5.6
   "@types/react-treeview": ^0.4.3
@@ -84,88 +43,34 @@ catalog:
   "@types/vscode": ^1.74.0
   "@types/vscode-webview": ^1.57.1
   "@types/ws": ^8.5.11
-  "@types/yargs": ^17.0.13
   "@unkey/api": ^0.26.2
-  "@vercel/analytics": ^1.2.2
-  "@vercel/stega": ^0.1.0
-  "@vitejs/plugin-react": ^4.0.0
-  "@vscode/test-electron": ^2.2.2
-  "@vscode/vsce": ^2.22.0
-  "@vscode/webview-ui-toolkit": ^1.2.2
-  assert: ^2.0.0
   ast-node-builder: ^4.2.1
   ast-types: ^0.14.2
-  autoprefixer: 10.4.17
   axios: ^1.8.2
   axios-retry: ^4.0.0
-  blessed: ^0.1.81
-  boxen: ^7.1.1
   bullmq: ^5.7.5
-  chai: ^4.3.7
   change-case: ^5.2.0
-  chatgpt: 5.2.5
   class-variance-authority: ^0.7.0
-  cli-progress: ^3.12.0
   clsx: ^2.0.0
   cobe: ^0.6.3
-  codehike: ^1.0.4
   colors-cli: ^1.0.33
   csstype: ^3.1.1
   cva: npm:class-variance-authority@^0.7.0
-  detect-indent: ^7.0.1
-  detect-newline: ^4.0.1
   diff: ^5.1.0
   dotenv: ^16.4.5
-  esbuild-wasm: ^0.23.0
   eslint: 8.56.0
   eslint-config-next: 14.1.0
-  exponential-backoff: ^3.1.1
   fastify: 4.28.1
-  filenamify: ^6.0.0
-  form-data: ^4.0.0
-  framer-motion: ^11.0.6
-  fuse.js: ^7.0.0
-  fuzzysort: ^2.0.4
-  geist: ^1.3.1
-  git-url-parse: ^14.0.0
   glob: ^10.4.5
   husky: ^8.0.3
   inquirer: ^9.2.16
-  intro.js: ^7.2.0
-  intro.js-react: ^1.0.0
-  json-schema-to-typescript: ^13.1.2
-  jszip: ^3.10.1
   katex: ^0.16.21
   keytar: ^7.9.0
-  langchain: ^0.3.6
-  lowlight: ^3.0.0
-  match-sorter: ^6.3.4
-  miragejs: 0.1.48
-  monaco-editor-webpack-plugin: ^7.0.1
-  monocle-ts: ^2.3.13
-  motion: ^11.18.0
   ms: ^2.1.3
-  newtype-ts: ^0.3.5
   next: ^14.2.3
-  next-sanity: ^8.5.0
-  nock: ^13.5.1
-  open: ^8.4.2
-  openai: 4.23.0
-  openai-edge: 1.2.2
-  ora: ^8.0.1
-  os-browserify: ^0.3.0
   pako: ^2.1.0
   pg: ^8.11.3
-  postcss: 8.4.35
-  postcss-multiple-tailwind: ^1.0.1
-  posthog-node: ^4.0.0
-  prettyjson: ^1.2.5
-  prism-react-renderer: ^2.3.1
-  prisma: ^5.14.0
   prop-types: ^15.8.1
-  ramda: ^0.29.1
-  raw-loader: ^4.0.2
-  react-arborist: ^3.4.0
   react-chartjs-2: ^5.2.0
   react-hook-form: ^7.48.2
   react-hot-toast: ^2.4.0
@@ -176,51 +81,17 @@ catalog:
   react-tooltip: ^5.9.0
   react-treeview: ^0.4.7
   react-use: 17.5.1
+  react: ^18.3.1
+  react-dom: ^18.3.1
   reactjs-popup: ^2.0.5
-  recast: ^0.22.0
-  redux-persist: ^6.0.0
-  rehype-sanitize: ^6.0.0
-  remark-gfm: ^3.0.1
-  remark-math: ^5.1.1
   replicate: 0.25.2
-  sanity: ^3.36.4
-  sanity-plugin-asset-source-ogimage: ^2.0.0-2
-  sanity-plugin-documents-pane: ^2.2.1
-  sanity-plugin-media: ^2.2.5
-  sanity-plugin-mux-input: ^2.2.4
-  semantic-release: ^24.0.0
-  server-only: 0.0.1
   simple-git: ^3.24.0
-  sinon: ^15.0.1
-  socket.io: ^4.7.5
-  socket.io-client: ^4.7.5
-  sonner: ^1.4.2
-  styled-components: ^6.1.8
-  swr: ^2.2.5
-  tailwind-merge: ^1.10.0
-  tailwindcss: 3.4.1
-  tailwindcss-animate: ^1.0.7
   tar: ^6.1.15
   tar-stream: ^3.1.7
-  terminal-link: ^3.0.0
-  tippy.js: ^6.3.7
-  tree-kill: ^1.2.2
-  ts-invariant: ^0.10.3
-  tslib: 2.4.1
+  typescript: ^5.8.3
   underscore: ^1.13.1
   unified: ^10.1.2
-  universal-base64url: ^1.1.0
-  use-resize-observer: ^9.1.0
-  uuid: ^11.0.3
-  valibot: ^0.34.0
-  vaul: ^0.9.0
-  vue-sfc-descriptor-to-string: ^2.0.0
-  web-vitals: ^2.1.4
-  webpack: 5.91.0
-  webpack-cli: 5.1.4
+  valibot: ^1.1.0
   wrap-ansi: ^9.0.0
   ws: ^8.18.0
-  yaml: ^2.4.5
-  yargs: ^17.6.2
-  zod: 3.22.3
-  zustand: ^4.5.2
+  zod: 4.0.5

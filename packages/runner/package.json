@@ -33,6 +33,7 @@
     "vitest": "^1.0.1"
   },
   "dependencies": {
+    "@babel/core": "catalog:",
     "@ast-grep/cli": "catalog:",
     "@ast-grep/napi": "catalog:",
     "@codemod.com/codemod-utils": "workspace:*",
@@ -56,6 +57,6 @@
     "unist-util-filter": "^5.0.1",
     "unist-util-visit": "^5.0.0",
     "valibot": "catalog:",
-    "vue-sfc-descriptor-to-string": "catalog:"
+    "vue-sfc-descriptor-to-string": "^3.0.1"
   }
 }
