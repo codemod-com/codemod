@@ -1,5 +1,11 @@
 # @codemod.com/jssg-types
 
+## 1.0.4
+
+### Patch Changes
+
+- a5293bb: Export all types from ast-grep napi types
+
 ## 1.0.3
 
 ### Patch Changes
