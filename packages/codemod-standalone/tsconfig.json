@@ -1,5 +1,6 @@
 {
   "extends": "@codemod-com/tsconfig/lib.json",
+  "exclude": ["tests/fixtures"],
   "compilerOptions": {
     "baseUrl": "./src",
     "outDir": "./dist"

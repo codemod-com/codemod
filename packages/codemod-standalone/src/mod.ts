@@ -56,6 +56,11 @@ export function registerCodemod(
     exclude: values.exclude ? [values.exclude] : DEFAULT_EXCLUDE,
   });
 
+  if (files.length === 0) {
+    console.error("No files found to process.");
+    return;
+  }
+
   for (const file of files) {
     const filePath = path.resolve(file);
 

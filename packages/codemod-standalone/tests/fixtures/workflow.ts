@@ -1,10 +1,5 @@
-# Codemod Standalone
-
-## Usage
-
-```ts
-import { registerCodemod } from "@codemod-com/codemod-standalone";
 import type { SgRoot } from "@ast-grep/napi";
+import { registerCodemod } from "../../src/mod.ts";
 
 // Work with `npx codemod@next`
 export default async function transform(root: SgRoot): Promise<string> {
@@ -15,12 +10,12 @@ export default async function transform(root: SgRoot): Promise<string> {
       any: [
         { pattern: "console.log($ARG)" },
         { pattern: "console.debug($ARG)" },
-      ]
+      ],
     },
   });
 
-  const edits = nodes.map(node => {
-    const arg = node.getMatch("ARG").text();
+  const edits = nodes.map((node) => {
+    const arg = node.getMatch("ARG")?.text();
     return node.replace(`logger.log(${arg})`);
   });
 
@@ -29,13 +24,4 @@ export default async function transform(root: SgRoot): Promise<string> {
 }
 
 // Register the codemod to use as `node src/transform.ts`
-
-// Register the codemod to use as `node src/transform.ts`
-registerCodemod(transform, 'typescript');
-```
-
-## Command Line Usage
-
-```bash
-node src/transform.ts --input <glob> --exclude <glob> 
-```
+registerCodemod(transform, "TypeScript");

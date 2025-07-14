@@ -58,6 +58,7 @@ target/
 
 # Testing
 coverage/
+coverage.lcov
 
 # CLI package
 apps/cli/package/
