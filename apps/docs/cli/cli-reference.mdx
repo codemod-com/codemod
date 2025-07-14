@@ -2,6 +2,24 @@
 title: "Codemod CLI"
 ---
 
+<Panel>
+  <Card title="Go to:">
+    - [`codemod@next workflow`](#codemod%40next-workflow)
+    - [`codemod@next jssg`](#codemod%40next-jssg)
+    - [`codemod@next init`](#codemod%40next-init)
+    - [`codemod@next login`](#codemod%40next-login)
+    - [`codemod@next logout`](#codemod%40next-logout)
+    - [`codemod@next whoami`](#codemod%40next-whoami)
+    - [`codemod@next publish`](#codemod%40next-publish)
+    - [`codemod@next search`](#codemod%40next-search)
+    - [`codemod@next cache`](#codemod%40next-cache)
+  </Card>
+</Panel>
+
+<Warning>
+  Codemod CLI is released under the temporary `@next` tag while it's in alpha. The core commands and [workflow schema](/cli/workflows) may change as we gather feedback. Please keep an eye on the CLI reference until we publish a stable `@latest`.
+</Warning>
+
 Codemod CLI (new) is accessible using the `npx codemod@next` command. The following commands and options are available:
 
 - `workflow` — Manage workflows (see subcommands below)
@@ -124,7 +142,186 @@ npx codemod@next workflow cancel -i <ID>
 
 ### `codemod@next jssg`
 
-See [this page](/cli/jssg) for full details and options for running and testing jssg codemods.
+jssg is a toolkit for running JavaScript/TypeScript codemods using the high-performance ast-grep engine. It enables fast, large-scale code transformations with a familiar API and robust language support.
+
+##### `jssg run`
+
+Run a jssg codemod.
+
+```bash
+npx codemod@next jssg run <codemod_file> <target_directory> [options]
+```
+<ResponseField name="codemod_file" type="string" required>
+  Path to the jssg codemod file (JS/TS).
+</ResponseField>
+<ResponseField name="target_directory" type="string" required>
+  Directory to apply the codemod to.
+</ResponseField>
+<ResponseField name="--language <LANG>" type="string" required>
+  Target language (e.g., `javascript`, `typescript`, `python`, `java`, `cpp`, `php`, `kotlin`, etc.).
+</ResponseField>
+<ResponseField name="--extensions <ext1,ext2>" type="string">
+  Comma-separated list of file extensions to process.
+</ResponseField>
+<ResponseField name="--no-gitignore" type="boolean">
+  Do not respect `.gitignore` files.
+</ResponseField>
+<ResponseField name="--include-hidden" type="boolean">
+  Include hidden files and directories in the scan.
+</ResponseField>
+<ResponseField name="--max-threads <N>" type="number">
+  Maximum number of concurrent threads to use.
+</ResponseField>
+<ResponseField name="--dry-run" type="boolean">
+  Perform a dry-run to see the changes without applying them.
+</ResponseField>
+
+#### `jssg test`
+
+Test a jssg codemod using before/after fixtures.
+
+```bash
+npx codemod@next jssg test <codemod_file> [options]
+```
+<ResponseField name="codemod_file" type="string" required>
+  Path to the jssg codemod file, which is a JS/TS file.
+</ResponseField>
+<ResponseField name="--language" type="string" required>
+  Target language (e.g., `javascript`, `typescript`, `python`, `java`, `cpp`, `php`, `kotlin`, etc.).
+</ResponseField>
+<ResponseField name="--test-directory" type="string">
+  The directory containing your tests (default: `"tests"`).
+</ResponseField>
+<ResponseField name="--filter" type="string">
+  A pattern to run only tests whose names match the filter.
+</ResponseField>
+<ResponseField name="--reporter" type="string">
+  The output format for test results. Can be `console`, `json`, or `terse`.
+</ResponseField>
+<ResponseField name="--verbose" type="boolean">
+  Show detailed output, including diffs for failed tests.
+</ResponseField>
+<ResponseField name="--context-lines" type="number">
+  The number of context lines to show in diffs (default: 3).
+</ResponseField>
+<ResponseField name="--ignore-whitespace" type="boolean">
+  Ignore whitespace differences when comparing test outputs.
+</ResponseField>
+<ResponseField name="--timeout" type="number">
+  Test timeout in seconds (default: 30).
+</ResponseField>
+<ResponseField name="--max-threads" type="number">
+  Maximum number of concurrent threads to use for running tests.
+</ResponseField>
+<ResponseField name="--sequential" type="boolean">
+  Run tests sequentially instead of in parallel.
+</ResponseField>
+<ResponseField name="--fail-fast" type="boolean">
+  Stop the test run on the first failure.
+</ResponseField>
+<ResponseField name="--update-snapshots, -u" type="boolean">
+  Create or update the `expected` files with the output of the codemod. (`-u` is a shorthand for `--update-snapshots`)
+</ResponseField>
+<ResponseField name="--expect-errors" type="string">
+  A comma-separated list of test patterns that are expected to fail.
+</ResponseField>
+<ResponseField name="--watch" type="boolean">
+  Enable watch mode to automatically re-run tests when files change.
+</ResponseField>
+
+<Accordion title="Quick Start Example">
+<Steps>
+  <Step title="Write your codemod">
+    Create a JS/TS file that exports your codemod logic.
+  </Step>
+  <Step title="Run your codemod">
+    ```bash
+    npx codemod@next jssg run my-codemod.js ./src --language javascript
+    ```
+  </Step>
+  <Step title="Test your codemod">
+    Organize your tests as follows:
+    ```
+    tests/
+    ├── simple-transform/
+    │   ├── input.js
+    │   └── expected.js
+    └── multi-file-case/
+        ├── input/
+        │   ├── file1.js
+        │   └── file2.js
+        └── expected/
+            ├── file1.js
+            └── file2.js
+    ```
+    Then run:
+    ```bash
+    npx codemod@next jssg test my-codemod.js --language javascript
+    ```
+  </Step>
+</Steps>
+</Accordion>
+
+<Accordion title="Testing Framework">
+The jssg testing framework provides robust support for before/after fixture testing.
+
+**Test Discovery & Filtering**
+<ResponseField name="--test-directory" type="string">
+  The directory containing your tests (default: `"tests"`).
+</ResponseField>
+<ResponseField name="--filter" type="string">
+  A pattern to run only tests whose names match the filter.
+</ResponseField>
+
+**Output & Reporting**
+<ResponseField name="--reporter" type="string">
+  The output format for test results. Can be `console`, `json`, or `terse`.
+</ResponseField>
+<ResponseField name="--verbose" type="boolean">
+  Show detailed output, including diffs for failed tests.
+</ResponseField>
+<ResponseField name="--context-lines" type="number">
+  The number of context lines to show in diffs (default: 3).
+</ResponseField>
+<ResponseField name="--ignore-whitespace" type="boolean">
+  Ignore whitespace differences when comparing test outputs.
+</ResponseField>
+
+**Execution Control**
+<ResponseField name="--timeout" type="number">
+  Test timeout in seconds (default: 30).
+</ResponseField>
+<ResponseField name="--max-threads" type="number">
+  Maximum number of concurrent threads to use for running tests.
+</ResponseField>
+<ResponseField name="--sequential" type="boolean">
+  Run tests sequentially instead of in parallel.
+</ResponseField>
+<ResponseField name="--fail-fast" type="boolean">
+  Stop the test run on the first failure.
+</ResponseField>
+
+**Snapshot & Error Management**
+<ResponseField name="--update-snapshots, -u" type="boolean">
+  Create or update the `expected` files with the output of the codemod. (`-u` is a shorthand for `--update-snapshots`)
+</ResponseField>
+<ResponseField name="--expect-errors" type="string">
+  A comma-separated list of test patterns that are expected to fail.
+</ResponseField>
+
+**Development**
+<ResponseField name="--watch" type="boolean">
+  Enable watch mode to automatically re-run tests when files change.
+</ResponseField>
+</Accordion>
+
+<Accordion title="Advanced Usage & Best Practices">
+- Use <code>--dry-run</code> to preview changes.
+- Use <code>--max-threads</code> to control concurrency.
+- For large codebases, filter files with <code>--extensions</code> and <code>--include-hidden</code>.
+- Use <code>--update-snapshots</code> to automatically update your expected outputs when your codemod changes.
+- See the <b>Testing Framework Details</b> accordion for more.
+</Accordion>
 
 ---
 
@@ -263,3 +460,54 @@ Search for packages in the registry.
 ```bash
 npx codemod@next search [QUERY] [options]
 ```
+
+### `codemod@next cache`
+
+Manage the local package cache for codemod packages.
+
+#### `cache info`
+
+Show cache information and statistics.
+
+```bash
+npx codemod@next cache info
+```
+
+#### `cache list`
+
+List cached packages.
+
+```bash
+npx codemod@next cache list [--detailed]
+```
+<ResponseField name="--detailed" type="boolean">
+  Show package details.
+</ResponseField>
+
+#### `cache clear`
+
+Clear cache for a specific package, or all packages.
+
+```bash
+npx codemod@next cache clear [PACKAGE] [--all]
+```
+<ResponseField name="[PACKAGE]" type="string">
+  Package name (e.g., @org/package or package).
+</ResponseField>
+<ResponseField name="--all" type="boolean">
+  Clear all cached packages.
+</ResponseField>
+
+#### `cache prune`
+
+Prune old or unused cache entries.
+
+```bash
+npx codemod@next cache prune [--max-age <MAX_AGE>] [--dry-run]
+```
+<ResponseField name="--max-age <MAX_AGE>" type="number">
+  Maximum age in days to keep (default: 30).
+</ResponseField>
+<ResponseField name="--dry-run" type="boolean">
+  Dry run - show what would be removed.
+</ResponseField>
