@@ -64,11 +64,6 @@ export function registerCodemod(
   for (const file of files) {
     const filePath = path.resolve(file);
 
-    if (!fs.existsSync(filePath)) {
-      console.error(`File not found: ${filePath}`);
-      continue;
-    }
-
     const content = fs.readFileSync(filePath, "utf-8");
     const root = parse(astGrepLang, content);
     const result = transform(root);
