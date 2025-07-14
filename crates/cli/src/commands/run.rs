@@ -111,18 +111,25 @@ pub async fn handler(engine: &Engine, args: &Command, telemetry: &PostHogSender)
         &base64::engine::general_purpose::URL_SAFE_NO_PAD,
         execution_id,
     );
-    let _ = telemetry.send_event(
-        BaseEvent {
-            kind: "codemodExecuted".to_string(),
-            properties: HashMap::from([
-                ("codemodName".to_string(), args.package.clone()),
-                ("executionId".to_string(), execution_id.clone()),
-                ("fileCount".to_string(), stats.files_modified.to_string()),
-                ("cliVersion".to_string(), cli_version.to_string()),
-            ]),
-        },
-        None,
-    );
+
+    if std::env::var("DISABLE_ANALYTICS") == Ok("false".to_string())
+        || std::env::var("DISABLE_ANALYTICS").is_err()
+    {
+        let _ = telemetry
+            .send_event(
+                BaseEvent {
+                    kind: "codemodExecuted".to_string(),
+                    properties: HashMap::from([
+                        ("codemodName".to_string(), args.package.clone()),
+                        ("executionId".to_string(), execution_id.clone()),
+                        ("fileCount".to_string(), stats.files_modified.to_string()),
+                        ("cliVersion".to_string(), cli_version.to_string()),
+                    ]),
+                },
+                None,
+            )
+            .await;
+    }
 
     Ok(())
 }

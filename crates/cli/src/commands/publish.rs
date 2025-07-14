@@ -200,17 +200,23 @@ pub async fn handler(args: &Command, telemetry: &PostHogSender) -> Result<()> {
 
     let cli_version = env!("CARGO_PKG_VERSION");
 
-    let _ = telemetry.send_event(
-        BaseEvent {
-            kind: "codemodPublished".to_string(),
-            properties: HashMap::from([
-                ("codemodName".to_string(), manifest.name.clone()),
-                ("version".to_string(), manifest.version.clone()),
-                ("cliVersion".to_string(), cli_version.to_string()),
-            ]),
-        },
-        None,
-    );
+    if std::env::var("DISABLE_ANALYTICS") == Ok("false".to_string())
+        || std::env::var("DISABLE_ANALYTICS").is_err()
+    {
+        let _ = telemetry
+            .send_event(
+                BaseEvent {
+                    kind: "codemodPublished".to_string(),
+                    properties: HashMap::from([
+                        ("codemodName".to_string(), manifest.name.clone()),
+                        ("version".to_string(), manifest.version.clone()),
+                        ("cliVersion".to_string(), cli_version.to_string()),
+                    ]),
+                },
+                None,
+            )
+            .await;
+    }
 
     println!("✅ Package published successfully!");
     println!("📦 {}", format_package_name(&response.package));
