@@ -1,0 +1,15 @@
+[package]
+name = "codemod-telemetry"
+edition = "2021"
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+repository.workspace = true
+license.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+async-trait.workspace = true
+posthog-rs = "0.3.7"
+serde.workspace = true
