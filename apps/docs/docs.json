@@ -40,7 +40,7 @@
           },
           {
             "group": "OSS & Community",
-            "pages": ["deploying-codemods/cli"]
+            "pages": ["cli/workflows", "cli/cli-reference"]
           },
           {
             "group": "Quick Links",
