@@ -1,8 +1,12 @@
 use ast_grep_codemod_dynamic_lang::{DynamicLang, Registration};
 use dirs::data_local_dir;
+use indicatif::{ProgressBar, ProgressState, ProgressStyle};
 use reqwest;
+use reqwest::header::CONTENT_LENGTH;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, env, fmt, path::PathBuf, str::FromStr};
+use tokio::io::AsyncWriteExt;
+use tokio_stream::StreamExt;
 
 use crate::sandbox::engine::language_data::get_extensions_for_language;
 
@@ -54,20 +58,59 @@ pub async fn load_tree_sitter(languages: &[SupportedLanguage]) -> Result<Vec<Dyn
                 "https://tree-sitter-parsers.s3.us-east-1.amazonaws.com".to_string()
             });
             let url = format!("{base_url}/tree-sitter/parsers/tree-sitter-{language}/latest/{os}-{arch}.{extension}");
+
             let client = reqwest::Client::builder()
                 .timeout(std::time::Duration::from_secs(30))
                 .build()
                 .map_err(|e| format!("Failed to build HTTP client: {e}"))?;
+
+            let head_response = client
+                .head(&url)
+                .send()
+                .await
+                .map_err(|e| format!("Failed to get header from {url}: {e}"))?;
+
+            let total_size = head_response
+                .headers()
+                .get(CONTENT_LENGTH)
+                .and_then(|val| val.to_str().ok()?.parse().ok())
+                .unwrap_or(0);
+
+            let progress_bar = ProgressBar::new(total_size);
+            progress_bar.set_style(
+                ProgressStyle::with_template(
+                    "{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({eta})"
+                )
+                .unwrap()
+                .with_key("eta", |state: &ProgressState, w: &mut dyn std::fmt::Write| {
+                    write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap()
+                })
+                .progress_chars("#>-")
+            );
+
             let response = client
                 .get(&url)
                 .send()
                 .await
                 .map_err(|e| format!("Failed to download from {url}: {e}"))?;
-            let body = response
-                .bytes()
+
+            let mut stream = response.bytes_stream();
+            let mut file = tokio::fs::File::create(&lib_path)
                 .await
-                .map_err(|e| format!("Failed to read response from {url}: {e}"))?;
-            std::fs::write(&lib_path, body).map_err(|e| format!("Failed to write file: {e}"))?;
+                .map_err(|e| format!("Failed to create file: {e}"))?;
+
+            while let Some(chunk) = stream.next().await {
+                let chunk = chunk.map_err(|e| format!("Stream error from {url}: {e}"))?;
+                file.write_all(&chunk)
+                    .await
+                    .map_err(|e| format!("Write error: {e}"))?;
+                progress_bar.inc(chunk.len() as u64);
+            }
+
+            file.flush()
+                .await
+                .map_err(|e| format!("Flush error: {e}"))?;
+            progress_bar.finish_with_message("Downloaded successfully");
         }
         ready_langs.insert(ReadyLang {
             language: *language,
