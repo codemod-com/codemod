@@ -1,7 +1,7 @@
-use std::collections::HashMap;
+use async_trait::async_trait;
 use posthog_rs;
 use serde::Serialize;
-use async_trait::async_trait;
+use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct TelemetrySenderOptions {
@@ -62,7 +62,7 @@ impl TelemetrySender for PostHogSender {
 
         let posthog_event = posthog_rs::Event::new(
             format!("codemod.{}.{}", cloud_role, event.kind),
-            distinct_id.clone()
+            distinct_id.clone(),
         );
 
         if let Err(e) = self.client.capture(posthog_event).await {

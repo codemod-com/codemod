@@ -4,12 +4,14 @@ use log::{debug, info, warn};
 use reqwest;
 use serde::{Deserialize, Serialize};
 use serde_yaml;
+use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use tempfile::TempDir;
 use walkdir::WalkDir;
 
 use crate::auth::TokenStorage;
+use codemod_telemetry::send_event::{BaseEvent, PostHogSender, TelemetrySender};
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -117,7 +119,7 @@ struct PublishedPackage {
     published_at: String,
 }
 
-pub async fn handler(args: &Command) -> Result<()> {
+pub async fn handler(args: &Command, telemetry: &PostHogSender) -> Result<()> {
     let package_path = args
         .path
         .as_ref()
@@ -195,6 +197,20 @@ pub async fn handler(args: &Command) -> Result<()> {
     if !response.success {
         return Err(anyhow!("Failed to publish package"));
     }
+
+    let cli_version = env!("CARGO_PKG_VERSION");
+
+    let _ = telemetry.send_event(
+        BaseEvent {
+            kind: "codemodPublished".to_string(),
+            properties: HashMap::from([
+                ("codemodName".to_string(), manifest.name.clone()),
+                ("version".to_string(), manifest.version.clone()),
+                ("cliVersion".to_string(), cli_version.to_string()),
+            ]),
+        },
+        None,
+    );
 
     println!("✅ Package published successfully!");
     println!("📦 {}", format_package_name(&response.package));

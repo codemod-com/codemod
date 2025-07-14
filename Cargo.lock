@@ -512,6 +512,7 @@ dependencies = [
  "dirs",
  "flate2",
  "log",
+ "once_cell",
  "regex",
  "reqwest 0.12.15",
  "serde",

@@ -31,6 +31,7 @@ tar = { workspace = true }
 tempfile = { workspace = true }
 walkdir = { workspace = true }
 dirs = { workspace = true }
+once_cell = "1.21.3"
 
 [dev-dependencies]
 tempfile = { workspace = true }

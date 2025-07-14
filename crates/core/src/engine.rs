@@ -31,13 +31,19 @@ use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
 use codemod_sandbox::sandbox::{
-    engine::{language_data::get_extensions_for_language, ExecutionConfig, ExecutionEngine},
+    engine::{
+        language_data::get_extensions_for_language, ExecutionConfig, ExecutionEngine,
+        ExecutionStats,
+    },
     filesystem::{RealFileSystem, WalkOptions},
     loaders::FileSystemLoader,
     resolvers::FileSystemResolver,
 };
 use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
+use once_cell::sync::Lazy;
 
+pub static GLOBAL_STATS: Lazy<Mutex<ExecutionStats>> =
+    Lazy::new(|| Mutex::new(ExecutionStats::default()));
 /// Workflow engine
 pub struct Engine {
     /// State adapter for persisting workflow state
@@ -1429,6 +1435,9 @@ impl Engine {
         info!("Modified files: {:?}", stats.files_modified);
         info!("Unmodified files: {:?}", stats.files_unmodified);
         info!("Files with errors: {:?}", stats.files_with_errors);
+        // set global stats
+        let mut data = GLOBAL_STATS.lock().await;
+        *data = stats.clone();
 
         // TODO: Consider writing execution stats to state or logs
         // Similar to AST grep, this could be extended to:
