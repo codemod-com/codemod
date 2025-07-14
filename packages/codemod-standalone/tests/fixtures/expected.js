@@ -16,7 +16,7 @@ function example() {
 }
 
 const data = {
-  value: 123,
+  value: 123
 };
 
 logger.log(data);
