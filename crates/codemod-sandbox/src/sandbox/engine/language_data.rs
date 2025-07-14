@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 
-#[cfg(feature = "native")]
-
 /// Creates a map from DynamicLang to their associated file extensions
 pub fn create_language_extension_map() -> HashMap<&'static str, Vec<&'static str>> {
     let mut map = HashMap::new();
