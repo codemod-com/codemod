@@ -1408,9 +1408,11 @@ impl Engine {
 
         // Set language first to get default extensions
         if let Some(lang_str) = &js_ast_grep.language {
-            config = config.with_language(
-                SupportedLanguage::from_str(lang_str).unwrap_or(SupportedLanguage::Typescript),
-            );
+            config =
+                config.with_language(SupportedLanguage::from_str(lang_str).unwrap_or_else(|_| {
+                    warn!("Failed to parse language '{lang_str}', falling back to TypeScript.");
+                    SupportedLanguage::Typescript
+                }));
         } else {
             // Parse TypeScript as default
             config = config.with_language(SupportedLanguage::Typescript);
