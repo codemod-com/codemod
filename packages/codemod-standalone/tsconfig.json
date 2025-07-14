@@ -1,0 +1,7 @@
+{
+  "extends": "@codemod-com/tsconfig/lib.json",
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "outDir": "./dist"
+  }
+}

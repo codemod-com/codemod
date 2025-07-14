@@ -1,0 +1,19 @@
+{
+  "name": "@codemod-com/codemod-standalone",
+  "author": "Augustin Mauroy",
+  "version": "0.0.1",
+  "description": "The utilities used across Codemod.com packages",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["./dist", "README.md", "tsconfig.json"],
+  "scripts": {
+    "build": "tsc"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@codemod-com/tsconfig": "workspace:*"
+  }
+}
