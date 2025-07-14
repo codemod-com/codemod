@@ -13,20 +13,18 @@
     "db:migrate:create": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
-    "db:seed": "tsx src/seed.ts",
+    "db:seed": "node --experimental-strip-types src/seed.ts",
     "db:format": "prisma format",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset"
   },
   "dependencies": {
-    "@prisma/client": "catalog:",
-    "prisma-json-types-generator": "catalog:"
+    "@prisma/client": "^5.15.1",
+    "prisma-json-types-generator": "^3.0.4"
   },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
-    "@faker-js/faker": "catalog:",
-    "prisma": "catalog:",
-    "tsx": "^4.11.0"
+    "@faker-js/faker": "catalog:"
   }
 }

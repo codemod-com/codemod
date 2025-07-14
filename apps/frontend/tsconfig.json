@@ -30,7 +30,6 @@
       "@studio/*": ["./app/(website)/studio-jscodeshift/src/*"],
       "@chatbot/*": ["./app/(website)/studio-jscodeshift/features/modGPT/*"],
       "@gr-run/*": ["./app/(website)/studio-jscodeshift/features/GHRun/*"],
-      "tslib": ["node_modules/tslib"],
       "ts-morph": ["node_modules/ts-morph"],
       "@utils/*": ["./utils/*"],
       "@context/*": ["./app/context/*"],
@@ -40,7 +39,6 @@
     "plugins": [{ "name": "next" }]
   },
   "include": [
-    ".eslintrc.cjs",
     "next-env.d.ts",
     "reset.d.ts",
     "../../../txt.d.ts",

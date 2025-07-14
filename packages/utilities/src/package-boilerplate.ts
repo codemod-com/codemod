@@ -1,8 +1,7 @@
-import * as changeCase from "change-case";
-import jsBeautify from "js-beautify";
-
 import baseTsconfig from "@codemod-com/tsconfig/base.json";
 import codemodTsconfig from "@codemod-com/tsconfig/codemod.json";
+import * as changeCase from "change-case";
+import jsBeautify from "js-beautify";
 import { isNeitherNullNorUndefined } from "./functions/validation.js";
 import {
   type CodemodConfigInput,
@@ -192,10 +191,7 @@ const tsconfigJson = () => {
         "./test/**/*.ts",
         "./test/**/*.js"
       ],
-      "exclude": ["node_modules", "./dist/**/*"],
-      "ts-node": {
-        "transpileOnly": true
-      }
+      "exclude": ["node_modules", "./dist/**/*"]
     }
 	`)}\n`;
 };
@@ -223,7 +219,7 @@ const packageJson = ({ name, engine, username }: ProjectDownloadInput) => {
   const scripts: Record<string, string> = {};
 
   if (engine !== "recipe") {
-    devDeps["@types/node"] = "20.9.0";
+    devDeps["@types/node"] = "^22."; // Use the latest Node.js types
     devDeps.typescript = "^5.2.2";
     devDeps.vitest = "^1.0.1";
     devDeps["@codemod.com/codemod-utils"] = "*";

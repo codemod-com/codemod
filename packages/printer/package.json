@@ -24,20 +24,17 @@
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@codemod-com/api-types": "workspace:*",
-    "@codemod-com/filemod": "workspace:*",
-    "@codemod-com/utilities": "workspace:*",
-    "@types/cli-progress": "catalog:",
-    "@types/node": "20.8.5",
-    "@vitest/coverage-v8": "catalog:",
+    "@types/cli-progress": "^3.11.6",
+    "@types/node": "catalog:",
     "vitest": "^1.0.1"
   },
   "dependencies": {
-    "boxen": "catalog:",
-    "chalk": "catalog:",
-    "cli-progress": "catalog:",
-    "ora": "catalog:",
-    "prettier": "^3.2.5",
+    "@codemod-com/api-types": "workspace:*",
+    "@codemod-com/utilities": "workspace:*",
+    "boxen": "^8.0.1",
+    "chalk": "5.4.1",
+    "cli-progress": "^3.12.0",
+    "ora": "^8.2.0",
     "valibot": "catalog:",
     "wrap-ansi": "catalog:"
   }

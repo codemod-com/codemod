@@ -27,6 +27,6 @@
   "keywords": ["ast-grep", "codemod", "ast", "types"],
   "license": "Apache-2.0",
   "devDependencies": {
-    "typescript": "5.5.4"
+    "typescript": "catalog:"
   }
 }

@@ -24,14 +24,11 @@
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/node": "20.10.3",
-    "@vitest/coverage-v8": "catalog:",
-    "csv-parser": "catalog:",
-    "ts-node": "10.9.1",
+    "@types/node": "catalog:",
     "vitest": "^1.0.1"
   },
   "dependencies": {
-    "applicationinsights": "catalog:",
-    "posthog-node": "catalog:"
+    "csv-parser": "^3.2.0",
+    "posthog-node": "^5.5.0"
   }
 }
