@@ -54,13 +54,19 @@ pub async fn load_tree_sitter(languages: &[SupportedLanguage]) -> Result<Vec<Dyn
                 "https://tree-sitter-parsers.s3.us-east-1.amazonaws.com".to_string()
             });
             let url = format!("{base_url}/tree-sitter/parsers/tree-sitter-{language}/latest/{os}-{arch}.{extension}");
-            let response = reqwest::get(url)
+            let client = reqwest::Client::builder()
+                .timeout(std::time::Duration::from_secs(30))
+                .build()
+                .map_err(|e| format!("Failed to build HTTP client: {e}"))?;
+            let response = client
+                .get(&url)
+                .send()
                 .await
-                .map_err(|e| format!("Failed to download: {e}"))?;
+                .map_err(|e| format!("Failed to download from {url}: {e}"))?;
             let body = response
                 .bytes()
                 .await
-                .map_err(|e| format!("Failed to read response: {e}"))?;
+                .map_err(|e| format!("Failed to read response from {url}: {e}"))?;
             std::fs::write(&lib_path, body).map_err(|e| format!("Failed to write file: {e}"))?;
         }
         ready_langs.insert(ReadyLang {
