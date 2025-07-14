@@ -1,6 +1,7 @@
 ---
 title: 'Building Codemod Workflows'
 sidebarTitle: 'Building Workflows'
+
 ---
 
 Codemod Workflows are self-hostable automations designed for running large-scale code transformation jobs.
@@ -41,21 +42,111 @@ Codemod Workflows can be run using [Codemod CLI](/cli/cli-reference) or [Codemod
     This will create a new folder with all the necessary files and structure for your chosen codemod type.
   </Step>
   <Step title="Explore the generated project">
-    ```
-    example-codemod/
-    ├── .gitignore
-    ├── README.md           # Project usage and development instructions
-    ├── codemod.yaml        # Codemod metadata and registry info
-    ├── workflow.yaml       # Workflow definition for running the codemod
-    ├── rules/
-    │   └── config.yml      # Example ast-grep rules
-    ├── scripts/            # (empty) for custom scripts
-    └── tests/
-        ├── input/          # (empty) for test fixtures
-        └── expected/       # (empty) for test fixtures
-    ```
+    The generated project structure will differ depending on the codemod type you select:
+    
+    <CodeGroup>
+
+```plaintext Shell Command Workflow
+example-codemod/
+├── .gitignore
+├── README.md
+├── codemod.yaml
+├── workflow.yaml
+├── scripts/
+│   └── my-script.sh      # Example shell script
+└── tests/
+    ├── input/
+    └── expected/
+```
+
+```plaintext JavaScript ast-grep Workflow
+example-codemod/
+├── .gitignore
+├── README.md
+├── codemod.yaml
+├── workflow.yaml
+├── rules/
+│   └── config.js         # Example JS ast-grep rule
+├── scripts/
+└── tests/
+    ├── input/
+    └── expected/
+```
+
+```plaintext YAML ast-grep Workflow
+example-codemod/
+├── .gitignore
+├── README.md
+├── codemod.yaml
+├── workflow.yaml
+├── rules/
+│   └── config.yml        # Example YAML ast-grep rule
+├── scripts/
+└── tests/
+    ├── input/
+    └── expected/
+```
+
+</CodeGroup>
+    
+    <Info>
+    You can combine different codemod types in a single package by placing each type under its required directory (e.g., <code>scripts/</code> for shell scripts, <code>rules/</code> for ast-grep rules) and referencing them from <code>workflow.yaml</code>. This allows you to orchestrate complex, multi-step migrations using the best tool for each job.
+    </Info>
   </Step>
   <Step title="Understand the example workflow">
+    The generated `workflow.yaml` will also differ depending on the codemod type you select:
+    
+    <CodeGroup>
+
+```yaml Shell Command Workflow
+version: "1"
+nodes:
+  - id: run-script
+    name: Run Shell Script
+    steps:
+      - name: Execute script
+        run: ./scripts/my-script.sh
+```
+
+```yaml JavaScript ast-grep Workflow
+version: "1"
+nodes:
+  - id: apply-js-rule
+    name: Apply JS ast-grep Rule
+    steps:
+      - name: Run ast-grep JS rule
+        ast-grep:
+          include:
+            - "**/*.js"
+          base_path: "src"
+          config_file: "rules/config.js"
+```
+
+```yaml YAML ast-grep Workflow
+version: "1"
+nodes:
+  - id: apply-yaml-rule
+    name: Apply YAML ast-grep Rule
+    steps:
+      - name: Run ast-grep YAML rule
+        ast-grep:
+          include:
+            - "**/*.ts"
+            - "**/*.tsx"
+          exclude:
+            - "**/*.test.ts"
+            - "**/*.spec.ts"
+          base_path: "src"
+          config_file: "rules/config.yml"
+```
+
+</CodeGroup>
+    
+    <Info>
+    You can combine different codemod types in a single package by placing each type under its required directory (e.g., <code>scripts/</code> for shell scripts, <code>rules/</code> for ast-grep rules) and referencing them from <code>workflow.yaml</code>. This allows you to orchestrate complex, multi-step migrations using the best tool for each job.
+    </Info>
+  </Step>
+  <Step title="Understand an example workflow">
     The generated `workflow.yaml` (when you choose the YAML-based ast-grep codemod for JavaScript/TypeScript) defines a simple workflow that applies an AST-grep rule to all TypeScript files in the `src/` directory (excluding test files):
 
     ```yaml
