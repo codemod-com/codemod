@@ -11,7 +11,7 @@ use tempfile::TempDir;
 use walkdir::WalkDir;
 
 use crate::auth::TokenStorage;
-use codemod_telemetry::send_event::{BaseEvent, PostHogSender, TelemetrySender};
+use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -119,7 +119,7 @@ struct PublishedPackage {
     published_at: String,
 }
 
-pub async fn handler(args: &Command, telemetry: &PostHogSender) -> Result<()> {
+pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<()> {
     let package_path = args
         .path
         .as_ref()
@@ -200,23 +200,19 @@ pub async fn handler(args: &Command, telemetry: &PostHogSender) -> Result<()> {
 
     let cli_version = env!("CARGO_PKG_VERSION");
 
-    if std::env::var("DISABLE_ANALYTICS") == Ok("false".to_string())
-        || std::env::var("DISABLE_ANALYTICS").is_err()
-    {
-        let _ = telemetry
-            .send_event(
-                BaseEvent {
-                    kind: "codemodPublished".to_string(),
-                    properties: HashMap::from([
-                        ("codemodName".to_string(), manifest.name.clone()),
-                        ("version".to_string(), manifest.version.clone()),
-                        ("cliVersion".to_string(), cli_version.to_string()),
-                    ]),
-                },
-                None,
-            )
-            .await;
-    }
+    let _ = telemetry
+        .send_event(
+            BaseEvent {
+                kind: "codemodPublished".to_string(),
+                properties: HashMap::from([
+                    ("codemodName".to_string(), manifest.name.clone()),
+                    ("version".to_string(), manifest.version.clone()),
+                    ("cliVersion".to_string(), cli_version.to_string()),
+                ]),
+            },
+            None,
+        )
+        .await;
 
     println!("✅ Package published successfully!");
     println!("📦 {}", format_package_name(&response.package));

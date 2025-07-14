@@ -60,10 +60,14 @@ impl TelemetrySender for PostHogSender {
             .and_then(|o| o.cloud_role.clone())
             .unwrap_or_else(|| self.options.cloud_role.clone());
 
-        let posthog_event = posthog_rs::Event::new(
+        let mut posthog_event = posthog_rs::Event::new(
             format!("codemod.{}.{}", cloud_role, event.kind),
             distinct_id.clone(),
         );
+
+        for (key, value) in event.properties {
+            posthog_event.insert_prop(key, value).unwrap();
+        }
 
         if let Err(e) = self.client.capture(posthog_event).await {
             eprintln!("Failed to send PostHog event: {e}");

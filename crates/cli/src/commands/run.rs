@@ -13,7 +13,7 @@ use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
 use butterflow_core::engine::{Engine, GLOBAL_STATS};
 use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
 use codemod_sandbox::sandbox::engine::ExecutionStats;
-use codemod_telemetry::send_event::{BaseEvent, PostHogSender, TelemetrySender};
+use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -46,7 +46,11 @@ pub struct Command {
     allow_dirty: bool,
 }
 
-pub async fn handler(engine: &Engine, args: &Command, telemetry: &PostHogSender) -> Result<()> {
+pub async fn handler(
+    engine: &Engine,
+    args: &Command,
+    telemetry: &dyn TelemetrySender,
+) -> Result<()> {
     // Create auth provider
     let auth_provider = CliAuthProvider::new()?;
 
@@ -103,7 +107,29 @@ pub async fn handler(engine: &Engine, args: &Command, telemetry: &PostHogSender)
         &args.args,
         args.dry_run,
     )
-    .await?;
+    .await;
+
+    let cli_version = env!("CARGO_PKG_VERSION");
+
+    if let Err(e) = stats {
+        let _ = telemetry
+            .send_event(
+                BaseEvent {
+                    kind: "failedToExecuteCommand".to_string(),
+                    properties: HashMap::from([
+                        ("codemodName".to_string(), args.package.clone()),
+                        ("cliVersion".to_string(), cli_version.to_string()),
+                        (
+                            "commandName".to_string(),
+                            "codemod.executeCodemod".to_string(),
+                        ),
+                    ]),
+                },
+                None,
+            )
+            .await;
+        return Err(anyhow::anyhow!("Error executing codemod: {}", e));
+    }
 
     let cli_version = env!("CARGO_PKG_VERSION");
     let execution_id: [u8; 20] = rand::thread_rng().gen();
@@ -112,24 +138,23 @@ pub async fn handler(engine: &Engine, args: &Command, telemetry: &PostHogSender)
         execution_id,
     );
 
-    if std::env::var("DISABLE_ANALYTICS") == Ok("false".to_string())
-        || std::env::var("DISABLE_ANALYTICS").is_err()
-    {
-        let _ = telemetry
-            .send_event(
-                BaseEvent {
-                    kind: "codemodExecuted".to_string(),
-                    properties: HashMap::from([
-                        ("codemodName".to_string(), args.package.clone()),
-                        ("executionId".to_string(), execution_id.clone()),
-                        ("fileCount".to_string(), stats.files_modified.to_string()),
-                        ("cliVersion".to_string(), cli_version.to_string()),
-                    ]),
-                },
-                None,
-            )
-            .await;
-    }
+    let _ = telemetry
+        .send_event(
+            BaseEvent {
+                kind: "codemodExecuted".to_string(),
+                properties: HashMap::from([
+                    ("codemodName".to_string(), args.package.clone()),
+                    ("executionId".to_string(), execution_id.clone()),
+                    (
+                        "fileCount".to_string(),
+                        stats.unwrap().files_modified.to_string(),
+                    ),
+                    ("cliVersion".to_string(), cli_version.to_string()),
+                ]),
+            },
+            None,
+        )
+        .await;
 
     Ok(())
 }

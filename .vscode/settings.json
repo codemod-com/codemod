@@ -27,5 +27,8 @@
     "statusBar.background": "#d6ff62",
     "statusBar.foreground": "#0B151E",
     "statusBar.border": "#0B151E"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
