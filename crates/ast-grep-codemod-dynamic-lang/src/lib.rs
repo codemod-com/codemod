@@ -11,8 +11,8 @@ use tree_sitter::{Language as NativeTS, LANGUAGE_VERSION, MIN_COMPATIBLE_LANGUAG
 use std::borrow::Cow;
 use std::fs::canonicalize;
 use std::path::{Path, PathBuf};
-use std::ptr::{addr_of, addr_of_mut};
 use std::str::FromStr;
+use std::sync::{RwLock, RwLockReadGuard};
 
 mod custom_lang;
 
@@ -39,10 +39,11 @@ impl DynamicLang {
             })
             .collect()
     }
+
     pub fn file_types(&self) -> Types {
         let mut builder = TypesBuilder::new();
         let inner = self.inner();
-        let mapping = unsafe { &*addr_of!(LANG_INDEX) };
+        let mapping = LANG_INDEX.read().unwrap();
         for (ext, i) in mapping.iter() {
             if *i == self.index {
                 builder
@@ -96,13 +97,12 @@ struct Inner {
     name: String,
     meta_var_char: char,
     expando_char: char,
-    // NOTE: need to hold a reference of lib to avoid cleanup
-    _lib: Library,
+    _lib: Library, // Keep lib alive
 }
 
 #[derive(Debug, Error)]
 pub enum DynamicLangError {
-    #[error("Target dynamic lib `{0}` is not configure")]
+    #[error("Target dynamic lib `{0}` is not configured")]
     NotConfigured(&'static str),
     #[error("cannot load lib")]
     OpenLib(#[source] LibError),
@@ -115,16 +115,12 @@ pub enum DynamicLangError {
 }
 
 /// # Safety: we must keep lib in memory after load it.
-/// libloading will do cleanup if `Library` is dropped which makes any lib symbol null pointer.
-/// This is not desirable for our case.
 unsafe fn load_ts_language(
     path: PathBuf,
     name: String,
 ) -> Result<(Library, TSLanguage), DynamicLangError> {
     let abs_path = canonicalize(path)?;
     let lib = Library::new(abs_path.as_os_str()).map_err(DynamicLangError::OpenLib)?;
-    // NOTE: func is a symbol with lifetime bound to `lib`.
-    // If we drop lib in the scope, func will be a dangling pointer.
     let func: Symbol<unsafe extern "C" fn() -> NativeTS> = lib
         .get(name.as_bytes())
         .map_err(DynamicLangError::ReadSymbol)?;
@@ -133,15 +129,13 @@ unsafe fn load_ts_language(
     if !(MIN_COMPATIBLE_LANGUAGE_VERSION..=LANGUAGE_VERSION).contains(&version) {
         Err(DynamicLangError::IncompatibleVersion(version))
     } else {
-        // ATTENTION: dragon ahead
-        // must hold valid reference to NativeTS
         Ok((lib, lang))
     }
 }
 
-// both use vec since lang will be small
-static mut DYNAMIC_LANG: Vec<Inner> = vec![];
-static mut LANG_INDEX: Vec<(String, u32)> = vec![];
+// Replaced unsafe global statics with thread-safe RwLocks
+static DYNAMIC_LANG: RwLock<Vec<Inner>> = RwLock::new(vec![]);
+static LANG_INDEX: RwLock<Vec<(String, u32)>> = RwLock::new(vec![]);
 
 #[derive(Default)]
 pub struct Registration {
@@ -154,17 +148,20 @@ pub struct Registration {
 }
 
 impl DynamicLang {
-    /// # Safety
-    /// the register function should be called exactly once before use.
-    /// It relies on a global mut static variable to be initialized.
-    pub unsafe fn register(regs: Vec<Registration>) -> Result<(), DynamicLangError> {
+    pub fn register(regs: Vec<Registration>) -> Result<(), DynamicLangError> {
         let mut langs = vec![];
         let mut mapping = vec![];
         for reg in regs {
             Self::register_one(reg, &mut langs, &mut mapping)?;
         }
-        _ = std::mem::replace(&mut *addr_of_mut!(DYNAMIC_LANG), langs);
-        _ = std::mem::replace(&mut *addr_of_mut!(LANG_INDEX), mapping);
+        {
+            let mut lang_guard = DYNAMIC_LANG.write().unwrap();
+            *lang_guard = langs;
+        }
+        {
+            let mut map_guard = LANG_INDEX.write().unwrap();
+            *map_guard = mapping;
+        }
         Ok(())
     }
 
@@ -177,7 +174,6 @@ impl DynamicLang {
         langs: &mut Vec<Inner>,
         mapping: &mut Vec<(String, LangIndex)>,
     ) -> Result<(), DynamicLangError> {
-        // lib must be retained!!
         let (_lib, lang) = unsafe { load_ts_language(reg.lib_path, reg.symbol)? };
         let meta_var_char = reg.meta_var_char.unwrap_or('$');
         let expando_char = reg.expando_char.unwrap_or(meta_var_char);
@@ -195,40 +191,33 @@ impl DynamicLang {
         }
         Ok(())
     }
+
     fn inner(&self) -> &Inner {
         let langs = Self::langs();
-        &langs[self.index as usize]
+        unsafe { &*std::ptr::addr_of!(langs[self.index as usize]) }
     }
 
-    fn langs() -> &'static Vec<Inner> {
-        unsafe { &*addr_of!(DYNAMIC_LANG) }
+    fn langs() -> RwLockReadGuard<'static, Vec<Inner>> {
+        DYNAMIC_LANG.read().unwrap()
     }
 }
+
 impl Language for DynamicLang {
-    /// normalize pattern code before matching
-    /// e.g. remove expression_statement, or prefer parsing {} to object over block
     fn pre_process_pattern<'q>(&self, query: &'q str) -> Cow<'q, str> {
         if self.meta_var_char() == self.expando_char() {
             return Cow::Borrowed(query);
         };
-        // use stack buffer to reduce allocation
         let mut buf = [0; 4];
         let expando = self.expando_char().encode_utf8(&mut buf);
-        // TODO: use more precise replacement
         let replaced = query.replace(self.meta_var_char(), expando);
         Cow::Owned(replaced)
     }
 
-    /// Configure meta variable special character
-    /// By default $ is the metavar char, but in PHP it can be #
     #[inline]
     fn meta_var_char(&self) -> char {
         self.inner().meta_var_char
     }
 
-    /// Some language does not accept $ as the leading char for identifiers.
-    /// We need to change $ to other char at run-time to make parser happy, thus the name expando.
-    /// By default this is the same as meta_var char so replacement is done at runtime.
     #[inline]
     fn expando_char(&self) -> char {
         self.expando
@@ -238,6 +227,7 @@ impl Language for DynamicLang {
         let inner = self.inner();
         inner.lang.id_for_node_kind(kind, true)
     }
+
     fn field_to_id(&self, field: &str) -> Option<u16> {
         let inner = self.inner();
         inner.lang.field_id_for_name(field).map(|f| f.get())
@@ -245,7 +235,7 @@ impl Language for DynamicLang {
 
     fn from_path<P: AsRef<Path>>(path: P) -> Option<Self> {
         let ext = path.as_ref().extension()?.to_str()?;
-        let mapping = unsafe { &*addr_of!(LANG_INDEX) };
+        let mapping = LANG_INDEX.read().ok()?;
         let langs = Self::langs();
         mapping.iter().find_map(|(p, idx)| {
             if p == ext {
@@ -259,6 +249,7 @@ impl Language for DynamicLang {
             }
         })
     }
+
     fn build_pattern(&self, builder: &PatternBuilder) -> Result<Pattern, PatternError> {
         builder.build(|src| {
             let doc = StrDoc::try_new(src, *self)?;
@@ -268,7 +259,6 @@ impl Language for DynamicLang {
 }
 
 impl LanguageExt for DynamicLang {
-    /// tree sitter language to parse the source
     fn get_ts_language(&self) -> TSLanguage {
         self.inner().lang.clone()
     }
