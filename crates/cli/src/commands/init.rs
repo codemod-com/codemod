@@ -573,7 +573,7 @@ fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     println!(
         "  {}",
         style(format!(
-            "npx codemod@next validate -w {}/workflow.yaml",
+            "npx codemod@next workflow validate -w {}/workflow.yaml",
             project_path.display()
         ))
         .cyan()
@@ -583,7 +583,7 @@ fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     println!(
         "  {}",
         style(format!(
-            "npx codemod@next run -w {}/workflow.yaml",
+            "npx codemod@next workflow run -w {}/workflow.yaml",
             project_path.display()
         ))
         .cyan()
@@ -594,8 +594,8 @@ fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
         "  {}",
         style(format!("cd {}", project_path.display())).cyan()
     );
-    println!("  {}", style("codemod login").cyan());
-    println!("  {}", style("codemod publish").cyan());
+    println!("  {}", style("npx codemod@next login").cyan());
+    println!("  {}", style("npx codemod@next publish").cyan());
 
     Ok(())
 }
