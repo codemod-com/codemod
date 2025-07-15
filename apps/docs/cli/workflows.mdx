@@ -3,6 +3,8 @@ title: "Building Codemod Workflows"
 sidebarTitle: "Building Workflows"
 ---
 
+import { CLIDemo } from "/snippets/cli-demo.mdx";
+
 Codemod Workflows are self-hostable automations designed for running large-scale code transformation jobs.
 
 ## Core Features
@@ -20,6 +22,10 @@ Codemod Workflows can be run using [Codemod CLI](/cli/cli-reference) or [Codemod
 ---
 
 ## Quick Start
+
+<Frame>
+    <CLIDemo />
+</Frame>
 
 <Steps>
   <Step title="Create a new codemod project">
@@ -273,24 +279,21 @@ my-workflow/
 The folder—called a **workflow bundle**—is the root when you run `npx codemod@next workflow run ./my-workflow/`. `$CODEMOD_PATH` points here inside every task.
 
 <Accordion title="Workflow Bundle & Loading Workflows">
-  A <b>
-  workflow bundle</b>
+  A workflow bundle is a directory containing your `workflow.yaml` and any scripts, rules, or assets referenced by your workflow.
 
-   is a directory containing your <code>
-  workflow.yaml</code>
-
-   and any scripts, rules, or assets referenced by your workflow.
-
-  - When you run <code>
-    npx codemod@next workflow run ./my-workflow/</code>
+  - When you run
+    ```bash
+    npx codemod@next workflow run ./my-workflow/
+    ```
 
     , the directory is used as the root for all relative paths.
   - You can also run a workflow directly from a file:
 
     <br />
 
-    <code>
-    npx codemod@next workflow run -w workflow.yaml</code>
+    ```bash
+    npx codemod@next workflow run -w workflow.yaml
+    ```
 
   <Info>
     Registry support (run workflows from remote sources) is planned for the future.
@@ -423,32 +426,14 @@ nodes:
 
 <ParamField path="run" type="string">
   Inline shell command to execute.
-
-  <br />
-
-  <b>
-  Provide either <code>
-  run</code>
-
-   or <code>
-  uses</code>
-
-  , not both.</b>
+  
+  Provide either `run` or `uses`, not both.
 </ParamField>
 
 <ParamField path="uses" type="object">
   Template call(s).
 
-  <br />
-
-  <b>
-  Provide either <code>
-  run</code>
-
-   or <code>
-  uses</code>
-
-  , not both.</b>
+  Provide either `run` or `uses`, not both.
 </ParamField>
 
 ## Matrix Strategy
