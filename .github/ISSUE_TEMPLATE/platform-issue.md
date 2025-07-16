@@ -10,7 +10,6 @@ assignees: ''
 ### Platform Area(s) Affected
 
 Select all that apply:
-- [ ] Scanner (Opportunity Finder, code search)
 - [ ] Migrations (Automated code migrations)
 - [ ] Insights (Analytics, reporting)
 - [ ] Codemod Studio (AI codemod authoring)
