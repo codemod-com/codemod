@@ -6,6 +6,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command as ProcessCommand;
 
 use crate::auth_provider::CliAuthProvider;
+use crate::dirty_git_check;
 use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
 use butterflow_core::engine::Engine;
 use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
@@ -35,11 +36,17 @@ pub struct Command {
     /// Additional arguments to pass to the codemod
     #[arg(last = true)]
     args: Vec<String>,
+
+    /// Allow dirty git status
+    #[arg(long)]
+    allow_dirty: bool,
 }
 
 pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     // Create auth provider
     let auth_provider = CliAuthProvider::new()?;
+
+    dirty_git_check::dirt_check(args.allow_dirty)?;
 
     // Get cache directory and default registry from config
     let cache_dir = get_cache_dir()?;

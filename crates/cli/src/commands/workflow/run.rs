@@ -3,6 +3,7 @@ use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use clap::Args;
 
+use crate::dirty_git_check;
 use crate::workflow_runner::{resolve_workflow_source, run_workflow, WorkflowRunConfig};
 
 #[derive(Args, Debug)]
@@ -14,6 +15,10 @@ pub struct Command {
     /// Workflow parameters (format: key=value)
     #[arg(long = "param", value_name = "KEY=VALUE")]
     params: Vec<String>,
+
+    /// Allow dirty git status
+    #[arg(long)]
+    allow_dirty: bool,
 }
 
 /// Run a workflow
@@ -31,6 +36,8 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
         params,
         wait_for_completion: true,
     };
+
+    dirty_git_check::dirt_check(args.allow_dirty)?;
 
     // Run workflow using the extracted workflow runner
     run_workflow(engine, config).await?;
