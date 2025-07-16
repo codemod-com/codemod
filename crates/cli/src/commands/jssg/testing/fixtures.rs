@@ -142,8 +142,6 @@ impl TestCase {
 
     /// Check if this test case should expect errors (either from naming or explicit configuration)
     pub fn should_expect_error(&self, expect_error_patterns: &[String]) -> bool {
-        println!("expect_error_patterns: {expect_error_patterns:?}");
-        println!("self.should_error: {:?}", self.should_error);
         // Check explicit patterns first
         let pattern_match = expect_error_patterns
             .iter()
