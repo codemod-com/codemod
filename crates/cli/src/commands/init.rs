@@ -174,17 +174,15 @@ pub fn handler(args: &Command) -> Result<()> {
         let project_type = args
             .project_type
             .clone()
-            .ok_or_else(|| anyhow!("Project type is required"))?;
+            .ok_or_else(|| anyhow!("Project type is required --project-type"))?;
         let package_manager = match (&project_type, args.package_manager.clone()) {
-            (ProjectType::AstGrepJs, Some(pm)) => pm,
+            (ProjectType::AstGrepJs, Some(pm)) => Some(pm),
             (ProjectType::AstGrepJs, None) => {
                 return Err(anyhow!(
                     "--package-manager is required when --project-type is ast-grep-js"
                 ));
             }
-            (_, pm) => {
-                pm.ok_or_else(|| anyhow!("Package manager is required --package-manager"))?
-            }
+            _ => None,
         };
         ProjectConfig {
             name: project_name,
@@ -206,7 +204,7 @@ pub fn handler(args: &Command) -> Result<()> {
                 .clone()
                 .ok_or_else(|| anyhow!("Language is required --language"))?,
             private: args.private,
-            package_manager: Some(package_manager),
+            package_manager,
         }
     } else {
         interactive_setup(&project_name, args)?
