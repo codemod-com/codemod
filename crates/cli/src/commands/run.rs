@@ -46,7 +46,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     // Create auth provider
     let auth_provider = CliAuthProvider::new()?;
 
-    dirty_git_check::dirt_check(args.allow_dirty)?;
+    dirty_git_check::dirty_check(args.allow_dirty)?;
 
     // Get cache directory and default registry from config
     let cache_dir = get_cache_dir()?;

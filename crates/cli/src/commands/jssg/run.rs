@@ -66,7 +66,7 @@ pub async fn handler(args: &Command) -> Result<()> {
     let mut config = ExecutionConfig::new(filesystem, resolver, loader, script_base_dir);
     let mut walk_options = WalkOptions::default();
 
-    dirty_git_check::dirt_check(args.allow_dirty)?;
+    dirty_git_check::dirty_check(args.allow_dirty)?;
 
     // Apply command line options
     if args.no_gitignore {

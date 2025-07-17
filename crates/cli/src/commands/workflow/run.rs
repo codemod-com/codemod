@@ -37,7 +37,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
         wait_for_completion: true,
     };
 
-    dirty_git_check::dirt_check(args.allow_dirty)?;
+    dirty_git_check::dirty_check(args.allow_dirty)?;
 
     // Run workflow using the extracted workflow runner
     run_workflow(engine, config).await?;

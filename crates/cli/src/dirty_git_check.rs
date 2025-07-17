@@ -1,10 +1,14 @@
 use anyhow::Result;
 use inquire::Confirm;
-use std::process::Command as ProcessCommand;
+use std::path::Path;
+use std::process::Command;
 
-pub fn dirt_check(allow_dirty: bool) -> Result<()> {
-    if !allow_dirty {
-        let output = ProcessCommand::new("git")
+pub fn dirty_check(allow_dirty: bool) -> Result<()> {
+    if !allow_dirty
+        && Command::new("git").arg("--version").output().is_ok()
+        && Path::new(".git").exists()
+    {
+        let output = Command::new("git")
             .args(["status", "--porcelain"])
             .output()
             .expect("Failed to run git");
