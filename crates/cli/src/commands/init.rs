@@ -72,6 +72,7 @@ struct ProjectConfig {
     project_type: ProjectType,
     language: String,
     private: bool,
+    package_manager: Option<String>,
 }
 
 // Template constants using include_str!
@@ -118,18 +119,26 @@ static CHECKMARK: Emoji<'_, '_> = Emoji("✓ ", "");
 
 pub fn handler(args: &Command) -> Result<()> {
     let (project_path, project_name) = if args.no_interactive {
-        let project_path = args
-            .path
-            .clone()
-            .unwrap_or_else(|| PathBuf::from("my-codemod"));
+        let project_path = match args.path.clone() {
+            Some(path) => path,
+            None => return Err(anyhow!("Path argument is required --path")),
+        };
 
-        let project_name = args.name.clone().unwrap_or_else(|| {
-            project_path
-                .file_name()
-                .and_then(|n| n.to_str())
-                .unwrap_or("my-codemod")
-                .to_string()
-        });
+        let project_name = match args.name.clone() {
+            Some(name) => name,
+            None => {
+                let file_name = project_path
+                    .file_name()
+                    .and_then(|n| n.to_str())
+                    .ok_or_else(|| {
+                        anyhow!(
+                            "Could not determine project name from path {}",
+                            project_path.display()
+                        )
+                    })?;
+                file_name.to_string()
+            }
+        };
 
         (project_path, project_name)
     } else {
@@ -162,24 +171,42 @@ pub fn handler(args: &Command) -> Result<()> {
     }
 
     let config = if args.no_interactive {
-        println!("no interactive");
+        let project_type = args
+            .project_type
+            .clone()
+            .ok_or_else(|| anyhow!("Project type is required"))?;
+        let package_manager = match (&project_type, args.package_manager.clone()) {
+            (ProjectType::AstGrepJs, Some(pm)) => pm,
+            (ProjectType::AstGrepJs, None) => {
+                return Err(anyhow!(
+                    "--package-manager is required when --project-type is ast-grep-js"
+                ));
+            }
+            (_, pm) => {
+                pm.ok_or_else(|| anyhow!("Package manager is required --package-manager"))?
+            }
+        };
         ProjectConfig {
             name: project_name,
             description: args
                 .description
                 .clone()
-                .unwrap_or_else(|| "A new codemod".to_string()),
+                .ok_or_else(|| anyhow!("Description is required --description"))?,
             author: args
                 .author
                 .clone()
-                .unwrap_or_else(|| "Author <author@example.com>".to_string()),
-            license: args.license.clone().unwrap_or_else(|| "MIT".to_string()),
-            project_type: args.project_type.clone().unwrap_or(ProjectType::Shell),
+                .ok_or_else(|| anyhow!("Author is required --author"))?,
+            license: args
+                .license
+                .clone()
+                .ok_or_else(|| anyhow!("License is required --license"))?,
+            project_type: project_type.clone(),
             language: args
                 .language
                 .clone()
-                .unwrap_or_else(|| "javascript".to_string()),
+                .ok_or_else(|| anyhow!("Language is required --language"))?,
             private: args.private,
+            package_manager: Some(package_manager),
         }
     } else {
         interactive_setup(&project_name, args)?
@@ -188,7 +215,7 @@ pub fn handler(args: &Command) -> Result<()> {
     create_project(&project_path, &config)?;
 
     // Run post init commands
-    run_post_init_commands(&project_path, &config)?;
+    run_post_init_commands(&project_path, &config, args.no_interactive)?;
 
     print_next_steps(&project_path, &config)?;
 
@@ -264,6 +291,7 @@ fn interactive_setup(project_name: &str, args: &Command) -> Result<ProjectConfig
         project_type,
         language,
         private,
+        package_manager: args.package_manager.clone(),
     })
 }
 
@@ -476,18 +504,23 @@ fn create_readme(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     Ok(())
 }
 
-fn run_post_init_commands(project_path: &Path, config: &ProjectConfig) -> Result<()> {
+fn run_post_init_commands(
+    project_path: &Path,
+    config: &ProjectConfig,
+    no_interactive: bool,
+) -> Result<()> {
     match config.project_type {
         ProjectType::AstGrepJs => {
-            if args.no_interactive {
-                let package_manager = config.package_manager.clone().unwrap_or("npm".to_string());
+            let package_manager = if no_interactive {
+                config.package_manager.clone().unwrap_or("npm".to_string())
             } else {
-                let package_manager = Select::new(
+                Select::new(
                     "Which package manager would you like to use?",
                     vec!["npm", "yarn", "pnpm"],
                 )
-                .prompt()?;
-            }
+                .prompt()?
+                .to_string()
+            };
 
             let output = ProcessCommand::new(package_manager)
                 .arg("install")
