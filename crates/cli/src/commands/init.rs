@@ -21,6 +21,10 @@ pub struct Command {
     #[arg(long)]
     project_type: Option<ProjectType>,
 
+    /// Package manager
+    #[arg(long)]
+    package_manager: Option<String>,
+
     /// Target language
     #[arg(long)]
     language: Option<String>,
@@ -158,6 +162,7 @@ pub fn handler(args: &Command) -> Result<()> {
     }
 
     let config = if args.no_interactive {
+        println!("no interactive");
         ProjectConfig {
             name: project_name,
             description: args
@@ -474,11 +479,15 @@ fn create_readme(project_path: &Path, config: &ProjectConfig) -> Result<()> {
 fn run_post_init_commands(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     match config.project_type {
         ProjectType::AstGrepJs => {
-            let package_manager = Select::new(
-                "Which package manager would you like to use?",
-                vec!["npm", "yarn", "pnpm"],
-            )
-            .prompt()?;
+            if args.no_interactive {
+                let package_manager = config.package_manager.clone().unwrap_or("npm".to_string());
+            } else {
+                let package_manager = Select::new(
+                    "Which package manager would you like to use?",
+                    vec!["npm", "yarn", "pnpm"],
+                )
+                .prompt()?;
+            }
 
             let output = ProcessCommand::new(package_manager)
                 .arg("install")
