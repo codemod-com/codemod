@@ -1,6 +1,5 @@
-use std::io::{self, Write};
-
 use anyhow::Result;
+use inquire::Confirm;
 use std::process::Command as ProcessCommand;
 
 pub fn dirt_check(allow_dirty: bool) -> Result<()> {
@@ -14,11 +13,13 @@ pub fn dirt_check(allow_dirty: bool) -> Result<()> {
             && !String::from_utf8_lossy(&output.stdout)
                 .contains("nothing to commit, working tree clean")
         {
-            print!("⚠️  You have uncommitted changes. Do you want to continue anyway? [y/N]: ");
-            io::stdout().flush().unwrap();
-            let mut answer = String::new();
-            io::stdin().read_line(&mut answer).unwrap();
-            if !matches!(answer.trim().to_lowercase().as_str(), "y" | "yes") {
+            let answer =
+                Confirm::new("⚠️  You have uncommitted changes. Do you want to continue anyway?")
+                    .with_default(false)
+                    .with_help_message("Press 'y' to continue or 'n' to abort")
+                    .prompt()?;
+
+            if !answer {
                 return Err(anyhow::anyhow!("Aborting due to uncommitted changes"));
             }
         }
