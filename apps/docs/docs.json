@@ -79,6 +79,18 @@
             ]
           }
         ]
+      },
+      {
+        "dropdown": "API Reference",
+        "icon": "terminal",
+        "description": "Codemod Registry API Reference and Playground",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["api-reference/introduction"]
+          }
+        ],
+        "openapi": "https://app.codemod.com/api/v1/registry/openapi"
       }
     ]
   },

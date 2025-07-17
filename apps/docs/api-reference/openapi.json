@@ -1,0 +1,519 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Codemod Registry API",
+    "description": "Codemod Registry API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://app.codemod.com",
+      "description": "Codemod Registry"
+    }
+  ],
+  "paths": {
+    "/packages/{name}/download/{version}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Package downloaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "download_url": { "type": "string", "format": "uri" },
+                    "expires_at": { "type": "string", "format": "date-time" }
+                  },
+                  "required": ["download_url", "expires_at"]
+                },
+                "example": {
+                  "download_url": "https://cdn.codemod.com/packages/replace-console-log-1.0.0.tgz",
+                  "expires_at": "2025-07-20T12:00:00Z"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getPackagesByNameDownloadByVersion",
+        "tags": ["registry"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "schema": {
+              "type": "string",
+              "pattern": "^(@[a-z0-9-_.]+/)?[a-zA-Z0-9-_]+$"
+            },
+            "required": true,
+            "description": "Name of the package (flat only)."
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*)?(\\+[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*)?$"
+            },
+            "required": true,
+            "description": "Version string (e.g. 1.0.0)."
+          }
+        ],
+        "summary": "Download a package",
+        "description": "Get a download URL for a package version.\n\n- Only flat (non-scoped, non-nested) package names are supported.\n- Example: `/packages/replace-console-log/download/1.0.0`\n- The response contains a temporary download URL.\n\n**Example response:**\n```json\n{\n  \"download_url\": \"https://cdn.codemod.com/packages/replace-console-log-1.0.0.tgz\",\n  \"expires_at\": \"2025-07-20T12:00:00Z\"\n}\n```"
+      }
+    },
+    "/packages/{name}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Package metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string" },
+                    "scope": { "type": ["string", "null"] },
+                    "display_name": { "type": ["string", "null"] },
+                    "description": { "type": ["string", "null"] },
+                    "author": { "type": "string" },
+                    "license": { "type": ["string", "null"] },
+                    "repository": { "type": ["string", "null"] },
+                    "homepage": { "type": ["string", "null"] },
+                    "documentation": { "type": ["string", "null"] },
+                    "bugs_url": { "type": ["string", "null"] },
+                    "keywords": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "category": { "type": ["string", "null"] },
+                    "visibility": {
+                      "type": "string",
+                      "enum": ["public", "private", "org", "user"]
+                    },
+                    "access": {
+                      "type": "string",
+                      "enum": ["public", "private"]
+                    },
+                    "latest_version": { "type": ["string", "null"] },
+                    "download_count": { "type": "number" },
+                    "is_legacy": { "type": "boolean" },
+                    "star_count": { "type": "number" },
+                    "created_at": { "type": "string", "format": "date-time" },
+                    "updated_at": { "type": "string", "format": "date-time" },
+                    "owner": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "format": "uuid" },
+                        "username": { "type": "string" },
+                        "name": { "type": "string" }
+                      },
+                      "required": ["id", "username", "name"]
+                    },
+                    "organization": {
+                      "type": ["object", "null"],
+                      "properties": {
+                        "id": { "type": "string", "format": "uuid" },
+                        "name": { "type": "string" },
+                        "slug": { "type": "string" }
+                      },
+                      "required": ["id", "name", "slug"]
+                    },
+                    "versions": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "format": "uuid" },
+                          "version": {
+                            "type": "string",
+                            "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*)?(\\+[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*)?$"
+                          },
+                          "description": { "type": ["string", "null"] },
+                          "published_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "size": { "type": "number" },
+                          "checksum": { "type": "string" },
+                          "download_count": { "type": "number" },
+                          "deprecated": { "type": "boolean" },
+                          "deprecation_message": { "type": ["string", "null"] },
+                          "targets": {
+                            "type": "object",
+                            "properties": {
+                              "languages": {
+                                "type": "array",
+                                "items": { "type": "string" }
+                              },
+                              "frameworks": {
+                                "type": "array",
+                                "items": { "type": "string" }
+                              },
+                              "versions": {
+                                "type": "object",
+                                "additionalProperties": { "type": "string" }
+                              }
+                            },
+                            "required": ["languages", "frameworks", "versions"]
+                          },
+                          "dependencies": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                          },
+                          "published_by": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "string", "format": "uuid" },
+                              "username": { "type": "string" },
+                              "name": { "type": "string" }
+                            },
+                            "required": ["id", "username", "name"]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "version",
+                          "description",
+                          "published_at",
+                          "size",
+                          "checksum",
+                          "download_count",
+                          "deprecated",
+                          "deprecation_message",
+                          "targets",
+                          "dependencies",
+                          "published_by"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "scope",
+                    "display_name",
+                    "description",
+                    "author",
+                    "license",
+                    "repository",
+                    "homepage",
+                    "documentation",
+                    "bugs_url",
+                    "keywords",
+                    "category",
+                    "visibility",
+                    "access",
+                    "latest_version",
+                    "download_count",
+                    "is_legacy",
+                    "star_count",
+                    "created_at",
+                    "updated_at",
+                    "owner",
+                    "organization"
+                  ]
+                },
+                "example": {
+                  "id": "ee5111b4-133d-47e4-86f1-fede9d42cf3e",
+                  "name": "replace-console-log",
+                  "scope": null,
+                  "display_name": "Replace console log",
+                  "description": "",
+                  "author": "Mohamad Mohebifar",
+                  "license": "MIT",
+                  "repository": null,
+                  "homepage": null,
+                  "documentation": null,
+                  "bugs_url": null,
+                  "keywords": [],
+                  "category": null,
+                  "visibility": "public",
+                  "access": "public",
+                  "latest_version": "1.0.0",
+                  "download_count": 0,
+                  "is_legacy": false,
+                  "star_count": 0,
+                  "created_at": "2025-07-16T16:15:54.532Z",
+                  "updated_at": "2025-07-16T16:15:54.532Z",
+                  "owner": {
+                    "id": "60be2aab-7f92-4158-b1ba-ee62555b75f0",
+                    "username": "mohebifar",
+                    "name": "Mohamad Mohebifar"
+                  },
+                  "organization": null,
+                  "versions": {}
+                }
+              }
+            },
+            "404": {
+              "description": "Not found",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": "Not Found",
+                    "message": "Package not found"
+                  }
+                }
+              }
+            }
+          },
+          "operationId": "getPackagesByName",
+          "tags": ["registry"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "name",
+              "schema": {
+                "type": "string",
+                "pattern": "^(@[a-z0-9-_.]+/)?[a-zA-Z0-9-_]+$"
+              },
+              "required": true,
+              "description": "Name of the package.\n\n**Only flat (non-scoped, non-nested) package names are supported.**\n\n**Examples:**\n- Works: `replace-console-log`, `transform-console`, `am_import-assertions-to-attributes`\n- Does NOT work: `@nodejs/correct-ts-specifiers`, `%40nodejs%2Fcorrect-ts-specifiers`, `@codemod/ts-upgrade`\n\nIf you see a package in the public registry but cannot fetch it via the API, it is likely due to this limitation."
+            }
+          ],
+          "summary": "Get package metadata",
+          "description": "Get metadata for a package.\n\n**Limitations:**\n- Only flat (non-scoped, non-nested) package names are supported by this endpoint.\n- Scoped packages (with `@` or `/` in the name) are visible in the public registry but cannot be fetched via the API, even if you URL-encode or use raw characters.\n\n**Examples:**\n- Works: `/packages/replace-console-log`\n- Does NOT work: `/packages/@nodejs/correct-ts-specifiers`\n\nFor non-existent packages, the API returns a 404 with `{\"error\": \"Not Found\", \"message\": \"Package not found\"}`."
+        },
+        "post": {
+          "responses": {
+            "200": {
+              "description": "Package published successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": { "type": "boolean" },
+                      "package": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "format": "uuid" },
+                          "name": { "type": "string" },
+                          "version": { "type": "string" },
+                          "scope": { "type": ["string", "null"] },
+                          "download_url": { "type": "string", "format": "uri" },
+                          "published_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "version",
+                          "scope",
+                          "download_url",
+                          "published_at"
+                        ]
+                      }
+                    },
+                    "required": ["success", "package"]
+                  }
+                }
+              }
+            }
+          },
+          "operationId": "postPackagesByName",
+          "tags": ["registry"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "name",
+              "schema": {
+                "type": "string",
+                "pattern": "^(@[a-z0-9-_.]+/)?[a-zA-Z0-9-_]+$"
+              },
+              "required": true,
+              "description": "Name of the package (flat only). Only flat (non-scoped, non-nested) package names are supported."
+            }
+          ],
+          "summary": "Publish a package",
+          "description": "Publish a new package to the registry.\n\n- Only flat (non-scoped, non-nested) package names are supported.\n- Example: `/packages/replace-console-log`\n\n**Example request:**\n- multipart/form-data with `packageFile` (gzip) and `manifest` (string).\n\n**Example response:**\n```json\n{\n  \"success\": true,\n  \"package\": {\n    \"id\": \"ee5111b4-133d-47e4-86f1-fede9d42cf3e\",\n    \"name\": \"replace-console-log\",\n    \"version\": \"1.0.0\",\n    \"scope\": null,\n    \"download_url\": \"https://cdn.codemod.com/packages/replace-console-log-1.0.0.tgz\",\n    \"published_at\": \"2025-07-16T16:15:54.532Z\"\n  }\n}\n```"
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Search packages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": { "type": "number" },
+                    "packages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "format": "uuid" },
+                          "name": { "type": "string" },
+                          "scope": { "type": ["string", "null"] },
+                          "display_name": { "type": ["string", "null"] },
+                          "description": { "type": ["string", "null"] },
+                          "author": { "type": "string" },
+                          "license": { "type": ["string", "null"] },
+                          "repository": { "type": ["string", "null"] },
+                          "homepage": { "type": ["string", "null"] },
+                          "documentation": { "type": ["string", "null"] },
+                          "bugs_url": { "type": ["string", "null"] },
+                          "keywords": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                          },
+                          "category": { "type": ["string", "null"] },
+                          "visibility": {
+                            "type": "string",
+                            "enum": ["public", "private", "org", "user"]
+                          },
+                          "access": {
+                            "type": "string",
+                            "enum": ["public", "private"]
+                          },
+                          "latest_version": { "type": ["string", "null"] },
+                          "download_count": { "type": "number" },
+                          "is_legacy": { "type": "boolean" },
+                          "star_count": { "type": "number" },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "owner": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "string", "format": "uuid" },
+                              "username": { "type": "string" },
+                              "name": { "type": "string" }
+                            },
+                            "required": ["id", "username", "name"]
+                          },
+                          "organization": {
+                            "type": ["object", "null"],
+                            "properties": {
+                              "id": { "type": "string", "format": "uuid" },
+                              "name": { "type": "string" },
+                              "slug": { "type": "string" }
+                            },
+                            "required": ["id", "name", "slug"]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "scope",
+                          "display_name",
+                          "description",
+                          "author",
+                          "license",
+                          "repository",
+                          "homepage",
+                          "documentation",
+                          "bugs_url",
+                          "keywords",
+                          "category",
+                          "visibility",
+                          "access",
+                          "latest_version",
+                          "download_count",
+                          "is_legacy",
+                          "star_count",
+                          "created_at",
+                          "updated_at",
+                          "owner",
+                          "organization"
+                        ]
+                      }
+                    }
+                  },
+                  "required": ["total", "packages"]
+                },
+                "example": {
+                  "total": 2,
+                  "packages": [
+                    {
+                      "id": "ee5111b4-133d-47e4-86f1-fede9d42cf3e",
+                      "name": "replace-console-log",
+                      "author": "Mohamad Mohebifar",
+                      "latest_version": "1.0.0"
+                    },
+                    {
+                      "id": "a15e3f54-6458-4457-a535-68216a08ad61",
+                      "name": "transform-console",
+                      "author": "hello@codemod.com",
+                      "latest_version": "0.1.0"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getSearch",
+        "tags": ["registry"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 100 },
+            "description": "Search query (e.g. 'typescript')."
+          },
+          {
+            "in": "query",
+            "name": "language",
+            "schema": { "type": "string", "maxLength": 50 }
+          },
+          {
+            "in": "query",
+            "name": "framework",
+            "schema": { "type": "string", "maxLength": 50 }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string",
+              "enum": ["migration", "analysis", "formatting", "optimization"]
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": { "type": "number", "exclusiveMinimum": 0, "default": 1 },
+            "description": "Page number (pagination)."
+          },
+          { "in": "query", "name": "scope", "schema": { "type": "string" } },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 12
+            },
+            "description": "Results per page (max 50)."
+          },
+          {
+            "in": "query",
+            "name": "includeLegacy",
+            "schema": { "type": "boolean", "default": true }
+          }
+        ],
+        "summary": "Search packages",
+        "description": "Search for codemod packages.\n\n- Use the 'q' parameter to search by name or keyword.\n- Supports pagination with 'page' and 'limit'.\n- Only flat package names are returned.\n\n**Example request:**\n```sh\ncurl \"https://app.codemod.com/api/v1/registry/search?q=typescript&page=1&limit=10\"\n```\n\n**Example response:**\n```json\n{\n  \"total\": 2,\n  \"packages\": [\n    { \"id\": \"ee5111b4-133d-47e4-86f1-fede9d42cf3e\", \"name\": \"replace-console-log\", \"author\": \"Mohamad Mohebifar\", \"latest_version\": \"1.0.0\" },\n    { \"id\": \"a15e3f54-6458-4457-a535-68216a08ad61\", \"name\": \"transform-console\", \"author\": \"hello@codemod.com\", \"latest_version\": \"0.1.0\" }\n  ]\n}\n```"
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}

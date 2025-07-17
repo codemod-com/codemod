@@ -1,0 +1,76 @@
+# Codemod Registry API: Usage & Tips
+
+This page covers how to use the Codemod Registry API to search, fetch, and manage codemod packages. The API is auto-generated from our [OpenAPI spec](https://app.codemod.com/api/v1/registry/openapi).
+
+## Codemod Naming Rules
+- Codemod names can be flat (e.g., `replace-console-log`) or scoped (e.g., `@org_name/codemodname`).
+- Only one `/` is allowed, and only to separate the scope from the codemod name.
+- Codemod names cannot contain `/` elsewhere (no nested/grouped names like `group/name/foo`).
+- The new CLI and backend support scoped names (`@org_name/codemodname`), but not further nesting.
+
+## Backend vs Public API: How Package Details Are Fetched
+
+- **Backend:** Fetches package (codemod) details directly from its own database. It supports flat and scoped names (`@org_name/codemodname`), but not further nested names.
+- **Public API:** Only supports fetching details for flat (non-scoped, non-nested) package names via `/packages/{name}`. Scoped packages (with `@org_name/`) and any names with `/` cannot be fetched via the public API, even if you URL-encode or use raw characters.
+- **Why:** This is a current limitation of the public API. The backend and web UI may show more packages than are accessible via the API.
+
+## Fetching Packages
+- Only flat (non-scoped, non-nested) package names are supported by `/packages/{name}`.
+- Scoped packages (with `@org_name/` in the name, e.g. `@nodejs/correct-ts-specifiers`) are visible in the [public registry](https://app.codemod.com/registry/@nodejs/correct-ts-specifiers) but cannot be fetched via the API, even if you URL-encode or use raw characters.
+- Use the [public registry](https://app.codemod.com/registry) to find valid package names.
+
+**Examples:**
+- Works: `/packages/replace-console-log`, `/packages/transform-console`, `/packages/am_import-assertions-to-attributes`
+- Does NOT work: `/packages/@nodejs/correct-ts-specifiers`, `/packages/%40nodejs%2Fcorrect-ts-specifiers`, `/packages/@codemod/ts-upgrade`, `/packages/group/name/foo`
+
+## Authentication
+- Public GET endpoints (search, fetch package info) do not require authentication.
+- POST/PUT/DELETE endpoints (publishing, modifying) require an API key:
+  - `Authorization: Bearer YOUR_API_KEY`
+
+## Search & Pagination
+- Search for packages:
+  - `GET /api/v1/registry/search?q=react-router`
+- Pagination:
+  - `GET /api/v1/registry/search?q=react-router&page=2&limit=20`
+
+## Example Requests
+
+Fetch a flat package:
+```sh
+curl "https://app.codemod.com/api/v1/registry/packages/replace-console-log"
+```
+
+Search for packages:
+```sh
+curl "https://app.codemod.com/api/v1/registry/search?q=typescript&page=1&limit=10"
+```
+
+## Troubleshooting
+- Scoped or nested packages (with `@` or `/`) cannot be fetched via the API.
+  - Example (does NOT work):
+    ```sh
+    curl "https://app.codemod.com/api/v1/registry/packages/@nodejs/correct-ts-specifiers"
+    # { "error": "Not Found", "message": "Package not found" }
+    ```
+  - Example (does NOT work, even with encoding):
+    ```sh
+    curl "https://app.codemod.com/api/v1/registry/packages/%40nodejs%2Fcorrect-ts-specifiers"
+    # { "error": "Not Found", "message": "Package not found" }
+    ```
+- For non-existent packages, the API returns:
+  ```json
+  { "error": "Not Found", "message": "Package not found" }
+  ```
+
+## Tips
+- Use the [public registry](https://app.codemod.com/registry) to find valid, fetchable package names.
+- For publishing or modifying packages, see authentication above.
+- If you need to fetch a scoped or nested package, contact support or check for future API updates.
+- The backend and web UI may show more packages than are accessible via the public API.
+- The CLI supports scoped names (`@org_name/codemodname`), but not names with additional slashes.
+
+## More Resources
+- [Codemod Registry](https://app.codemod.com/registry)
+- [replace-console-log example](https://app.codemod.com/registry/replace-console-log)
+- [am_import-assertions-to-attributes example](https://app.codemod.com/registry/am_import-assertions-to-attributes) 
