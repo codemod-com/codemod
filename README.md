@@ -18,8 +18,7 @@
 
 # Codemod
 
-[![Docs](https://img.shields.io/badge/docs-available-brightgreen)](https://docs.codemod.com)
-[![Community](https://img.shields.io/badge/slack-join-blue)](https://codemod.com/community)
+[![Community](https://img.shields.io/badge/slack-join-e9a820)](https://codemod.com/community)
 [![License](https://img.shields.io/github/license/codemod-com/codemod)](LICENSE)
 
 Codemod is the AI-powered, community-led platform for automating code migrations, framework upgrades, and large-scale changes.
