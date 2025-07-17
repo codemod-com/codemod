@@ -13,10 +13,7 @@ pub fn dirty_check(allow_dirty: bool) -> Result<()> {
             .output()
             .expect("Failed to run git");
 
-        if !output.stdout.is_empty()
-            && !String::from_utf8_lossy(&output.stdout)
-                .contains("nothing to commit, working tree clean")
-        {
+        if !output.stdout.is_empty() {
             let answer =
                 Confirm::new("⚠️  You have uncommitted changes. Do you want to continue anyway?")
                     .with_default(false)
