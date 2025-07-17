@@ -66,7 +66,9 @@ impl TelemetrySender for PostHogSender {
         );
 
         for (key, value) in event.properties {
-            posthog_event.insert_prop(key, value).unwrap();
+            if let Err(e) = posthog_event.insert_prop(key, value) {
+                eprintln!("Failed to insert property into PostHog event: {e}");
+            }
         }
 
         if let Err(e) = self.client.capture(posthog_event).await {
