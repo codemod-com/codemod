@@ -130,7 +130,15 @@ npx codemod@next workflow cancel -i <ID>
 
 jssg is a toolkit for running JavaScript/TypeScript codemods using the high-performance ast-grep engine. It enables fast, large-scale code transformations with a familiar API and robust language support.
 
-*`jssg run`*
+`codemod@next jssg` lets you run ast-grep codemods directly from the CLI, without needing to define a workflow. It's built for speed and simplicity, making ast-grep codemods a first-class experience.
+
+<Tip>
+**When should I use jssg?**
+  - When you want to quickly run or test an ast-grep codemod on your codebase.
+  - For for more complex transformations that require granular AST access and manipulation than a YAML rule can provide. Read more about [when to define workflows](#when-should-i-define-a-workflow-instead).
+</Tip>
+
+**`jssg run`**
 
 Run a jssg codemod.
 
@@ -215,99 +223,117 @@ npx codemod@next jssg test <codemod_file> [options]
   Enable watch mode to automatically re-run tests when files change.
 </ResponseField>
 
-<Accordion title="Quick Start Example">
-<Steps>
-  <Step title="Write your codemod">
-    Create a JS/TS file that exports your codemod logic.
-  </Step>
-  <Step title="Run your codemod">
-    ```bash
-    npx codemod@next jssg run my-codemod.js ./src --language javascript
-    ```
-  </Step>
-  <Step title="Test your codemod">
-    Organize your tests as follows:
-    ```
-    tests/
-    ├── simple-transform/
-    │   ├── input.js
-    │   └── expected.js
-    └── multi-file-case/
-        ├── input/
-        │   ├── file1.js
-        │   └── file2.js
-        └── expected/
-            ├── file1.js
-            └── file2.js
-    ```
-    Then run:
-    ```bash
-    npx codemod@next jssg test my-codemod.js --language javascript
-    ```
-  </Step>
-</Steps>
-</Accordion>
 
-<Accordion title="Testing Framework">
-The jssg testing framework provides robust support for before/after fixture testing.
+<AccordionGroup>
+  <Accordion title="When should I define a workflow instead?">
+    - When you need to chain multiple codemods or scripts.
+    - When you want manual review, approval steps, or CI/CD integration.
+    - When you want to use engines other than ast-grep (e.g., jscodeshift, YAML, or custom scripts).
+  </Accordion>
 
-**Test Discovery & Filtering**
-<ResponseField name="--test-directory" type="string">
-  The directory containing your tests (default: `"tests"`).
-</ResponseField>
-<ResponseField name="--filter" type="string">
-  A pattern to run only tests whose names match the filter.
-</ResponseField>
+  <Accordion title="Why ast-grep?">
+    ast-grep is extremely fast and robust for syntax-aware code transformations. We made it first-class in the CLI for the most common use case, but you can still use any engine via workflows.
 
-**Output & Reporting**
-<ResponseField name="--reporter" type="string">
-  The output format for test results. Can be `console`, `json`, or `terse`.
-</ResponseField>
-<ResponseField name="--verbose" type="boolean">
-  Show detailed output, including diffs for failed tests.
-</ResponseField>
-<ResponseField name="--context-lines" type="number">
-  The number of context lines to show in diffs (default: 3).
-</ResponseField>
-<ResponseField name="--ignore-whitespace" type="boolean">
-  Ignore whitespace differences when comparing test outputs.
-</ResponseField>
+    jssg replicates the ast-grep NAPI, but with a few key differences:
+    - It's built into the CLI, so you can run it directly without needing to install it separately.
+    - It's built for speed and simplicity, making ast-grep codemods a first-class experience.
+    - It's built for speed and simplicity, making ast-grep codemods a first-class experience.
+  </Accordion>
 
-**Execution Control**
-<ResponseField name="--timeout" type="number">
-  Test timeout in seconds (default: 30).
-</ResponseField>
-<ResponseField name="--max-threads" type="number">
-  Maximum number of concurrent threads to use for running tests.
-</ResponseField>
-<ResponseField name="--sequential" type="boolean">
-  Run tests sequentially instead of in parallel.
-</ResponseField>
-<ResponseField name="--fail-fast" type="boolean">
-  Stop the test run on the first failure.
-</ResponseField>
+  <Accordion title="Quick Start Example">
+  <Steps>
+    <Step title="Write your codemod">
+      Create a JS/TS file that exports your codemod logic.
+    </Step>
+    <Step title="Run your codemod">
+      ```bash
+      npx codemod@next jssg run my-codemod.js ./src --language javascript
+      ```
+    </Step>
+    <Step title="Test your codemod">
+      Organize your tests as follows:
+      ```
+      tests/
+      ├── simple-transform/
+      │   ├── input.js
+      │   └── expected.js
+      └── multi-file-case/
+          ├── input/
+          │   ├── file1.js
+          │   └── file2.js
+          └── expected/
+              ├── file1.js
+              └── file2.js
+      ```
+      Then run:
+      ```bash
+      npx codemod@next jssg test my-codemod.js --language javascript
+      ```
+    </Step>
+  </Steps>
+  </Accordion>
 
-**Snapshot & Error Management**
-<ResponseField name="--update-snapshots, -u" type="boolean">
-  Create or update the `expected` files with the output of the codemod. (`-u` is a shorthand for `--update-snapshots`)
-</ResponseField>
-<ResponseField name="--expect-errors" type="string">
-  A comma-separated list of test patterns that are expected to fail.
-</ResponseField>
+  <Accordion title="Testing Framework">
+  The jssg testing framework provides robust support for before/after fixture testing.
 
-**Development**
-<ResponseField name="--watch" type="boolean">
-  Enable watch mode to automatically re-run tests when files change.
-</ResponseField>
-</Accordion>
+  **Test Discovery & Filtering**
+  <ResponseField name="--test-directory" type="string">
+    The directory containing your tests (default: `"tests"`).
+  </ResponseField>
+  <ResponseField name="--filter" type="string">
+    A pattern to run only tests whose names match the filter.
+  </ResponseField>
 
-<Accordion title="Advanced Usage & Best Practices">
-- Use <code>--dry-run</code> to preview changes.
-- Use <code>--max-threads</code> to control concurrency.
-- For large codebases, filter files with <code>--extensions</code> and <code>--include-hidden</code>.
-- Use <code>--update-snapshots</code> to automatically update your expected outputs when your codemod changes.
-- See the <b>Testing Framework Details</b> accordion for more.
-</Accordion>
+  **Output & Reporting**
+  <ResponseField name="--reporter" type="string">
+    The output format for test results. Can be `console`, `json`, or `terse`.
+  </ResponseField>
+  <ResponseField name="--verbose" type="boolean">
+    Show detailed output, including diffs for failed tests.
+  </ResponseField>
+  <ResponseField name="--context-lines" type="number">
+    The number of context lines to show in diffs (default: 3).
+  </ResponseField>
+  <ResponseField name="--ignore-whitespace" type="boolean">
+    Ignore whitespace differences when comparing test outputs.
+  </ResponseField>
+
+  **Execution Control**
+  <ResponseField name="--timeout" type="number">
+    Test timeout in seconds (default: 30).
+  </ResponseField>
+  <ResponseField name="--max-threads" type="number">
+    Maximum number of concurrent threads to use for running tests.
+  </ResponseField>
+  <ResponseField name="--sequential" type="boolean">
+    Run tests sequentially instead of in parallel.
+  </ResponseField>
+  <ResponseField name="--fail-fast" type="boolean">
+    Stop the test run on the first failure.
+  </ResponseField>
+
+  **Snapshot & Error Management**
+  <ResponseField name="--update-snapshots, -u" type="boolean">
+    Create or update the `expected` files with the output of the codemod. (`-u` is a shorthand for `--update-snapshots`)
+  </ResponseField>
+  <ResponseField name="--expect-errors" type="string">
+    A comma-separated list of test patterns that are expected to fail.
+  </ResponseField>
+
+  **Development**
+  <ResponseField name="--watch" type="boolean">
+    Enable watch mode to automatically re-run tests when files change.
+  </ResponseField>
+  </Accordion>
+
+  <Accordion title="Advanced Usage & Best Practices">
+  - Use <code>--dry-run</code> to preview changes.
+  - Use <code>--max-threads</code> to control concurrency.
+  - For large codebases, filter files with <code>--extensions</code> and <code>--include-hidden</code>.
+  - Use <code>--update-snapshots</code> to automatically update your expected outputs when your codemod changes.
+  - See the <b>Testing Framework Details</b> accordion for more.
+  </Accordion>
+</AccordionGroup>
 
 ---
 
