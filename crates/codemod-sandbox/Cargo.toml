@@ -46,7 +46,6 @@ serde_yaml = { workspace = true, optional = true }
 dirs.workspace = true
 reqwest.workspace = true
 ast-grep-codemod-dynamic-lang = { version = "1.0.0-rc.6", path = "../ast-grep-codemod-dynamic-lang" }
-indicatif = "0.18.0"
 tokio-stream = "0.1.17"
 
 [dev-dependencies]

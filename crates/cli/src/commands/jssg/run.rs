@@ -1,3 +1,4 @@
+use crate::download_progress_bar::create_progress_bar;
 use anyhow::Result;
 use clap::Args;
 use codemod_sandbox::sandbox::{
@@ -123,8 +124,9 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     // Create and run the execution engine
     let engine = ExecutionEngine::new(config);
+    let progress_callback = Some(create_progress_bar());
     let stats = engine
-        .execute_on_directory(js_file_path, target_directory)
+        .execute_on_directory(js_file_path, target_directory, progress_callback)
         .await?;
 
     println!("Modified files: {:?}", stats.files_modified);

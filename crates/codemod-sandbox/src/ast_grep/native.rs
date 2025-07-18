@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
+use std::sync::Arc;
 
 use crate::sandbox::engine::language_data::get_extensions_for_language;
 use crate::tree_sitter::{load_tree_sitter, SupportedLanguage};
@@ -64,6 +65,7 @@ pub async fn execute_ast_grep_on_globs(
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
+    progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         include_globs,
@@ -72,6 +74,7 @@ pub async fn execute_ast_grep_on_globs(
         config_file,
         working_dir,
         false,
+        progress_callback,
     )
     .await
 }
@@ -83,6 +86,7 @@ pub async fn execute_ast_grep_on_globs_with_fixes(
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
+    progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         include_globs,
@@ -91,6 +95,7 @@ pub async fn execute_ast_grep_on_globs_with_fixes(
         config_file,
         working_dir,
         true,
+        progress_callback,
     )
     .await
 }
@@ -107,6 +112,7 @@ async fn execute_ast_grep_on_globs_with_options(
     config_file: &str,
     working_dir: Option<&Path>,
     apply_fixes: bool,
+    progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -145,9 +151,11 @@ async fn execute_ast_grep_on_globs_with_options(
             languages.push(SupportedLanguage::from_str(&rule.language).unwrap());
         }
 
-        load_tree_sitter(&languages).await.map_err(|e| {
-            AstGrepError::Config(format!("Failed to load tree-sitter language: {e:?}"))
-        })?;
+        load_tree_sitter(&languages, progress_callback)
+            .await
+            .map_err(|e| {
+                AstGrepError::Config(format!("Failed to load tree-sitter language: {e:?}"))
+            })?;
 
         from_yaml_string::<DynamicLang>(&config_content, &Default::default())
             .map_err(|e| AstGrepError::Config(format!("Failed to parse YAML rules: {e:?}")))?
@@ -522,8 +530,17 @@ pub async fn execute_ast_grep_on_paths(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
+    progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs(Some(paths), None, None, config_file, working_dir).await
+    execute_ast_grep_on_globs(
+        Some(paths),
+        None,
+        None,
+        config_file,
+        working_dir,
+        progress_callback,
+    )
+    .await
 }
 
 /// Backward compatibility function - converts paths to include globs with fixes
@@ -531,8 +548,17 @@ pub async fn execute_ast_grep_on_paths_with_fixes(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
+    progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs_with_fixes(Some(paths), None, None, config_file, working_dir).await
+    execute_ast_grep_on_globs_with_fixes(
+        Some(paths),
+        None,
+        None,
+        config_file,
+        working_dir,
+        progress_callback,
+    )
+    .await
 }
 
 #[cfg(test)]
@@ -623,6 +649,7 @@ message: "Found var declaration"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            None,
         )
         .await
         .unwrap();
@@ -689,6 +716,7 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            None,
         )
         .await
         .unwrap();
@@ -735,6 +763,7 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            None,
         )
         .await
         .unwrap();
@@ -784,6 +813,7 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            None,
         )
         .await
         .unwrap();
@@ -819,6 +849,7 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            None,
         )
         .await
         .unwrap();
@@ -853,6 +884,7 @@ rule:
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            None,
         )
         .await;
 
@@ -895,6 +927,7 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            None,
         )
         .await
         .unwrap();
@@ -922,6 +955,7 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            None,
         )
         .await
         .unwrap();
@@ -988,6 +1022,7 @@ message: "Found var declaration"
             None,
             "rules.yaml",
             Some(temp_path),
+            None,
         )
         .await
         .unwrap();
@@ -1049,6 +1084,7 @@ message: "Found console.log statement in TSX"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            None,
         )
         .await
         .unwrap();
@@ -1131,6 +1167,7 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            None,
         )
         .await
         .unwrap();

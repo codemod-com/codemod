@@ -1,20 +1,26 @@
+use crate::auth_provider::CliAuthProvider;
+use crate::auth_provider::CliAuthProvider;
+use crate::auth_provider::CliAuthProvider;
+use crate::dirty_git_check;
+use crate::dirty_git_check;
+use crate::download_progress_bar::create_progress_bar;
+use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
+use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
 use anyhow::Result;
+use butterflow_core::engine::{Engine, ProgressCallback};
+use butterflow_core::engine::{Engine, GLOBAL_STATS};
+use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
+use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
 use butterflow_core::utils::get_cache_dir;
 use clap::Args;
+use codemod_sandbox::sandbox::engine::ExecutionStats;
+use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 use log::info;
 use rand::Rng;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::process::Command as ProcessCommand;
 use tokio::sync::Mutex;
-
-use crate::auth_provider::CliAuthProvider;
-use crate::dirty_git_check;
-use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
-use butterflow_core::engine::{Engine, GLOBAL_STATS};
-use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
-use codemod_sandbox::sandbox::engine::ExecutionStats;
-use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -100,6 +106,7 @@ pub async fn handler(
         resolved_package.package_dir.display()
     );
 
+    let progress_callback = Some(create_progress_bar());
     // Execute the codemod
     let stats = execute_codemod(
         engine,
@@ -107,6 +114,7 @@ pub async fn handler(
         &args.path,
         &args.args,
         args.dry_run,
+        progress_callback,
     )
     .await;
 
@@ -194,6 +202,7 @@ async fn execute_codemod(
     target_path: &Path,
     additional_args: &[String],
     dry_run: bool,
+    progress_callback: Option<ProgressCallback>,
 ) -> Result<ExecutionStats> {
     let workflow_path = package_dir.join("workflow.yaml");
 
@@ -230,7 +239,7 @@ async fn execute_codemod(
     };
 
     // Run workflow using the extracted workflow runner
-    run_workflow(engine, config).await?;
+    run_workflow(engine, config, progress_callback).await?;
     let stats = GLOBAL_STATS
         .get_or_init(|| Mutex::new(ExecutionStats::default()))
         .lock()

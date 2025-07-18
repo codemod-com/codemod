@@ -15,6 +15,8 @@ use std::path::Path;
 use std::sync::Arc;
 use tokio::io::AsyncWriteExt;
 
+pub type ProgressCallback = Arc<Box<dyn Fn(u64, u64) + Send + Sync>>;
+
 /// Statistics about the execution results
 #[derive(Debug, Clone, Default)]
 pub struct ExecutionStats {
@@ -166,6 +168,7 @@ where
         &self,
         script_path: &Path,
         target_dir: &Path,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<ExecutionStats, ExecutionError> {
         // Check if target directory exists
         if !self.config.filesystem.exists(target_dir).await {
@@ -185,12 +188,23 @@ where
                 .map(|n| n.get())
                 .unwrap_or(4)
         });
-        let language = load_tree_sitter(&[self
-            .config
-            .language
-            .unwrap_or(SupportedLanguage::Typescript)])
+        let languages = load_tree_sitter(
+            &[self
+                .config
+                .language
+                .unwrap_or(SupportedLanguage::Typescript)],
+            progress_callback,
+        )
         .await
-        .unwrap()[0];
+        .map_err(|e| ExecutionError::Configuration {
+            message: format!("Failed to load tree-sitter language: {e}"),
+        })?;
+
+        let language = languages
+            .first()
+            .ok_or_else(|| ExecutionError::Configuration {
+                message: "No tree-sitter languages were loaded".to_string(),
+            })?;
 
         let config = Arc::clone(&self.config);
         let modified_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));

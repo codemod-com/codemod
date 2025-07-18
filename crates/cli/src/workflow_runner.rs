@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use butterflow_core::engine::Engine;
+use butterflow_core::engine::{Engine, ProgressCallback};
 use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
 use log::{error, info};
@@ -16,7 +16,11 @@ pub struct WorkflowRunConfig {
 }
 
 /// Run a workflow with the given configuration
-pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<String> {
+pub async fn run_workflow(
+    engine: &Engine,
+    config: WorkflowRunConfig,
+    progress_callback: Option<ProgressCallback>,
+) -> Result<String> {
     // Parse workflow file
     let workflow = utils::parse_workflow_file(&config.workflow_file_path).context(format!(
         "Failed to parse workflow file: {}",
@@ -25,7 +29,12 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
 
     // Run workflow
     let workflow_run_id = engine
-        .run_workflow(workflow, config.params, Some(config.bundle_path))
+        .run_workflow(
+            workflow,
+            config.params,
+            Some(config.bundle_path),
+            progress_callback,
+        )
         .await
         .context("Failed to run workflow")?;
 

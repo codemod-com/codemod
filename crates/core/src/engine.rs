@@ -47,6 +47,10 @@ use std::str::FromStr;
 use std::sync::OnceLock;
 
 pub static GLOBAL_STATS: OnceLock<Mutex<ExecutionStats>> = OnceLock::new();
+
+/// Type alias for progress callback functions
+pub type ProgressCallback = Arc<Box<dyn Fn(u64, u64) + Send + Sync>>;
+
 /// Workflow engine
 pub struct Engine {
     /// State adapter for persisting workflow state
@@ -111,6 +115,7 @@ impl Engine {
         workflow: Workflow,
         params: HashMap<String, String>,
         bundle_path: Option<PathBuf>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<Uuid> {
         utils::validate_workflow(&workflow)?;
         self.validate_codemod_dependencies(&workflow, &[]).await?;
@@ -135,7 +140,10 @@ impl Engine {
 
         let engine = self.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, progress_callback)
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -144,7 +152,12 @@ impl Engine {
     }
 
     /// Resume a workflow run
-    pub async fn resume_workflow(&self, workflow_run_id: Uuid, task_ids: Vec<Uuid>) -> Result<()> {
+    pub async fn resume_workflow(
+        &self,
+        workflow_run_id: Uuid,
+        task_ids: Vec<Uuid>,
+        progress_callback: Option<ProgressCallback>,
+    ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
             .state_adapter
@@ -180,8 +193,9 @@ impl Engine {
                     .await?;
 
                 let engine = self.clone();
+                let progress_callback_clone = progress_callback.clone();
                 tokio::spawn(async move {
-                    if let Err(e) = engine.execute_task(task_id).await {
+                    if let Err(e) = engine.execute_task(task_id, progress_callback_clone).await {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -218,7 +232,10 @@ impl Engine {
 
         let engine = self.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, progress_callback)
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -227,7 +244,11 @@ impl Engine {
     }
 
     /// Trigger all awaiting tasks in a workflow run
-    pub async fn trigger_all(&self, workflow_run_id: Uuid) -> Result<()> {
+    pub async fn trigger_all(
+        &self,
+        workflow_run_id: Uuid,
+        progress_callback: Option<ProgressCallback>,
+    ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
             .state_adapter
@@ -310,8 +331,9 @@ impl Engine {
 
             let engine = self.clone();
             let task_id = task.id;
+            let progress_callback_clone = progress_callback.clone();
             tokio::spawn(async move {
-                if let Err(e) = engine.execute_task(task_id).await {
+                if let Err(e) = engine.execute_task(task_id, progress_callback_clone).await {
                     error!("Task execution failed: {e}");
                 }
             });
@@ -347,7 +369,10 @@ impl Engine {
 
         let engine = self.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, progress_callback)
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -623,7 +648,11 @@ impl Engine {
     }
 
     /// Execute a workflow
-    async fn execute_workflow(&self, workflow_run_id: Uuid) -> Result<()> {
+    async fn execute_workflow(
+        &self,
+        workflow_run_id: Uuid,
+        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+    ) -> Result<()> {
         // Get the workflow run
         let workflow_run = self
             .state_adapter
@@ -841,8 +870,9 @@ impl Engine {
                 // Start task execution
                 let engine = self.clone();
                 let task_id = task.id;
+                let progress_callback = progress_callback.clone();
                 tokio::spawn(async move {
-                    if let Err(e) = engine.execute_task(task_id).await {
+                    if let Err(e) = engine.execute_task(task_id, progress_callback).await {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -914,7 +944,11 @@ impl Engine {
     }
 
     /// Execute a task
-    async fn execute_task(&self, task_id: Uuid) -> Result<()> {
+    async fn execute_task(
+        &self,
+        task_id: Uuid,
+        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+    ) -> Result<()> {
         let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
         let workflow_run = self
@@ -1008,6 +1042,7 @@ impl Engine {
                     &state,
                     &workflow_run.workflow,
                     &workflow_run.bundle_path,
+                    progress_callback.clone(),
                 )
                 .await;
 
@@ -1130,6 +1165,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
+        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
     ) -> Result<()> {
         self.execute_step_action_with_chain(
             runner,
@@ -1142,6 +1178,7 @@ impl Engine {
             workflow,
             bundle_path,
             &[],
+            progress_callback,
         )
         .await
     }
@@ -1160,6 +1197,7 @@ impl Engine {
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
     ) -> Result<()> {
         match action {
             StepAction::RunScript(run) => {
@@ -1201,18 +1239,27 @@ impl Engine {
                         workflow,
                         bundle_path,
                         dependency_chain,
+                        progress_callback.clone(),
                     ))
                     .await?;
                 }
                 Ok(())
             }
             StepAction::AstGrep(ast_grep) => {
-                self.execute_ast_grep_step_with_dir(ast_grep, bundle_path.as_deref())
-                    .await
+                self.execute_ast_grep_step_with_dir(
+                    ast_grep,
+                    bundle_path.as_deref(),
+                    progress_callback,
+                )
+                .await
             }
             StepAction::JSAstGrep(js_ast_grep) => {
-                self.execute_js_ast_grep_step_with_dir(js_ast_grep, bundle_path.as_deref())
-                    .await
+                self.execute_js_ast_grep_step_with_dir(
+                    js_ast_grep,
+                    bundle_path.as_deref(),
+                    progress_callback,
+                )
+                .await
             }
             StepAction::Codemod(codemod) => {
                 Box::pin(self.execute_codemod_step_with_chain(
@@ -1224,6 +1271,7 @@ impl Engine {
                     state,
                     bundle_path,
                     dependency_chain,
+                    progress_callback,
                 ))
                 .await
             }
@@ -1234,6 +1282,7 @@ impl Engine {
         &self,
         ast_grep: &UseAstGrep,
         bundle_path: Option<&std::path::Path>,
+        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
@@ -1272,6 +1321,7 @@ impl Engine {
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir_ref,
+                progress_callback,
             )
             .await
             .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {e}")))?
@@ -1282,6 +1332,7 @@ impl Engine {
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir_ref,
+                progress_callback,
             )
             .await
             .map_err(|e| Error::Other(format!("AST grep execution failed: {e}")))?
@@ -1323,6 +1374,7 @@ impl Engine {
         &self,
         js_ast_grep: &UseJSAstGrep,
         bundle_path: Option<&std::path::Path>,
+        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
@@ -1440,7 +1492,7 @@ impl Engine {
         // Create and run the execution engine
         let engine = ExecutionEngine::new(config);
         let stats = engine
-            .execute_on_directory(&js_file_path, &base_path)
+            .execute_on_directory(&js_file_path, &base_path, progress_callback)
             .await
             .map_err(|e| Error::Other(format!("JavaScript execution failed: {e}")))?;
 
@@ -1473,6 +1525,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
     ) -> Result<()> {
         info!("Executing codemod step: {}", codemod.source);
 
@@ -1547,6 +1600,7 @@ impl Engine {
             state,
             bundle_path,
             &new_chain,
+            progress_callback,
         )
         .await
     }
@@ -1563,6 +1617,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
     ) -> Result<()> {
         let workflow_path = resolved_package.package_dir.join("workflow.yaml");
 
@@ -1642,7 +1697,6 @@ impl Engine {
 
         // Create a direct runner for executing the codemod steps
         let runner: Box<dyn Runner> = Box::new(DirectRunner::new());
-
         // Execute each node in the codemod workflow
         for node in &codemod_workflow.nodes {
             for step in &node.steps {
@@ -1657,6 +1711,7 @@ impl Engine {
                     &codemod_workflow,
                     &Some(resolved_package.package_dir.clone()),
                     dependency_chain,
+                    progress_callback.clone(),
                 ))
                 .await?;
             }
@@ -2145,6 +2200,7 @@ mod tests {
                 &state,
                 &bundle_path,
                 &dependency_chain,
+                None,
             )
             .await;
 

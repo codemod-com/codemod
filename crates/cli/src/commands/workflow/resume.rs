@@ -1,3 +1,4 @@
+use crate::download_progress_bar::create_progress_bar;
 use anyhow::{Context, Result};
 use butterflow_core::engine::Engine;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
@@ -27,7 +28,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     if args.trigger_all {
         // Trigger all awaiting tasks
         engine
-            .trigger_all(args.id)
+            .trigger_all(args.id, Some(create_progress_bar()))
             .await
             .context("Failed to trigger all tasks")?;
 
@@ -35,7 +36,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     } else if !args.task.is_empty() {
         // Trigger specific tasks
         engine
-            .resume_workflow(args.id, args.task.to_vec())
+            .resume_workflow(args.id, args.task.to_vec(), Some(create_progress_bar()))
             .await
             .context("Failed to resume workflow")?;
 
