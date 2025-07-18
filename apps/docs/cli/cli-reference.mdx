@@ -16,28 +16,26 @@ import { CLIDemo } from "/snippets/cli-demo.mdx";
 
 ## Getting Started
 
-The fastest way to get started with Codemod CLI is to:
-
-1. **Initialize a new codemod project**
-
-   ```bash
-   npx codemod@next init my-codemod
-   ```
-   This scaffolds a new codemod project in the `my-codemod` directory.
-
-2. **Publish your codemod**
-
-   ```bash
-   npx codemod@next publish my-codemod
-   ```
-   This publishes your codemod to the registry (you may need to login first).
-
-3. **Run your codemod**
-
-   ```bash
-   npx codemod@next workflow run -w my-codemod/workflow.yaml
-   ```
-   This runs your codemod workflow on your codebase.
+<Steps>
+  <Step title="Initialize a new codemod project">
+    ```bash
+    npx codemod@next init my-codemod
+    ```
+    This scaffolds a new codemod project in the `my-codemod` directory.
+  </Step>
+  <Step title="Publish your codemod">
+    ```bash
+    npx codemod@next publish my-codemod
+    ```
+    This publishes your codemod to the registry (you may need to [login](#codemod%40next-login) first).
+  </Step>
+  <Step title="Run your codemod">
+    ```bash
+    npx codemod@next workflow run -w my-codemod/workflow.yaml
+    ```
+    This runs your codemod workflow on your codebase.
+  </Step>
+</Steps>
 
 For more details on building and running workflows, see the [Workflows documentation](#cli-command-reference).
 
