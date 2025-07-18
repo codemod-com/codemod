@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Result};
-use butterflow_models::workflow;
 use butterflow_core::utils;
+use butterflow_models::workflow;
 use clap::Args;
 use log::{debug, info, warn};
 use reqwest;
@@ -14,7 +14,7 @@ use tempfile::TempDir;
 use walkdir::WalkDir;
 
 use crate::auth::TokenStorage;
-use crate::commands::workflow::validate::{validate_codemod_manifest_structure};
+use crate::commands::workflow::validate::validate_codemod_manifest_structure;
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -162,7 +162,8 @@ pub async fn handler(args: &Command) -> Result<()> {
     let js_ast_grep_entries = workflow.get_js_ast_grep_entry_points();
 
     // Create package tarball with JS bundling
-    let tarball_path = create_package_tarball(&package_path, &manifest, &js_ast_grep_entries, args.dry_run)?;
+    let tarball_path =
+        create_package_tarball(&package_path, &manifest, &js_ast_grep_entries, args.dry_run)?;
 
     if args.dry_run {
         println!("✓ Package validation successful");
@@ -254,10 +255,7 @@ async fn bundle_js_files(
 
         // Configure Rspack
         let config = Config {
-            entry: Entry::from([(
-                "main".to_string(),
-                entry_path.to_string_lossy().to_string(),
-            )]),
+            entry: Entry::from([("main".to_string(), entry_path.to_string_lossy().to_string())]),
             output: OutputOptions {
                 path: output_dir.to_string_lossy().to_string(),
                 filename: output_filename.clone(),
@@ -314,11 +312,11 @@ async fn bundle_js_files(
         if output_path.exists() {
             // Read the bundled content
             let bundled_content = fs::read_to_string(&output_path)?;
-            
+
             // Store the relative path and content
             let relative_entry = format!("bundled/{}", output_filename);
             bundled_files.push((relative_entry, bundled_content));
-            
+
             info!("Successfully bundled: {} -> {}", entry, output_filename);
         } else {
             warn!("Bundle output file not found: {}", output_path.display());
@@ -362,9 +360,8 @@ fn create_package_tarball(
     // Bundle JavaScript files if any exist
     let bundled_files = if !js_entries.is_empty() {
         info!("Bundling {} JavaScript entry files", js_entries.len());
-        tokio::runtime::Runtime::new()?.block_on(async {
-            bundle_js_files(package_path, js_entries, temp_dir.path()).await
-        })?
+        tokio::runtime::Runtime::new()?
+            .block_on(async { bundle_js_files(package_path, js_entries, temp_dir.path()).await })?
     } else {
         Vec::new()
     };
@@ -385,13 +382,16 @@ fn create_package_tarball(
         if entry.file_type().is_file() {
             let relative_path = entry.path().strip_prefix(package_path)?;
             let relative_path_str = relative_path.to_string_lossy();
-            
+
             // Skip original JS entry files since we'll include bundled versions
-            if js_entries.iter().any(|js_entry| relative_path_str == *js_entry) {
+            if js_entries
+                .iter()
+                .any(|js_entry| relative_path_str == *js_entry)
+            {
                 debug!("Skipping original JS entry file: {}", relative_path_str);
                 continue;
             }
-            
+
             debug!("Adding file to bundle: {}", relative_path.display());
             tar.append_path_with_name(entry.path(), relative_path)?;
             file_count += 1;

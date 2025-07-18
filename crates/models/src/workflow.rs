@@ -1,10 +1,10 @@
+use anyhow::{anyhow, Result};
 use chrono::{DateTime, Utc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use uuid::Uuid;
-use anyhow::{anyhow, Result};
 
 use crate::node::Node;
 use crate::state::StateSchema;
@@ -106,7 +106,8 @@ pub enum WorkflowStatus {
 impl Workflow {
     /// Validate that all referenced templates exist in the workflow
     pub fn validate_templates(&self) -> Result<()> {
-        let template_ids: std::collections::HashSet<_> = self.templates.iter().map(|t| t.id.clone()).collect();
+        let template_ids: std::collections::HashSet<_> =
+            self.templates.iter().map(|t| t.id.clone()).collect();
         for node in &self.nodes {
             for step in &node.steps {
                 if let crate::step::StepAction::UseTemplate(template_use) = &step.action {
@@ -125,15 +126,17 @@ impl Workflow {
 
     /// Get all js-ast-grep entry points in the workflow
     pub fn get_js_ast_grep_entry_points(&self) -> Vec<String> {
-        self.nodes.iter().flat_map(|node| {
-            node.steps.iter().filter_map(|step| {
-                if let crate::step::StepAction::JSAstGrep(grep) = &step.action {
-                    Some(grep.js_file.clone())
-                } else {
-                    None
-                }
+        self.nodes
+            .iter()
+            .flat_map(|node| {
+                node.steps.iter().filter_map(|step| {
+                    if let crate::step::StepAction::JSAstGrep(grep) = &step.action {
+                        Some(grep.js_file.clone())
+                    } else {
+                        None
+                    }
+                })
             })
-        })
-        .collect::<Vec<_>>()
+            .collect::<Vec<_>>()
     }
 }

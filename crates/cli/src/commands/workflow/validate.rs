@@ -15,7 +15,10 @@ pub struct Command {
 /// Validate a workflow file
 pub fn handler(args: &Command) -> Result<()> {
     validate_workflow(&args.workflow)?;
-    validate_codemod_manifest_structure(&args.workflow, &utils::parse_workflow_file(&args.workflow)?)?;
+    validate_codemod_manifest_structure(
+        &args.workflow,
+        &utils::parse_workflow_file(&args.workflow)?,
+    )?;
 }
 
 fn calculate_package_size(package_path: &Path) -> Result<u64> {
@@ -33,14 +36,19 @@ fn calculate_package_size(package_path: &Path) -> Result<u64> {
     Ok(total_size)
 }
 
-pub fn validate_codemod_manifest_structure(package_path: &Path, manifest: &CodemodManifest) -> Result<()> {
+pub fn validate_codemod_manifest_structure(
+    package_path: &Path,
+    manifest: &CodemodManifest,
+) -> Result<()> {
     // Check required files
     let (workflow_path, _) = utils::resolve_workflow_source(&manifest.workflow)
         .context("Failed to resolve workflow source")?;
 
     // Validate workflow file
-    utils::parse_workflow_file(&workflow_path)
-        .context(format!("Failed to parse workflow file: {}", workflow_path.display()))?;
+    utils::parse_workflow_file(&workflow_path).context(format!(
+        "Failed to parse workflow file: {}",
+        workflow_path.display()
+    ))?;
 
     // Check optional files
     if let Some(readme) = &manifest.readme {
@@ -92,7 +100,8 @@ fn validate_workflow(workflow_path: &Path) -> Result<()> {
     // Get the base directory for resolving relative paths
     let base_dir = workflow_path.parent().unwrap_or(Path::new("."));
 
-    workflow.validate_js_ast_grep_files(base_dir)
+    workflow
+        .validate_js_ast_grep_files(base_dir)
         .context("js-ast-grep file validation failed")?;
 
     info!("✓ Workflow definition is valid");
