@@ -651,7 +651,7 @@ impl Engine {
     async fn execute_workflow(
         &self,
         workflow_run_id: Uuid,
-        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         // Get the workflow run
         let workflow_run = self
@@ -947,7 +947,7 @@ impl Engine {
     async fn execute_task(
         &self,
         task_id: Uuid,
-        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
@@ -1165,7 +1165,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
-        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         self.execute_step_action_with_chain(
             runner,
@@ -1197,7 +1197,7 @@ impl Engine {
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
-        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         match action {
             StepAction::RunScript(run) => {
@@ -1282,7 +1282,7 @@ impl Engine {
         &self,
         ast_grep: &UseAstGrep,
         bundle_path: Option<&std::path::Path>,
-        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
@@ -1374,7 +1374,7 @@ impl Engine {
         &self,
         js_ast_grep: &UseJSAstGrep,
         bundle_path: Option<&std::path::Path>,
-        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
@@ -1525,7 +1525,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
-        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         info!("Executing codemod step: {}", codemod.source);
 
@@ -1617,7 +1617,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
-        progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         let workflow_path = resolved_package.package_dir.join("workflow.yaml");
 

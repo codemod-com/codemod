@@ -1,9 +1,8 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
-use std::sync::Arc;
 
-use crate::sandbox::engine::language_data::get_extensions_for_language;
+use crate::sandbox::engine::{language_data::get_extensions_for_language, ProgressCallback};
 use crate::tree_sitter::{load_tree_sitter, SupportedLanguage};
 use ast_grep_codemod_dynamic_lang::DynamicLang;
 use ast_grep_config::{from_yaml_string, CombinedScan, RuleConfig};
@@ -65,7 +64,7 @@ pub async fn execute_ast_grep_on_globs(
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
-    progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+    progress_callback: Option<ProgressCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         include_globs,
@@ -86,7 +85,7 @@ pub async fn execute_ast_grep_on_globs_with_fixes(
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
-    progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+    progress_callback: Option<ProgressCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         include_globs,
@@ -112,7 +111,7 @@ async fn execute_ast_grep_on_globs_with_options(
     config_file: &str,
     working_dir: Option<&Path>,
     apply_fixes: bool,
-    progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+    progress_callback: Option<ProgressCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -530,7 +529,7 @@ pub async fn execute_ast_grep_on_paths(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
-    progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+    progress_callback: Option<ProgressCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs(
         Some(paths),
@@ -548,7 +547,7 @@ pub async fn execute_ast_grep_on_paths_with_fixes(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
-    progress_callback: Option<Arc<Box<dyn Fn(u64, u64) + Send + Sync>>>,
+    progress_callback: Option<ProgressCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_fixes(
         Some(paths),
