@@ -1,4 +1,5 @@
 pub mod engine;
+pub mod error;
 pub mod registry;
 pub mod utils;
 

@@ -1,8 +1,7 @@
-use ast_grep_language::SupportLang;
-
 use crate::sandbox::filesystem::{FileSystem, WalkOptions};
 use crate::sandbox::loaders::ModuleLoader;
 use crate::sandbox::resolvers::ModuleResolver;
+use crate::tree_sitter::SupportedLanguage;
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -26,7 +25,7 @@ where
     /// Options for directory walking
     pub walk_options: WalkOptions,
     /// Language to use for execution
-    pub language: Option<SupportLang>,
+    pub language: Option<SupportedLanguage>,
     /// Extensions to use for execution
     pub extensions: Option<Vec<String>>,
     /// Include glob patterns for files to process
@@ -35,6 +34,8 @@ where
     pub exclude_globs: Option<Vec<String>>,
     /// Whether to dry run the execution
     pub dry_run: bool,
+    /// Progress callback for tree-sitter downloads
+    pub progress_callback: Option<Arc<dyn Fn(u64, u64) + Send + Sync>>,
 }
 
 impl<F, R, L> ExecutionConfig<F, R, L>
@@ -61,6 +62,7 @@ where
             include_globs: None,
             exclude_globs: None,
             dry_run: false,
+            progress_callback: None,
         }
     }
 
@@ -89,7 +91,7 @@ where
         self
     }
 
-    pub fn with_language(mut self, language: SupportLang) -> Self {
+    pub fn with_language(mut self, language: SupportedLanguage) -> Self {
         self.language = Some(language);
         self
     }
@@ -111,6 +113,14 @@ where
 
     pub fn with_dry_run(mut self, dry_run: bool) -> Self {
         self.dry_run = dry_run;
+        self
+    }
+
+    pub fn with_progress_callback(
+        mut self,
+        progress_callback: Box<dyn Fn(u64, u64) + Send + Sync>,
+    ) -> Self {
+        self.progress_callback = Some(Arc::from(progress_callback));
         self
     }
 }

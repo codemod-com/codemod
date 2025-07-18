@@ -36,7 +36,12 @@ use codemod_sandbox::sandbox::{
     loaders::FileSystemLoader,
     resolvers::FileSystemResolver,
 };
+use codemod_sandbox::tree_sitter::SupportedLanguage;
 use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
+use std::str::FromStr;
+
+/// Type alias for progress callback functions
+pub type ProgressCallback = Arc<Box<dyn Fn(u64, u64) + Send + Sync>>;
 
 /// Workflow engine
 pub struct Engine {
@@ -102,6 +107,7 @@ impl Engine {
         workflow: Workflow,
         params: HashMap<String, String>,
         bundle_path: Option<PathBuf>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<Uuid> {
         utils::validate_workflow(&workflow)?;
         self.validate_codemod_dependencies(&workflow, &[]).await?;
@@ -126,7 +132,10 @@ impl Engine {
 
         let engine = self.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, progress_callback)
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -135,7 +144,12 @@ impl Engine {
     }
 
     /// Resume a workflow run
-    pub async fn resume_workflow(&self, workflow_run_id: Uuid, task_ids: Vec<Uuid>) -> Result<()> {
+    pub async fn resume_workflow(
+        &self,
+        workflow_run_id: Uuid,
+        task_ids: Vec<Uuid>,
+        progress_callback: Option<ProgressCallback>,
+    ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
             .state_adapter
@@ -171,8 +185,9 @@ impl Engine {
                     .await?;
 
                 let engine = self.clone();
+                let progress_callback_clone = progress_callback.clone();
                 tokio::spawn(async move {
-                    if let Err(e) = engine.execute_task(task_id).await {
+                    if let Err(e) = engine.execute_task(task_id, progress_callback_clone).await {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -209,7 +224,10 @@ impl Engine {
 
         let engine = self.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, progress_callback)
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -218,7 +236,11 @@ impl Engine {
     }
 
     /// Trigger all awaiting tasks in a workflow run
-    pub async fn trigger_all(&self, workflow_run_id: Uuid) -> Result<()> {
+    pub async fn trigger_all(
+        &self,
+        workflow_run_id: Uuid,
+        progress_callback: Option<ProgressCallback>,
+    ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
             .state_adapter
@@ -301,8 +323,9 @@ impl Engine {
 
             let engine = self.clone();
             let task_id = task.id;
+            let progress_callback_clone = progress_callback.clone();
             tokio::spawn(async move {
-                if let Err(e) = engine.execute_task(task_id).await {
+                if let Err(e) = engine.execute_task(task_id, progress_callback_clone).await {
                     error!("Task execution failed: {e}");
                 }
             });
@@ -338,7 +361,10 @@ impl Engine {
 
         let engine = self.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, progress_callback)
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -614,7 +640,11 @@ impl Engine {
     }
 
     /// Execute a workflow
-    async fn execute_workflow(&self, workflow_run_id: Uuid) -> Result<()> {
+    async fn execute_workflow(
+        &self,
+        workflow_run_id: Uuid,
+        progress_callback: Option<ProgressCallback>,
+    ) -> Result<()> {
         // Get the workflow run
         let workflow_run = self
             .state_adapter
@@ -832,8 +862,9 @@ impl Engine {
                 // Start task execution
                 let engine = self.clone();
                 let task_id = task.id;
+                let progress_callback = progress_callback.clone();
                 tokio::spawn(async move {
-                    if let Err(e) = engine.execute_task(task_id).await {
+                    if let Err(e) = engine.execute_task(task_id, progress_callback).await {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -905,7 +936,11 @@ impl Engine {
     }
 
     /// Execute a task
-    async fn execute_task(&self, task_id: Uuid) -> Result<()> {
+    async fn execute_task(
+        &self,
+        task_id: Uuid,
+        progress_callback: Option<ProgressCallback>,
+    ) -> Result<()> {
         let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
         let workflow_run = self
@@ -999,6 +1034,7 @@ impl Engine {
                     &state,
                     &workflow_run.workflow,
                     &workflow_run.bundle_path,
+                    progress_callback.clone(),
                 )
                 .await;
 
@@ -1121,6 +1157,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         self.execute_step_action_with_chain(
             runner,
@@ -1133,6 +1170,7 @@ impl Engine {
             workflow,
             bundle_path,
             &[],
+            progress_callback,
         )
         .await
     }
@@ -1151,6 +1189,7 @@ impl Engine {
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         match action {
             StepAction::RunScript(run) => {
@@ -1192,18 +1231,27 @@ impl Engine {
                         workflow,
                         bundle_path,
                         dependency_chain,
+                        progress_callback.clone(),
                     ))
                     .await?;
                 }
                 Ok(())
             }
             StepAction::AstGrep(ast_grep) => {
-                self.execute_ast_grep_step_with_dir(ast_grep, bundle_path.as_deref())
-                    .await
+                self.execute_ast_grep_step_with_dir(
+                    ast_grep,
+                    bundle_path.as_deref(),
+                    progress_callback,
+                )
+                .await
             }
             StepAction::JSAstGrep(js_ast_grep) => {
-                self.execute_js_ast_grep_step_with_dir(js_ast_grep, bundle_path.as_deref())
-                    .await
+                self.execute_js_ast_grep_step_with_dir(
+                    js_ast_grep,
+                    bundle_path.as_deref(),
+                    progress_callback,
+                )
+                .await
             }
             StepAction::Codemod(codemod) => {
                 Box::pin(self.execute_codemod_step_with_chain(
@@ -1215,6 +1263,7 @@ impl Engine {
                     state,
                     bundle_path,
                     dependency_chain,
+                    progress_callback,
                 ))
                 .await
             }
@@ -1225,6 +1274,7 @@ impl Engine {
         &self,
         ast_grep: &UseAstGrep,
         bundle_path: Option<&std::path::Path>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
@@ -1263,7 +1313,9 @@ impl Engine {
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir_ref,
+                progress_callback,
             )
+            .await
             .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {e}")))?
         } else {
             execute_ast_grep_on_globs(
@@ -1272,7 +1324,9 @@ impl Engine {
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir_ref,
+                progress_callback,
             )
+            .await
             .map_err(|e| Error::Other(format!("AST grep execution failed: {e}")))?
         };
 
@@ -1312,6 +1366,7 @@ impl Engine {
         &self,
         js_ast_grep: &UseJSAstGrep,
         bundle_path: Option<&std::path::Path>,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
@@ -1385,30 +1440,27 @@ impl Engine {
         }
 
         // Set language first to get default extensions
-        let language = if let Some(lang_str) = &js_ast_grep.language {
-            let parsed_lang = lang_str
-                .parse()
-                .map_err(|e| Error::Other(format!("Invalid language '{lang_str}': {e}")))?;
-            config = config.with_language(parsed_lang);
-            parsed_lang
+        if let Some(lang_str) = &js_ast_grep.language {
+            config =
+                config.with_language(SupportedLanguage::from_str(lang_str).unwrap_or_else(|_| {
+                    warn!("Failed to parse language '{lang_str}', falling back to TypeScript.");
+                    SupportedLanguage::Typescript
+                }));
         } else {
             // Parse TypeScript as default
-            let default_lang = "typescript"
-                .parse()
-                .map_err(|e| Error::Other(format!("Failed to parse default language: {e}")))?;
-            config = config.with_language(default_lang);
-            default_lang
-        };
+            config = config.with_language(SupportedLanguage::Typescript);
+        }
 
         // Handle include/exclude patterns with proper glob support
         if let Some(include_patterns) = &js_ast_grep.include {
             config = config.with_include_globs(include_patterns.clone());
         } else {
             // When include is None, use default extensions for the language
-            let default_extensions = get_extensions_for_language(language)
-                .into_iter()
-                .map(|ext| ext.trim_start_matches('.').to_string())
-                .collect();
+            let default_extensions =
+                get_extensions_for_language(config.language.unwrap().to_string().as_str())
+                    .into_iter()
+                    .map(|ext| ext.trim_start_matches('.').to_string())
+                    .collect();
             config = config.with_extensions(default_extensions);
         }
 
@@ -1421,7 +1473,7 @@ impl Engine {
         // Create and run the execution engine
         let engine = ExecutionEngine::new(config);
         let stats = engine
-            .execute_on_directory(&js_file_path, &base_path)
+            .execute_on_directory(&js_file_path, &base_path, progress_callback)
             .await
             .map_err(|e| Error::Other(format!("JavaScript execution failed: {e}")))?;
 
@@ -1450,6 +1502,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         info!("Executing codemod step: {}", codemod.source);
 
@@ -1524,6 +1577,7 @@ impl Engine {
             state,
             bundle_path,
             &new_chain,
+            progress_callback,
         )
         .await
     }
@@ -1540,6 +1594,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<()> {
         let workflow_path = resolved_package.package_dir.join("workflow.yaml");
 
@@ -1619,7 +1674,6 @@ impl Engine {
 
         // Create a direct runner for executing the codemod steps
         let runner: Box<dyn Runner> = Box::new(DirectRunner::new());
-
         // Execute each node in the codemod workflow
         for node in &codemod_workflow.nodes {
             for step in &node.steps {
@@ -1634,6 +1688,7 @@ impl Engine {
                     &codemod_workflow,
                     &Some(resolved_package.package_dir.clone()),
                     dependency_chain,
+                    progress_callback.clone(),
                 ))
                 .await?;
             }
@@ -2122,6 +2177,7 @@ mod tests {
                 &state,
                 &bundle_path,
                 &dependency_chain,
+                None,
             )
             .await;
 

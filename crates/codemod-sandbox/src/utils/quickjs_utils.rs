@@ -7,8 +7,8 @@ pub async fn maybe_promise<'js>(
         let promise = result_obj.as_promise().unwrap().clone();
         let ctx = result_obj.ctx();
         while ctx.execute_pending_job() {}
-        let result = promise.into_future::<rquickjs_compat::Value<'js>>().await?;
-        result
+
+        promise.into_future::<rquickjs_compat::Value<'js>>().await?
     } else {
         result_obj.clone()
     };

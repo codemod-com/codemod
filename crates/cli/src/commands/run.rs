@@ -1,16 +1,15 @@
+use crate::auth_provider::CliAuthProvider;
+use crate::dirty_git_check;
+use crate::download_progress_bar::create_progress_bar;
+use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
 use anyhow::Result;
+use butterflow_core::engine::{Engine, ProgressCallback};
+use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
 use butterflow_core::utils::get_cache_dir;
 use clap::Args;
 use log::info;
 use std::path::{Path, PathBuf};
 use std::process::Command as ProcessCommand;
-
-use crate::auth_provider::CliAuthProvider;
-use crate::dirty_git_check;
-use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
-use butterflow_core::engine::Engine;
-use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
-
 #[derive(Args, Debug)]
 pub struct Command {
     /// Package name with optional version (e.g., @org/package@1.0.0)
@@ -91,6 +90,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
         resolved_package.package_dir.display()
     );
 
+    let progress_callback = Some(create_progress_bar());
     // Execute the codemod
     execute_codemod(
         engine,
@@ -98,6 +98,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
         &args.path,
         &args.args,
         args.dry_run,
+        progress_callback,
     )
     .await?;
 
@@ -139,6 +140,7 @@ async fn execute_codemod(
     target_path: &Path,
     additional_args: &[String],
     dry_run: bool,
+    progress_callback: Option<ProgressCallback>,
 ) -> Result<()> {
     let workflow_path = package_dir.join("workflow.yaml");
 
@@ -175,7 +177,7 @@ async fn execute_codemod(
     };
 
     // Run workflow using the extracted workflow runner
-    run_workflow(engine, config).await?;
+    run_workflow(engine, config, progress_callback).await?;
 
     Ok(())
 }

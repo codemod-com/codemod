@@ -1,3 +1,4 @@
+use crate::download_progress_bar::create_progress_bar;
 use anyhow::Result;
 use clap::Args;
 use codemod_sandbox::sandbox::{
@@ -6,7 +7,9 @@ use codemod_sandbox::sandbox::{
     loaders::FileSystemLoader,
     resolvers::FileSystemResolver,
 };
-use std::{path::Path, sync::Arc};
+use codemod_sandbox::tree_sitter::SupportedLanguage;
+use log::warn;
+use std::{path::Path, str::FromStr, sync::Arc};
 
 use crate::dirty_git_check;
 
@@ -89,8 +92,13 @@ pub async fn handler(args: &Command) -> Result<()> {
         }
     }
 
-    if let Some(language) = &args.language {
-        config = config.with_language(language.parse()?);
+    if let Some(language) = args.language.as_ref() {
+        config = config.with_language(SupportedLanguage::from_str(language).unwrap_or_else(|_| {
+            warn!("Failed to parse language '{language}', falling back to TypeScript.");
+            SupportedLanguage::Typescript
+        }));
+    } else {
+        config = config.with_language(SupportedLanguage::Typescript);
     }
 
     if let Some(extensions) = &args.extensions {
@@ -109,8 +117,9 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     // Create and run the execution engine
     let engine = ExecutionEngine::new(config);
+    let progress_callback = Some(create_progress_bar());
     let stats = engine
-        .execute_on_directory(js_file_path, target_directory)
+        .execute_on_directory(js_file_path, target_directory, progress_callback)
         .await?;
 
     println!("Modified files: {:?}", stats.files_modified);

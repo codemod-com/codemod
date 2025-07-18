@@ -7,7 +7,7 @@ use crate::sandbox::errors::ExecutionError;
 use crate::sandbox::filesystem::FileSystem;
 use crate::sandbox::loaders::ModuleLoader;
 use crate::sandbox::resolvers::ModuleResolver;
-use ast_grep_language::SupportLang;
+use crate::tree_sitter::{load_tree_sitter, SupportedLanguage};
 use ignore::{overrides::OverrideBuilder, WalkBuilder, WalkState};
 use llrt_modules::module_builder::ModuleBuilder;
 use rquickjs_git::{async_with, AsyncContext, AsyncRuntime};
@@ -15,6 +15,8 @@ use std::fmt;
 use std::path::Path;
 use std::sync::Arc;
 use tokio::io::AsyncWriteExt;
+
+pub type ProgressCallback = Arc<Box<dyn Fn(u64, u64) + Send + Sync>>;
 
 /// Statistics about the execution results
 #[derive(Debug, Clone, Default)]
@@ -168,6 +170,7 @@ where
         &self,
         script_path: &Path,
         target_dir: &Path,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<ExecutionStats, ExecutionError> {
         // Check if target directory exists
         if !self.config.filesystem.exists(target_dir).await {
@@ -187,8 +190,23 @@ where
                 .map(|n| n.get())
                 .unwrap_or(4)
         });
+        let languages = load_tree_sitter(
+            &[self
+                .config
+                .language
+                .unwrap_or(SupportedLanguage::Typescript)],
+            progress_callback,
+        )
+        .await
+        .map_err(|e| ExecutionError::Configuration {
+            message: format!("Failed to load tree-sitter language: {e}"),
+        })?;
 
-        let language = self.config.language.unwrap_or(SupportLang::TypeScript);
+        let language = languages
+            .first()
+            .ok_or_else(|| ExecutionError::Configuration {
+                message: "No tree-sitter languages were loaded".to_string(),
+            })?;
 
         let config = Arc::clone(&self.config);
         let modified_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
@@ -198,7 +216,7 @@ where
         let script_path = Arc::new(script_path.to_path_buf());
         let ts_extensions =
             Arc::new(self.config.extensions.as_ref().cloned().unwrap_or_else(|| {
-                get_extensions_for_language(language)
+                get_extensions_for_language(language.name())
                     .into_iter()
                     .map(|s| s.to_string())
                     .collect()
@@ -530,7 +548,7 @@ where
                     })?;
 
                 // Set the language for the codemod
-                let language_str = config.language
+                let language_str = config.language.as_ref()
                     .map(|lang| lang.to_string())
                     .unwrap_or_else(|| "typescript".to_string());
                 ctx.globals()
