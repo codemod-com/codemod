@@ -39,61 +39,20 @@ The fastest way to get started with Codemod CLI is to:
    ```
    This runs your codemod workflow on your codebase.
 
-For more details on building and running workflows, see the [Workflows documentation](/cli/workflows).
+For more details on building and running workflows, see the [Workflows documentation](#cli-command-reference).
 
 ---
 
 ## Advanced Concepts
 
-- **Workflows:** Orchestrate complex, multi-step codemod processes. [Learn more &rarr;](/cli/workflows)
-- **jssg:** Run JavaScript/TypeScript codemods using the high-performance ast-grep engine. [See jssg section](#codemodnext-jssg)
+- **Workflows:** Orchestrate complex, multi-step codemod processes. [Learn more ->](#cli-command-reference)
+- **jssg:** Run JavaScript/TypeScript codemods using the high-performance ast-grep engine. [See jssg reference ->](#codemod%40next-jssg)
 
 ---
 
-# Command Reference
+# CLI Command Reference
 
-Below is a categorized reference of all Codemod CLI commands.
-
-## Project Commands
-
-- **`init`** — Initialize a new codemod project
-- **`publish`** — Publish a workflow/codemod to a registry
-- **`search`** — Search for packages in the registry
-- **`run`** — Run a codemod from the registry
-
-## Workflow Commands
-
-- **`workflow`** — Manage and execute workflow YAMLs
-  - `workflow run` — Run a workflow
-  - `workflow resume` — Resume a paused workflow
-  - `workflow validate` — Validate a workflow file
-  - `workflow status` — Show workflow run status
-  - `workflow list` — List workflow runs
-  - `workflow cancel` — Cancel a workflow run
-
-## jssg Commands
-
-- **`jssg`** — JavaScript ast-grep execution
-  - `jssg run` — Run a jssg codemod
-  - `jssg test` — Test a jssg codemod using before/after fixtures
-
-## Auth Commands
-
-- **`login`** — Login to a registry
-- **`logout`** — Logout from a registry
-- **`whoami`** — Show current authentication status
-
-## Cache Commands
-
-- **`cache`** — Manage package cache
-  - `cache info` — Show cache information and statistics
-  - `cache list` — List cached packages
-  - `cache clear` — Clear cache for a specific package, or all packages
-  - `cache prune` — Prune old or unused cache entries
-
----
-
-# Detailed Command Reference
+Codemod CLI (new) is accessible using the `npx codemod@next` command. The following commands and options are available:
 
 ### `codemod@next workflow`
 
