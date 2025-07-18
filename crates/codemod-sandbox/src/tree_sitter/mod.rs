@@ -56,7 +56,6 @@ pub async fn load_tree_sitter(languages: &[SupportedLanguage]) -> Result<Vec<Dyn
                 std::fs::create_dir_all(parent)
                     .map_err(|e| format!("Failed to create directory: {e}"))?;
             }
-            println!("base_url: {BASE_URL}");
             let url = format!(
                 "{BASE_URL}/tree-sitter/parsers/tree-sitter-{language}/latest/{os}-{arch}.{extension}"
             );
