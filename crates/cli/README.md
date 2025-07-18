@@ -235,6 +235,7 @@ codemod validate ./my-workflow-bundle/
 - Matrix strategy validation
 - State schema validation
 - Variable reference syntax validation
+- `js-ast-grep` step validation: Ensures referenced JavaScript files exist
 
 **Example Output:**
 
