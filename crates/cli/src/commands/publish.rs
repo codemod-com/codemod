@@ -1,4 +1,6 @@
 use anyhow::{anyhow, Result};
+use butterflow_models::workflow;
+use butterflow_core::utils;
 use clap::Args;
 use log::{debug, info, warn};
 use reqwest;
@@ -10,6 +12,7 @@ use tempfile::TempDir;
 use walkdir::WalkDir;
 
 use crate::auth::TokenStorage;
+use crate::commands::workflow::validate::{validate_codemod_manifest_structure};
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -148,7 +151,14 @@ pub async fn handler(args: &Command) -> Result<()> {
     }
 
     // Validate package structure
-    validate_package_structure(&package_path, &manifest)?;
+    validate_codemod_manifest_structure(&package_path, &manifest)?;
+
+    let workflow = utils::parse_workflow_file(&manifest.workflow).context(format!(
+        "Failed to parse workflow file: {}",
+        manifest.workflow.display()
+    ))?;
+    let js_ast_grep_entries = workflow.get_js_ast_grep_entry_points();
+    let contain_js_entries = !js_ast_grep_entries.is_empty();
 
     // Create package tarball
     let tarball_path = create_package_tarball(&package_path, &manifest, args.dry_run)?;
@@ -229,58 +239,6 @@ fn load_manifest(package_path: &Path) -> Result<CodemodManifest> {
         manifest.name, manifest.version
     );
     Ok(manifest)
-}
-
-fn validate_package_structure(package_path: &Path, manifest: &CodemodManifest) -> Result<()> {
-    // Check required files
-    let workflow_path = package_path.join(&manifest.workflow);
-    if !workflow_path.exists() {
-        return Err(anyhow!(
-            "Workflow file not found: {}",
-            workflow_path.display()
-        ));
-    }
-
-    // Validate workflow file
-    let workflow_content = fs::read_to_string(&workflow_path)?;
-    let _workflow: serde_yaml::Value = serde_yaml::from_str(&workflow_content)
-        .map_err(|e| anyhow!("Invalid workflow YAML: {}", e))?;
-
-    // Check optional files
-    if let Some(readme) = &manifest.readme {
-        let readme_path = package_path.join(readme);
-        if !readme_path.exists() {
-            warn!("README file not found: {}", readme_path.display());
-        }
-    }
-
-    // Validate package name format
-    if !is_valid_package_name(&manifest.name) {
-        return Err(anyhow!("Invalid package name: {}. Must contain only lowercase letters, numbers, hyphens, and underscores.", manifest.name));
-    }
-
-    // Validate version format (semver)
-    if !is_valid_semver(&manifest.version) {
-        return Err(anyhow!(
-            "Invalid version: {}. Must be valid semantic version (x.y.z).",
-            manifest.version
-        ));
-    }
-
-    // Check package size
-    let package_size = calculate_package_size(package_path)?;
-    const MAX_PACKAGE_SIZE: u64 = 50 * 1024 * 1024; // 50MB
-
-    if package_size > MAX_PACKAGE_SIZE {
-        return Err(anyhow!(
-            "Package too large: {} bytes. Maximum allowed: {} bytes.",
-            package_size,
-            MAX_PACKAGE_SIZE
-        ));
-    }
-
-    info!("Package validation successful");
-    Ok(())
 }
 
 fn create_package_tarball(
@@ -458,21 +416,6 @@ async fn upload_package(
 
     let publish_response: PublishResponse = response.json().await?;
     Ok(publish_response)
-}
-
-fn calculate_package_size(package_path: &Path) -> Result<u64> {
-    let mut total_size = 0;
-
-    for entry in WalkDir::new(package_path)
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.file_type().is_file())
-        .filter(|e| should_include_file(e.path(), package_path))
-    {
-        total_size += entry.metadata()?.len();
-    }
-
-    Ok(total_size)
 }
 
 fn is_valid_package_name(name: &str) -> bool {

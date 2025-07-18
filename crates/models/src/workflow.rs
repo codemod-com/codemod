@@ -124,7 +124,7 @@ impl Workflow {
     }
 
     /// Get all js-ast-grep entry points in the workflow
-    pub fn js_ast_grep_entry_points(&self) -> Vec<String> {
+    pub fn get_js_ast_grep_entry_points(&self) -> Vec<String> {
         self.nodes.iter().flat_map(|node| {
             node.steps.iter().filter_map(|step| {
                 if let crate::step::StepAction::JSAstGrep(grep) = &step.action {

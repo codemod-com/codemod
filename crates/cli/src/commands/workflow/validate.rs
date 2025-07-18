@@ -14,7 +14,69 @@ pub struct Command {
 
 /// Validate a workflow file
 pub fn handler(args: &Command) -> Result<()> {
-    validate_workflow(&args.workflow)
+    validate_workflow(&args.workflow)?;
+    validate_codemod_manifest_structure(&args.workflow, &utils::parse_workflow_file(&args.workflow)?)?;
+}
+
+fn calculate_package_size(package_path: &Path) -> Result<u64> {
+    let mut total_size = 0;
+
+    for entry in WalkDir::new(package_path)
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .filter(|e| e.file_type().is_file())
+        .filter(|e| should_include_file(e.path(), package_path))
+    {
+        total_size += entry.metadata()?.len();
+    }
+
+    Ok(total_size)
+}
+
+pub fn validate_codemod_manifest_structure(package_path: &Path, manifest: &CodemodManifest) -> Result<()> {
+    // Check required files
+    let (workflow_path, _) = utils::resolve_workflow_source(&manifest.workflow)
+        .context("Failed to resolve workflow source")?;
+
+    // Validate workflow file
+    utils::parse_workflow_file(&workflow_path)
+        .context(format!("Failed to parse workflow file: {}", workflow_path.display()))?;
+
+    // Check optional files
+    if let Some(readme) = &manifest.readme {
+        let readme_path = package_path.join(readme);
+        if !readme_path.exists() {
+            warn!("README file not found: {}", readme_path.display());
+        }
+    }
+
+    // Validate package name format
+    if !is_valid_package_name(&manifest.name) {
+        return Err(anyhow!("Invalid package name: {}. Must contain only lowercase letters, numbers, hyphens, and underscores.", manifest.name));
+    }
+
+    // Validate version format (semver)
+    if !is_valid_semver(&manifest.version) {
+        return Err(anyhow!(
+            "Invalid version: {}. Must be valid semantic version (x.y.z).",
+            manifest.version
+        ));
+    }
+
+    // Check package size
+    let package_size = calculate_package_size(package_path)?;
+    const MAX_PACKAGE_SIZE: u64 = 50 * 1024 * 1024; // 50MB
+
+    if package_size > MAX_PACKAGE_SIZE {
+        return Err(anyhow!(
+            "Package too large: {} bytes. Maximum allowed: {} bytes.",
+            package_size,
+            MAX_PACKAGE_SIZE
+        ));
+    }
+
+    info!("Package validation successful");
+    Ok(())
 }
 
 fn validate_workflow(workflow_path: &Path) -> Result<()> {
