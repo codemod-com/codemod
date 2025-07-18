@@ -2,6 +2,7 @@ use async_trait::async_trait;
 use posthog_rs;
 use serde::Serialize;
 use std::collections::HashMap;
+use std::env;
 
 #[derive(Debug, Clone)]
 pub struct TelemetrySenderOptions {
@@ -36,9 +37,11 @@ pub struct PostHogSender {
     options: TelemetrySenderOptions,
 }
 
+pub const POSTHOG_API_KEY: &str = env!("POSTHOG_API_KEY");
+
 impl PostHogSender {
     pub async fn new(options: TelemetrySenderOptions) -> Self {
-        let client = posthog_rs::client("phc_nGWKWP3t1fcNFqGi6UdstXjMf0fxx7SBeohHPSS6d2Y").await;
+        let client = posthog_rs::client(POSTHOG_API_KEY).await;
         Self { client, options }
     }
 }
