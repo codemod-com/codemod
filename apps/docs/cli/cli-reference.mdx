@@ -138,6 +138,37 @@ jssg is a toolkit for running JavaScript/TypeScript codemods using the high-perf
   - For for more complex transformations that require granular AST access and manipulation than a YAML rule can provide. Read more about [when to define workflows](#when-should-i-define-a-workflow-instead).
 </Tip>
 
+<Steps>
+  <Step title="Write your codemod">
+    Create a JS/TS file that exports your codemod logic.
+  </Step>
+  <Step title="Run your codemod">
+    ```bash
+    npx codemod@next jssg run my-codemod.js ./src --language javascript
+    ```
+  </Step>
+  <Step title="Test your codemod">
+    Organize your tests as follows:
+    ```
+    tests/
+    ├── simple-transform/
+    │   ├── input.js
+    │   └── expected.js
+    └── multi-file-case/
+        ├── input/
+        │   ├── file1.js
+        │   └── file2.js
+        └── expected/
+            ├── file1.js
+            └── file2.js
+    ```
+    Then run:
+    ```bash
+    npx codemod@next jssg test my-codemod.js --language javascript
+    ```
+  </Step>
+</Steps>
+
 **`jssg run`**
 
 Run a jssg codemod.
@@ -238,92 +269,6 @@ npx codemod@next jssg test <codemod_file> [options]
     - It's built into the CLI, so you can run it directly without needing to install it separately.
     - It's built for speed and simplicity, making ast-grep codemods a first-class experience.
     - It's built for speed and simplicity, making ast-grep codemods a first-class experience.
-  </Accordion>
-
-  <Accordion title="Quick Start Example">
-  <Steps>
-    <Step title="Write your codemod">
-      Create a JS/TS file that exports your codemod logic.
-    </Step>
-    <Step title="Run your codemod">
-      ```bash
-      npx codemod@next jssg run my-codemod.js ./src --language javascript
-      ```
-    </Step>
-    <Step title="Test your codemod">
-      Organize your tests as follows:
-      ```
-      tests/
-      ├── simple-transform/
-      │   ├── input.js
-      │   └── expected.js
-      └── multi-file-case/
-          ├── input/
-          │   ├── file1.js
-          │   └── file2.js
-          └── expected/
-              ├── file1.js
-              └── file2.js
-      ```
-      Then run:
-      ```bash
-      npx codemod@next jssg test my-codemod.js --language javascript
-      ```
-    </Step>
-  </Steps>
-  </Accordion>
-
-  <Accordion title="Testing Framework">
-  The jssg testing framework provides robust support for before/after fixture testing.
-
-  **Test Discovery & Filtering**
-  <ResponseField name="--test-directory" type="string">
-    The directory containing your tests (default: `"tests"`).
-  </ResponseField>
-  <ResponseField name="--filter" type="string">
-    A pattern to run only tests whose names match the filter.
-  </ResponseField>
-
-  **Output & Reporting**
-  <ResponseField name="--reporter" type="string">
-    The output format for test results. Can be `console`, `json`, or `terse`.
-  </ResponseField>
-  <ResponseField name="--verbose" type="boolean">
-    Show detailed output, including diffs for failed tests.
-  </ResponseField>
-  <ResponseField name="--context-lines" type="number">
-    The number of context lines to show in diffs (default: 3).
-  </ResponseField>
-  <ResponseField name="--ignore-whitespace" type="boolean">
-    Ignore whitespace differences when comparing test outputs.
-  </ResponseField>
-
-  **Execution Control**
-  <ResponseField name="--timeout" type="number">
-    Test timeout in seconds (default: 30).
-  </ResponseField>
-  <ResponseField name="--max-threads" type="number">
-    Maximum number of concurrent threads to use for running tests.
-  </ResponseField>
-  <ResponseField name="--sequential" type="boolean">
-    Run tests sequentially instead of in parallel.
-  </ResponseField>
-  <ResponseField name="--fail-fast" type="boolean">
-    Stop the test run on the first failure.
-  </ResponseField>
-
-  **Snapshot & Error Management**
-  <ResponseField name="--update-snapshots, -u" type="boolean">
-    Create or update the `expected` files with the output of the codemod. (`-u` is a shorthand for `--update-snapshots`)
-  </ResponseField>
-  <ResponseField name="--expect-errors" type="string">
-    A comma-separated list of test patterns that are expected to fail.
-  </ResponseField>
-
-  **Development**
-  <ResponseField name="--watch" type="boolean">
-    Enable watch mode to automatically re-run tests when files change.
-  </ResponseField>
   </Accordion>
 
   <Accordion title="Advanced Usage & Best Practices">
