@@ -25,7 +25,7 @@ Codemod CLI (new) is accessible using the `npx codemod@next` command. The follow
 
 Manage and execute workflow YAMLs.
 
-*`workflow run`*
+**`workflow run`**
 
 Run a workflow.
 
@@ -39,7 +39,7 @@ npx codemod@next workflow run -w <workflow.yaml|directory> [--param key=value]
   Workflow parameters (format: key=value).
 </ResponseField>
 
-*`workflow resume`*
+**`workflow resume`**
 
 Resume a paused workflow.
 
@@ -56,7 +56,7 @@ npx codemod@next workflow resume -i <ID> [-t <TASK>] [--trigger-all]
   Trigger all awaiting tasks.
 </ResponseField>
 
-*`workflow validate`*
+**`workflow validate`**
 
 Validate a workflow file.
 
@@ -93,7 +93,7 @@ npx codemod@next workflow validate -w <workflow.yaml>
   - **State consistency**: Whether state updates are logically sound
   </Accordion>
 
-*`workflow status`*
+**`workflow status`**
 
 Show workflow run status.
 
@@ -104,7 +104,7 @@ npx codemod@next workflow status -i <ID>
   Workflow run ID.
 </ResponseField>
 
-*`workflow list`*
+**`workflow list`**
 
 List workflow runs.
 
@@ -115,7 +115,7 @@ npx codemod@next workflow list [-l <LIMIT>]
   Number of workflow runs to show. (default: 10)
 </ResponseField>
 
-*`workflow cancel`*
+**`workflow cancel`**
 
 Cancel a workflow run.
 
@@ -201,7 +201,7 @@ npx codemod@next jssg run <codemod_file> <target_directory> [options]
   Perform a dry-run to see the changes without applying them.
 </ResponseField>
 
-*`jssg test`*
+**`jssg test`**
 
 Test a jssg codemod using before/after fixtures.
 
@@ -422,7 +422,7 @@ npx codemod@next search [QUERY] [options]
 
 Manage the local package cache for codemod packages.
 
-*`cache info`*
+**`cache info`**
 
 Show cache information and statistics.
 
@@ -430,7 +430,7 @@ Show cache information and statistics.
 npx codemod@next cache info
 ```
 
-*`cache list`*
+**`cache list`**
 
 List cached packages.
 
@@ -441,7 +441,7 @@ npx codemod@next cache list [--detailed]
   Show package details.
 </ResponseField>
 
-*`cache clear`*
+**`cache clear`**
 
 Clear cache for a specific package, or all packages.
 
@@ -455,7 +455,7 @@ npx codemod@next cache clear [PACKAGE] [--all]
   Clear all cached packages.
 </ResponseField>
 
-*`cache prune`*
+**`cache prune`**
 
 Prune old or unused cache entries.
 
