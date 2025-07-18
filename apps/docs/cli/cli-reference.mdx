@@ -2,20 +2,6 @@
 title: "Codemod CLI"
 ---
 
-<Panel>
-  <Card title="Go to:">
-    - [`codemod@next workflow`](#codemod%40next-workflow)
-    - [`codemod@next jssg`](#codemod%40next-jssg)
-    - [`codemod@next init`](#codemod%40next-init)
-    - [`codemod@next login`](#codemod%40next-login)
-    - [`codemod@next logout`](#codemod%40next-logout)
-    - [`codemod@next whoami`](#codemod%40next-whoami)
-    - [`codemod@next publish`](#codemod%40next-publish)
-    - [`codemod@next search`](#codemod%40next-search)
-    - [`codemod@next cache`](#codemod%40next-cache)
-  </Card>
-</Panel>
-
 <Warning>
   Codemod CLI is released under the temporary `@next` tag while it's in alpha. The core commands and [workflow schema](/cli/workflows) may change as we gather feedback. Please keep an eye on the CLI reference until we publish a stable `@latest`.
 </Warning>
@@ -39,7 +25,7 @@ Codemod CLI (new) is accessible using the `npx codemod@next` command. The follow
 
 Manage and execute workflow YAMLs.
 
-#### `workflow run`
+*`workflow run`*
 
 Run a workflow.
 
@@ -53,7 +39,7 @@ npx codemod@next workflow run -w <workflow.yaml|directory> [--param key=value]
   Workflow parameters (format: key=value).
 </ResponseField>
 
-#### `workflow resume`
+*`workflow resume`*
 
 Resume a paused workflow.
 
@@ -70,7 +56,7 @@ npx codemod@next workflow resume -i <ID> [-t <TASK>] [--trigger-all]
   Trigger all awaiting tasks.
 </ResponseField>
 
-#### `workflow validate`
+*`workflow validate`*
 
 Validate a workflow file.
 
@@ -107,7 +93,7 @@ npx codemod@next workflow validate -w <workflow.yaml>
   - **State consistency**: Whether state updates are logically sound
   </Accordion>
 
-#### `workflow status`
+*`workflow status`*
 
 Show workflow run status.
 
@@ -118,7 +104,7 @@ npx codemod@next workflow status -i <ID>
   Workflow run ID.
 </ResponseField>
 
-#### `workflow list`
+*`workflow list`*
 
 List workflow runs.
 
@@ -129,7 +115,7 @@ npx codemod@next workflow list [-l <LIMIT>]
   Number of workflow runs to show. (default: 10)
 </ResponseField>
 
-#### `workflow cancel`
+*`workflow cancel`*
 
 Cancel a workflow run.
 
@@ -144,7 +130,7 @@ npx codemod@next workflow cancel -i <ID>
 
 jssg is a toolkit for running JavaScript/TypeScript codemods using the high-performance ast-grep engine. It enables fast, large-scale code transformations with a familiar API and robust language support.
 
-##### `jssg run`
+*`jssg run`*
 
 Run a jssg codemod.
 
@@ -176,7 +162,7 @@ npx codemod@next jssg run <codemod_file> <target_directory> [options]
   Perform a dry-run to see the changes without applying them.
 </ResponseField>
 
-#### `jssg test`
+*`jssg test`*
 
 Test a jssg codemod using before/after fixtures.
 
@@ -465,7 +451,7 @@ npx codemod@next search [QUERY] [options]
 
 Manage the local package cache for codemod packages.
 
-#### `cache info`
+*`cache info`*
 
 Show cache information and statistics.
 
@@ -473,7 +459,7 @@ Show cache information and statistics.
 npx codemod@next cache info
 ```
 
-#### `cache list`
+*`cache list`*
 
 List cached packages.
 
@@ -484,7 +470,7 @@ npx codemod@next cache list [--detailed]
   Show package details.
 </ResponseField>
 
-#### `cache clear`
+*`cache clear`*
 
 Clear cache for a specific package, or all packages.
 
@@ -498,7 +484,7 @@ npx codemod@next cache clear [PACKAGE] [--all]
   Clear all cached packages.
 </ResponseField>
 
-#### `cache prune`
+*`cache prune`*
 
 Prune old or unused cache entries.
 
