@@ -150,15 +150,15 @@ pub async fn handler(args: &Command) -> Result<()> {
     // Validate package structure
     validate_package_structure(&package_path, &manifest)?;
 
-    // Create package bundle
-    let bundle_path = create_package_bundle(&package_path, &manifest, args.dry_run)?;
+    // Create package tarball
+    let tarball_path = create_package_tarball(&package_path, &manifest, args.dry_run)?;
 
     if args.dry_run {
         println!("✓ Package validation successful");
         println!(
-            "✓ Bundle created: {} ({} bytes)",
-            bundle_path.display(),
-            fs::metadata(&bundle_path)?.len()
+            "✓ Tarball created: {} ({} bytes)",
+            tarball_path.display(),
+            fs::metadata(&tarball_path)?.len()
         );
         println!("📦 Package ready for publishing");
         return Ok(());
@@ -283,7 +283,7 @@ fn validate_package_structure(package_path: &Path, manifest: &CodemodManifest) -
     Ok(())
 }
 
-fn create_package_bundle(
+fn create_package_tarball(
     package_path: &Path,
     manifest: &CodemodManifest,
     dry_run: bool,

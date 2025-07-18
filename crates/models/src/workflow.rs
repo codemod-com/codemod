@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use uuid::Uuid;
+use anyhow::{anyhow, Result};
 
 use crate::node::Node;
 use crate::state::StateSchema;
@@ -15,6 +16,16 @@ use ts_rs::TS;
 pub struct Workflow {
     /// Version of the workflow format
     pub version: String,
+
+    /// Human-readable name of the workflow
+    #[serde(default)]
+    #[ts(optional=nullable)]
+    pub name: Option<String>,
+
+    /// Detailed description of the workflow
+    #[serde(default)]
+    #[ts(optional=nullable)]
+    pub description: Option<String>,
 
     /// State schema definition
     #[serde(default)]
@@ -90,4 +101,39 @@ pub enum WorkflowStatus {
 
     /// Workflow has been canceled
     Canceled,
+}
+
+impl Workflow {
+    /// Validate that all referenced templates exist in the workflow
+    pub fn validate_templates(&self) -> Result<()> {
+        let template_ids: std::collections::HashSet<_> = self.templates.iter().map(|t| t.id.clone()).collect();
+        for node in &self.nodes {
+            for step in &node.steps {
+                if let crate::step::StepAction::UseTemplate(template_use) = &step.action {
+                    if !template_ids.contains(&template_use.template) {
+                        return Err(anyhow!(
+                            "Step '{}' references non-existent template: {}",
+                            step.name,
+                            template_use.template
+                        ));
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Get all js-ast-grep entry points in the workflow
+    pub fn js_ast_grep_entry_points(&self) -> Vec<String> {
+        self.nodes.iter().flat_map(|node| {
+            node.steps.iter().filter_map(|step| {
+                if let crate::step::StepAction::JSAstGrep(grep) = &step.action {
+                    Some(grep.js_file.clone())
+                } else {
+                    None
+                }
+            })
+        })
+        .collect::<Vec<_>>()
+    }
 }

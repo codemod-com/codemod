@@ -27,6 +27,12 @@ fn validate_workflow(workflow_path: &Path) -> Result<()> {
     // Validate workflow
     utils::validate_workflow(&workflow).context("Workflow validation failed")?;
 
+    // Get the base directory for resolving relative paths
+    let base_dir = workflow_path.parent().unwrap_or(Path::new("."));
+
+    workflow.validate_js_ast_grep_files(base_dir)
+        .context("js-ast-grep file validation failed")?;
+
     info!("✓ Workflow definition is valid");
     info!("Schema validation: Passed");
     info!(
