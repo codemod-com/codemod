@@ -1,5 +1,4 @@
 use crate::auth_provider::CliAuthProvider;
-use crate::auth_provider::CliAuthProvider;
 use crate::dirty_git_check;
 use crate::download_progress_bar::create_progress_bar;
 use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
