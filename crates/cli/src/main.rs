@@ -1,7 +1,9 @@
 use anyhow::Result;
 use clap::{Args, Parser, Subcommand};
+use hostname::get as get_hostname;
 use log::info;
-
+use machine_uid::get as get_machine_uid;
+use sha2::{Digest, Sha256};
 mod ascii_art;
 mod auth;
 mod auth_provider;
@@ -10,11 +12,12 @@ mod dirty_git_check;
 mod engine;
 mod workflow_runner;
 use ascii_art::print_ascii_art;
-use auth::TokenStorage;
 use codemod_telemetry::{
     send_event::{PostHogSender, TelemetrySender, TelemetrySenderOptions},
     send_null::NullSender,
 };
+
+use crate::auth::TokenStorage;
 
 #[derive(Parser)]
 #[command(name = "codemod")]
@@ -184,7 +187,7 @@ async fn handle_implicit_run_command(
 #[tokio::main]
 async fn main() -> Result<()> {
     // Initialize logger
-    env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
+    env_logger::init_from_env(env_logger::Env::default().default_filter_or("error"));
 
     // Parse command line arguments
     let cli = Cli::parse();
@@ -198,17 +201,23 @@ async fn main() -> Result<()> {
 
     // Create engine
     let engine = engine::create_engine()?;
-    let storage = TokenStorage::new()?;
-    let auth = storage.load_auth("https://app.codemod.com")?;
-    let auth = auth.unwrap();
 
     let telemetry_sender: Box<dyn codemod_telemetry::send_event::TelemetrySender> =
         if std::env::var("DISABLE_ANALYTICS") == Ok("false".to_string())
             || std::env::var("DISABLE_ANALYTICS").is_err()
         {
+            let storage = TokenStorage::new()?;
+            let config = storage.load_config()?;
+
+            let auth = storage.get_auth_for_registry(&config.default_registry)?;
+
+            let distrinct_id = auth
+                .map(|auth| auth.user.id)
+                .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
+
             Box::new(
                 PostHogSender::new(TelemetrySenderOptions {
-                    distinct_id: auth.user.id.clone(),
+                    distinct_id: distrinct_id,
                     cloud_role: "CLI".to_string(),
                 })
                 .await,
