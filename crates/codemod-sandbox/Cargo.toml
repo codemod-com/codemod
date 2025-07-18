@@ -2,6 +2,7 @@
 name = "codemod-sandbox"
 version.workspace = true
 edition = "2021"
+build = "src/build.rs"
 
 [dependencies]
 rquickjs-registry = { package = "rquickjs", version = "0.9.0", default-features = false, optional = true }

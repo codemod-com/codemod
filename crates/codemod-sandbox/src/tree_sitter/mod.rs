@@ -17,6 +17,8 @@ struct ReadyLang {
     lib_path: PathBuf,
 }
 
+pub const BASE_URL: &str = env!("TREE_SITTER_BASE_URL");
+
 pub async fn load_tree_sitter(languages: &[SupportedLanguage]) -> Result<Vec<DynamicLang>, String> {
     let mut ready_langs = HashSet::new();
     for language in languages {
@@ -54,10 +56,10 @@ pub async fn load_tree_sitter(languages: &[SupportedLanguage]) -> Result<Vec<Dyn
                 std::fs::create_dir_all(parent)
                     .map_err(|e| format!("Failed to create directory: {e}"))?;
             }
-            let base_url = std::env::var("TREE_SITTER_BASE_URL").unwrap_or_else(|_| {
-                "https://tree-sitter-parsers.s3.us-east-1.amazonaws.com".to_string()
-            });
-            let url = format!("{base_url}/tree-sitter/parsers/tree-sitter-{language}/latest/{os}-{arch}.{extension}");
+            println!("base_url: {BASE_URL}");
+            let url = format!(
+                "{BASE_URL}/tree-sitter/parsers/tree-sitter-{language}/latest/{os}-{arch}.{extension}"
+            );
 
             let client = reqwest::Client::builder()
                 .timeout(std::time::Duration::from_secs(30))
