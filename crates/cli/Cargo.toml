@@ -56,6 +56,7 @@ open = "5.0"
 libtest-mimic = "0.8"
 similar = "2.0"
 ast-grep-language.workspace = true
+tabled = "0.20.0"
 
 
 [features]
