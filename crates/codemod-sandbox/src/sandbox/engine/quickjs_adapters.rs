@@ -57,11 +57,16 @@ impl Loader for QuickJSLoader {
             // Check if the file is a TypeScript file that needs transpilation
             let extension = path.extension().and_then(|ext| ext.to_str());
             let needs_transpilation = matches!(extension, Some("ts") | Some("mts") | Some("cts"));
+            let file_name = path
+                .file_name()
+                .unwrap_or_else(|| std::ffi::OsStr::new("anon.ts"))
+                .to_string_lossy();
 
             if needs_transpilation {
-                let transpiled_bytes = transpiler::transpile(source).map_err(|err| {
-                    Error::new_loading(&format!("Transpilation failed for {name}: {err}"))
-                })?;
+                let transpiled_bytes = transpiler::transpile(source, file_name.to_string())
+                    .map_err(|err| {
+                        Error::new_loading(&format!("Transpilation failed for {name}: {err}"))
+                    })?;
                 Module::declare(ctx.clone(), name, transpiled_bytes.as_slice())
             } else {
                 Module::declare(ctx.clone(), name, source.as_bytes())
