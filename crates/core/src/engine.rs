@@ -40,10 +40,9 @@ use codemod_sandbox::sandbox::{
     resolvers::FileSystemResolver,
 };
 use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
-use once_cell::sync::Lazy;
+use std::sync::OnceLock;
 
-pub static GLOBAL_STATS: Lazy<Mutex<ExecutionStats>> =
-    Lazy::new(|| Mutex::new(ExecutionStats::default()));
+pub static GLOBAL_STATS: OnceLock<Mutex<ExecutionStats>> = OnceLock::new();
 /// Workflow engine
 pub struct Engine {
     /// State adapter for persisting workflow state
@@ -1436,7 +1435,8 @@ impl Engine {
         info!("Unmodified files: {:?}", stats.files_unmodified);
         info!("Files with errors: {:?}", stats.files_with_errors);
         // set global stats
-        let mut data = GLOBAL_STATS.lock().await;
+        let data = GLOBAL_STATS.get_or_init(|| Mutex::new(ExecutionStats::default()));
+        let mut data = data.lock().await;
         *data = stats.clone();
 
         // TODO: Consider writing execution stats to state or logs

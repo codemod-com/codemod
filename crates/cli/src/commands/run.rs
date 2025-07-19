@@ -6,6 +6,7 @@ use rand::Rng;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::process::Command as ProcessCommand;
+use tokio::sync::Mutex;
 
 use crate::auth_provider::CliAuthProvider;
 use crate::dirty_git_check;
@@ -231,7 +232,11 @@ async fn execute_codemod(
 
     // Run workflow using the extracted workflow runner
     run_workflow(engine, config).await?;
-    let stats = GLOBAL_STATS.lock().await.clone();
+    let stats = GLOBAL_STATS
+        .get_or_init(|| Mutex::new(ExecutionStats::default()))
+        .lock()
+        .await
+        .clone();
 
     Ok(stats)
 }
