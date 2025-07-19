@@ -129,7 +129,7 @@ pub async fn handler(
                 None,
             )
             .await;
-        return Err(anyhow::anyhow!("Error executing codemod: {}", e));
+        return Err(e);
     }
 
     let stats = stats.unwrap();

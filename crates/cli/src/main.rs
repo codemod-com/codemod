@@ -1,9 +1,6 @@
 use anyhow::Result;
 use clap::{Args, Parser, Subcommand};
-use hostname::get as get_hostname;
 use log::info;
-use machine_uid::get as get_machine_uid;
-use sha2::{Digest, Sha256};
 mod ascii_art;
 mod auth;
 mod auth_provider;
@@ -213,13 +210,13 @@ async fn main() -> Result<()> {
 
             let auth = storage.get_auth_for_registry(&config.default_registry)?;
 
-            let distrinct_id = auth
+            let distinct_id = auth
                 .map(|auth| auth.user.id)
                 .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
 
             Box::new(
                 PostHogSender::new(TelemetrySenderOptions {
-                    distinct_id: distrinct_id,
+                    distinct_id,
                     cloud_role: "CLI".to_string(),
                 })
                 .await,

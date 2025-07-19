@@ -776,14 +776,12 @@ dependencies = [
  "dirs",
  "env_logger",
  "flate2",
- "hostname",
  "humantime",
  "hyper 0.14.32",
  "hyper-rustls 0.24.2",
  "inquire",
  "libtest-mimic",
  "log",
- "machine-uid",
  "num_cpus",
  "oauth2",
  "open",
@@ -808,7 +806,6 @@ dependencies = [
  "urlencoding",
  "uuid",
  "walkdir",
- "whoami",
 ]
 
 [[package]]
@@ -1803,17 +1800,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "589533453244b0995c858700322199b2becb13b627df2851f64a2775d024abcf"
 dependencies = [
  "windows-sys 0.59.0",
-]
-
-[[package]]
-name = "hostname"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a56f203cd1c76362b69e3863fd987520ac36cf70a8c92627449b2f64a8cf7d65"
-dependencies = [
- "cfg-if",
- "libc",
- "windows-link",
 ]
 
 [[package]]
@@ -2896,16 +2882,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "machine-uid"
-version = "0.5.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c4506fa0abb0a2ea93f5862f55973da0a662d2ad0e98f337a1c5aac657f0892"
-dependencies = [
- "libc",
- "winreg 0.52.0",
-]
-
-[[package]]
 name = "md-5"
 version = "0.10.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3906,7 +3882,7 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys 0.3.77 (registry+https://github.com/rust-lang/crates.io-index)",
  "webpki-roots 0.25.4",
- "winreg 0.50.0",
+ "winreg",
 ]
 
 [[package]]
@@ -6908,7 +6884,6 @@ checksum = "6994d13118ab492c3c80c1f81928718159254c53c472bf9ce36f8dae4add02a7"
 dependencies = [
  "redox_syscall",
  "wasite",
- "web-sys 0.3.77 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -7319,16 +7294,6 @@ name = "winreg"
 version = "0.50.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "524e57b2c537c0f9b1e69f1965311ec12182b4122e45035b1508cd24d2adadb1"
-dependencies = [
- "cfg-if",
- "windows-sys 0.48.0",
-]
-
-[[package]]
-name = "winreg"
-version = "0.52.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a277a57398d4bfa075df44f501a17cfdf8542d224f0d36095a2adc7aee4ef0a5"
 dependencies = [
  "cfg-if",
  "windows-sys 0.48.0",
