@@ -15,7 +15,7 @@ tokio = { version = "1.0", features = [
   "fs",
 ], optional = true }
 bytes = "1.0"
-swc_core = { version = "26.2", features = [
+swc_core = { version = "33.0", features = [
   "common",
   "base",
   "ecma_ast_serde",
@@ -30,6 +30,7 @@ swc_core = { version = "26.2", features = [
   "ecma_utils",
   "ecma_visit",
 ] }
+swc_ts_fast_strip = "27.0.1"
 wasm-bindgen = { workspace = true, optional = true }
 wasm-bindgen-futures = { workspace = true, optional = true }
 js-sys = { workspace = true, optional = true }
