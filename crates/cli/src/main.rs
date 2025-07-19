@@ -58,6 +58,9 @@ enum Commands {
     /// Run a codemod from the registry
     Run(commands::run::Command),
 
+    /// Unpublish a package from the registry
+    Unpublish(commands::unpublish::Command),
+
     /// Manage package cache
     Cache(commands::cache::Command),
 }
@@ -117,7 +120,16 @@ fn is_package_name(arg: &str) -> bool {
 
     // Check for simple package names (exclude known subcommands)
     let known_commands = [
-        "workflow", "jssg", "init", "login", "logout", "whoami", "publish", "search", "run",
+        "workflow",
+        "jssg",
+        "init",
+        "login",
+        "logout",
+        "whoami",
+        "publish",
+        "search",
+        "run",
+        "unpublish",
         "cache",
     ];
 
@@ -231,6 +243,9 @@ async fn main() -> Result<()> {
         }
         Some(Commands::Run(args)) => {
             commands::run::handler(&engine, args).await?;
+        }
+        Some(Commands::Unpublish(args)) => {
+            commands::unpublish::handler(args).await?;
         }
         Some(Commands::Cache(args)) => {
             commands::cache::handler(args).await?;
