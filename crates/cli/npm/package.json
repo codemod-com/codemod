@@ -20,7 +20,8 @@
   ],
   "files": [
     "codemod",
-    "postinstall.js"
+    "postinstall.js",
+    "README.md"
   ],
   "dependencies": {
     "detect-libc": "^2.0.3"

@@ -610,8 +610,25 @@ where
         match result {
             Ok(new_content) => Ok(ExecutionOutput::success(new_content, content)),
             Err(e) => {
-                println!("Error: {e:?}");
-                Ok(ExecutionOutput::error(e.to_string()))
+                // Format the error message for better readability
+                let error_msg = match &e {
+                    ExecutionError::Runtime { source } => {
+                        match source {
+                            crate::sandbox::errors::RuntimeError::InitializationFailed {
+                                message,
+                            } => {
+                                // Unescape newlines in JavaScript error messages
+                                message.replace("\\n", "\n")
+                            }
+                            crate::sandbox::errors::RuntimeError::ExecutionFailed { message } => {
+                                message.replace("\\n", "\n")
+                            }
+                            _ => e.to_string(),
+                        }
+                    }
+                    _ => e.to_string(),
+                };
+                Ok(ExecutionOutput::error(error_msg))
             }
         }
     }

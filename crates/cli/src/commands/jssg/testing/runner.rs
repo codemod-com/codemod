@@ -12,6 +12,7 @@ use crate::commands::jssg::testing::{
 use ast_grep_language::SupportLang;
 use codemod_sandbox::sandbox::{
     engine::{ExecutionConfig, ExecutionEngine},
+    errors::ExecutionError,
     filesystem::RealFileSystem,
     loaders::FileSystemLoader,
     resolvers::FileSystemResolver,
@@ -75,6 +76,47 @@ impl TestRunner {
         }
     }
 
+    /// Format execution errors in a more readable way
+    fn format_execution_error(error: &ExecutionError) -> String {
+        match error {
+            ExecutionError::Runtime { source } => {
+                match source {
+                    codemod_sandbox::sandbox::errors::RuntimeError::InitializationFailed {
+                        message,
+                    } => {
+                        // Check if this looks like a JavaScript error with stack trace
+                        if message.contains("\\n") {
+                            // Unescape newlines and format nicely
+                            let formatted = message.replace("\\n", "\n");
+                            format!("Runtime Error:\n{formatted}")
+                        } else {
+                            format!("Runtime Error: {message}")
+                        }
+                    }
+                    codemod_sandbox::sandbox::errors::RuntimeError::ExecutionFailed { message } => {
+                        if message.contains("\\n") {
+                            let formatted = message.replace("\\n", "\n");
+                            format!("Execution Error:\n{formatted}")
+                        } else {
+                            format!("Execution Error: {message}")
+                        }
+                    }
+                    other => format!("Runtime Error: {other}"),
+                }
+            }
+            ExecutionError::Configuration { message } => {
+                format!("Configuration Error: {message}")
+            }
+            ExecutionError::FileSystem { source } => {
+                format!("File System Error: {source}")
+            }
+            ExecutionError::ThreadExecution { message } => {
+                format!("Thread Execution Error: {message}")
+            }
+            ExecutionError::NoFilesFound => "No files found to process".to_string(),
+        }
+    }
+
     pub async fn run_tests(&mut self, codemod_path: &Path, language: &str) -> Result<TestSummary> {
         if self.options.watch {
             return self.run_with_watch(codemod_path, language).await;
@@ -98,6 +140,23 @@ impl TestRunner {
             ));
         }
 
+        // Filter test cases before execution if filter is specified
+        let filtered_test_cases: Vec<&TestCase> = if let Some(filter) = &self.options.filter {
+            test_cases
+                .iter()
+                .filter(|test_case| test_case.name.contains(filter))
+                .collect()
+        } else {
+            test_cases.iter().collect()
+        };
+
+        if filtered_test_cases.is_empty() {
+            return Err(anyhow::anyhow!(
+                "No test cases match the filter '{}'",
+                self.options.filter.as_ref().unwrap()
+            ));
+        }
+
         // Set up execution engine
         let filesystem = Arc::new(RealFileSystem::new());
         let script_base_dir = codemod_path
@@ -115,9 +174,9 @@ impl TestRunner {
 
         let engine = ExecutionEngine::new(config);
 
-        // Pre-execute all tests to avoid borrowing issues
+        // Execute only the filtered tests
         let mut test_results = Vec::new();
-        for test_case in &test_cases {
+        for test_case in filtered_test_cases {
             let result = timeout(
                 self.options.timeout,
                 Self::execute_test_case(&engine, test_case, codemod_path, &self.options),
@@ -152,8 +211,10 @@ impl TestRunner {
             })
             .collect();
 
-        // Convert our options to libtest-mimic arguments
-        let args = self.options.to_libtest_args();
+        // Convert our options to libtest-mimic arguments (without filter since we already filtered)
+        let mut args = self.options.to_libtest_args();
+        // Clear the filter since we already applied it
+        args.filter = None;
 
         // Run tests using libtest-mimic
         let result = run(&args, trials);
@@ -174,7 +235,6 @@ impl TestRunner {
     ) -> Result<()> {
         let should_expect_error = test_case.should_expect_error(&options.expect_errors);
 
-        println!("should_expect_error: {should_expect_error:?}");
         // Check for missing expected files
         if let Err(TestError::NoExpectedFile {
             test_dir,
@@ -202,7 +262,7 @@ impl TestRunner {
             let execution_output = engine
                 .execute_codemod_on_content(codemod_path, &input_file.path, &input_file.content)
                 .await
-                .map_err(|e| anyhow::anyhow!("Failed to execute codemod: {}", e))?;
+                .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
 
             // Handle expected errors
             if should_expect_error {
@@ -219,7 +279,7 @@ impl TestRunner {
             }
 
             if let Some(error) = execution_output.error {
-                return Err(anyhow::anyhow!("Codemod execution failed: {}", error));
+                return Err(anyhow::anyhow!("Codemod execution failed:\n{}", error));
             }
 
             let actual_content = execution_output
@@ -266,10 +326,10 @@ impl TestRunner {
             let execution_output = engine
                 .execute_codemod_on_content(codemod_path, &input_file.path, &input_file.content)
                 .await
-                .map_err(|e| anyhow::anyhow!("Failed to execute codemod: {}", e))?;
+                .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
 
             if let Some(error) = execution_output.error {
-                return Err(anyhow::anyhow!("Codemod execution failed: {}", error));
+                return Err(anyhow::anyhow!("Codemod execution failed:\n{}", error));
             }
 
             let output_content = execution_output

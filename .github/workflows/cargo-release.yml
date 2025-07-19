@@ -275,6 +275,11 @@ jobs:
           # Make binaries executable
           chmod +x crates/cli/npm/platforms/*/codemod
 
+      - name: Include the README.md in the npm package
+        run: |
+          # Copy README.md to the npm package directory
+          cp crates/cli/README.md crates/cli/npm/README.md
+
       - name: Update package versions
         run: |
           # Update main package version

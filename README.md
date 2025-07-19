@@ -16,59 +16,34 @@
   </p>
 </p>
 
-## Codemod
+# Codemod
 
-Codemod platform helps you create, distribute, and run codemods in codebases of any size.
+[![Community](https://img.shields.io/badge/slack-join-e9a820)](https://codemod.com/community)
+[![License](https://img.shields.io/github/license/codemod-com/codemod)](LICENSE)
 
-The AI-powered, community-led codemods enable you to automate framework upgrades, large refactoring, and boilerplate programming with unparalleled speed and developer experience.
+Codemod is the AI-powered, community-led platform for automating code migrations, framework upgrades, and large-scale changes.
 
-We are making dream migrations a reality for all developers in the world, one framework at a time.
+## Get Started
 
-## Documentation
+- **Platform:** [Codemod Platform](https://go.codemod.com/app) — Plan, automate, and track migrations in any codebase.
+- **Docs:** [docs.codemod.com](https://docs.codemod.com)
 
-For details on how to use Codemod, check out our [documentation](https://go.codemod.com/docs).
+## Platform Features
 
-## Codemod Platform
+Codemod helps you plan, automate, and orchestrate code migrations at scale. Here’s what you can do:
 
-Codemod platform helps you plan, automate, orchestrate, and track code migrations in codebases of any size.
+- **Migrations:** Automate code changes and framework upgrades with AI-powered codemods. [Learn more](https://docs.codemod.com/migrations)
+- **Insights:** Track, measure, and report on migration progress and code health. [Learn more](https://docs.codemod.com/insights)
+- **Codemod Studio:** Author, test, and share codemods using an intuitive web interface. [Learn more](https://docs.codemod.com/codemod-studio)
+- **Workflows:** Orchestrate and manage large-scale code migration campaigns. [Learn more](https://docs.codemod.com/platform/workflows)
+- **CLI:** Run codemods and manage migrations from your terminal. [Learn more](https://docs.codemod.com/cli/cli-reference)
 
-To get started, go to [Codemod platform](https://go.codemod.com/app).
+## CLI
 
-## Codemod CLI
+> The new Codemod CLI is under active development. For the latest features and usage, see our [CLI docs](https://docs.codemod.com/cli/cli-reference).
 
-### Quickstart
 
-To get started, you can install Codemod CLI:
-
-```
-npm i -g codemod
-```
-
-With Codemod CLI, you can:
-
-#### 1. Build codemods
-
-You can easily scaffold and start building codemods by running the following command:
-
-```
-codemod init
-```
-
-#### 2. Publish codemods
-
-You can publish a [compatible](https://go.codemod.com/package-structure) local codemod package to [Codemod Registry](https://codemod.com/registry) with:
-
-```
-codemod publish
-```
-
-#### 3. Run codemods
-
-```
-codemod [codemod name]
-```
-
-## Community
+## Community & Support
 
 Codemod community can be found on [Slack](https://codemod.com/community), where you can ask questions, share your feedback, and contribute to the community.
 

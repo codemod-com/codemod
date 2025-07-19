@@ -8,6 +8,8 @@ use codemod_sandbox::sandbox::{
 };
 use std::{path::Path, sync::Arc};
 
+use crate::dirty_git_check;
+
 #[derive(Args, Debug)]
 pub struct Command {
     /// Path to the JavaScript file to execute
@@ -39,6 +41,10 @@ pub struct Command {
     /// File extensions to process (comma-separated)
     #[arg(long)]
     pub extensions: Option<String>,
+
+    /// Allow dirty git status
+    #[arg(long)]
+    pub allow_dirty: bool,
 }
 
 pub async fn handler(args: &Command) -> Result<()> {
@@ -59,6 +65,8 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     let mut config = ExecutionConfig::new(filesystem, resolver, loader, script_base_dir);
     let mut walk_options = WalkOptions::default();
+
+    dirty_git_check::dirty_check(args.allow_dirty)?;
 
     // Apply command line options
     if args.no_gitignore {
