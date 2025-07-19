@@ -132,6 +132,8 @@ pub async fn handler(
         return Err(anyhow::anyhow!("Error executing codemod: {}", e));
     }
 
+    let stats = stats.unwrap();
+
     let cli_version = env!("CARGO_PKG_VERSION");
     let execution_id: [u8; 20] = rand::thread_rng().gen();
     let execution_id = base64::Engine::encode(
@@ -146,10 +148,7 @@ pub async fn handler(
                 properties: HashMap::from([
                     ("codemodName".to_string(), args.package.clone()),
                     ("executionId".to_string(), execution_id.clone()),
-                    (
-                        "fileCount".to_string(),
-                        stats.unwrap().files_modified.to_string(),
-                    ),
+                    ("fileCount".to_string(), stats.files_modified.to_string()),
                     ("cliVersion".to_string(), cli_version.to_string()),
                 ]),
             },

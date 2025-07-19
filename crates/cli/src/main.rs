@@ -203,9 +203,11 @@ async fn main() -> Result<()> {
     let engine = engine::create_engine()?;
 
     let telemetry_sender: Box<dyn codemod_telemetry::send_event::TelemetrySender> =
-        if std::env::var("DISABLE_ANALYTICS") == Ok("false".to_string())
-            || std::env::var("DISABLE_ANALYTICS").is_err()
+        if std::env::var("DISABLE_ANALYTICS") == Ok("true".to_string())
+            || std::env::var("DISABLE_ANALYTICS") == Ok("1".to_string())
         {
+            Box::new(NullSender {})
+        } else {
             let storage = TokenStorage::new()?;
             let config = storage.load_config()?;
 
@@ -222,8 +224,6 @@ async fn main() -> Result<()> {
                 })
                 .await,
             )
-        } else {
-            Box::new(NullSender {})
         };
 
     // Handle command or implicit run
