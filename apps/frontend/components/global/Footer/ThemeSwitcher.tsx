@@ -7,7 +7,10 @@ import { motion } from "framer-motion";
 export default function ThemeSwitcher({
   toggleTheme,
   isLight,
-}: { toggleTheme: VoidFunction; isLight: boolean }) {
+}: {
+  toggleTheme: VoidFunction;
+  isLight: boolean;
+}) {
   const darkVariants = {
     initial: { x: "-200%", y: "60%" },
     animate: !isLight ? { x: "-50%", y: "0%" } : { x: "-200%", y: "60%" },

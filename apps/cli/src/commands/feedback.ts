@@ -2,9 +2,7 @@ import { open } from "../utils/open.js";
 
 import { type Printer, chalk } from "@codemod-com/printer";
 
-export const handleFeedbackCommand = async (options: {
-  printer: Printer;
-}) => {
+export const handleFeedbackCommand = async (options: { printer: Printer }) => {
   const { printer } = options;
   const feedbackUrl = "https://go.codemod.com/feedback";
 

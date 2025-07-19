@@ -26,7 +26,7 @@ const buildPhrasesUsingTokens = (snippet: string): ReadonlyArray<string> => {
 
   const tokens =
     parseResult !== null && "tokens" in parseResult
-      ? parseResult.tokens ?? []
+      ? (parseResult.tokens ?? [])
       : [];
 
   return tokens

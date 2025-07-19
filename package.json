@@ -71,7 +71,7 @@
     "commitizen": "catalog:",
     "concurrently": "catalog:",
     "cz-conventional-changelog": "catalog:",
-    "husky": "catalog:",
+    "husky": "8.0.3",
     "lint-staged": "catalog:",
     "tsx": "^4.2.0",
     "turbo": "catalog:",
@@ -86,7 +86,9 @@
   },
   "pnpm": {
     "peerDependencyRules": {
-      "ignoreMissing": ["@babel/core"]
+      "ignoreMissing": [
+        "@babel/core"
+      ]
     },
     "overrides": {
       "postcss": "8.4.35",

@@ -8,7 +8,10 @@ import { useRouter } from "next/navigation";
 const AuthButtons = ({
   variant = "studio",
   redirectUrl,
-}: { variant: "studio" | "www"; redirectUrl: string }) => {
+}: {
+  variant: "studio" | "www";
+  redirectUrl: string;
+}) => {
   const isStudio = variant === "studio";
   const router = useRouter();
 

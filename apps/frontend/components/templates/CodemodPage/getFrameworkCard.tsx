@@ -8,7 +8,10 @@ import Link from "next/link";
 export const getFrameworkCard = ({
   name: framework,
   image: frameworkImage,
-}: { name: string; image: FilterIcon }) => (
+}: {
+  name: string;
+  image: FilterIcon;
+}) => (
   <Link
     key={framework}
     href={`/registry?${

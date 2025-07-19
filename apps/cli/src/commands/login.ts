@@ -25,9 +25,7 @@ const routeUserToStudioForLogin = (
     printer,
   );
 };
-export const handleLoginCliCommand = async (options: {
-  printer: Printer;
-}) => {
+export const handleLoginCliCommand = async (options: { printer: Printer }) => {
   const { printer } = options;
 
   const userData = await getCurrentUserData();

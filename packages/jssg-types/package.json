@@ -20,11 +20,18 @@
   },
   "sideEffects": false,
   "private": false,
-  "files": ["./src"],
+  "files": [
+    "./src"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "keywords": ["ast-grep", "codemod", "ast", "types"],
+  "keywords": [
+    "ast-grep",
+    "codemod",
+    "ast",
+    "types"
+  ],
   "license": "Apache-2.0",
   "devDependencies": {
     "typescript": "5.5.4"

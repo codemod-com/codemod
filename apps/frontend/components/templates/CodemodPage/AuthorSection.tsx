@@ -6,7 +6,11 @@ export const AuthorSection = ({
   author,
   authorImage,
   href,
-}: { author: string; authorImage: FilterIcon; href: string }) => (
+}: {
+  author: string;
+  authorImage: FilterIcon;
+  href: string;
+}) => (
   <SanityLink
     className="rounded-sm focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark"
     link={{ href }}

@@ -66,7 +66,7 @@ export function loadQuery<T>({
   return queryStore.loadQuery<T>(query, params, {
     perspective: isDraftMode ? "previewDrafts" : "published",
     next: {
-      revalidate: isDraftMode ? 0 : revalidate ?? 120,
+      revalidate: isDraftMode ? 0 : (revalidate ?? 120),
       tags,
     },
   });

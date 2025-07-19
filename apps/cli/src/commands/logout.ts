@@ -7,9 +7,7 @@ import {
   credentialsStorage,
 } from "#credentials-storage.js";
 
-export const handleLogoutCliCommand = async (options: {
-  printer: Printer;
-}) => {
+export const handleLogoutCliCommand = async (options: { printer: Printer }) => {
   const { printer } = options;
 
   const userData = await getCurrentUserData();

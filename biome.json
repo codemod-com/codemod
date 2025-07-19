@@ -1,25 +1,29 @@
 {
-  "$schema": "node_modules/@biomejs/biome/configuration_schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+  "assist": { "actions": { "source": { "organizeImports": "off" } } },
   "files": {
-    "ignore": ["**/__testfixtures__/**", "**/schemas/**", "submodules/**"]
+    "includes": [
+      "**",
+      "!**/__testfixtures__/**",
+      "!**/schemas/**",
+      "!**/submodules/**"
+    ]
   },
   "linter": {
-    "ignore": [
-      "./packages",
-      "*.d.ts",
-      "*.js",
-      "dist",
-      "cdmd_dist",
-      "build",
-      "pnpm-lock.yaml",
-      "node_modules",
-      ".eslint*",
-      ".next",
-      ".vscode",
-      "build-ncc",
-      "generated",
-      "*.py",
-      "./apps/ai/**"
+    "includes": [
+      "!packages",
+      "!**/*.d.ts",
+      "!**/*.js",
+      "!**/dist",
+      "!**/cdmd_dist",
+      "!**/build",
+      "!**/pnpm-lock.yaml",
+      "!**/node_modules",
+      "!**/.eslint*",
+      "!**/.next",
+      "!**/.vscode",
+      "!**/build-ncc",
+      "!**/generated"
     ],
     "rules": {
       "suspicious": {
@@ -40,13 +44,13 @@
         "noUnsafeNegation": "warn",
         "noSelfCompare": "warn",
         "noShadowRestrictedNames": "warn",
-        "useValidTypeof": "warn",
         "useGetterReturn": "warn",
         "noCommentText": "warn",
         "noDuplicateJsxProps": "warn",
         "noExplicitAny": "warn",
         "noUnsafeDeclarationMerging": "warn",
-        "noArrayIndexKey": "off"
+        "noArrayIndexKey": "off",
+        "noWith": "warn"
       },
       "correctness": {
         "noUndeclaredVariables": "off",
@@ -55,7 +59,6 @@
         "noConstAssign": "warn",
         "noEmptyCharacterClassInRegex": "warn",
         "noEmptyPattern": "warn",
-        "noNewSymbol": "warn",
         "noGlobalObjectCalls": "warn",
         "noSelfAssign": "warn",
         "noUnreachableSuper": "warn",
@@ -65,27 +68,27 @@
         "useYield": "warn",
         "useIsNan": "warn",
         "useHookAtTopLevel": "error",
-        "useJsxKeyInIterable": "warn"
+        "useJsxKeyInIterable": "warn",
+        "useValidTypeof": "warn",
+        "noInvalidBuiltinInstantiation": "warn"
       },
       "complexity": {
         "noUselessConstructor": "off",
         "noUselessLabel": "warn",
-        "noMultipleSpacesInRegularExpressionLiterals": "warn",
         "noUselessRename": "warn",
-        "noWith": "warn",
-        "noForEach": "off"
+        "noForEach": "off",
+        "noAdjacentSpacesInRegex": "warn",
+        "noArguments": "warn",
+        "noCommaOperator": "warn"
       },
       "style": {
-        "noArguments": "warn",
         "noUnusedTemplateLiteral": "off",
-        "noCommaOperator": "warn",
         "noRestrictedGlobals": "error",
         "useLiteralEnumMembers": "off",
         "noNonNullAssertion": "warn"
       },
       "a11y": {
         "noSvgWithoutTitle": "warn",
-        "noBlankTarget": "warn",
         "useAltText": "warn",
         "useAnchorContent": "warn",
         "useValidAnchor": "warn",
@@ -106,41 +109,33 @@
         "noNoninteractiveTabindex": "warn"
       },
       "performance": { "noDelete": "off", "noAccumulatingSpread": "warn" },
-      "security": { "noDangerouslySetInnerHtml": "warn" }
+      "security": {
+        "noDangerouslySetInnerHtml": "warn",
+        "noBlankTarget": "warn"
+      }
     }
   },
   "formatter": {
     "formatWithErrors": true,
     "indentStyle": "space",
-    "ignore": [
-      "*.d.ts",
-      "input.js",
-      "output.js",
-      "dist",
-      "cdmd_dist",
-      "build",
-      "pnpm-lock.yaml",
-      "node_modules",
-      "build-ncc",
-      ".next",
-      ".vscode",
-      "generated",
-      "*.py",
-      "./apps/ai/**",
-      ".all-contributorsrc",
-      "**/__testfixtures__/**"
-    ]
-  },
-  "organizeImports": {
-    "ignore": [
-      "node_modules",
-      "dist",
-      "cdmd_dist",
-      "build",
-      ".next",
-      ".vscode",
-      "build-ncc",
-      "**/__testfixtures__/**"
+    "includes": [
+      "**",
+      "!**/*.d.ts",
+      "!**/input.js",
+      "!**/output.js",
+      "!**/dist",
+      "!**/cdmd_dist",
+      "!**/build",
+      "!**/pnpm-lock.yaml",
+      "!**/node_modules",
+      "!**/build-ncc",
+      "!**/.next",
+      "!**/.vscode",
+      "!**/generated",
+      "!**/*.py",
+      "!apps/ai/**",
+      "!**/.all-contributorsrc",
+      "!**/__testfixtures__/**"
     ]
   }
 }

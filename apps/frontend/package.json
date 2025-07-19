@@ -5,18 +5,17 @@
     "dev:ai": "cd ../modgpt && npm run start & cd ../../../ee && uvicorn app:app & npm run dev",
     "build": "next build",
     "dev": "next",
-    "format": "npx @biomejs/biome --write . --ignore-path .gitignore",
-    "biome": "npx @biomejs/biome lint --error-on-warnings ./",
-    "biome:fix": "npx @biomejs/biome lint --write ./",
-    "biome:errors": "npx @biomejs/biome lint - -diagnostic-level=error ./",
     "lint": "next lint -- --ignore-path .gitignore",
     "lint:fix": "npm run format && npm run lint -- --fix",
     "start": "next start",
-    "type-check": "tsc --noEmit",
-    "prepare": "husky"
+    "type-check": "tsc --noEmit"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -186,7 +185,6 @@
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-prettier": "catalog:",
     "eslint-plugin-simple-import-sort": "catalog:",
-    "husky": "catalog:",
     "miragejs": "catalog:",
     "monaco-editor-webpack-plugin": "catalog:",
     "null-loader": "catalog:",
