@@ -77,6 +77,8 @@ jobs:
       - name: Build
         run: |
           cargo build --release -p codemod --target ${{ matrix.target }}
+        env:
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
 
       - name: Chmod binary
         run: |
