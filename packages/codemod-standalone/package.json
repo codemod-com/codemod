@@ -1,0 +1,21 @@
+{
+  "name": "@codemod-com/codemod-standalone",
+  "author": "Augustin Mauroy",
+  "version": "0.0.1",
+  "description": "The utilities used across Codemod.com packages",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["./dist", "README.md", "tsconfig.json"],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-strip-types --test tests/**/*.test.ts",
+    "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test  --test-reporter=lcov --test-reporter-destination=./coverage.lcov --test-reporter=spec --test-reporter-destination=stdout --test-coverage-include='src/**/*' tests/**/*.test.ts"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@codemod-com/tsconfig": "workspace:*"
+  }
+}
