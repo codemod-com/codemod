@@ -200,15 +200,6 @@ struct PackageRow {
 
     #[tabled(rename = "👤 Author")]
     author: String,
-
-    #[tabled(rename = "🌐 Homepage")]
-    homepage: String,
-
-    #[tabled(rename = "🏢 Organization")]
-    organization: String,
-
-    #[tabled(rename = "🔑 Keywords")]
-    keywords: String,
 }
 
 fn print_table(result: &SearchResponse, args: &Command) -> Result<()> {
@@ -230,30 +221,15 @@ fn print_table(result: &SearchResponse, args: &Command) -> Result<()> {
                 None => package.name.clone(),
             };
 
-            let keywords = if package.keywords.is_empty() {
-                "-".to_string()
-            } else {
-                package.keywords.join(", ")
-            };
-
             let downloads = format_number(package.download_count);
             let stars = format_number(package.star_count);
             let author = package.author.clone();
-            let homepage = package.homepage.clone().unwrap_or_else(|| "-".to_string());
-            let organization = package
-                .organization
-                .as_ref()
-                .map(|org| org.name.clone())
-                .unwrap_or_else(|| "-".to_string());
 
             PackageRow {
                 name,
                 downloads,
                 stars,
                 author,
-                homepage,
-                organization,
-                keywords,
             }
         })
         .collect();
