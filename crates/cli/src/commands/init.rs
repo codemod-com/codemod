@@ -121,7 +121,7 @@ pub fn handler(args: &Command) -> Result<()> {
     let (project_path, project_name) = if args.no_interactive {
         let project_path = match args.path.clone() {
             Some(path) => path,
-            None => return Err(anyhow!("Path argument is required --path")),
+            None => return Err(anyhow!("Path argument is required")),
         };
 
         let project_name = match args.name.clone() {
