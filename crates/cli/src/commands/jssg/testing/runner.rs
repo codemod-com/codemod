@@ -5,6 +5,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tokio::time::timeout;
 
+use codemod_sandbox::utils::project_discovery::find_tsconfig;
+
 use crate::commands::jssg::testing::{
     config::TestOptions,
     fixtures::{TestCase, TestError, TestFile},
@@ -14,8 +16,7 @@ use codemod_sandbox::sandbox::{
     engine::{ExecutionConfig, ExecutionEngine},
     errors::ExecutionError,
     filesystem::RealFileSystem,
-    loaders::FileSystemLoader,
-    resolvers::FileSystemResolver,
+    resolvers::OxcResolver,
 };
 
 #[derive(Debug, Clone)]
@@ -163,13 +164,20 @@ impl TestRunner {
             .parent()
             .unwrap_or(Path::new("."))
             .to_path_buf();
-        let resolver = Arc::new(FileSystemResolver::new(
-            filesystem.clone(),
-            script_base_dir.clone(),
-        ));
-        let loader = Arc::new(FileSystemLoader::new(filesystem.clone()));
 
-        let config = ExecutionConfig::new(filesystem, resolver, loader, script_base_dir)
+        let tsconfig_path = find_tsconfig(&script_base_dir);
+
+        let resolver = Arc::new(
+            match tsconfig_path {
+                Some(tsconfig_path) => {
+                    OxcResolver::with_tsconfig(script_base_dir.clone(), tsconfig_path)
+                }
+                None => OxcResolver::new(script_base_dir.clone()),
+            }
+            .map_err(|e| anyhow::anyhow!("Failed to create OxcResolver: {e}"))?,
+        );
+
+        let config = ExecutionConfig::new(filesystem, resolver, script_base_dir)
             .with_language(language_enum);
 
         let engine = ExecutionEngine::new(config);
@@ -224,11 +232,7 @@ impl TestRunner {
     }
 
     async fn execute_test_case(
-        engine: &ExecutionEngine<
-            RealFileSystem,
-            FileSystemResolver<RealFileSystem>,
-            FileSystemLoader<RealFileSystem>,
-        >,
+        engine: &ExecutionEngine<RealFileSystem, OxcResolver>,
         test_case: &TestCase,
         codemod_path: &Path,
         options: &TestOptions,
@@ -314,11 +318,7 @@ impl TestRunner {
     }
 
     async fn create_expected_files(
-        engine: &ExecutionEngine<
-            RealFileSystem,
-            FileSystemResolver<RealFileSystem>,
-            FileSystemLoader<RealFileSystem>,
-        >,
+        engine: &ExecutionEngine<RealFileSystem, OxcResolver>,
         test_case: &TestCase,
         codemod_path: &Path,
     ) -> Result<()> {

@@ -1,24 +1,20 @@
 use ast_grep_language::SupportLang;
 
 use crate::sandbox::filesystem::{FileSystem, WalkOptions};
-use crate::sandbox::loaders::ModuleLoader;
 use crate::sandbox::resolvers::ModuleResolver;
 use std::path::PathBuf;
 use std::sync::Arc;
 
 /// Configuration for JavaScript execution
-pub struct ExecutionConfig<F, R, L>
+pub struct ExecutionConfig<F, R>
 where
     F: FileSystem,
     R: ModuleResolver,
-    L: ModuleLoader,
 {
     /// Filesystem implementation to use
     pub filesystem: Arc<F>,
     /// Module resolver implementation to use
     pub resolver: Arc<R>,
-    /// Module loader implementation to use
-    pub loader: Arc<L>,
     /// Base directory for script resolution
     pub script_base_dir: PathBuf,
     /// Maximum number of concurrent threads for parallel execution
@@ -37,22 +33,15 @@ where
     pub dry_run: bool,
 }
 
-impl<F, R, L> ExecutionConfig<F, R, L>
+impl<F, R> ExecutionConfig<F, R>
 where
     F: FileSystem,
     R: ModuleResolver,
-    L: ModuleLoader,
 {
-    pub fn new(
-        filesystem: Arc<F>,
-        resolver: Arc<R>,
-        loader: Arc<L>,
-        script_base_dir: PathBuf,
-    ) -> Self {
+    pub fn new(filesystem: Arc<F>, resolver: Arc<R>, script_base_dir: PathBuf) -> Self {
         Self {
             filesystem,
             resolver,
-            loader,
             script_base_dir,
             max_threads: None,
             walk_options: WalkOptions::default(),

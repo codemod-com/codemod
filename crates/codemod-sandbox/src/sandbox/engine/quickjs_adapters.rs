@@ -2,45 +2,27 @@ use crate::rquickjs_compat::{
     loader::{Loader, Resolver},
     module, Ctx, Error, Module, Result,
 };
+use crate::sandbox::resolvers::ModuleResolver;
 use crate::utils::transpiler;
-use std::path::PathBuf;
+use std::sync::Arc;
 
-/// QuickJS-compatible resolver adapter
-pub struct QuickJSResolver {
-    base_dir: PathBuf,
+/// QuickJS-compatible resolver adapter that uses any ModuleResolver
+pub struct QuickJSResolver<R: ModuleResolver> {
+    resolver: Arc<R>,
 }
 
-impl QuickJSResolver {
-    pub fn new(base_dir: PathBuf) -> Self {
-        Self { base_dir }
+impl<R: ModuleResolver> QuickJSResolver<R> {
+    pub fn new(resolver: Arc<R>) -> Self {
+        Self { resolver }
     }
 }
 
-impl Resolver for QuickJSResolver {
+impl<R: ModuleResolver> Resolver for QuickJSResolver<R> {
     fn resolve(&mut self, _ctx: &Ctx<'_>, base: &str, name: &str) -> Result<String> {
-        // Handle relative imports
-        if name.starts_with("./") || name.starts_with("../") {
-            let base_path = if base.is_empty() {
-                self.base_dir.clone()
-            } else {
-                let base_file = std::path::Path::new(base);
-                if base_file.is_absolute() {
-                    base_file.parent().unwrap_or(&self.base_dir).to_path_buf()
-                } else {
-                    self.base_dir
-                        .join(base_file.parent().unwrap_or(std::path::Path::new("")))
-                }
-            };
-
-            let resolved_path = base_path.join(name);
-            let canonicalized = resolved_path
-                .canonicalize()
-                .map_err(|_| Error::new_resolving(base, name))?;
-
-            Ok(canonicalized.to_string_lossy().to_string())
-        } else {
-            // For non-relative imports, return as-is (will be handled by the built-in resolver)
-            Err(Error::new_resolving(base, name))
+        // Use the configured ModuleResolver to resolve the module
+        match self.resolver.resolve(base, name) {
+            Ok(resolved_path) => Ok(resolved_path),
+            Err(_) => Err(Error::new_resolving(base, name)),
         }
     }
 }
