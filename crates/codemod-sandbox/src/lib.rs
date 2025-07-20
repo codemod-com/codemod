@@ -4,7 +4,7 @@ pub mod capabilities;
 mod plugins;
 mod rquickjs_compat;
 pub mod sandbox;
-mod utils;
+pub mod utils;
 
 #[cfg(feature = "native")]
 pub use ast_grep::{

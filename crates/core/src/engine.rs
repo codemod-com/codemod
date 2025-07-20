@@ -30,16 +30,18 @@ use butterflow_runners::Runner;
 use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
-use codemod_sandbox::sandbox::{
-    engine::{
-        language_data::get_extensions_for_language, ExecutionConfig, ExecutionEngine,
-        ExecutionStats,
-    },
-    filesystem::{RealFileSystem, WalkOptions},
-    loaders::FileSystemLoader,
-    resolvers::FileSystemResolver,
-};
 use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
+use codemod_sandbox::{
+    sandbox::{
+        engine::{
+            language_data::get_extensions_for_language, ExecutionConfig, ExecutionEngine,
+            ExecutionStats,
+        },
+        filesystem::{RealFileSystem, WalkOptions},
+        resolvers::OxcResolver,
+    },
+    utils::project_discovery::find_tsconfig,
+};
 use std::sync::OnceLock;
 
 pub static GLOBAL_STATS: OnceLock<Mutex<ExecutionStats>> = OnceLock::new();
@@ -1357,13 +1359,24 @@ impl Engine {
             .parent()
             .unwrap_or(Path::new("."))
             .to_path_buf();
-        let resolver = Arc::new(FileSystemResolver::new(
-            filesystem.clone(),
-            script_base_dir.clone(),
-        ));
-        let loader = Arc::new(FileSystemLoader::new(filesystem.clone()));
 
-        let mut config = ExecutionConfig::new(filesystem, resolver, loader, script_base_dir);
+        // Find tsconfig.json relative to the bundle path (or working directory as fallback)
+        let search_dir = bundle_path
+            .or(working_dir.as_deref())
+            .unwrap_or(&script_base_dir);
+        let tsconfig_path = find_tsconfig(search_dir);
+
+        let resolver = Arc::new(
+            match tsconfig_path {
+                Some(tsconfig_path) => {
+                    OxcResolver::with_tsconfig(script_base_dir.clone(), tsconfig_path)
+                }
+                None => OxcResolver::new(script_base_dir.clone()),
+            }
+            .map_err(|e| Error::Other(format!("Failed to create OxcResolver: {e}")))?,
+        );
+
+        let mut config = ExecutionConfig::new(filesystem, resolver, script_base_dir);
         let mut walk_options = WalkOptions::default();
 
         // Apply configuration options from the step definition

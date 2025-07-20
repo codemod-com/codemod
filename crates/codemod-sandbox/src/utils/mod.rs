@@ -1,3 +1,5 @@
+pub mod project_discovery;
+
 #[cfg(feature = "wasm")]
 pub mod quickjs_wasm;
 
