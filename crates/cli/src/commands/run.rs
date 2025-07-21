@@ -1,15 +1,9 @@
 use crate::auth_provider::CliAuthProvider;
-use crate::auth_provider::CliAuthProvider;
-use crate::auth_provider::CliAuthProvider;
-use crate::dirty_git_check;
 use crate::dirty_git_check;
 use crate::download_progress_bar::create_progress_bar;
 use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
-use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
 use anyhow::Result;
-use butterflow_core::engine::{Engine, ProgressCallback};
-use butterflow_core::engine::{Engine, GLOBAL_STATS};
-use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
+use butterflow_core::engine::{Engine, ProgressCallback, GLOBAL_STATS};
 use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
 use butterflow_core::utils::get_cache_dir;
 use clap::Args;
