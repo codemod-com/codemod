@@ -1,10 +1,10 @@
+use crate::dirty_git_check;
+use crate::download_progress_bar::create_progress_bar;
+use crate::workflow_runner::{resolve_workflow_source, run_workflow, WorkflowRunConfig};
 use anyhow::{Context, Result};
 use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use clap::Args;
-
-use crate::dirty_git_check;
-use crate::workflow_runner::{resolve_workflow_source, run_workflow, WorkflowRunConfig};
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -40,7 +40,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     dirty_git_check::dirty_check(args.allow_dirty)?;
 
     // Run workflow using the extracted workflow runner
-    run_workflow(engine, config).await?;
+    run_workflow(engine, config, Some(create_progress_bar())).await?;
 
     Ok(())
 }

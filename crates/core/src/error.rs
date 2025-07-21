@@ -46,4 +46,7 @@ pub enum Error {
 
     #[error("Other error: {0}")]
     Other(String),
+
+    #[error("Tree-sitter error: {0}")]
+    TreeSitter(String),
 }

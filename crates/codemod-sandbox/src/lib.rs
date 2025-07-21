@@ -4,6 +4,7 @@ pub mod capabilities;
 mod plugins;
 mod rquickjs_compat;
 pub mod sandbox;
+pub mod tree_sitter;
 pub mod utils;
 
 #[cfg(feature = "native")]

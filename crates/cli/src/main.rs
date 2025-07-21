@@ -6,6 +6,7 @@ mod auth;
 mod auth_provider;
 mod commands;
 mod dirty_git_check;
+mod download_progress_bar;
 mod engine;
 mod workflow_runner;
 use ascii_art::print_ascii_art;
