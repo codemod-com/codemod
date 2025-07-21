@@ -446,8 +446,55 @@ npx codemod@next publish [PATH] [options]
 Search for packages in the registry.
 
 ```bash
-npx codemod@next search [QUERY] [options]
+npx codemod@next search [OPTIONS] [QUERY]
 ```
+
+<ResponseField name="[QUERY]" type="string">
+  Search query
+</ResponseField>
+<ResponseField name="--language <LANGUAGE>" type="string">
+  Filter by programming language
+</ResponseField>
+<ResponseField name="--framework <FRAMEWORK>" type="string">
+  Filter by framework
+</ResponseField>
+<ResponseField name="--category <CATEGORY>" type="string">
+  Filter by category
+</ResponseField>
+<ResponseField name="--size <SIZE>" type="number">
+  Number of results to return (default: 20)
+</ResponseField>
+<ResponseField name="--from <FROM>" type="number">
+  Pagination offset (default: 0)
+</ResponseField>
+<ResponseField name="--scope <SCOPE>" type="string">
+  Filter by organization scope
+</ResponseField>
+<ResponseField name="--registry <REGISTRY>" type="string">
+  Registry URL
+</ResponseField>
+<ResponseField name="--format <FORMAT>" type="string">
+  Output format (default: table). Possible values: table, json, yaml
+</ResponseField>
+
+<Accordion title="Examples">
+
+Search for codemods related to React:
+```bash
+npx codemod@next search react
+```
+
+Filter by language and category:
+```bash
+npx codemod@next search --language typescript --category migration
+```
+
+Get results in JSON format:
+```bash
+npx codemod@next search --format json next
+```
+
+</Accordion>
 
 ### `codemod@next cache`
 
