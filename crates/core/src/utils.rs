@@ -1,10 +1,10 @@
-use std::collections::{HashMap, HashSet};
-use std::fs;
-use std::path::{Path, PathBuf};
-use serde_yaml;
 use anyhow::{Context, Result};
 use butterflow_models::step::StepAction;
 use butterflow_models::{Error, Node, Result, Workflow};
+use serde_yaml;
+use std::collections::{HashMap, HashSet};
+use std::fs;
+use std::path::{Path, PathBuf};
 
 /// Parse a workflow definition from a file
 pub fn parse_workflow_file<P: AsRef<Path>>(path: P) -> Result<Workflow> {
