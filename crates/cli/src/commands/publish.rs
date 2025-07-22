@@ -4,7 +4,6 @@ use butterflow_models::workflow;
 use clap::Args;
 use log::{debug, info, warn};
 use reqwest;
-use rspack::{Compiler, Config, Entry, ModuleOptions, OutputOptions, ResolveOptions};
 use serde::{Deserialize, Serialize};
 use serde_yaml;
 use std::collections::HashMap;
@@ -14,6 +13,7 @@ use tempfile::TempDir;
 use walkdir::WalkDir;
 
 use crate::auth::TokenStorage;
+use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 use crate::commands::workflow::validate::validate_codemod_manifest_structure;
 
 #[derive(Args, Debug)]
@@ -122,7 +122,7 @@ struct PublishedPackage {
     published_at: String,
 }
 
-pub async fn handler(args: &Command) -> Result<()> {
+pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<()> {
     let package_path = args
         .path
         .as_ref()
@@ -152,26 +152,16 @@ pub async fn handler(args: &Command) -> Result<()> {
         }
     }
 
-    // Validate package structure
+    // Validate codemod manifest structure
     validate_codemod_manifest_structure(&package_path, &manifest)?;
 
-    let workflow = utils::parse_workflow_file(&manifest.workflow).context(format!(
-        "Failed to parse workflow file: {}",
-        manifest.workflow.display()
-    ))?;
-    let js_ast_grep_entries = workflow.get_js_ast_grep_entry_points();
-
-    // Create package tarball with JS bundling
-    let tarball_path =
-        create_package_tarball(&package_path, &manifest, &js_ast_grep_entries, args.dry_run)?;
+    // Create codemod tarball
+    let tarball_path = create_codemod_tarball(&package_path, &manifest, args.dry_run)?;
 
     if args.dry_run {
         println!("✓ Package validation successful");
-        if !js_ast_grep_entries.is_empty() {
-            println!("✓ JavaScript files bundled: {}", js_ast_grep_entries.len());
-        }
         println!(
-            "✓ Tarball created: {} ({} bytes)",
+            "✓ tarball created: {} ({} bytes)",
             tarball_path.display(),
             fs::metadata(&tarball_path)?.len()
         );
@@ -199,9 +189,9 @@ pub async fn handler(args: &Command) -> Result<()> {
         })?;
 
     // Upload package
-    let response = upload_package(
+    let response = upload_codemod(
         &registry_url,
-        &tarball_path,
+        &bundle_path,
         &manifest,
         &auth.tokens.access_token,
     )
@@ -211,119 +201,34 @@ pub async fn handler(args: &Command) -> Result<()> {
         return Err(anyhow!("Failed to publish package"));
     }
 
+    let cli_version = env!("CARGO_PKG_VERSION");
+
+    let _ = telemetry
+        .send_event(
+            BaseEvent {
+                kind: "codemodPublished".to_string(),
+                properties: HashMap::from([
+                    ("codemodName".to_string(), manifest.name.clone()),
+                    ("version".to_string(), manifest.version.clone()),
+                    ("cliVersion".to_string(), cli_version.to_string()),
+                ]),
+            },
+            None,
+        )
+        .await;
+
     println!("✅ Package published successfully!");
-    println!("📦 {}", format_package_name(&response.package));
+    println!("📦 {}", format_codemod_name(&response.package));
     println!("🏷️  Version: {}", response.package.version);
     println!("📅 Published: {}", response.package.published_at);
     println!("🔗 Download: {}", response.package.download_url);
 
     // Clean up temporary bundle
-    if let Err(e) = fs::remove_file(&tarball_path) {
+    if let Err(e) = fs::remove_file(&bundle_path) {
         warn!("Failed to clean up temporary bundle: {e}");
     }
 
     Ok(())
-}
-
-async fn bundle_js_files(
-    package_path: &Path,
-    js_entries: &[String],
-    temp_dir: &Path,
-) -> Result<Vec<(String, String)>> {
-    let mut bundled_files = Vec::new();
-
-    for entry in js_entries {
-        let entry_path = package_path.join(entry);
-        if !entry_path.exists() {
-            warn!("JavaScript entry file not found: {}", entry_path.display());
-            continue;
-        }
-
-        info!("Bundling JavaScript file: {}", entry);
-
-        // Create output directory for this entry
-        let output_dir = temp_dir.join("bundled");
-        fs::create_dir_all(&output_dir)?;
-
-        // Generate output filename
-        let entry_name = Path::new(entry)
-            .file_stem()
-            .and_then(|s| s.to_str())
-            .unwrap_or("index");
-        let output_filename = format!("{}.bundle.js", entry_name);
-        let output_path = output_dir.join(&output_filename);
-
-        // Configure Rspack
-        let config = Config {
-            entry: Entry::from([("main".to_string(), entry_path.to_string_lossy().to_string())]),
-            output: OutputOptions {
-                path: output_dir.to_string_lossy().to_string(),
-                filename: output_filename.clone(),
-                ..Default::default()
-            },
-            module: ModuleOptions {
-                rules: vec![
-                    // Add rules for JavaScript/TypeScript files
-                    rspack::ModuleRule {
-                        test: Some(rspack::RuleTest::Regexp(r"\.m?js$".to_string())),
-                        r#type: Some("javascript/auto".to_string()),
-                        ..Default::default()
-                    },
-                    rspack::ModuleRule {
-                        test: Some(rspack::RuleTest::Regexp(r"\.ts$".to_string())),
-                        r#type: Some("javascript/auto".to_string()),
-                        r#use: vec![rspack::RuleUse {
-                            loader: "builtin:swc-loader".to_string(),
-                            options: Some(serde_json::json!({
-                                "jsc": {
-                                    "parser": {
-                                        "syntax": "typescript"
-                                    },
-                                    "transform": {}
-                                }
-                            })),
-                        }],
-                        ..Default::default()
-                    },
-                ],
-                ..Default::default()
-            },
-            resolve: ResolveOptions {
-                extensions: vec![".js".to_string(), ".ts".to_string(), ".mjs".to_string()],
-                ..Default::default()
-            },
-            mode: rspack::Mode::Production,
-            target: vec!["node".to_string()],
-            ..Default::default()
-        };
-
-        // Create compiler and run bundling
-        let compiler = Compiler::new(config)?;
-        let stats = compiler.run().await?;
-
-        if stats.has_errors() {
-            let errors = stats.compilation.get_errors();
-            for error in errors {
-                warn!("Bundling error: {}", error);
-            }
-            return Err(anyhow!("Failed to bundle JavaScript file: {}", entry));
-        }
-
-        if output_path.exists() {
-            // Read the bundled content
-            let bundled_content = fs::read_to_string(&output_path)?;
-
-            // Store the relative path and content
-            let relative_entry = format!("bundled/{}", output_filename);
-            bundled_files.push((relative_entry, bundled_content));
-
-            info!("Successfully bundled: {} -> {}", entry, output_filename);
-        } else {
-            warn!("Bundle output file not found: {}", output_path.display());
-        }
-    }
-
-    Ok(bundled_files)
 }
 
 fn load_manifest(package_path: &Path) -> Result<CodemodManifest> {
@@ -347,67 +252,34 @@ fn load_manifest(package_path: &Path) -> Result<CodemodManifest> {
     Ok(manifest)
 }
 
-fn create_package_tarball(
+fn create_codemod_tarball(
     package_path: &Path,
     manifest: &CodemodManifest,
-    js_entries: &[String],
     dry_run: bool,
 ) -> Result<PathBuf> {
     let temp_dir = TempDir::new()?;
     let bundle_name = format!("{}-{}.tar.gz", manifest.name, manifest.version);
     let temp_bundle_path = temp_dir.path().join(&bundle_name);
 
-    // Bundle JavaScript files if any exist
-    let bundled_files = if !js_entries.is_empty() {
-        info!("Bundling {} JavaScript entry files", js_entries.len());
-        tokio::runtime::Runtime::new()?
-            .block_on(async { bundle_js_files(package_path, js_entries, temp_dir.path()).await })?
-    } else {
-        Vec::new()
-    };
-
     // Create tar.gz archive
     let tar_gz = fs::File::create(&temp_bundle_path)?;
     let enc = flate2::write::GzEncoder::new(tar_gz, flate2::Compression::default());
     let mut tar = tar::Builder::new(enc);
 
-    // Add original files to archive (excluding JS entries that will be bundled)
+    // Add files to archive
     let mut file_count = 0;
     for entry in WalkDir::new(package_path)
         .into_iter()
         .filter_map(|e| e.ok())
         .filter(|e| e.path() != package_path) // Skip the root directory itself
-        .filter(|e| should_include_file(e.path(), package_root))
+        .filter(|e| should_include_file(e.path(), package_path))
     {
         if entry.file_type().is_file() {
             let relative_path = entry.path().strip_prefix(package_path)?;
-            let relative_path_str = relative_path.to_string_lossy();
-
-            // Skip original JS entry files since we'll include bundled versions
-            if js_entries
-                .iter()
-                .any(|js_entry| relative_path_str == *js_entry)
-            {
-                debug!("Skipping original JS entry file: {}", relative_path_str);
-                continue;
-            }
-
             debug!("Adding file to bundle: {}", relative_path.display());
             tar.append_path_with_name(entry.path(), relative_path)?;
             file_count += 1;
         }
-    }
-
-    // Add bundled JavaScript files
-    for (bundled_path, bundled_content) in bundled_files {
-        debug!("Adding bundled file: {}", bundled_path);
-        let mut header = tar::Header::new_gnu();
-        header.set_path(&bundled_path)?;
-        header.set_size(bundled_content.len() as u64);
-        header.set_mode(0o644);
-        header.set_cksum();
-        tar.append(&header, bundled_content.as_bytes())?;
-        file_count += 1;
     }
 
     info!("Added {file_count} files to bundle");
@@ -427,7 +299,7 @@ fn create_package_tarball(
         ));
     }
 
-    info!("Created bundle: {bundle_name} ({bundle_size} bytes)");
+    info!("Created codemod tarball: {bundle_name} ({bundle_size} bytes)");
 
     // Move to a persistent location (both dry-run and regular publishing)
     let output_path = if dry_run {
@@ -490,15 +362,15 @@ fn should_include_file(file_path: &Path, package_root: &Path) -> bool {
     true
 }
 
-async fn upload_package(
+async fn upload_codemod(
     registry_url: &str,
-    bundle_path: &Path,
+    tarball_path: &Path,
     manifest: &CodemodManifest,
     access_token: &str,
 ) -> Result<PublishResponse> {
     let client = reqwest::Client::new();
 
-    let package_name = if let Some(registry) = &manifest.registry {
+    let codemod_name = if let Some(registry) = &manifest.registry {
         if let Some(scope) = &registry.scope {
             format!("{}/{}", scope, manifest.name)
         } else {
@@ -508,10 +380,10 @@ async fn upload_package(
         manifest.name.clone()
     };
 
-    let url = format!("{registry_url}/api/v1/registry/packages/{package_name}");
+    let url = format!("{registry_url}/api/v1/registry/packages/{codemod_name}");
 
-    // Read bundle file
-    let bundle_data = fs::read(bundle_path)?;
+    // Read tarball file
+    let tarball_data = fs::read(tarball_path)?;
     let manifest_json = serde_json::to_string(manifest)?;
 
     // Create multipart form
@@ -557,31 +429,8 @@ async fn upload_package(
     Ok(publish_response)
 }
 
-fn is_valid_package_name(name: &str) -> bool {
-    !name.is_empty()
-        && name.len() <= 50
-        && name
-            .chars()
-            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '_')
-        && !name.starts_with('-')
-        && !name.ends_with('-')
-}
 
-fn is_valid_semver(version: &str) -> bool {
-    // Basic semver validation (x.y.z format)
-    let parts: Vec<&str> = version.split('.').collect();
-    if parts.len() != 3 {
-        return false;
-    }
-
-    parts.iter().all(|part| {
-        part.chars().all(|c| c.is_ascii_digit())
-            && !part.is_empty()
-            && (*part == "0" || !part.starts_with('0'))
-    })
-}
-
-fn format_package_name(package: &PublishedPackage) -> String {
+fn format_codemod_name(package: &PublishedPackage) -> String {
     if let Some(scope) = &package.scope {
         format!("{}/{}", scope, package.name)
     } else {
