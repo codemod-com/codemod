@@ -527,6 +527,7 @@ dependencies = [
 name = "butterflow-models"
 version = "1.0.0-rc.15"
 dependencies = [
+ "anyhow",
  "chrono",
  "regex",
  "reqwest 0.12.15",

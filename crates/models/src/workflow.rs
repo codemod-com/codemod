@@ -3,7 +3,7 @@ use chrono::{DateTime, Utc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use uuid::Uuid;
 
 use crate::node::Node;
@@ -107,7 +107,7 @@ pub enum WorkflowStatus {
 impl Workflow {
     /// Validate workflow's nodes and steps that use ast-grep js api
     /// by checking if the files exist in the filesystem
-    pub fn validate_js_ast_grep_files(&self, base_dir: &PathBuf) -> Result<()> {
+    pub fn validate_js_ast_grep_files(&self, base_dir: &Path) -> Result<()> {
         for node in &self.nodes {
             for step in &node.steps {
                 if let StepAction::JSAstGrep(js_ast_grep) = &step.action {
