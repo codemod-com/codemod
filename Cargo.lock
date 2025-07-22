@@ -500,6 +500,7 @@ dependencies = [
 name = "butterflow-core"
 version = "1.0.0-rc.15"
 dependencies = [
+ "anyhow",
  "async-trait",
  "butterflow-models",
  "butterflow-runners",
