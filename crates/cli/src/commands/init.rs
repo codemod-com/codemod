@@ -103,6 +103,8 @@ const JS_APPLY_SCRIPT_FOR_JAVA: &str =
 const JS_TSCONFIG_TEMPLATE: &str = include_str!("../templates/js-astgrep/tsconfig.json");
 const JS_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.js");
 const JS_TEST_EXPECTED: &str = include_str!("../templates/js-astgrep/tests/fixtures/expected.js");
+const JS_CODEMOD_MANIFEST: &str = include_str!("../templates/js-astgrep/tests/codemod.yaml");
+
 // ast-grep YAML project templates
 const ASTGREP_PATTERNS_FOR_JAVASCRIPT: &str =
     include_str!("../templates/astgrep-yaml/rules/config.js.yml");

@@ -1,6 +1,7 @@
 import type { SgRoot } from "@ast-grep/napi";
+import type Java from "codemod:ast-grep/langs/java";
 
-async function transform(root: SgRoot): Promise<string | null> {
+async function transform(root: SgRoot<Java>): Promise<string | null> {
   const rootNode = root.root();
 
   // Find for-each loops that iterate over a collection and add items to another collection
@@ -17,12 +18,12 @@ async function transform(root: SgRoot): Promise<string | null> {
   });
 
   const edits = filterMapLoops.map((node) => {
-    const type = node.getMatch("TYPE").text();
-    const variable = node.getMatch("VAR").text();
-    const collection = node.getMatch("COLLECTION").text();
-    const condition = node.getMatch("CONDITION").text();
-    const target = node.getMatch("TARGET").text();
-    const expression = node.getMatch("EXPRESSION").text();
+    const type = node.getMatch("TYPE")?.text();
+    const variable = node.getMatch("VAR")?.text();
+    const collection = node.getMatch("COLLECTION")?.text();
+    const condition = node.getMatch("CONDITION")?.text();
+    const target = node.getMatch("TARGET")?.text();
+    const expression = node.getMatch("EXPRESSION")?.text();
 
     // Transform to streams API
     return node.replace(`
@@ -45,10 +46,10 @@ async function transform(root: SgRoot): Promise<string | null> {
   });
 
   const moreEdits = simpleMappingLoops.map((node) => {
-    const variable = node.getMatch("VAR").text();
-    const collection = node.getMatch("COLLECTION").text();
-    const target = node.getMatch("TARGET").text();
-    const expression = node.getMatch("EXPRESSION").text();
+    const variable = node.getMatch("VAR")?.text();
+    const collection = node.getMatch("COLLECTION")?.text();
+    const target = node.getMatch("TARGET")?.text();
+    const expression = node.getMatch("EXPRESSION")?.text();
 
     // Transform to streams API
     return node.replace(`
