@@ -58,9 +58,9 @@ pub fn validate_codemod_manifest_structure(
         }
     }
 
-    // Validate package name format
-    if !is_valid_package_name(&manifest.name) {
-        return Err(anyhow!("Invalid package name: {}. Must contain only lowercase letters, numbers, hyphens, and underscores.", manifest.name));
+    // Validate codemod name format
+    if !is_valid_codemod_name(&manifest.name) {
+        return Err(anyhow!("Invalid codemod name: {}. Must contain only lowercase letters, numbers, hyphens, and underscores.", manifest.name));
     }
 
     // Validate version format (semver)
@@ -144,4 +144,28 @@ fn validate_workflow(workflow_path: &Path) -> Result<()> {
     info!("State schema: Valid ({state_schema_count} schema definitions)");
 
     Ok(())
+}
+
+fn is_valid_codemod_name(name: &str) -> bool {
+    !name.is_empty()
+        && name.len() <= 50
+        && name
+            .chars()
+            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '_')
+        && !name.starts_with('-')
+        && !name.ends_with('-')
+}
+
+fn is_valid_semver(version: &str) -> bool {
+    // Basic semver validation (x.y.z format)
+    let parts: Vec<&str> = version.split('.').collect();
+    if parts.len() != 3 {
+        return false;
+    }
+
+    parts.iter().all(|part| {
+        part.chars().all(|c| c.is_ascii_digit())
+            && !part.is_empty()
+            && (*part == "0" || !part.starts_with('0'))
+    })
 }
