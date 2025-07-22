@@ -441,6 +441,67 @@ npx codemod@next publish [PATH] [options]
   Validate and pack without uploading.
 </ResponseField>
 
+<Accordion title="Examples">
+```bash
+# Dry-run to verify bundle
+npx codemod@next publish ./my-codemod --dry-run
+
+# Publish a private package tagged beta
+npx codemod@next publish ./my-codemod --access private --tag beta
+
+# Override version and custom registry
+npx codemod@next publish ./my-codemod --version 1.2.0 --registry https://registry.example.com
+```
+</Accordion>
+
+### `codemod@next unpublish`
+
+Remove a package or selected version from the registry.
+
+```bash
+npx codemod@next unpublish <PACKAGE> [options]
+```
+
+<ResponseField name="<PACKAGE>" type="string" required>
+  Package name (e.g., `@org/my-codemod` or `my-codemod`).
+</ResponseField>
+
+<ResponseField name="--version <VERSION>" type="string">
+  Specific semver to unpublish. Requires confirmation.
+</ResponseField>
+
+<ResponseField name="--force" type="boolean">
+  Unpublish **all** versions (irreversible). Confirmation required.
+</ResponseField>
+
+<ResponseField name="--registry <REGISTRY>" type="string">
+  Target registry URL.
+</ResponseField>
+
+<ResponseField name="--dry-run" type="boolean">
+  Show what would be removed without actually unpublishing.
+</ResponseField>
+
+<Tip>
+  The CLI always prompts for confirmation when `--version` or `--force` is used. This interactive step cannot be bypassed programmatically.
+</Tip>
+
+<Accordion title="Examples">
+```bash
+# Preview removal of a single version
+npx codemod@next unpublish my-codemod --version 0.1.0 --dry-run
+
+# Remove a single version (will prompt)
+npx codemod@next unpublish my-codemod --version 0.1.0
+
+# Remove all versions (will prompt)
+npx codemod@next unpublish my-codemod --force
+
+# Unpublish from a custom registry
+npx codemod@next unpublish my-codemod --force --registry https://registry.example.com
+```
+</Accordion>
+
 ### `codemod@next search`
 
 Search for packages in the registry.
