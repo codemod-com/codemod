@@ -9,6 +9,7 @@ use uuid::Uuid;
 use crate::node::Node;
 use crate::state::StateSchema;
 use crate::template::Template;
+use crate::step::StepAction;
 use ts_rs::TS;
 
 /// Represents a workflow definition
@@ -104,39 +105,35 @@ pub enum WorkflowStatus {
 }
 
 impl Workflow {
-    /// Validate that all referenced templates exist in the workflow
-    pub fn validate_templates(&self) -> Result<()> {
-        let template_ids: std::collections::HashSet<_> =
-            self.templates.iter().map(|t| t.id.clone()).collect();
+    /// Validate workflow's nodes and steps that use ast-grep js api
+    /// by checking if the files exist in the filesystem
+    pub fn validate_js_ast_grep_files(&self, base_dir: &PathBuf) -> Result<()> {
         for node in &self.nodes {
             for step in &node.steps {
-                if let crate::step::StepAction::UseTemplate(template_use) = &step.action {
-                    if !template_ids.contains(&template_use.template) {
+                if let StepAction::JSAstGrep(js_ast_grep) = &step.action {
+                    let js_file_path = base_dir.join(&js_ast_grep.js_file);
+
+                    if !js_file_path.exists() {
                         return Err(anyhow!(
-                            "Step '{}' references non-existent template: {}",
+                            "JavaScript file '{}' not found for step '{}' in node '{}'",
+                            js_ast_grep.js_file,
                             step.name,
-                            template_use.template
+                            node.name
+                        ));
+                    }
+                    
+                    if !js_file_path.is_file() {
+                        return Err(anyhow!(
+                            "Path '{}' exists but is not a file for step '{}' in node '{}'",
+                            js_ast_grep.js_file,
+                            step.name,
+                            node.name
                         ));
                     }
                 }
             }
         }
+        
         Ok(())
-    }
-
-    /// Get all js-ast-grep entry points in the workflow
-    pub fn get_js_ast_grep_entry_points(&self) -> Vec<String> {
-        self.nodes
-            .iter()
-            .flat_map(|node| {
-                node.steps.iter().filter_map(|step| {
-                    if let crate::step::StepAction::JSAstGrep(grep) = &step.action {
-                        Some(grep.js_file.clone())
-                    } else {
-                        None
-                    }
-                })
-            })
-            .collect::<Vec<_>>()
     }
 }
