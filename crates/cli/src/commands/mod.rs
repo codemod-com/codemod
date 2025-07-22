@@ -6,5 +6,6 @@ pub mod logout;
 pub mod publish;
 pub mod run;
 pub mod search;
+pub mod unpublish;
 pub mod whoami;
 pub mod workflow;

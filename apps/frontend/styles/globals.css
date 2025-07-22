@@ -1,4 +1,4 @@
-@import '../app/(website)/studio-jscodeshift/src/index.css';
+@import "../app/(website)/studio-jscodeshift/src/index.css";
 
 @tailwind base;
 @tailwind components;
@@ -126,8 +126,8 @@ html {
   -moz-osx-font-smoothing: grayscale;
 
   transition:
-          background-color 0.01s ease-out,
-          color 0.01s ease-out;
+    background-color 0.01s ease-out,
+    color 0.01s ease-out;
 
   @apply bg-primary-dark text-primary-light dark:bg-primary-light dark:text-primary-dark;
 }
@@ -184,9 +184,9 @@ h6 {
 
   @media (min-width: 1024px) {
     background: linear-gradient(
-            180deg,
-            #bbfc03 0%,
-            rgba(187, 252, 3, 0.17) 100%
+      180deg,
+      #bbfc03 0%,
+      rgba(187, 252, 3, 0.17) 100%
     );
   }
 }
@@ -194,9 +194,9 @@ h6 {
 .codeblock pre {
   font-variant-numeric: slashed-zero;
   font-feature-settings:
-          "ss02" on,
-          "clig" off,
-          "liga" off;
+    "ss02" on,
+    "clig" off,
+    "liga" off;
 }
 
 h2[class*="heading"] a,
@@ -211,12 +211,17 @@ h6[class*="heading"] a {
 }
 
 /* Cutomize Clerk components */
-.cl-userButtonPopoverActionButton, .cl-userButtonPopoverActionButton:hover, .cl-footerActionLink {
+.cl-userButtonPopoverActionButton,
+.cl-userButtonPopoverActionButton:hover,
+.cl-footerActionLink {
   color: inherit;
 }
 
-.prose :where(code):not(:where([class~=not-prose],[class~=not-prose] *)):before,  .prose :where(code):not(:where([class~=not-prose],[class~=not-prose] *)):after{
-  content: normal
+.prose
+  :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)):before,
+.prose
+  :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)):after {
+  content: normal;
 }
 
 .introjs-tooltip {
@@ -229,10 +234,10 @@ h6[class*="heading"] a {
 }
 
 .tabs {
-   z-index: 15;
-   background: rgba(206, 208, 210, 0.12);
-   font-size: 14px;
- }
+  z-index: 15;
+  background: rgba(206, 208, 210, 0.12);
+  font-size: 14px;
+}
 
 .tabs input {
   width: 80px;
@@ -249,7 +254,7 @@ h6[class*="heading"] a {
 
 /* Increase height when content overflows */
 .tabs-list::after {
-  content: '';
+  content: "";
   display: block;
   height: 3px; /* Height of the scrollbar */
   min-width: 1px; /* Ensures it's always present */
@@ -294,10 +299,10 @@ h6[class*="heading"] a {
     scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1);
   }
 }
-.tab-trigger{
+.tab-trigger {
   cursor: pointer;
   background: none;
-  min-width: 100px
+  min-width: 100px;
 }
 
 .tab-trigger:hover {
@@ -390,13 +395,13 @@ h6[class*="heading"] a {
 .scrollbar::-webkit-scrollbar {
   @apply w-1;
 }
-.scrollbar::-webkit-scrollbar, .scrollbar::-webkit-scrollbar-thumb {
+.scrollbar::-webkit-scrollbar,
+.scrollbar::-webkit-scrollbar-thumb {
   @apply overflow-visible rounded;
 }
 .scrollbar::-webkit-scrollbar-thumb {
   @apply bg-slate-500/20;
 }
-
 
 .outline {
   outline-width: 1px;
@@ -405,4 +410,3 @@ h6[class*="heading"] a {
   outline-offset: 2px;
   border-radius: 3px;
 }
-

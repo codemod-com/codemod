@@ -5,7 +5,10 @@ import { alwaysVisible } from "@studio/utils/visibility";
 export const VisibilityIcon = ({
   visibilityOptions = alwaysVisible,
   className,
-}: { visibilityOptions?: VisibilityOptions; className?: string }) => (
+}: {
+  visibilityOptions?: VisibilityOptions;
+  className?: string;
+}) => (
   <span
     onClick={visibilityOptions.toggleVisibility}
     className="panel_show_hide_icon"

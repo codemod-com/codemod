@@ -15,6 +15,7 @@ butterflow-core = { workspace = true }
 butterflow-state = { workspace = true }
 butterflow-runners = { workspace = true }
 codemod-sandbox = { workspace = true }
+codemod-telemetry = { workspace = true }
 tokio = { workspace = true }
 clap = { version = "4.5", features = ["derive"] }
 flate2 = { workspace = true }
@@ -56,7 +57,9 @@ open = "5.0"
 libtest-mimic = "0.8"
 similar = "2.0"
 ast-grep-language.workspace = true
-
+tabled = "0.20.0"
+posthog-rs = "0.3.7"
+async-trait.workspace = true
 
 [features]
 default = []

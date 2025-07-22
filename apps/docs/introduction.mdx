@@ -2,40 +2,79 @@
 title: Overview
 ---
 
-<Frame>
-  <img
-    src="/images/intro/codemod-docs-hero-light.jpg"
-    alt="Codemod platform architecture"
-    className="block dark:hidden"
-  />
-  <img
-    src="/images/intro/codemod-docs-hero-dark.jpg"
-    alt="Codemod platform architecture"
-    className="hidden dark:block"
-  />
-</Frame>
+Codemod Platform keeps your code modern—continuously. It helps teams:
 
-Codemod platform helps you create, distribute, and run codemods in codebases of any size.
+* **Spot modernization opportunities** in aging codebases.
+* **Apply migrations** for frameworks, APIs, and dependencies.
+* **Orchestrate and track** those changes across every repo and service.
 
-The AI-powered, community-led codemods enable you to automate framework upgrades, large refactoring, and boilerplate programming with unparalleled speed and developer experience.
+By closing the loop from discovery to rollout, teams win back thousands of engineering hours and stop tech debt before it stacks up—regaining the speed and reliability that drive competitive edge.
 
-We are making dream migrations a reality for all developers in the world, one framework at a time.
+<img 
+  className="block dark:hidden" 
+  src="/images/intro/intro-platform-light.png" 
+  alt="Light mode interface"
+/>
 
-## Getting started
+<img 
+  className="hidden dark:block" 
+  src="/images/intro/intro-platform-dark.png" 
+  alt="Dark mode interface"
+/>
 
-Take the first step towards modernizing your codebase.
+The platform stands on two complementary foundations:
+
+* **Open-source toolkit** – a free CLI and public registry maintained by the community, ensuring migrations stay current and battle-tested.
+* **Enterprise capabilities** – Studio, Campaigns, Insights, and private registries that add creation, orchestration, and governance for larger engineering orgs.
+
+Community-powered migrations, paired with enterprise-grade automation, make Codemod the gold standard for keeping codebases up to date.
+
+## Problems it solves
+* End-of-life package & SDK upgrades (e.g. React, Nuxt, etc. upgrades)
+* Large-scale API refactors & deprecations
+* Security / compliance patches across fleets of services
+* Dependency consistency, lint-fixes, and other “sweeping” chores
+* Internationalization (i18n) roll-outs and other cross-cutting business mandates
+* Tech unification after M&A or platform consolidation (CommonJS → ESM/TS)
+* Infrastructure migrations (RDS → Dynamo DB, on-prem → cloud)
+
+## Who is it for?
+
+| Audience | How Codemod helps |
+| --- | --- |
+| <Icon icon="github-alt" iconType="solid" /> **OSS framework maintainers**  | Ship one-click upgrade recipes to your users |
+| <Icon icon="user-helmet-safety" iconType="solid" /> **Platform engineers / DevEx teams** | Automate org-wide migrations & standards |
+| <Icon icon="people-group" iconType="solid" /> **Engineering leaders** | Track modernization, risk, and ROI with *Insights* |
+
+### Open-source building blocks
+
+* **[CLI](/cli/cli-reference)** – build, run, & publish codemod workflows
+* **[Public Registry](https://codemod.com/registry)** – discover community-led codemods
+
+### Enterprise & engineering teams' features
+
+<Note>
+  The following capabilities are available on the [Pro and Enterprise tiers](https://codemod.com/pricing).
+</Note>
+
+* **[Studio](/codemod-studio)** – AI-generated codemods & recipes
+* **[Campaigns](/migrations)** – run and orchestrate changes at scale
+* **[Insights](/insights)** – plan and track fleet-wide progress
+* **Private / Pro Registry** – secure, organization-scoped codemods
+
+## Quick links
 
 <CardGroup cols={2}>
-  <Card title="Plan" icon="notebook" href="/platform/plan">
-    Identify and plan code migration opportunities.
+  <Card title="Get started with CLI" icon="terminal" href="/cli/cli-reference">
+    Build and run codemod workflows locally.
   </Card>
-  <Card title="Automate" icon="robot" href="/platform/automate">
-    Put migrations, code search, and insights on autopilot.
+  <Card title="Codemod Studio" icon="bolt" href="/codemod-studio">
+    Generate codemods with AI.
   </Card>
-  <Card title="Orchestrate" icon="users-rays" href="/platform/orchestrate">
-    Orchestrate & manage large-scale code migration campaigns.
+  <Card title="Launch a Campaign" icon="users-rays" href="/migrations">
+    Orchestrate multi-repo migrations.
   </Card>
-  <Card title="Track" icon="chart-line-up-down" href="/platform/track">
-    Stay on top of code changes that scale over time.
+  <Card title="See Insights" icon="chart-line-up-down" href="/insights">
+    Track modernisation metrics over time.
   </Card>
 </CardGroup>

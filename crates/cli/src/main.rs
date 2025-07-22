@@ -1,14 +1,20 @@
 use anyhow::Result;
 use clap::{Args, Parser, Subcommand};
 use log::info;
-
 mod ascii_art;
 mod auth;
 mod auth_provider;
 mod commands;
+mod dirty_git_check;
 mod engine;
 mod workflow_runner;
 use ascii_art::print_ascii_art;
+use codemod_telemetry::{
+    send_event::{PostHogSender, TelemetrySender, TelemetrySenderOptions},
+    send_null::NullSender,
+};
+
+use crate::auth::TokenStorage;
 
 #[derive(Parser)]
 #[command(name = "codemod")]
@@ -56,6 +62,9 @@ enum Commands {
 
     /// Run a codemod from the registry
     Run(commands::run::Command),
+
+    /// Unpublish a package from the registry
+    Unpublish(commands::unpublish::Command),
 
     /// Manage package cache
     Cache(commands::cache::Command),
@@ -116,7 +125,16 @@ fn is_package_name(arg: &str) -> bool {
 
     // Check for simple package names (exclude known subcommands)
     let known_commands = [
-        "workflow", "jssg", "init", "login", "logout", "whoami", "publish", "search", "run",
+        "workflow",
+        "jssg",
+        "init",
+        "login",
+        "logout",
+        "whoami",
+        "publish",
+        "search",
+        "run",
+        "unpublish",
         "cache",
     ];
 
@@ -127,6 +145,7 @@ fn is_package_name(arg: &str) -> bool {
 async fn handle_implicit_run_command(
     engine: &butterflow_core::engine::Engine,
     trailing_args: Vec<String>,
+    telemetry_sender: &dyn TelemetrySender,
 ) -> Result<bool> {
     if trailing_args.is_empty() {
         return Ok(false);
@@ -145,7 +164,7 @@ async fn handle_implicit_run_command(
     match Cli::try_parse_from(&full_args) {
         Ok(new_cli) => {
             if let Some(Commands::Run(run_args)) = new_cli.command {
-                commands::run::handler(engine, &run_args).await?;
+                commands::run::handler(engine, &run_args, telemetry_sender).await?;
                 Ok(true)
             } else {
                 Ok(false)
@@ -165,7 +184,7 @@ async fn handle_implicit_run_command(
 #[tokio::main]
 async fn main() -> Result<()> {
     // Initialize logger
-    env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
+    env_logger::init_from_env(env_logger::Env::default().default_filter_or("error"));
 
     // Parse command line arguments
     let cli = Cli::parse();
@@ -179,6 +198,30 @@ async fn main() -> Result<()> {
 
     // Create engine
     let engine = engine::create_engine()?;
+
+    let telemetry_sender: Box<dyn codemod_telemetry::send_event::TelemetrySender> =
+        if std::env::var("DISABLE_ANALYTICS") == Ok("true".to_string())
+            || std::env::var("DISABLE_ANALYTICS") == Ok("1".to_string())
+        {
+            Box::new(NullSender {})
+        } else {
+            let storage = TokenStorage::new()?;
+            let config = storage.load_config()?;
+
+            let auth = storage.get_auth_for_registry(&config.default_registry)?;
+
+            let distinct_id = auth
+                .map(|auth| auth.user.id)
+                .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
+
+            Box::new(
+                PostHogSender::new(TelemetrySenderOptions {
+                    distinct_id,
+                    cloud_role: "CLI".to_string(),
+                })
+                .await,
+            )
+        };
 
     // Handle command or implicit run
     match &cli.command {
@@ -223,20 +266,25 @@ async fn main() -> Result<()> {
             commands::whoami::handler(args).await?;
         }
         Some(Commands::Publish(args)) => {
-            commands::publish::handler(args).await?;
+            commands::publish::handler(args, telemetry_sender.as_ref()).await?;
         }
         Some(Commands::Search(args)) => {
             commands::search::handler(args).await?;
         }
         Some(Commands::Run(args)) => {
-            commands::run::handler(&engine, args).await?;
+            commands::run::handler(&engine, args, telemetry_sender.as_ref()).await?;
+        }
+        Some(Commands::Unpublish(args)) => {
+            commands::unpublish::handler(args).await?;
         }
         Some(Commands::Cache(args)) => {
             commands::cache::handler(args).await?;
         }
         None => {
             // Try to parse as implicit run command
-            if !handle_implicit_run_command(&engine, cli.trailing_args).await? {
+            if !handle_implicit_run_command(&engine, cli.trailing_args, telemetry_sender.as_ref())
+                .await?
+            {
                 // No valid subcommand or package name provided, show help
                 print_ascii_art();
                 eprintln!("No command provided. Use --help for usage information.");

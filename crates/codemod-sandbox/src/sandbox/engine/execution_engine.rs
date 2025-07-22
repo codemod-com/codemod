@@ -5,7 +5,6 @@ use crate::ast_grep::AstGrepModule;
 use crate::rquickjs_compat::{CatchResultExt, Function, Module};
 use crate::sandbox::errors::ExecutionError;
 use crate::sandbox::filesystem::FileSystem;
-use crate::sandbox::loaders::ModuleLoader;
 use crate::sandbox::resolvers::ModuleResolver;
 use ast_grep_language::SupportLang;
 use ignore::{overrides::OverrideBuilder, WalkBuilder, WalkState};
@@ -126,17 +125,16 @@ impl ExecutionOutput {
 ///
 /// This engine coordinates filesystem operations, module resolution,
 /// and JavaScript execution across multiple files and threads.
-pub struct ExecutionEngine<F: FileSystem, R: ModuleResolver, L: ModuleLoader> {
-    config: Arc<ExecutionConfig<F, R, L>>,
+pub struct ExecutionEngine<F: FileSystem, R: ModuleResolver> {
+    config: Arc<ExecutionConfig<F, R>>,
 }
 
-impl<F, R, L> ExecutionEngine<F, R, L>
+impl<F, R> ExecutionEngine<F, R>
 where
     F: FileSystem + 'static,
     R: ModuleResolver + 'static,
-    L: ModuleLoader + 'static,
 {
-    pub fn new(config: ExecutionConfig<F, R, L>) -> Self {
+    pub fn new(config: ExecutionConfig<F, R>) -> Self {
         Self {
             config: Arc::new(config),
         }
@@ -363,7 +361,7 @@ where
 
     /// Execute JavaScript code on a single file
     async fn execute_on_single_file(
-        config: &Arc<ExecutionConfig<F, R, L>>,
+        config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
     ) -> Result<ExecutionResult, ExecutionError> {
@@ -383,7 +381,7 @@ where
 
     #[cfg(feature = "native")]
     async fn execute_with_quickjs(
-        config: &Arc<ExecutionConfig<F, R, L>>,
+        config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
     ) -> Result<ExecutionResult, ExecutionError> {
@@ -449,7 +447,7 @@ where
     /// This is the core execution logic that doesn't touch the filesystem
     #[cfg(feature = "native")]
     async fn execute_codemod_with_quickjs(
-        config: &Arc<ExecutionConfig<F, R, L>>,
+        config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         file_path: &Path,
         content: &str,
@@ -482,8 +480,7 @@ where
         built_in_resolver = built_in_resolver.add_name("codemod:ast-grep");
         built_in_loader = built_in_loader.with_module("codemod:ast-grep", AstGrepModule);
 
-        // Use our new QuickJS adapters with the script's base directory
-        let fs_resolver = QuickJSResolver::new(config.script_base_dir.clone());
+        let fs_resolver = QuickJSResolver::new(Arc::clone(&config.resolver));
         let fs_loader = QuickJSLoader;
 
         // Combine resolvers and loaders
@@ -610,8 +607,25 @@ where
         match result {
             Ok(new_content) => Ok(ExecutionOutput::success(new_content, content)),
             Err(e) => {
-                println!("Error: {e:?}");
-                Ok(ExecutionOutput::error(e.to_string()))
+                // Format the error message for better readability
+                let error_msg = match &e {
+                    ExecutionError::Runtime { source } => {
+                        match source {
+                            crate::sandbox::errors::RuntimeError::InitializationFailed {
+                                message,
+                            } => {
+                                // Unescape newlines in JavaScript error messages
+                                message.replace("\\n", "\n")
+                            }
+                            crate::sandbox::errors::RuntimeError::ExecutionFailed { message } => {
+                                message.replace("\\n", "\n")
+                            }
+                            _ => e.to_string(),
+                        }
+                    }
+                    _ => e.to_string(),
+                };
+                Ok(ExecutionOutput::error(error_msg))
             }
         }
     }

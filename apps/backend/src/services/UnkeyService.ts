@@ -17,7 +17,11 @@ export const createApiKey = async ({
   apiKeyData,
   externalId,
   uuid,
-}: { apiKeyData: CreateAPIKeyRequest; externalId: string; uuid: string }) => {
+}: {
+  apiKeyData: CreateAPIKeyRequest;
+  externalId: string;
+  uuid: string;
+}) => {
   const response = await getUnkey().keys.create({
     apiId: UNKEY_API_ID,
     prefix: "codemod.com",

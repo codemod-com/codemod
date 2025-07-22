@@ -1,12 +1,26 @@
 {
   "name": "@codemod.com/cli-linux-x64-gnu",
   "version": "0.0.0",
-  "os": ["linux"],
-  "cpu": ["x64"],
-  "libc": ["glibc"],
-  "files": ["codemod"],
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "libc": [
+    "glibc"
+  ],
+  "files": [
+    "codemod"
+  ],
   "description": "Codemod platform for semantic code transformations - Linux x64 binary",
-  "keywords": ["codemod", "ast", "transformation", "refactoring", "migration"],
+  "keywords": [
+    "codemod",
+    "ast",
+    "transformation",
+    "refactoring",
+    "migration"
+  ],
   "license": "MIT",
   "engines": {
     "node": ">= 10"

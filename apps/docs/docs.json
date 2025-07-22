@@ -20,35 +20,19 @@
         "groups": [
           {
             "group": "Quickstart",
-            "pages": [
-              "introduction",
-              "platform/plan",
-              "platform/automate",
-              "platform/orchestrate",
-              "platform/track"
-            ]
+            "pages": ["introduction"]
           },
           {
             "group": "Codemod Platform",
-            "pages": [
-              "scanner",
-              "migrations",
-              "insights",
-              "codemod-studio",
-              "platform/workflows"
-            ]
+            "pages": ["migrations", "insights", "codemod-studio"]
           },
           {
             "group": "OSS & Community",
-            "pages": ["cli/workflows", "cli/cli-reference"]
+            "pages": ["cli/cli-reference", "cli/workflows"]
           },
           {
             "group": "Quick Links",
-            "pages": [
-              "external-links/codemod-platform",
-              "external-links/codemod-studio",
-              "external-links/codemod-registry"
-            ]
+            "pages": ["external-links/codemod-registry"]
           },
           {
             "group": "Other Resources",
@@ -119,6 +103,22 @@
     {
       "source": "/more-resources/legal/terms-and-conditions",
       "destination": "https://codemod.com/terms-and-conditions"
+    },
+    {
+      "source": "/platform/plan",
+      "destination": "/migrations"
+    },
+    {
+      "source": "/platform/automate",
+      "destination": "/codemod-studio"
+    },
+    {
+      "source": "/platform/orchestrate",
+      "destination": "/migrations"
+    },
+    {
+      "source": "/platform/track",
+      "destination": "/insights"
     }
   ],
   "contextual": {

@@ -11,8 +11,18 @@
   "engines": {
     "node": ">= 16.0.0"
   },
-  "keywords": ["codemod", "ast", "transformation", "refactoring", "migration"],
-  "files": ["codemod", "postinstall.js", "README.md"],
+  "keywords": [
+    "codemod",
+    "ast",
+    "transformation",
+    "refactoring",
+    "migration"
+  ],
+  "files": [
+    "codemod",
+    "postinstall.js",
+    "README.md"
+  ],
   "dependencies": {
     "detect-libc": "^2.0.3"
   },

@@ -3,6 +3,7 @@ use clap::Args;
 use log::debug;
 use reqwest;
 use serde::{Deserialize, Serialize};
+use tabled::{Table, Tabled};
 
 use crate::auth::TokenStorage;
 
@@ -186,64 +187,63 @@ pub async fn handler(args: &Command) -> Result<()> {
     Ok(())
 }
 
+#[derive(Tabled)]
+struct PackageRow {
+    #[tabled(rename = "📦 Name")]
+    name: String,
+
+    #[tabled(rename = "📊 Downloads")]
+    downloads: String,
+
+    #[tabled(rename = "⭐ Stars")]
+    stars: String,
+
+    #[tabled(rename = "👤 Author")]
+    author: String,
+}
+
 fn print_table(result: &SearchResponse, args: &Command) -> Result<()> {
+    use tabled::settings::{object::Columns, Alignment, Modify, Style};
+
     if result.packages.is_empty() {
         println!("No packages found.");
         return Ok(());
     }
 
-    println!("Found {} packages:", result.total);
-    println!();
+    println!("Found {} packages:\n", result.total);
 
-    for package in &result.packages {
-        let scope_name = if let Some(scope) = &package.scope {
-            format!("{}/{}", scope, package.name)
-        } else {
-            package.name.clone()
-        };
+    let rows: Vec<PackageRow> = result
+        .packages
+        .iter()
+        .map(|package| {
+            let name = match &package.scope {
+                Some(scope) => format!("{}/{}", scope, package.name),
+                None => package.name.clone(),
+            };
 
-        println!("📦 {scope_name}");
+            let downloads = format_number(package.download_count);
+            let stars = format_number(package.star_count);
+            let author = package.author.clone();
 
-        if let Some(description) = &package.description {
-            println!("   {description}");
-        }
+            PackageRow {
+                name,
+                downloads,
+                stars,
+                author,
+            }
+        })
+        .collect();
 
-        print!(
-            "   📊 Downloads: {} ⭐ Stars: {}",
-            format_number(package.download_count),
-            format_number(package.star_count)
-        );
+    let mut table = Table::new(rows);
+    table
+        .with(Style::rounded())
+        .with(Modify::new(Columns::new(..)).with(Alignment::left())); // align all columns left
 
-        if let Some(version) = &package.latest_version {
-            print!(" 🏷️  Latest: {version}");
-        }
-
-        println!();
-
-        if !package.keywords.is_empty() {
-            println!("   🏷️  Keywords: {}", package.keywords.join(", "));
-        }
-
-        if let Some(homepage) = &package.homepage {
-            println!("   🌐 Homepage: {homepage}");
-        }
-
-        if let Some(repository) = &package.repository {
-            println!("   📁 Repository: {repository}");
-        }
-
-        println!("   👤 Author: {}", package.author);
-
-        if let Some(org) = &package.organization {
-            println!("   🏢 Organization: {}", org.name);
-        }
-
-        println!();
-    }
+    println!("{table}");
 
     if result.total as usize > result.packages.len() {
         let shown = args.from + result.packages.len() as u32;
-        println!("Showing {} of {} packages", shown, result.total);
+        println!("\nShowing {} of {} packages", shown, result.total);
 
         if shown < result.total {
             println!("Use --from {shown} to see more results");
@@ -252,13 +252,21 @@ fn print_table(result: &SearchResponse, args: &Command) -> Result<()> {
 
     Ok(())
 }
-
 fn format_number(num: u32) -> String {
     if num >= 1_000_000 {
-        format!("{:.1}M", num as f64 / 1_000_000.0)
+        format_suffix(num, 1_000_000.0, "M")
     } else if num >= 1_000 {
-        format!("{:.1}K", num as f64 / 1_000.0)
+        format_suffix(num, 1_000.0, "K")
     } else {
         num.to_string()
+    }
+}
+
+fn format_suffix(num: u32, divisor: f64, suffix: &str) -> String {
+    let value = num as f64 / divisor;
+    if value.fract() == 0.0 {
+        format!("{value:.0}{suffix}")
+    } else {
+        format!("{value:.1}{suffix}")
     }
 }

@@ -3,10 +3,12 @@ use clap::Args;
 use codemod_sandbox::sandbox::{
     engine::{ExecutionConfig, ExecutionEngine},
     filesystem::{RealFileSystem, WalkOptions},
-    loaders::FileSystemLoader,
-    resolvers::FileSystemResolver,
+    resolvers::OxcResolver,
 };
 use std::{path::Path, sync::Arc};
+
+use crate::dirty_git_check;
+use codemod_sandbox::utils::project_discovery::find_tsconfig;
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -39,25 +41,46 @@ pub struct Command {
     /// File extensions to process (comma-separated)
     #[arg(long)]
     pub extensions: Option<String>,
+
+    /// Allow dirty git status
+    #[arg(long)]
+    pub allow_dirty: bool,
 }
 
 pub async fn handler(args: &Command) -> Result<()> {
     let js_file_path = Path::new(&args.js_file);
     let target_directory = Path::new(&args.target_directory);
 
-    // Set up the new modular system
+    dirty_git_check::dirty_check(args.allow_dirty)?;
+
+    // Verify the JavaScript file exists
+    if !js_file_path.exists() {
+        anyhow::bail!(
+            "JavaScript file '{}' does not exist",
+            js_file_path.display()
+        );
+    }
+
+    // Set up the new modular system with OxcResolver
     let filesystem = Arc::new(RealFileSystem::new());
     let script_base_dir = js_file_path
         .parent()
         .unwrap_or(Path::new("."))
         .to_path_buf();
-    let resolver = Arc::new(FileSystemResolver::new(
-        filesystem.clone(),
-        script_base_dir.clone(),
-    ));
-    let loader = Arc::new(FileSystemLoader::new(filesystem.clone()));
 
-    let mut config = ExecutionConfig::new(filesystem, resolver, loader, script_base_dir);
+    let tsconfig_path = find_tsconfig(&script_base_dir);
+
+    let resolver = Arc::new(
+        match tsconfig_path {
+            Some(tsconfig_path) => {
+                OxcResolver::with_tsconfig(script_base_dir.clone(), tsconfig_path)
+            }
+            None => OxcResolver::new(script_base_dir.clone()),
+        }
+        .map_err(|e| anyhow::anyhow!("Failed to create OxcResolver: {e}"))?,
+    );
+
+    let mut config = ExecutionConfig::new(filesystem, resolver, script_base_dir);
     let mut walk_options = WalkOptions::default();
 
     // Apply command line options
@@ -90,14 +113,6 @@ pub async fn handler(args: &Command) -> Result<()> {
     }
 
     config = config.with_walk_options(walk_options);
-
-    // Verify the JavaScript file exists
-    if !js_file_path.exists() {
-        anyhow::bail!(
-            "JavaScript file '{}' does not exist",
-            js_file_path.display()
-        );
-    }
 
     // Create and run the execution engine
     let engine = ExecutionEngine::new(config);

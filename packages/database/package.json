@@ -6,7 +6,9 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist/**"],
+  "files": [
+    "dist/**"
+  ],
   "private": true,
   "scripts": {
     "build": "pnpm run db:generate && tsc",

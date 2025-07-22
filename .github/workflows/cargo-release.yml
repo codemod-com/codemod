@@ -77,6 +77,8 @@ jobs:
       - name: Build
         run: |
           cargo build --release -p codemod --target ${{ matrix.target }}
+        env:
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
 
       - name: Chmod binary
         run: |
@@ -160,11 +162,8 @@ jobs:
       - name: Back up CHANGELOG.md
         run: cp CHANGELOG.md CHANGELOG.md.bak
 
-      - name: Set up git-cliff
-        uses: kenji-miyake/setup-git-cliff@v1
-
       - name: Generate a changelog
-        uses: orhun/git-cliff-action@v3
+        uses: orhun/git-cliff-action@v4
         id: git-cliff
         with:
           config: cliff.toml

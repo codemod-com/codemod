@@ -7,6 +7,7 @@ members = [
     "crates/state",
     "crates/codemod-sandbox",
     "crates/codemod-sandbox/build",
+    "crates/telemetry",
     "xtask"
 ]
 resolver = "2"
@@ -20,7 +21,7 @@ documentation = "https://docs.rs/butterflow"
 repository = "https://github.com/codemod-com/butterflow"
 license = "MIT"
 rust-version = "1.70"
-version = "1.0.0-rc.11"
+version = "1.0.0-rc.15"
 
 [workspace.dependencies]
 butterflow-models = { path = "crates/models" }
@@ -29,6 +30,7 @@ butterflow-state = { path = "crates/state" }
 butterflow-runners = { path = "crates/runners" }
 butterflow-scheduler = { path = "crates/scheduler" }
 codemod-sandbox = { path = "crates/codemod-sandbox" }
+codemod-telemetry = { path = "crates/telemetry" }
 
 anyhow = "1.0"
 ast-grep-language = "0.38.6"

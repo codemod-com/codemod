@@ -166,6 +166,10 @@ impl<'js> SgNodeRjs<'js> {
         Ok(result)
     }
 
+    pub fn id(&self) -> Result<usize> {
+        Ok(self.inner_node.node_id())
+    }
+
     #[qjs(rename = "isLeaf")]
     pub fn is_leaf(&self) -> Result<bool> {
         Ok(self.inner_node.is_leaf())

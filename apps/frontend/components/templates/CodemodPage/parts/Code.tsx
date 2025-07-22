@@ -109,7 +109,6 @@ const CodeBlock = ({ children, scrollable = true }: Props) => {
             className={clsx(
               `my-2 rounded-lg p-[20px] overflow-y-hidden ${className}`,
               {
-                // biome-ignore lint/complexity/useLiteralKeys:
                 ["no-scrollbar overflow-x-scroll"]: scrollable,
               },
             )}
