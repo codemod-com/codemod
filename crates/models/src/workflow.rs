@@ -8,8 +8,8 @@ use uuid::Uuid;
 
 use crate::node::Node;
 use crate::state::StateSchema;
-use crate::template::Template;
 use crate::step::StepAction;
+use crate::template::Template;
 use ts_rs::TS;
 
 /// Represents a workflow definition
@@ -121,7 +121,7 @@ impl Workflow {
                             node.name
                         ));
                     }
-                    
+
                     if !js_file_path.is_file() {
                         return Err(anyhow!(
                             "Path '{}' exists but is not a file for step '{}' in node '{}'",
@@ -133,7 +133,7 @@ impl Workflow {
                 }
             }
         }
-        
+
         Ok(())
     }
 }

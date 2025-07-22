@@ -429,7 +429,6 @@ async fn upload_codemod(
     Ok(publish_response)
 }
 
-
 fn format_codemod_name(package: &PublishedPackage) -> String {
     if let Some(scope) = &package.scope {
         format!("{}/{}", scope, package.name)
