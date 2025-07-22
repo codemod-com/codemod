@@ -1,12 +1,14 @@
+use anyhow::{anyhow, Result};
 use chrono::{DateTime, Utc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use uuid::Uuid;
 
 use crate::node::Node;
 use crate::state::StateSchema;
+use crate::step::StepAction;
 use crate::template::Template;
 use ts_rs::TS;
 
@@ -15,6 +17,16 @@ use ts_rs::TS;
 pub struct Workflow {
     /// Version of the workflow format
     pub version: String,
+
+    /// Human-readable name of the workflow
+    #[serde(default)]
+    #[ts(optional=nullable)]
+    pub name: Option<String>,
+
+    /// Detailed description of the workflow
+    #[serde(default)]
+    #[ts(optional=nullable)]
+    pub description: Option<String>,
 
     /// State schema definition
     #[serde(default)]
@@ -90,4 +102,38 @@ pub enum WorkflowStatus {
 
     /// Workflow has been canceled
     Canceled,
+}
+
+impl Workflow {
+    /// Validate workflow's nodes and steps that use ast-grep js api
+    /// by checking if the files exist in the filesystem
+    pub fn validate_js_ast_grep_files(&self, base_dir: &Path) -> Result<()> {
+        for node in &self.nodes {
+            for step in &node.steps {
+                if let StepAction::JSAstGrep(js_ast_grep) = &step.action {
+                    let js_file_path = base_dir.join(&js_ast_grep.js_file);
+
+                    if !js_file_path.exists() {
+                        return Err(anyhow!(
+                            "JavaScript file '{}' not found for step '{}' in node '{}'",
+                            js_ast_grep.js_file,
+                            step.name,
+                            node.name
+                        ));
+                    }
+
+                    if !js_file_path.is_file() {
+                        return Err(anyhow!(
+                            "Path '{}' exists but is not a file for step '{}' in node '{}'",
+                            js_ast_grep.js_file,
+                            step.name,
+                            node.name
+                        ));
+                    }
+                }
+            }
+        }
+
+        Ok(())
+    }
 }

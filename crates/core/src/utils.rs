@@ -1,14 +1,20 @@
+use anyhow::{Context, Result};
+use butterflow_models::step::StepAction;
+use butterflow_models::{Error, Node, Result, Workflow};
+use serde_yaml;
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use butterflow_models::step::StepAction;
-use serde_yaml;
-
-use butterflow_models::{Error, Node, Result, Workflow};
-
 /// Parse a workflow definition from a file
 pub fn parse_workflow_file<P: AsRef<Path>>(path: P) -> Result<Workflow> {
+    if !path.as_ref().exists() {
+        return Err(anyhow!(
+            "Workflow file not found: {}",
+            path.as_ref().display()
+        ));
+    }
+
     let content = fs::read_to_string(path.as_ref())?;
 
     // Try to parse as YAML first

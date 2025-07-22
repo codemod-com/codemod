@@ -1,4 +1,6 @@
 use anyhow::{anyhow, Result};
+use butterflow_core::utils;
+use butterflow_models::workflow;
 use clap::Args;
 use log::{debug, info, warn};
 use reqwest;
@@ -11,6 +13,7 @@ use tempfile::TempDir;
 use walkdir::WalkDir;
 
 use crate::auth::TokenStorage;
+use crate::commands::workflow::validate::validate_codemod_manifest_structure;
 use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 
 #[derive(Args, Debug)]
@@ -149,18 +152,18 @@ pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<
         }
     }
 
-    // Validate package structure
-    validate_package_structure(&package_path, &manifest)?;
+    // Validate codemod manifest structure
+    validate_codemod_manifest_structure(&package_path, &manifest)?;
 
-    // Create package bundle
-    let bundle_path = create_package_bundle(&package_path, &manifest, args.dry_run)?;
+    // Create codemod tarball
+    let tarball_path = create_codemod_tarball(&package_path, &manifest, args.dry_run)?;
 
     if args.dry_run {
         println!("✓ Package validation successful");
         println!(
-            "✓ Bundle created: {} ({} bytes)",
-            bundle_path.display(),
-            fs::metadata(&bundle_path)?.len()
+            "✓ tarball created: {} ({} bytes)",
+            tarball_path.display(),
+            fs::metadata(&tarball_path)?.len()
         );
         println!("📦 Package ready for publishing");
         return Ok(());
@@ -186,7 +189,7 @@ pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<
         })?;
 
     // Upload package
-    let response = upload_package(
+    let response = upload_codemod(
         &registry_url,
         &bundle_path,
         &manifest,
@@ -215,7 +218,7 @@ pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<
         .await;
 
     println!("✅ Package published successfully!");
-    println!("📦 {}", format_package_name(&response.package));
+    println!("📦 {}", format_codemod_name(&response.package));
     println!("🏷️  Version: {}", response.package.version);
     println!("📅 Published: {}", response.package.published_at);
     println!("🔗 Download: {}", response.package.download_url);
@@ -249,59 +252,7 @@ fn load_manifest(package_path: &Path) -> Result<CodemodManifest> {
     Ok(manifest)
 }
 
-fn validate_package_structure(package_path: &Path, manifest: &CodemodManifest) -> Result<()> {
-    // Check required files
-    let workflow_path = package_path.join(&manifest.workflow);
-    if !workflow_path.exists() {
-        return Err(anyhow!(
-            "Workflow file not found: {}",
-            workflow_path.display()
-        ));
-    }
-
-    // Validate workflow file
-    let workflow_content = fs::read_to_string(&workflow_path)?;
-    let _workflow: serde_yaml::Value = serde_yaml::from_str(&workflow_content)
-        .map_err(|e| anyhow!("Invalid workflow YAML: {}", e))?;
-
-    // Check optional files
-    if let Some(readme) = &manifest.readme {
-        let readme_path = package_path.join(readme);
-        if !readme_path.exists() {
-            warn!("README file not found: {}", readme_path.display());
-        }
-    }
-
-    // Validate package name format
-    if !is_valid_package_name(&manifest.name) {
-        return Err(anyhow!("Invalid package name: {}. Must contain only lowercase letters, numbers, hyphens, and underscores.", manifest.name));
-    }
-
-    // Validate version format (semver)
-    if !is_valid_semver(&manifest.version) {
-        return Err(anyhow!(
-            "Invalid version: {}. Must be valid semantic version (x.y.z).",
-            manifest.version
-        ));
-    }
-
-    // Check package size
-    let package_size = calculate_package_size(package_path)?;
-    const MAX_PACKAGE_SIZE: u64 = 50 * 1024 * 1024; // 50MB
-
-    if package_size > MAX_PACKAGE_SIZE {
-        return Err(anyhow!(
-            "Package too large: {} bytes. Maximum allowed: {} bytes.",
-            package_size,
-            MAX_PACKAGE_SIZE
-        ));
-    }
-
-    info!("Package validation successful");
-    Ok(())
-}
-
-fn create_package_bundle(
+fn create_codemod_tarball(
     package_path: &Path,
     manifest: &CodemodManifest,
     dry_run: bool,
@@ -348,7 +299,7 @@ fn create_package_bundle(
         ));
     }
 
-    info!("Created bundle: {bundle_name} ({bundle_size} bytes)");
+    info!("Created codemod tarball: {bundle_name} ({bundle_size} bytes)");
 
     // Move to a persistent location (both dry-run and regular publishing)
     let output_path = if dry_run {
@@ -411,15 +362,15 @@ fn should_include_file(file_path: &Path, package_root: &Path) -> bool {
     true
 }
 
-async fn upload_package(
+async fn upload_codemod(
     registry_url: &str,
-    bundle_path: &Path,
+    tarball_path: &Path,
     manifest: &CodemodManifest,
     access_token: &str,
 ) -> Result<PublishResponse> {
     let client = reqwest::Client::new();
 
-    let package_name = if let Some(registry) = &manifest.registry {
+    let codemod_name = if let Some(registry) = &manifest.registry {
         if let Some(scope) = &registry.scope {
             format!("{}/{}", scope, manifest.name)
         } else {
@@ -429,10 +380,10 @@ async fn upload_package(
         manifest.name.clone()
     };
 
-    let url = format!("{registry_url}/api/v1/registry/packages/{package_name}");
+    let url = format!("{registry_url}/api/v1/registry/packages/{codemod_name}");
 
-    // Read bundle file
-    let bundle_data = fs::read(bundle_path)?;
+    // Read tarball file
+    let tarball_data = fs::read(tarball_path)?;
     let manifest_json = serde_json::to_string(manifest)?;
 
     // Create multipart form
@@ -478,46 +429,7 @@ async fn upload_package(
     Ok(publish_response)
 }
 
-fn calculate_package_size(package_path: &Path) -> Result<u64> {
-    let mut total_size = 0;
-
-    for entry in WalkDir::new(package_path)
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.file_type().is_file())
-        .filter(|e| should_include_file(e.path(), package_path))
-    {
-        total_size += entry.metadata()?.len();
-    }
-
-    Ok(total_size)
-}
-
-fn is_valid_package_name(name: &str) -> bool {
-    !name.is_empty()
-        && name.len() <= 50
-        && name
-            .chars()
-            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '_')
-        && !name.starts_with('-')
-        && !name.ends_with('-')
-}
-
-fn is_valid_semver(version: &str) -> bool {
-    // Basic semver validation (x.y.z format)
-    let parts: Vec<&str> = version.split('.').collect();
-    if parts.len() != 3 {
-        return false;
-    }
-
-    parts.iter().all(|part| {
-        part.chars().all(|c| c.is_ascii_digit())
-            && !part.is_empty()
-            && (*part == "0" || !part.starts_with('0'))
-    })
-}
-
-fn format_package_name(package: &PublishedPackage) -> String {
+fn format_codemod_name(package: &PublishedPackage) -> String {
     if let Some(scope) = &package.scope {
         format!("{}/{}", scope, package.name)
     } else {
