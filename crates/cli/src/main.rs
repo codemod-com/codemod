@@ -105,6 +105,8 @@ enum WorkflowCommands {
 
 #[derive(Subcommand, Debug)]
 enum JssgCommands {
+    /// Bundle JavaScript/TypeScript files and dependencies
+    Bundle(commands::jssg::bundle::Command),
     /// Run JavaScript code transformation
     Run(commands::jssg::run::Command),
     /// Test JavaScript code transformations
@@ -246,6 +248,9 @@ async fn main() -> Result<()> {
             }
         },
         Some(Commands::Jssg(args)) => match &args.command {
+            JssgCommands::Bundle(args) => {
+                args.clone().run().await?;
+            }
             JssgCommands::Run(args) => {
                 commands::jssg::run::handler(args).await?;
             }
