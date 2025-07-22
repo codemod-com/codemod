@@ -21,6 +21,9 @@ use swc_core::{
 mod module_analyzer;
 mod module_transformer;
 
+#[cfg(test)]
+mod module_transformer_tests;
+
 /// Represents a module in the dependency graph
 #[derive(Debug, Clone)]
 pub struct BundledModule {
@@ -74,6 +77,7 @@ impl Bundler {
     /// Check if a module path is a built-in module (codemod:* prefix)
     pub fn is_builtin_module(module_path: &str) -> bool {
         module_path.starts_with("codemod:")
+            || module_path.starts_with("node:")
             || module_path == "fs"
             || module_path == "path"
             || module_path == "os"
@@ -415,8 +419,7 @@ impl Bundler {
                 }
             }
 
-            let wrapped_code =
-                self.wrap_module_commonjs(&module.code, &module.dependencies, &dependency_id_map)?;
+            let wrapped_code = self.wrap_module_commonjs(&module.code, &dependency_id_map)?;
 
             result.push_str(&format!(
                 "__codemod_define('{module_id}', function(module, exports, require) {{\n{wrapped_code}\n}});\n\n"
@@ -448,8 +451,7 @@ impl Bundler {
                 }
             }
 
-            let wrapped_code =
-                self.wrap_module_custom(&module.code, &module.dependencies, &dependency_id_map)?;
+            let wrapped_code = self.wrap_module_custom(&module.code, &dependency_id_map)?;
 
             result.push_str(&format!(
                 "__codemod_define('{module_id}', function(exports, require) {{\n{wrapped_code}\n}});\n\n"
@@ -463,29 +465,26 @@ impl Bundler {
     fn wrap_module_commonjs(
         &self,
         code: &str,
-        dependencies: &[String],
         dependency_id_map: &HashMap<String, String>,
     ) -> Result<String, Box<dyn std::error::Error>> {
         // Transform ES6 imports/exports to CommonJS
-        self.transform_to_commonjs(code, dependencies, dependency_id_map)
+        self.transform_to_commonjs(code, dependency_id_map)
     }
 
     /// Wrap module code for custom runtime
     fn wrap_module_custom(
         &self,
         code: &str,
-        dependencies: &[String],
         dependency_id_map: &HashMap<String, String>,
     ) -> Result<String, Box<dyn std::error::Error>> {
         // Similar to CommonJS but with custom module format
-        self.transform_to_commonjs(code, dependencies, dependency_id_map)
+        self.transform_to_commonjs(code, dependency_id_map)
     }
 
     /// Transform ES6 modules to CommonJS using SWC AST transformations
     fn transform_to_commonjs(
         &self,
         source_code: &str,
-        dependencies: &[String],
         dependency_id_map: &HashMap<String, String>,
     ) -> Result<String, Box<dyn std::error::Error>> {
         // Parse the source code
@@ -502,17 +501,8 @@ impl Bundler {
             .parse_module()
             .map_err(|e| format!("Parse error: {e:?}"))?;
 
-        // Create builtin variable map
-        let mut builtin_variable_map = HashMap::new();
-        for dep in dependencies {
-            if Self::is_builtin_module(dep) {
-                builtin_variable_map.insert(dep.clone(), self.get_builtin_variable_name(dep));
-            }
-        }
-
         // Apply transformations
-        let mut transformer =
-            ModuleTransformer::new(dependency_id_map.clone(), builtin_variable_map);
+        let mut transformer = ModuleTransformer::new(dependency_id_map.clone());
         module.visit_mut_with(&mut transformer);
 
         // Add any remaining export assignments at the end

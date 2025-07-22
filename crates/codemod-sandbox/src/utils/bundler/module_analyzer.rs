@@ -15,13 +15,13 @@ pub struct ModuleExports {
 }
 
 /// SWC visitor to analyze imports and exports
-pub struct ModuleAnalyzer {
-    pub dependencies: Vec<String>,
-    pub exports: ModuleExports,
+pub(crate) struct ModuleAnalyzer {
+    pub(crate) dependencies: Vec<String>,
+    pub(crate) exports: ModuleExports,
 }
 
 impl ModuleAnalyzer {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             dependencies: Vec::new(),
             exports: ModuleExports::default(),
@@ -81,7 +81,7 @@ impl Visit for ModuleAnalyzer {
 }
 
 impl ModuleAnalyzer {
-    fn extract_export_name(&self, spec: &ExportSpecifier) -> Option<String> {
+    pub(crate) fn extract_export_name(&self, spec: &ExportSpecifier) -> Option<String> {
         match spec {
             ExportSpecifier::Named(named) => match &named.exported {
                 Some(ModuleExportName::Ident(ident)) => Some(ident.sym.to_string()),

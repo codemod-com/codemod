@@ -12,29 +12,20 @@ use swc_core::{
 };
 
 /// SWC visitor for transforming ES6 modules to CommonJS
-pub struct ModuleTransformer {
-    pub dependency_id_map: HashMap<String, String>,
-    pub builtin_variable_map: HashMap<String, String>,
-    pub export_assignments: Vec<Stmt>,
+pub(crate) struct ModuleTransformer {
+    pub(crate) dependency_id_map: HashMap<String, String>,
+    pub(crate) export_assignments: Vec<Stmt>,
 }
 
 impl ModuleTransformer {
-    pub fn new(
-        dependency_id_map: HashMap<String, String>,
-        builtin_variable_map: HashMap<String, String>,
-    ) -> Self {
+    pub(crate) fn new(dependency_id_map: HashMap<String, String>) -> Self {
         Self {
             dependency_id_map,
-            builtin_variable_map,
             export_assignments: Vec::new(),
         }
     }
 
-    fn is_builtin_module(module_path: &str) -> bool {
-        module_path.starts_with("codemod:")
-    }
-
-    fn create_require_call(&self, module_path: &str) -> Box<Expr> {
+    pub(crate) fn create_require_call(&self, module_path: &str) -> Box<Expr> {
         let resolved_id = self
             .dependency_id_map
             .get(module_path)
@@ -63,7 +54,7 @@ impl ModuleTransformer {
         }))
     }
 
-    fn create_module_exports_assignment(&self, name: &str, value: Box<Expr>) -> Stmt {
+    pub(crate) fn create_module_exports_assignment(&self, name: &str, value: Box<Expr>) -> Stmt {
         Stmt::Expr(swc_core::ecma::ast::ExprStmt {
             span: DUMMY_SP,
             expr: Box::new(Expr::Assign(swc_core::ecma::ast::AssignExpr {
@@ -95,18 +86,8 @@ impl ModuleTransformer {
         })
     }
 
-    fn transform_import_decl(&self, import: &ImportDecl) -> ModuleItem {
+    pub(crate) fn transform_import_decl(&self, import: &ImportDecl) -> ModuleItem {
         let module_path = import.src.value.as_str();
-
-        // Transform built-in modules to use pre-imported variables
-        if Self::is_builtin_module(module_path) {
-            if let Some(builtin_var) = self.builtin_variable_map.get(module_path) {
-                return self.transform_builtin_import_decl(import, builtin_var);
-            } else {
-                // Fallback to keeping import (shouldn't happen)
-                return ModuleItem::ModuleDecl(ModuleDecl::Import(import.clone()));
-            }
-        }
 
         let require_call = self.create_require_call(module_path);
 
@@ -179,7 +160,10 @@ impl ModuleTransformer {
         }))))
     }
 
-    fn transform_export_named(&self, export: &swc_core::ecma::ast::NamedExport) -> Vec<Stmt> {
+    pub(crate) fn transform_export_named(
+        &self,
+        export: &swc_core::ecma::ast::NamedExport,
+    ) -> Vec<Stmt> {
         let mut stmts = Vec::new();
 
         if let Some(src) = &export.src {
@@ -252,93 +236,7 @@ impl ModuleTransformer {
         stmts
     }
 
-    /// Transform built-in import declaration to use pre-imported variable
-    fn transform_builtin_import_decl(&self, import: &ImportDecl, builtin_var: &str) -> ModuleItem {
-        let mut declarators = Vec::new();
-
-        for spec in &import.specifiers {
-            match spec {
-                ImportSpecifier::Named(named) => {
-                    let imported_name = match &named.imported {
-                        Some(ModuleExportName::Ident(ident)) => ident.sym.as_str(),
-                        Some(ModuleExportName::Str(str_lit)) => str_lit.value.as_str(),
-                        None => named.local.sym.as_str(),
-                    };
-
-                    // const { imported_name } = __builtin_module
-                    declarators.push(VarDeclarator {
-                        span: DUMMY_SP,
-                        name: Pat::Ident(named.local.clone().into()),
-                        init: Some(Box::new(Expr::Member(swc_core::ecma::ast::MemberExpr {
-                            span: DUMMY_SP,
-                            obj: Box::new(Expr::Ident(Ident::new(
-                                builtin_var.into(),
-                                DUMMY_SP,
-                                SyntaxContext::empty(),
-                            ))),
-                            prop: swc_core::ecma::ast::MemberProp::Ident(IdentName::new(
-                                imported_name.into(),
-                                DUMMY_SP,
-                            )),
-                        }))),
-                        definite: false,
-                    });
-                }
-                ImportSpecifier::Default(default) => {
-                    // const default_name = __builtin_module.default || __builtin_module
-                    declarators.push(VarDeclarator {
-                        span: DUMMY_SP,
-                        name: Pat::Ident(default.local.clone().into()),
-                        init: Some(Box::new(Expr::Bin(swc_core::ecma::ast::BinExpr {
-                            span: DUMMY_SP,
-                            op: swc_core::ecma::ast::BinaryOp::LogicalOr,
-                            left: Box::new(Expr::Member(swc_core::ecma::ast::MemberExpr {
-                                span: DUMMY_SP,
-                                obj: Box::new(Expr::Ident(Ident::new(
-                                    builtin_var.into(),
-                                    DUMMY_SP,
-                                    SyntaxContext::empty(),
-                                ))),
-                                prop: swc_core::ecma::ast::MemberProp::Ident(IdentName::new(
-                                    "default".into(),
-                                    DUMMY_SP,
-                                )),
-                            })),
-                            right: Box::new(Expr::Ident(Ident::new(
-                                builtin_var.into(),
-                                DUMMY_SP,
-                                SyntaxContext::empty(),
-                            ))),
-                        }))),
-                        definite: false,
-                    });
-                }
-                ImportSpecifier::Namespace(namespace) => {
-                    // const namespace = __builtin_module
-                    declarators.push(VarDeclarator {
-                        span: DUMMY_SP,
-                        name: Pat::Ident(namespace.local.clone().into()),
-                        init: Some(Box::new(Expr::Ident(Ident::new(
-                            builtin_var.into(),
-                            DUMMY_SP,
-                            SyntaxContext::empty(),
-                        )))),
-                        definite: false,
-                    });
-                }
-            }
-        }
-
-        ModuleItem::Stmt(Stmt::Decl(Decl::Var(Box::new(VarDecl {
-            span: DUMMY_SP,
-            ctxt: SyntaxContext::empty(),
-            kind: swc_core::ecma::ast::VarDeclKind::Const,
-            declare: false,
-            decls: declarators,
-        }))))
-    }
-
-    fn transform_export_default_decl(
+    pub(crate) fn transform_export_default_decl(
         &self,
         export: &swc_core::ecma::ast::ExportDefaultDecl,
     ) -> (Stmt, Stmt) {
@@ -401,14 +299,17 @@ impl ModuleTransformer {
         }
     }
 
-    fn transform_export_default_expr(
+    pub(crate) fn transform_export_default_expr(
         &self,
         export: &swc_core::ecma::ast::ExportDefaultExpr,
     ) -> Stmt {
         self.create_module_exports_assignment("default", export.expr.clone())
     }
 
-    fn transform_export_decl(&self, export: &swc_core::ecma::ast::ExportDecl) -> (Stmt, Stmt) {
+    pub(crate) fn transform_export_decl(
+        &self,
+        export: &swc_core::ecma::ast::ExportDecl,
+    ) -> (Stmt, Stmt) {
         match &export.decl {
             Decl::Var(var_decl) => {
                 let mut export_stmts = Vec::new();
@@ -471,7 +372,7 @@ impl ModuleTransformer {
         }
     }
 
-    fn transform_export_all(&self, export_all: &swc_core::ecma::ast::ExportAll) -> Stmt {
+    pub(crate) fn transform_export_all(&self, export_all: &swc_core::ecma::ast::ExportAll) -> Stmt {
         let require_call = self.create_require_call(export_all.src.value.as_str());
 
         // Object.assign(module.exports, require('module'))
