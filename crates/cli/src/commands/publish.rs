@@ -13,7 +13,6 @@ use tempfile::TempDir;
 use walkdir::WalkDir;
 
 use crate::auth::TokenStorage;
-use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 use crate::commands::workflow::validate::validate_codemod_manifest_structure;
 
 #[derive(Args, Debug)]
@@ -122,7 +121,7 @@ struct PublishedPackage {
     published_at: String,
 }
 
-pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<()> {
+pub async fn handler(args: &Command) -> Result<()> {
     let package_path = args
         .path
         .as_ref()
@@ -200,22 +199,6 @@ pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<
     if !response.success {
         return Err(anyhow!("Failed to publish package"));
     }
-
-    let cli_version = env!("CARGO_PKG_VERSION");
-
-    let _ = telemetry
-        .send_event(
-            BaseEvent {
-                kind: "codemodPublished".to_string(),
-                properties: HashMap::from([
-                    ("codemodName".to_string(), manifest.name.clone()),
-                    ("version".to_string(), manifest.version.clone()),
-                    ("cliVersion".to_string(), cli_version.to_string()),
-                ]),
-            },
-            None,
-        )
-        .await;
 
     println!("✅ Package published successfully!");
     println!("📦 {}", format_codemod_name(&response.package));
