@@ -1,5 +1,10 @@
 use anyhow::{anyhow, Result};
+use butterflow_core::utils::validate_workflow;
+use butterflow_core::Workflow;
+use butterflow_models::step::StepAction;
 use clap::Args;
+use codemod_sandbox::utils::bundler::{Bundler, BundlerConfig, RuntimeSystem};
+use codemod_sandbox::utils::project_discovery::find_tsconfig;
 use log::{debug, info, warn};
 use reqwest;
 use serde::{Deserialize, Serialize};
@@ -149,11 +154,12 @@ pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<
         }
     }
 
-    // Validate package structure
-    validate_package_structure(&package_path, &manifest)?;
+    // Validate package structure and get JS files to bundle
+    let js_files_to_bundle = validate_package_structure(&package_path, &manifest)?;
 
-    // Create package bundle
-    let bundle_path = create_package_bundle(&package_path, &manifest, args.dry_run)?;
+    // Create package bundle with bundled JS files
+    let bundle_path =
+        create_package_bundle(&package_path, &manifest, &js_files_to_bundle, args.dry_run)?;
 
     if args.dry_run {
         println!("✓ Package validation successful");
@@ -249,7 +255,66 @@ fn load_manifest(package_path: &Path) -> Result<CodemodManifest> {
     Ok(manifest)
 }
 
-fn validate_package_structure(package_path: &Path, manifest: &CodemodManifest) -> Result<()> {
+/// Find all JS files used in JS AST grep steps
+fn find_js_files_in_workflow(workflow: &Workflow, package_path: &Path) -> Result<Vec<String>> {
+    let mut js_files = Vec::new();
+
+    for node in &workflow.nodes {
+        for step in &node.steps {
+            if let StepAction::JSAstGrep(js_step) = &step.action {
+                let js_file_path = package_path.join(&js_step.js_file);
+                if !js_file_path.exists() {
+                    return Err(anyhow!(
+                        "JS file referenced in workflow not found: {}",
+                        js_file_path.display()
+                    ));
+                }
+                js_files.push(js_step.js_file.clone());
+            }
+        }
+    }
+
+    info!(
+        "Found {} JS files to bundle: {:?}",
+        js_files.len(),
+        js_files
+    );
+    Ok(js_files)
+}
+
+/// Bundle a JavaScript file and return the bundled code
+fn bundle_js_file(package_path: &Path, js_file: &str) -> Result<String> {
+    let js_file_path = package_path.join(js_file);
+
+    debug!("Bundling JS file: {}", js_file_path.display());
+
+    let tsconfig_path = find_tsconfig(&js_file_path);
+
+    let config = BundlerConfig {
+        base_dir: package_path.to_path_buf(),
+        tsconfig_path,
+        runtime_system: RuntimeSystem::CommonJS,
+        source_maps: false,
+    };
+
+    let mut bundler =
+        Bundler::new(config).map_err(|e| anyhow!("Failed to create bundler: {}", e))?;
+    let bundle_result = bundler
+        .bundle(&js_file_path.to_string_lossy())
+        .map_err(|e| anyhow!("Failed to bundle {}: {}", js_file, e))?;
+
+    info!(
+        "Successfully bundled {} ({} modules)",
+        js_file,
+        bundle_result.modules.len()
+    );
+    Ok(bundle_result.code)
+}
+
+fn validate_package_structure(
+    package_path: &Path,
+    manifest: &CodemodManifest,
+) -> Result<Vec<String>> {
     // Check required files
     let workflow_path = package_path.join(&manifest.workflow);
     if !workflow_path.exists() {
@@ -261,8 +326,16 @@ fn validate_package_structure(package_path: &Path, manifest: &CodemodManifest) -
 
     // Validate workflow file
     let workflow_content = fs::read_to_string(&workflow_path)?;
-    let _workflow: serde_yaml::Value = serde_yaml::from_str(&workflow_content)
+    let workflow: Workflow = serde_yaml::from_str(&workflow_content)
         .map_err(|e| anyhow!("Invalid workflow YAML: {}", e))?;
+
+    let validation_result = validate_workflow(&workflow);
+    if let Err(e) = validation_result {
+        return Err(anyhow!("Invalid workflow: {}", e));
+    }
+
+    // Find all JS AST grep steps that need bundling
+    let js_files = find_js_files_in_workflow(&workflow, package_path)?;
 
     // Check optional files
     if let Some(readme) = &manifest.readme {
@@ -298,17 +371,32 @@ fn validate_package_structure(package_path: &Path, manifest: &CodemodManifest) -
     }
 
     info!("Package validation successful");
-    Ok(())
+    Ok(js_files)
 }
 
 fn create_package_bundle(
     package_path: &Path,
     manifest: &CodemodManifest,
+    js_files_to_bundle: &[String],
     dry_run: bool,
 ) -> Result<PathBuf> {
     let temp_dir = TempDir::new()?;
     let bundle_name = format!("{}-{}.tar.gz", manifest.name, manifest.version);
     let temp_bundle_path = temp_dir.path().join(&bundle_name);
+
+    // Bundle JS files first and prepare replacements
+    let mut bundled_files = HashMap::new();
+    for js_file in js_files_to_bundle {
+        match bundle_js_file(package_path, js_file) {
+            Ok(bundled_code) => {
+                bundled_files.insert(js_file.clone(), bundled_code);
+                info!("Successfully bundled: {js_file}");
+            }
+            Err(e) => {
+                warn!("Failed to bundle {js_file}: {e}. Using original file.");
+            }
+        }
+    }
 
     // Create tar.gz archive
     let tar_gz = fs::File::create(&temp_bundle_path)?;
@@ -325,8 +413,28 @@ fn create_package_bundle(
     {
         if entry.file_type().is_file() {
             let relative_path = entry.path().strip_prefix(package_path)?;
+            let relative_path_str = relative_path.to_string_lossy().to_string();
+
             debug!("Adding file to bundle: {}", relative_path.display());
-            tar.append_path_with_name(entry.path(), relative_path)?;
+
+            // Check if this is a JS file that should be replaced with bundled version
+            if let Some(bundled_code) = bundled_files.get(&relative_path_str) {
+                // Add bundled version instead of original
+                let mut header = tar::Header::new_gnu();
+                header.set_path(relative_path)?;
+                header.set_size(bundled_code.len() as u64);
+                header.set_mode(0o644);
+                header.set_cksum();
+                tar.append(&header, bundled_code.as_bytes())?;
+                info!(
+                    "Replaced {} with bundled version ({} bytes)",
+                    relative_path_str,
+                    bundled_code.len()
+                );
+            } else {
+                // Add original file
+                tar.append_path_with_name(entry.path(), relative_path)?;
+            }
             file_count += 1;
         }
     }
