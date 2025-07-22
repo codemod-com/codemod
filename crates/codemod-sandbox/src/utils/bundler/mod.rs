@@ -248,23 +248,17 @@ impl Bundler {
         }
 
         // Use the existing transpiler utility with panic handling
-        let transpile_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            transpiler::transpile(source_code.to_string(), file_path.to_string())
-        }));
+        let transpile_result =
+            transpiler::transpile(source_code.to_string(), file_path.to_string());
 
         match transpile_result {
-            Ok(Ok(transpiled_bytes)) => {
+            Ok(transpiled_bytes) => {
                 // Convert bytes back to string
                 String::from_utf8(transpiled_bytes)
                     .map_err(|e| format!("Failed to convert transpiled code to UTF-8: {e}").into())
             }
-            Ok(Err(e)) => {
-                eprintln!("Warning: TypeScript transpilation failed for {file_path}: {e:?}");
-                eprintln!("Falling back to original source code...");
-                Ok(source_code.to_string())
-            }
-            Err(_) => {
-                eprintln!("Warning: TypeScript transpilation panicked for {file_path}");
+            Err(e) => {
+                eprintln!("Warning: TypeScript transpilation failed for {file_path}: {e}");
                 eprintln!("Falling back to original source code...");
                 Ok(source_code.to_string())
             }
