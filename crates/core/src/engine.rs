@@ -1434,7 +1434,7 @@ impl Engine {
         // Create and run the execution engine
         let engine = ExecutionEngine::new(config);
         let stats = engine
-            .execute_on_directory(&js_file_path, &base_path)
+            .execute_on_directory(&js_file_path, &base_path, None)
             .await
             .map_err(|e| Error::Other(format!("JavaScript execution failed: {e}")))?;
 
