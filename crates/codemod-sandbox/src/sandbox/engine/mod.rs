@@ -1,5 +1,6 @@
 pub mod config;
 pub mod execution_engine;
+mod llrt_module_builder;
 pub mod quickjs_adapters;
 
 pub use config::*;

@@ -264,7 +264,12 @@ impl TestRunner {
             .zip(test_case.expected_files.iter())
         {
             let execution_output = engine
-                .execute_codemod_on_content(codemod_path, &input_file.path, &input_file.content)
+                .execute_codemod_on_content(
+                    codemod_path,
+                    &input_file.path,
+                    &input_file.content,
+                    None,
+                )
                 .await
                 .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
 
@@ -324,7 +329,12 @@ impl TestRunner {
     ) -> Result<()> {
         for input_file in &test_case.input_files {
             let execution_output = engine
-                .execute_codemod_on_content(codemod_path, &input_file.path, &input_file.content)
+                .execute_codemod_on_content(
+                    codemod_path,
+                    &input_file.path,
+                    &input_file.content,
+                    None,
+                )
                 .await
                 .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
 
