@@ -4,6 +4,8 @@ use llrt_modules::{
     perf_hooks, process, stream_web, string_decoder, timers, tty, url, util, zlib,
 };
 
+pub const UNSAFE_MODULES: &[&str] = &["fetch", "child_process", "fs"];
+
 pub struct LlrtModuleBuilder {
     pub builder: ModuleBuilder,
 }
