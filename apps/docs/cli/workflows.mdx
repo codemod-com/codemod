@@ -101,15 +101,12 @@ Codemod Workflows can be run using [Codemod CLI](/cli/cli-reference) or [Codemod
 
     <Info>
       You can combine different codemod types in a single package by placing each type under its required directory (e.g., <code>
-      
       scripts/</code>
 
-      for shell scripts, <code>
-      
+       for shell scripts,<code>
       rules/</code>
 
-      for ast-grep rules) and referencing them from <code>
-      
+       for ast-grep rules) and referencing them from <code>
       workflow.yaml</code>
 
       . This allows you to orchestrate complex, multi-step migrations using the best tool for each job.
@@ -209,7 +206,7 @@ Codemod Workflows can be run using [Codemod CLI](/cli/cli-reference) or [Codemod
       
       scripts/</code>
 
-      for shell scripts, <code>
+      for shell scripts,<code>
       
       rules/</code>
 
@@ -294,7 +291,7 @@ The folder—called a **workflow bundle**—is the root when you run `npx codemo
     npx codemod@next workflow run ./my-workflow/
     ```
 
-    , the directory is used as the root for all relative paths.
+    the directory is used as the root for all relative paths.
   - You can also run a workflow directly from a file:
 
     <br />
