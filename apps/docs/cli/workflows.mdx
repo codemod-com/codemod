@@ -202,19 +202,7 @@ Codemod Workflows can be run using [Codemod CLI](/cli/cli-reference) or [Codemod
     </CodeGroup>
 
     <Info>
-      You can combine different codemod types in a single package by placing each type under its required directory (e.g., <code>
-      
-      scripts/</code>
-
-      for shell scripts,<code>
-      
-      rules/</code>
-
-      for ast-grep rules) and referencing them from <code>
-      
-      workflow.yaml</code>
-
-      . This allows you to orchestrate complex, multi-step migrations using the best tool for each job.
+      You can combine different codemod types in a single package by placing each type under its required directory (e.g., `scripts/` for shell scripts, `rules/` for ast-grep rules) and referencing them from `workflow.yaml`. This allows you to orchestrate complex, multi-step migrations using the best tool for each job.
     </Info>
   </Step>
   <Step title="Understand an example workflow">
@@ -471,11 +459,7 @@ nodes:
   3. Leaves existing tasks untouched if their item remains.
 
   <Info>
-    Matrix nodes have a <b>
-    
-    master task</b>
-
-    that tracks the status of all generated tasks.
+    Matrix nodes have a **master task** that tracks the status of all generated tasks.
   </Info>
 </Accordion>
 
@@ -682,19 +666,11 @@ nodes:
 ## Roadmap
 
 <Update description="Container runtime support">
-  Support for <code>
-  
-  runtime: docker</code>
-
-  and other container runtimes, allowing tasks to run in isolated environments.
+  Support for `runtime: docker` and other container runtimes, allowing tasks to run in isolated environments.
 </Update>
 
 <Update description="Parameter flags">
-  Ability to pass parameters to workflows via <code>
-  
-  --param key=value</code>
-
-  flags.
+  Ability to pass parameters to workflows via `--param key=value` flags.
 </Update>
 
 <Update description="Nested matrix strategies">
