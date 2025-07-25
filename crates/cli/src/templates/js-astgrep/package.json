@@ -11,7 +11,7 @@
     "typescript": "^5.8.3"
   },
   "scripts": {
-    "test": "npx codemod@next jssg test -l typescript ./scripts/codemod.js.ts",
+    "test": "npx codemod@next jssg test -l typescript ./scripts/codemod.ts",
     "check-types": "npx tsc --noEmit"
   }
 }

@@ -20,7 +20,7 @@ nodes:
     steps:
       - name: Remove console.log statements
         js-ast-grep:
-          js_file: scripts/codemod.js.ts
+          js_file: scripts/codemod.ts
           base_path: .
           include:
             - "**/*.ts"
