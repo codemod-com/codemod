@@ -1898,6 +1898,7 @@ function helper() {
             },
             Some(temp_path),
             None,
+            &None,
         )
         .await;
 
@@ -1976,6 +1977,7 @@ interface ApiResponse {
             },
             Some(temp_path),
             None,
+            &None,
         )
         .await;
 
@@ -2032,6 +2034,7 @@ var count = 0;
             },
             Some(temp_path),
             None,
+            &None,
         )
         .await;
 
@@ -2068,6 +2071,7 @@ async fn test_execute_js_ast_grep_step_nonexistent_js_file() {
             },
             Some(temp_path),
             None,
+            &None,
         )
         .await;
 
@@ -2132,6 +2136,7 @@ build/
             },
             Some(temp_path),
             None,
+            &None,
         )
         .await;
 
@@ -2158,6 +2163,7 @@ build/
             },
             Some(temp_path),
             None,
+            &None,
         )
         .await;
 
@@ -2210,6 +2216,7 @@ export default function transform(ast) {
             },
             Some(temp_path),
             None,
+            &None,
         )
         .await;
 
@@ -2257,6 +2264,7 @@ export default function transform(ast) {
             },
             Some(temp_path),
             None,
+            &None,
         )
         .await;
 
@@ -2305,6 +2313,7 @@ export default function transform(ast) {
             },
             Some(temp_path),
             None,
+            &None,
         )
         .await;
 

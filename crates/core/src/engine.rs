@@ -1255,6 +1255,7 @@ impl Engine {
                     js_ast_grep,
                     bundle_path.as_deref(),
                     yes_or_no_callback.clone(),
+                    &Some(params.clone()),
                 )
                 .await
             }
@@ -1367,6 +1368,7 @@ impl Engine {
         js_ast_grep: &UseJSAstGrep,
         bundle_path: Option<&std::path::Path>,
         yes_or_no_callback: Option<YesOrNoCallback>,
+        params: &Option<HashMap<String, String>>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
@@ -1479,10 +1481,13 @@ impl Engine {
 
         config = config.with_walk_options(walk_options);
 
-        let capabilities = js_ast_grep.capabilities.clone();
+        let capabilities = params
+            .as_ref()
+            .and_then(|p| p.get("capabilities"))
+            .map(|c| c.split(',').map(|c| c.to_string()).collect::<Vec<_>>());
 
         // validate capabilities
-        if let Some(capabilities) = &js_ast_grep.capabilities {
+        if let Some(capabilities) = &capabilities {
             for capability in capabilities {
                 if codemod_sandbox::sandbox::engine::llrt_module_builder::UNSAFE_MODULES
                     .contains(&capability.as_str())
