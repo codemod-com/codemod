@@ -11,8 +11,8 @@ async function transform(root: SgRoot<JS>): Promise<string> {
   });
 
   const edits = nodes.map((node) => {
-    const varName = node.getMatch("VAR").text();
-    const value = node.getMatch("VALUE").text();
+    const varName = node.getMatch("VAR")?.text();
+    const value = node.getMatch("VALUE")?.text();
     return node.replace(`const ${varName} = ${value}`);
   });
 

@@ -1,6 +1,7 @@
 import type { SgRoot } from "@ast-grep/napi";
+import type Rust from "codemod:ast-grep/langs/rust";
 
-async function transform(root: SgRoot): Promise<string> {
+async function transform(root: SgRoot<Rust>): Promise<string> {
   const rootNode = root.root();
 
   // Find all println! macro calls

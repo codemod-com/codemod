@@ -1,4 +1,5 @@
 version: "1"
+
 nodes:
   - id: install-deps
     name: Install Dependencies
@@ -17,13 +18,13 @@ nodes:
     runtime:
       type: direct
     steps:
-      - name: "Remove console.log statements"
+      - name: Remove console.log statements
         js-ast-grep:
-          js_file: "scripts/codemod.ts"
-          base_path: "."
+          js_file: scripts/codemod.ts
+          base_path: .
           include:
             - "**/*.ts"
             - "**/*.tsx"
           exclude:
             - "**/node_modules/**"
-          language: "typescript"
+          language: typescript
