@@ -1,20 +1,23 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use butterflow_core::utils::get_cache_dir;
 use clap::Args;
 use log::info;
 use rand::Rng;
 use std::collections::HashMap;
+use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command as ProcessCommand;
 use tokio::sync::Mutex;
 
 use crate::auth_provider::CliAuthProvider;
+use crate::commands::publish::CodemodManifest;
 use crate::dirty_git_check;
 use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
 use butterflow_core::engine::{Engine, GLOBAL_STATS};
 use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
 use codemod_sandbox::sandbox::engine::ExecutionStats;
 use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
+use serde_yaml;
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -219,6 +222,23 @@ async fn execute_codemod(
         if let Some((key, value)) = arg.split_once('=') {
             params.insert(key.to_string(), value.to_string());
         }
+    }
+
+    let codemod_config_path = package_dir.join("codemod.yaml");
+    let codemod_config: Option<CodemodManifest> = if codemod_config_path.exists() {
+        let codemod_config_content = fs::read_to_string(&codemod_config_path)?;
+        let codemod_config: CodemodManifest = serde_yaml::from_str(&codemod_config_content)
+            .map_err(|e| anyhow!("Failed to parse codemod.yaml: {}", e))?;
+        Some(codemod_config)
+    } else {
+        None
+    };
+
+    let capabilities = codemod_config.and_then(|config| config.capabilities);
+
+    if let Some(capabilities) = capabilities {
+        let capabilities_str = capabilities.join(",");
+        params.insert("capabilities".to_string(), capabilities_str);
     }
 
     // Create workflow run configuration
