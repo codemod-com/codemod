@@ -6,6 +6,7 @@ use clap::Args;
 use codemod_sandbox::utils::bundler::{Bundler, BundlerConfig, RuntimeSystem};
 use codemod_sandbox::utils::project_discovery::find_tsconfig;
 use log::{debug, info, warn};
+use regex::Regex;
 use reqwest;
 use serde::{Deserialize, Serialize};
 use serde_yaml;
@@ -381,7 +382,12 @@ fn create_package_bundle(
     dry_run: bool,
 ) -> Result<PathBuf> {
     let temp_dir = TempDir::new()?;
-    let bundle_name = format!("{}-{}.tar.gz", manifest.name, manifest.version);
+    let bundle_name = format!(
+        "{}-{}.tar.gz",
+        manifest.name.replace("/", "__"),
+        manifest.version
+    )
+    .to_string();
     let temp_bundle_path = temp_dir.path().join(&bundle_name);
 
     // Bundle JS files first and prepare replacements
@@ -602,13 +608,13 @@ fn calculate_package_size(package_path: &Path) -> Result<u64> {
 }
 
 fn is_valid_package_name(name: &str) -> bool {
-    !name.is_empty()
-        && name.len() <= 50
-        && name
-            .chars()
-            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '_')
-        && !name.starts_with('-')
-        && !name.ends_with('-')
+    if name.is_empty() || name.len() > 50 {
+        return false;
+    }
+
+    // Pattern: /^(@[a-zA-Z0-9-_.]+\/)?[a-zA-Z0-9-_]+$/
+    let re = Regex::new(r"^(@[a-zA-Z0-9\-_.]+/)?[a-zA-Z0-9\-_]+$").unwrap();
+    re.is_match(name)
 }
 
 fn is_valid_semver(version: &str) -> bool {
