@@ -302,7 +302,7 @@ fn bundle_js_file(package_path: &Path, js_file: &str) -> Result<String> {
         Bundler::new(config).map_err(|e| anyhow!("Failed to create bundler: {}", e))?;
     let bundle_result = bundler
         .bundle(&js_file_path.to_string_lossy())
-        .map_err(|e| anyhow!("Failed to bundle {}: {}", js_file, e))?;
+        .map_err(|e| anyhow!("Failed to bundle {js_file}:\n{e}"))?;
 
     info!(
         "Successfully bundled {} ({} modules)",
@@ -393,15 +393,7 @@ fn create_package_bundle(
     // Bundle JS files first and prepare replacements
     let mut bundled_files = HashMap::new();
     for js_file in js_files_to_bundle {
-        match bundle_js_file(package_path, js_file) {
-            Ok(bundled_code) => {
-                bundled_files.insert(js_file.clone(), bundled_code);
-                info!("Successfully bundled: {js_file}");
-            }
-            Err(e) => {
-                warn!("Failed to bundle {js_file}: {e}. Using original file.");
-            }
-        }
+        bundled_files.insert(js_file.clone(), bundle_js_file(package_path, js_file)?);
     }
 
     // Create tar.gz archive

@@ -18,7 +18,7 @@ pub enum FsError {
 
 #[derive(Debug, Error)]
 pub enum ResolverError {
-    #[error("Module resolution failed: base='{base}', name='{name}'")]
+    #[error("Module resolution failed:\nCannot resolve {name} from {base}")]
     ResolutionFailed { base: String, name: String },
 
     #[error("Invalid module path: {path}")]
