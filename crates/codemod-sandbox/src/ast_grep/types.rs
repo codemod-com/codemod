@@ -3,7 +3,7 @@ use crate::rquickjs_compat::{Ctx, Error, FromJs, IntoJs, Object, Result, Value};
 use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct JsPosition {
-    pub row: usize,
+    pub line: usize,
     pub column: usize,
     pub index: usize,
 }
@@ -14,17 +14,21 @@ impl<'js> FromJs<'js> for JsPosition {
         let obj = value
             .as_object()
             .ok_or(Error::new_from_js(ty_name, "Object"))?;
-        let row = obj.get("row")?;
+        let line = obj.get("line")?;
         let column = obj.get("column")?;
         let index = obj.get("index")?;
-        Ok(Self { row, column, index })
+        Ok(Self {
+            line,
+            column,
+            index,
+        })
     }
 }
 
 impl<'js> IntoJs<'js> for JsPosition {
     fn into_js(self, ctx: &Ctx<'js>) -> Result<Value<'js>> {
         let obj = Object::new(ctx.clone())?;
-        obj.set("row", self.row)?;
+        obj.set("line", self.line)?;
         obj.set("column", self.column)?;
         obj.set("index", self.index)?;
         obj.into_js(ctx)

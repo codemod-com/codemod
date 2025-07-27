@@ -153,12 +153,12 @@ impl<'js> SgNodeRjs<'js> {
 
         let result = JsNodeRange {
             start: crate::ast_grep::types::JsPosition {
-                row: start_pos_obj.line(),
+                line: start_pos_obj.line(),
                 column: start_pos_obj.column(&self.inner_node),
                 index: byte_range.start,
             },
             end: crate::ast_grep::types::JsPosition {
-                row: end_pos_obj.line(),
+                line: end_pos_obj.line(),
                 column: end_pos_obj.column(&self.inner_node),
                 index: byte_range.end,
             },
