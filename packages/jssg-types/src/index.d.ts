@@ -73,3 +73,7 @@ declare module "codemod:ast-grep/langs/tsx" {
 declare module "codemod:ast-grep/langs/typescript" {
   export { default } from "@codemod.com/jssg-types/langs/typescript";
 }
+
+declare module "codemod:ast-grep/langs/yaml" {
+  export { default } from "@codemod.com/jssg-types/langs/yaml";
+}
