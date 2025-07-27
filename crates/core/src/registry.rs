@@ -451,28 +451,30 @@ impl RegistryClient {
 }
 
 pub fn parse_package_spec(package: &str) -> Result<PackageSpec> {
-    let (name_part, version) = if package.contains('@') {
-        let parts: Vec<&str> = package.rsplitn(2, '@').collect();
+    // Scoped packages are prefixed with @
+    let (scope, rest) = if package.starts_with('@') {
+        let parts: Vec<&str> = package.splitn(2, '/').collect();
         if parts.len() == 2 {
-            (parts[1], Some(parts[0].to_string()))
-        } else {
-            (package, None)
-        }
-    } else {
-        (package, None)
-    };
-
-    let (scope, name) = if name_part.starts_with('@') {
-        let parts: Vec<&str> = name_part.splitn(2, '/').collect();
-        if parts.len() == 2 {
-            (Some(parts[0].to_string()), parts[1].to_string())
+            (Some(parts[0].to_string()), parts[1])
         } else {
             return Err(RegistryError::InvalidScopedPackageName {
-                name: name_part.to_string(),
+                name: package.to_string(),
             });
         }
     } else {
-        (None, name_part.to_string())
+        (None, package)
+    };
+
+    // Get version
+    let (name, version) = if rest.contains('@') {
+        let parts: Vec<&str> = rest.rsplitn(2, '@').collect();
+        if parts.len() == 2 {
+            (parts[1].to_string(), Some(parts[0].to_string()))
+        } else {
+            (rest.to_string(), None)
+        }
+    } else {
+        (rest.to_string(), None)
     };
 
     Ok(PackageSpec {
