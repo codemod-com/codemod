@@ -1,5 +1,11 @@
 # @codemod.com/jssg-types
 
+## 1.0.5
+
+### Patch Changes
+
+- b70e102: Add YAML grammar
+
 ## 1.0.4
 
 ### Patch Changes
