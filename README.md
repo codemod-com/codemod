@@ -121,6 +121,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/sid-maddy"><img src="https://avatars.githubusercontent.com/u/10049286?v=4?s=100" width="100px;" alt="Siddhesh Mhadnak"/><br /><sub><b>Siddhesh Mhadnak</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=sid-maddy" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://augustinmauroy.github.io/"><img src="https://avatars.githubusercontent.com/u/97875033?v=4?s=100" width="100px;" alt="Augustin Mauroy"/><br /><sub><b>Augustin Mauroy</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=AugustinMauroy" title="Code">💻</a> <a href="https://github.com/codemod-com/codemod/issues?q=author%3AAugustinMauroy" title="Bug reports">🐛</a> <a href="#ideas-AugustinMauroy" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://brunocroh.com"><img src="https://avatars.githubusercontent.com/u/13812512?v=4?s=100" width="100px;" alt="Bruno Rodrigues"/><br /><sub><b>Bruno Rodrigues</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=brunocroh" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

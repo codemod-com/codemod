@@ -431,6 +431,15 @@
         "bug",
         "ideas"
       ]
+    },
+    {
+      "login": "brunocroh",
+      "name": "Bruno Rodrigues",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13812512?v=4",
+      "profile": "http://brunocroh.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
