@@ -7,6 +7,12 @@
     "light": "#91c500",
     "dark": "#0B151E"
   },
+  "background": {
+    "color": {
+      "dark": "#0b141e",
+      "light": "#FFF"
+    }
+  },
   "favicon": "/favicon.svg",
   "styling": {
     "eyebrows": "breadcrumbs"
