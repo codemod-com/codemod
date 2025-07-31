@@ -12,6 +12,41 @@ export async function POST(req: NextRequest) {
 
   const formData = await req.formData();
   const email = formData.get("email")?.toString() || "no email provided";
+  const captchaToken = formData.get("captchaToken")?.toString();
+
+  // Verify reCAPTCHA token server-side (Google reCAPTCHA v3)
+  if (!captchaToken) {
+    return NextResponse.json(
+      { error: "Captcha token missing" },
+      { status: 400 },
+    );
+  }
+
+  const verifyRes = await fetch(
+    `https://www.google.com/recaptcha/api/siteverify`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      // `body` must be URL-encoded
+      body: `secret=${encodeURIComponent(
+        env.RECAPTCHA_SECRET_KEY,
+      )}&response=${encodeURIComponent(captchaToken)}`,
+    },
+  );
+
+  const verifyData = await verifyRes.json();
+
+  if (
+    !verifyData.success ||
+    (verifyData.score !== undefined && verifyData.score < 0.5)
+  ) {
+    return NextResponse.json(
+      { error: "Captcha verification failed" },
+      { status: 400 },
+    );
+  }
 
   try {
     const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${env.HUBSPOT_PORTAL_ID}`;

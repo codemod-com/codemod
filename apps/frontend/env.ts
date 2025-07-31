@@ -20,6 +20,7 @@ export const env = createEnv({
     HUBSPOT_JOB_FORM_ID: z.string(),
     HUBSPOT_CONTACT_FORM_ID: z.string(),
     HUBSPOT_NEWSLETTER_FORM_ID: z.string(),
+    RECAPTCHA_SECRET_KEY: z.string(),
     IS_PREVIEW: z.string().optional(),
   },
   client: {
@@ -28,6 +29,7 @@ export const env = createEnv({
     NEXT_PUBLIC_AI_API_URL: z.string(),
     NEXT_PUBLIC_WS_URL: z.string(),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
+    NEXT_PUBLIC_RECAPTCHA_SITE_KEY: z.string(),
     NEXT_PUBLIC_SANITY_PROJECT_ID: z.string(),
     NEXT_PUBLIC_SANITY_DATASET: z.string(),
     NEXT_PUBLIC_SANITY_API_VERSION: z.string().optional(),
@@ -50,6 +52,7 @@ export const env = createEnv({
     NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_RECAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
     SANITY_API_TOKEN: process.env.SANITY_API_TOKEN,
     SANITY_REVALIDATE_SECRET: process.env.SANITY_REVALIDATE_SECRET,
     NEXT_PUBLIC_SANITY_PROJECT_ID: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -63,6 +66,7 @@ export const env = createEnv({
     HUBSPOT_JOB_FORM_ID: process.env.HUBSPOT_JOB_FORM_ID,
     HUBSPOT_CONTACT_FORM_ID: process.env.HUBSPOT_CONTACT_FORM_ID,
     HUBSPOT_NEWSLETTER_FORM_ID: process.env.HUBSPOT_NEWSLETTER_FORM_ID,
+    RECAPTCHA_SECRET_KEY: process.env.RECAPTCHA_SECRET_KEY,
     IS_PREVIEW: process.env.IS_PREVIEW,
   },
 });
