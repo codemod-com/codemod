@@ -7,32 +7,15 @@ assignees: ''
 
 ---
 
-### Issue Description
+# Platform Issues
 
-Select one of:
-[ ] Generated codemod is not correct
-[ ] Bug in Codemod Studio
-[ ] UI/UX improvement request
-[ ] Feature request
+**This repository is for open-source contributions to Codemod CLI and related tools.**
 
-A quick description of the issue you ran into.
+For issues, feedback, or feature requests related to **Codemod Platform**, please use one of these channels:
 
-### Steps to Reproduce
+- **[Feedback Board](https://feedback.codemod.com)** - Submit bugs, feature requests, and general feedback
+- **[Slack Community](https://go.codemod.com/community)** - Discuss issues and get help from the community
 
-1. (for example) Went to ...
-2. Clicked on...
-3. ...
+---
 
-### Actual Results
-
-What is happening right now that is different from what is expected. If this issue is about faulty codemod generation, add the `Before` code snippet here.
-
-### Expected Results
-
-The expected correct result. If this issue is about faulty codemod generation, add the `After` code snippet here.
-
-### Technical details
-
-- Browser version, screen recording, console logs, network requests (optional).
-- Node.js version
-- Anything else that you think could be an issue.
+**If you're here to report an issue with the open-source CLI or contribute to the codebase, please use the appropriate issue template instead.**
