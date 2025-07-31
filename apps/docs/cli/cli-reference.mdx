@@ -32,11 +32,23 @@ import { APIKeyDemo } from "/snippets/api-key-demo.mdx";
     This publishes your codemod to the registry (you may need to [login](#codemod%40next-login) first).
   </Step>
   <Step title="Run your codemod">
+    <Tabs>
+    <Tab title="Local Workflow">
     ```bash
     npx codemod@next workflow run -w my-codemod/workflow.yaml
     ```
-
-    This runs your codemod workflow on your codebase.
+    
+    This runs your local codemod workflow on your codebase.
+    </Tab>
+    
+    <Tab title="Registry Package">
+    ```bash
+    npx codemod@next @codemod-com/my-test-pkg
+    ```
+    
+    Run published codemods directly from the [Codemod Registry](https://app.codemod.com/registry).
+    </Tab>
+    </Tabs>
   </Step>
 </Steps>
 
@@ -63,9 +75,23 @@ Manage and execute workflow YAMLs.
 
 Run a workflow.
 
-```bash
+<CodeGroup>
+
+```bash Running a local workflow
 npx codemod@next workflow run -w <workflow.yaml|directory> [--param key=value]
 ```
+
+```bash Running a workflow from Codemod Registry
+npx codemod@next workflow run <package-name> [--param key=value]
+```
+
+</CodeGroup>
+
+<Info>
+**Local workflows vs. Registry packages:** 
+- Use `npx codemod@next workflow run -w <path>` for local workflow files and directories
+- Use `npx codemod@next <package-name>` to run packages directly from the [Codemod Registry](https://app.codemod.com/registry)
+</Info>
 
 <ResponseField name="-w, --workflow <PATH>" type="string" required>
   Path to workflow file or directory.
@@ -74,6 +100,36 @@ npx codemod@next workflow run -w <workflow.yaml|directory> [--param key=value]
 <ResponseField name="--param <KEY=VALUE>" type="string">
   Workflow parameters (format: key=value).
 </ResponseField>
+
+
+<Accordion title="Examples">
+
+**Running a local workflow**:
+
+```bash
+# Run a local workflow file
+npx codemod@next workflow run -w ./my-workflow.yaml
+
+# Run a workflow from a local directory
+npx codemod@next workflow run -w ./my-codemod
+
+# Run with parameters
+npx codemod@next workflow run -w ./my-codemod --param version=latest --param target=src
+```
+
+**Running a workflow from the registry**:
+
+```bash
+# Run a workflow package from the registry
+npx codemod@next @codemod-com/my-test-pkg
+
+# Run with parameters
+npx codemod@next @codemod-com/my-test-pkg --param version=latest --param target=src
+```
+
+Explore available packages on [Codemod Registry](https://app.codemod.com/registry).
+
+</Accordion>
 
 **`workflow resume`**
 
@@ -543,6 +599,9 @@ npx codemod@next publish [PATH] [options]
     
     # Publish under an organization scope (requires GitHub App installation)
     npx codemod@next publish ./my-codemod --scope nodejs
+    
+    # After publishing, run your package from the registry
+    npx codemod@next @your-scope/my-codemod
     ```
   </Accordion>
 </AccordionGroup>
