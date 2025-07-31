@@ -12,7 +12,7 @@ import Button from "./Button";
 import Input from "./Input";
 
 export default function NewsletterForm(props: PageCtaDouble) {
-  const { formState, handleSubmit, formRef } = useFormSubmission({
+  const { formState, handleSubmit, formRef, errorMessage } = useFormSubmission({
     recaptcha: true,
   });
 
@@ -111,9 +111,12 @@ export default function NewsletterForm(props: PageCtaDouble) {
             &nbsp;apply.
           </span>
         </div>
-        {formState === "error" ? (
-          <span className="body-s text-error-light dark:text-error-dark">
-            There has been a system error. Please, send your form again.
+        {formState === "error" && errorMessage ? (
+          <span
+            className="body-s text-error-light dark:text-error-dark"
+            role="alert"
+          >
+            {errorMessage}
           </span>
         ) : null}
         {props.privacyLink?.link && (

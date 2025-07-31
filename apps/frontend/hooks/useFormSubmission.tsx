@@ -12,6 +12,7 @@ export function useFormSubmission(options: { recaptcha?: boolean } = {}) {
     "idle" | "loading" | "error" | "success"
   >("idle");
   const [canSend, setCanSend] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
@@ -64,7 +65,16 @@ export function useFormSubmission(options: { recaptcha?: boolean } = {}) {
 
     if (res.status === 200 || res.headers.get("location") === "/success") {
       setFormState("success");
+      setErrorMessage(null);
     } else {
+      let message = "Something went wrong. Please try again.";
+      try {
+        const data = await res.json();
+        if (data?.error) message = data.error as string;
+      } catch {
+        /* response not JSON */
+      }
+      setErrorMessage(message);
       setFormState("error");
     }
   }
@@ -88,5 +98,6 @@ export function useFormSubmission(options: { recaptcha?: boolean } = {}) {
     handleSubmit,
     formRef,
     canSend,
+    errorMessage,
   };
 }
