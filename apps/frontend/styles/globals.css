@@ -410,3 +410,11 @@ h6[class*="heading"] a {
   outline-offset: 2px;
   border-radius: 3px;
 }
+
+/* Hide default Google reCAPTCHA badge – we render our own compliant attribution */
+.grecaptcha-badge {
+  visibility: hidden !important;
+  /* Keep space zero so layout isn't affected */
+  width: 0 !important;
+  height: 0 !important;
+}
