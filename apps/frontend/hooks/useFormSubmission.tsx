@@ -15,7 +15,7 @@ export function useFormSubmission(options: { recaptcha?: boolean } = {}) {
   const [canSend, setCanSend] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const siteKey = env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
   // Load reCAPTCHA script if needed (client-side only)
   useEffect(() => {
