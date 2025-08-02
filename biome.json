@@ -6,7 +6,8 @@
       "**",
       "!**/__testfixtures__/**",
       "!**/schemas/**",
-      "!**/submodules/**"
+      "!**/submodules/**",
+      "!crates/cli/src/templates/**"
     ]
   },
   "linter": {

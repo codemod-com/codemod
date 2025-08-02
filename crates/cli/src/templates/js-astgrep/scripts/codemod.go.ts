@@ -1,5 +1,5 @@
 import type { SgRoot } from "@ast-grep/napi";
-import type Go from "@ast-grep/napi/lang/go";
+import type Go from "codemod:ast-grep/langs/go";
 
 async function transform(root: SgRoot<Go>): Promise<string> {
   const rootNode = root.root();
