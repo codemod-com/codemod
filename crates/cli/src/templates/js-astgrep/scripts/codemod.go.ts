@@ -1,7 +1,7 @@
-import type { SgRoot } from "@ast-grep/napi";
-import type Go from "@ast-grep/napi/lang/go";
+import type { SgRoot } from "codemod:ast-grep";
+import type GO from "codemod:ast-grep/langs/go";
 
-async function transform(root: SgRoot<Go>): Promise<string> {
+async function transform(root: SgRoot<GO>): Promise<string> {
   const rootNode = root.root();
 
   // Find all fmt.Println calls
