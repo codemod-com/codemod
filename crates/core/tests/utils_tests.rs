@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::env;
 use std::fs;
+use std::path::Path;
 
 use butterflow_core::utils;
 use butterflow_core::NodeType;
@@ -147,7 +148,7 @@ fn test_validate_workflow_valid() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation succeeds
     assert!(result.is_ok());
@@ -189,7 +190,7 @@ fn test_validate_workflow_duplicate_node_id() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -223,7 +224,7 @@ fn test_validate_workflow_nonexistent_dependency() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -271,7 +272,7 @@ fn test_validate_workflow_cyclic_dependency() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -374,7 +375,7 @@ fn test_validate_workflow_duplicate_template_id() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -424,7 +425,7 @@ fn test_validate_workflow_nonexistent_template_reference() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -462,7 +463,7 @@ fn test_validate_workflow_invalid_matrix_strategy() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -523,7 +524,7 @@ fn test_validate_workflow_complex_cyclic_dependency() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -640,7 +641,7 @@ fn test_validate_workflow_self_dependency() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -693,7 +694,7 @@ fn test_validate_workflow_valid_matrix_strategy_with_values() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation succeeds
     assert!(result.is_ok());
@@ -725,7 +726,7 @@ fn test_validate_workflow_valid_matrix_strategy_with_from_state() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation succeeds
     assert!(result.is_ok());
@@ -755,7 +756,7 @@ fn test_validate_workflow_with_template_outputs() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation succeeds
     assert!(result.is_ok());
@@ -790,7 +791,7 @@ fn test_validate_workflow_with_step_env_vars() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation succeeds
     assert!(result.is_ok());
