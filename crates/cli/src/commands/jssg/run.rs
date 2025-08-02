@@ -70,15 +70,7 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     let tsconfig_path = find_tsconfig(&script_base_dir);
 
-    let resolver = Arc::new(
-        match tsconfig_path {
-            Some(tsconfig_path) => {
-                OxcResolver::with_tsconfig(script_base_dir.clone(), tsconfig_path)
-            }
-            None => OxcResolver::new(script_base_dir.clone()),
-        }
-        .map_err(|e| anyhow::anyhow!("Failed to create OxcResolver: {e}"))?,
-    );
+    let resolver = Arc::new(OxcResolver::new(script_base_dir.clone(), tsconfig_path)?);
 
     let mut config = ExecutionConfig::new(filesystem, resolver, script_base_dir);
     let mut walk_options = WalkOptions::default();

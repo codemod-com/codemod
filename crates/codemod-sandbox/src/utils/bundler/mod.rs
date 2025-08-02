@@ -88,14 +88,10 @@ impl Bundler {
 
     /// Create a new bundler instance
     pub fn new(config: BundlerConfig) -> Result<Self, Box<dyn std::error::Error>> {
-        let resolver: Box<dyn ModuleResolver> = if let Some(tsconfig_path) = &config.tsconfig_path {
-            Box::new(OxcResolver::with_tsconfig(
-                config.base_dir.clone(),
-                tsconfig_path.clone(),
-            )?)
-        } else {
-            Box::new(OxcResolver::new(config.base_dir.clone())?)
-        };
+        let tsconfig_path = config.tsconfig_path.clone();
+
+        let resolver: Box<dyn ModuleResolver> =
+            Box::new(OxcResolver::new(config.base_dir.clone(), tsconfig_path)?);
 
         Ok(Self {
             resolver,
