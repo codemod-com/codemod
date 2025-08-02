@@ -1367,13 +1367,8 @@ impl Engine {
         let tsconfig_path = find_tsconfig(search_dir);
 
         let resolver = Arc::new(
-            match tsconfig_path {
-                Some(tsconfig_path) => {
-                    OxcResolver::with_tsconfig(script_base_dir.clone(), tsconfig_path)
-                }
-                None => OxcResolver::new(script_base_dir.clone()),
-            }
-            .map_err(|e| Error::Other(format!("Failed to create OxcResolver: {e}")))?,
+            OxcResolver::new(script_base_dir.clone(), tsconfig_path)
+                .map_err(|e| Error::Other(format!("Failed to create resolver: {e}")))?,
         );
 
         let mut config = ExecutionConfig::new(filesystem, resolver, script_base_dir);
