@@ -23,35 +23,38 @@
 
 Codemod is the AI-powered, community-led platform for automating code migrations, framework upgrades, and large-scale changes.
 
-## Get Started
+This monorepo is centered around the **Codemod CLI**, the command-line interface that allows you to build, test, and run codemod workflows in your terminal.
 
-- **Platform:** [Codemod Platform](https://go.codemod.com/app) — Plan, automate, and track migrations in any codebase.
-- **Docs:** [docs.codemod.com](https://docs.codemod.com)
+## Key Features
 
-## Platform Features
+- **Workflows** – Scaffold, test, and orchestrate complex, multi-step migrations with ast-grep YAML or JavaScipt ast-grep (jssg).
+- **Codemod Registry** – Share or discover codemods via `npx codemod@next publish` or `npx codemod@next search`.
 
-Codemod helps you plan, automate, and orchestrate code migrations at scale. Here’s what you can do:
+## Getting Started
 
-- **Migrations:** Automate code changes and framework upgrades with AI-powered codemods. [Learn more](https://docs.codemod.com/migrations)
-- **Insights:** Track, measure, and report on migration progress and code health. [Learn more](https://docs.codemod.com/insights)
-- **Codemod Studio:** Author, test, and share codemods using an intuitive web interface. [Learn more](https://docs.codemod.com/codemod-studio)
-- **Workflows:** Orchestrate and manage large-scale code migration campaigns. [Learn more](https://docs.codemod.com/platform/workflows)
-- **CLI:** Run codemods and manage migrations from your terminal. [Learn more](https://docs.codemod.com/cli/cli-reference)
+```bash
+# Initialize a new codemod project
+npx codemod@next init my-codemod
 
-## CLI
+# Publish it to the Codemod Registry
+npx codemod@next publish my-codemod
 
-> The new Codemod CLI is under active development. For the latest features and usage, see our [CLI docs](https://docs.codemod.com/cli/cli-reference).
+# Run it on your codebase
+npx codemod@next workflow run -w my-codemod/workflow.yaml
+```
 
+See the full [CLI reference](https://docs.codemod.com/cli/cli-reference) for every command and option.
 
-## Community & Support
+## Codemod Platform
 
-Codemod community can be found on [Slack](https://codemod.com/community), where you can ask questions, share your feedback, and contribute to the community.
+The CLI is the engine that powers campaigns inside [Codemod Platform](https://app.codemod.com).
+Need to coordinate changes across multiple repositories, track progress, or collaborate with your team? The Platform adds insights, orchestration, dashboards, and authoring tools that help teams successfully land large-scale code migrations.
 
-Our [Code of Conduct](/CODE_OF_CONDUCT.md) applies to all Codemod community channels.
+Learn more in the [docs](https://docs.codemod.com) and share feedback on the [feedback board](https://feedback.codemod.com). We also hang out in Slack — join us at [go.codemod.com/community](https://go.codemod.com/community).
 
 ## Contributing
 
-To contribute to Codemod platform, please refer to the [contributing guide](/CONTRIBUTING.md).
+We welcome contributions to the Codemod CLI. Please see the [contributing guide](/CONTRIBUTING.md) to get started.
 
 ### Contributors ✨
 
