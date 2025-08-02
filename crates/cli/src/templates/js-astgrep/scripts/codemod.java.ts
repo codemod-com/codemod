@@ -1,8 +1,8 @@
 import type { SgRoot } from "codemod:ast-grep";
 import type Java from "codemod:ast-grep/langs/java";
 
-async function transform(root: SgRoot<Java>): Promise<string> {
-  	const rootNode = root.root();
+async function transform(root: SgRoot<Java>): Promise<string | null> {
+	const rootNode = root.root();
 
 	// Find for-each loops that iterate over a collection and add items to another collection
 	const filterMapLoops = rootNode.findAll({
@@ -24,6 +24,7 @@ async function transform(root: SgRoot<Java>): Promise<string> {
 		const condition = node.getMatch("CONDITION")?.text();
 		const target = node.getMatch("TARGET")?.text();
 		const expression = node.getMatch("EXPRESSION")?.text();
+
 		// Transform to streams API
 		return node.replace(`
       ${collection}.stream()

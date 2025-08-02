@@ -103,6 +103,16 @@ const JS_APPLY_SCRIPT_FOR_JAVA: &str =
 const JS_TSCONFIG_TEMPLATE: &str = include_str!("../templates/js-astgrep/tsconfig.json");
 const JS_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.js");
 const JS_TEST_EXPECTED: &str = include_str!("../templates/js-astgrep/tests/fixtures/expected.js");
+const GO_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.go");
+const GO_TEST_EXPECTED: &str = include_str!("../templates/js-astgrep/tests/fixtures/expected.go");
+const PYTHON_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.py");
+const PYTHON_TEST_EXPECTED: &str =
+    include_str!("../templates/js-astgrep/tests/fixtures/expected.py");
+const RUST_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.rs");
+const RUST_TEST_EXPECTED: &str = include_str!("../templates/js-astgrep/tests/fixtures/expected.rs");
+const JAVA_TEST_INPUT: &str = include_str!("../templates/js-astgrep/tests/fixtures/input.java");
+const JAVA_TEST_EXPECTED: &str =
+    include_str!("../templates/js-astgrep/tests/fixtures/expected.java");
 
 // ast-grep YAML project templates
 const ASTGREP_PATTERNS_FOR_JAVASCRIPT: &str =
@@ -467,15 +477,47 @@ fn create_astgrep_yaml_project(project_path: &Path, config: &ProjectConfig) -> R
     Ok(())
 }
 
-fn create_js_tests(project_path: &Path, _config: &ProjectConfig) -> Result<()> {
+fn create_js_tests(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     let tests_dir = project_path.join("tests");
     fs::create_dir_all(tests_dir.join("fixtures"))?;
 
-    fs::write(tests_dir.join("fixtures").join("input.js"), JS_TEST_INPUT)?;
-    fs::write(
-        tests_dir.join("fixtures").join("expected.js"),
-        JS_TEST_EXPECTED,
-    )?;
+    if config.language == "javascript" || config.language == "typescript" {
+        fs::write(tests_dir.join("fixtures").join("input.js"), JS_TEST_INPUT)?;
+        fs::write(
+            tests_dir.join("fixtures").join("expected.js"),
+            JS_TEST_EXPECTED,
+        )?;
+    } else if config.language == "python" {
+        fs::write(
+            tests_dir.join("fixtures").join("input.py"),
+            PYTHON_TEST_INPUT,
+        )?;
+        fs::write(
+            tests_dir.join("fixtures").join("expected.py"),
+            PYTHON_TEST_EXPECTED,
+        )?;
+    } else if config.language == "rust" {
+        fs::write(tests_dir.join("fixtures").join("input.rs"), RUST_TEST_INPUT)?;
+        fs::write(
+            tests_dir.join("fixtures").join("expected.rs"),
+            RUST_TEST_EXPECTED,
+        )?;
+    } else if config.language == "go" {
+        fs::write(tests_dir.join("fixtures").join("input.go"), GO_TEST_INPUT)?;
+        fs::write(
+            tests_dir.join("fixtures").join("expected.go"),
+            GO_TEST_EXPECTED,
+        )?;
+    } else if config.language == "java" {
+        fs::write(
+            tests_dir.join("fixtures").join("input.java"),
+            JAVA_TEST_INPUT,
+        )?;
+        fs::write(
+            tests_dir.join("fixtures").join("expected.java"),
+            JAVA_TEST_EXPECTED,
+        )?;
+    }
 
     Ok(())
 }

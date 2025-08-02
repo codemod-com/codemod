@@ -1,5 +1,4 @@
 import type { SgRoot } from "codemod:ast-grep";
-
 import type Go from "codemod:ast-grep/langs/go";
 
 async function transform(root: SgRoot<Go>): Promise<string> {
