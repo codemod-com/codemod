@@ -41,7 +41,29 @@ serde-wasm-bindgen = { version = "0.6", optional = true }
 ast-grep-core = { version = "0.38.6", default-features = false, optional = true }
 ast-grep-config = { version = "0.38.6", default-features = false, optional = true }
 ast-grep-language = { workspace = true, default-features = true, optional = true }
-llrt_modules = { path = "../../submodules/llrt/llrt_modules", default-features = true, optional = true }
+llrt_modules = { path = "../../submodules/llrt/llrt_modules", default-features = false, features = [
+  "console",
+  "abort",
+  "assert",
+  "buffer",
+  "child-process",
+  "crypto",
+  "events",
+  "exceptions",
+  "fetch",
+  "fs",
+  "os",
+  "path",
+  "perf-hooks",
+  "process",
+  "stream-web",
+  "string-decoder",
+  "timers",
+  "tty",
+  "url",
+  "util",
+  "zlib",
+], optional = true }
 ignore = { workspace = true, optional = true }
 serde_yaml = { workspace = true, optional = true }
 

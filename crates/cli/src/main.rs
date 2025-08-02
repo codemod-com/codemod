@@ -1,5 +1,6 @@
 use anyhow::Result;
 use clap::{Args, Parser, Subcommand};
+use inquire::Confirm;
 use log::info;
 mod ascii_art;
 mod auth;
@@ -180,6 +181,18 @@ async fn handle_implicit_run_command(
             }
             Ok(false)
         }
+    }
+}
+
+pub fn capability_check_warning_callback(message: &str) -> Result<()> {
+    let answer = Confirm::new(message)
+        .with_default(false)
+        .with_help_message("Press 'y' to continue or 'n' to abort")
+        .prompt()?;
+    if answer {
+        Ok(())
+    } else {
+        Err(anyhow::anyhow!("Aborting due to warning"))
     }
 }
 
