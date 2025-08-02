@@ -110,7 +110,7 @@ impl Engine {
         params: HashMap<String, String>,
         bundle_path: Option<PathBuf>,
     ) -> Result<Uuid> {
-        utils::validate_workflow(&workflow)?;
+        utils::validate_workflow(&workflow, bundle_path.as_deref().unwrap_or(Path::new("")))?;
         self.validate_codemod_dependencies(&workflow, &[]).await?;
 
         let workflow_run_id = Uuid::new_v4();

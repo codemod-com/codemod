@@ -30,7 +30,7 @@ pub fn parse_workflow_file<P: AsRef<Path>>(path: P) -> Result<Workflow> {
 }
 
 /// Validate a workflow definition
-pub fn validate_workflow(workflow: &Workflow) -> Result<()> {
+pub fn validate_workflow(workflow: &Workflow, package_path: &Path) -> Result<()> {
     // Check that all node IDs are unique
     let mut node_ids = HashSet::new();
     for node in &workflow.nodes {
@@ -76,6 +76,22 @@ pub fn validate_workflow(workflow: &Workflow) -> Result<()> {
                     return Err(Error::WorkflowValidation(format!(
                         "Step {} in node {} uses non-existent template: {}",
                         step.name, node.id, template_use.template
+                    )));
+                }
+            } else if let StepAction::JSAstGrep(js_step) = &step.action {
+                let js_file_path = package_path.join(&js_step.js_file);
+                if !js_file_path.exists() {
+                    return Err(Error::WorkflowValidation(format!(
+                        "JS file referenced in workflow not found: {}",
+                        js_file_path.display()
+                    )));
+                }
+            } else if let StepAction::AstGrep(ast_step) = &step.action {
+                let ast_file_path = package_path.join(&ast_step.config_file);
+                if !ast_file_path.exists() {
+                    return Err(Error::WorkflowValidation(format!(
+                        "AST file referenced in workflow not found: {}",
+                        ast_file_path.display()
                     )));
                 }
             }

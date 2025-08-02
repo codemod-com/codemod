@@ -24,8 +24,15 @@ fn validate_workflow(workflow_path: &Path) -> Result<()> {
         workflow_path.display()
     ))?;
 
+    let parent_dir = workflow_path.parent().ok_or_else(|| {
+        anyhow::anyhow!(
+            "Cannot get parent directory for path: {}",
+            workflow_path.display()
+        )
+    })?;
+
     // Validate workflow
-    utils::validate_workflow(&workflow).context("Workflow validation failed")?;
+    utils::validate_workflow(&workflow, parent_dir).context("Workflow validation failed")?;
 
     info!("✓ Workflow definition is valid");
     info!("Schema validation: Passed");

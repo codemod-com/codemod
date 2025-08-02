@@ -330,7 +330,7 @@ fn validate_package_structure(
     let workflow: Workflow = serde_yaml::from_str(&workflow_content)
         .map_err(|e| anyhow!("Invalid workflow YAML: {}", e))?;
 
-    let validation_result = validate_workflow(&workflow);
+    let validation_result = validate_workflow(&workflow, package_path);
     if let Err(e) = validation_result {
         return Err(anyhow!("Invalid workflow: {}", e));
     }
