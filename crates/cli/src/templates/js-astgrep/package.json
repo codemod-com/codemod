@@ -1,17 +1,14 @@
 {
-  "name": "{name}",
-  "version": "0.1.0",
-  "description": "{description}",
-  "type": "module",
-  "dependencies": {
-    "@ast-grep/napi": "^0.39.1"
-  },
-  "devDependencies": {
-    "@codemod.com/jssg-types": "^1.0.3",
-    "typescript": "^5.8.3"
-  },
-  "scripts": {
-    "test": "npx codemod@next jssg test -l typescript ./scripts/codemod.ts",
-    "check-types": "npx tsc --noEmit"
-  }
+	"name": "{name}",
+	"version": "0.1.0",
+	"description": "{description}",
+	"type": "module",
+	"devDependencies": {
+		"@codemod.com/jssg-types": "^1.0.3",
+		"typescript": "^5.8.3"
+	},
+	"scripts": {
+		"test": "npx codemod@next jssg test -l typescript ./scripts/codemod.ts",
+		"check-types": "npx tsc --noEmit"
+	}
 }

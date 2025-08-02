@@ -92,7 +92,7 @@ const SHELL_CLEANUP_SCRIPT: &str = include_str!("../templates/shell/scripts/clea
 // JS ast-grep project templates
 const JS_PACKAGE_JSON_TEMPLATE: &str = include_str!("../templates/js-astgrep/package.json");
 const JS_APPLY_SCRIPT_FOR_JAVASCRIPT: &str =
-    include_str!("../templates/js-astgrep/scripts/codemod.js.ts");
+    include_str!("../templates/js-astgrep/scripts/codemod.ts.ts");
 const JS_APPLY_SCRIPT_FOR_PYTHON: &str =
     include_str!("../templates/js-astgrep/scripts/codemod.py.ts");
 const JS_APPLY_SCRIPT_FOR_RUST: &str =
@@ -106,7 +106,7 @@ const JS_TEST_EXPECTED: &str = include_str!("../templates/js-astgrep/tests/fixtu
 
 // ast-grep YAML project templates
 const ASTGREP_PATTERNS_FOR_JAVASCRIPT: &str =
-    include_str!("../templates/astgrep-yaml/rules/config.js.yml");
+    include_str!("../templates/astgrep-yaml/rules/config.ts.yml");
 const ASTGREP_PATTERNS_FOR_PYTHON: &str =
     include_str!("../templates/astgrep-yaml/rules/config.py.yml");
 const ASTGREP_PATTERNS_FOR_RUST: &str =
@@ -325,7 +325,7 @@ fn select_language() -> Result<String> {
     let selection = Select::new("Which language would you like to target?", options).prompt()?;
 
     let language = match selection {
-        "JavaScript/TypeScript" => "javascript",
+        "JavaScript/TypeScript" => "typescript",
         "Python" => "python",
         "Rust" => "rust",
         "Go" => "go",
@@ -334,7 +334,7 @@ fn select_language() -> Result<String> {
             let custom = Text::new("Enter language name:").prompt()?;
             return Ok(custom);
         }
-        _ => "javascript",
+        _ => "typescript",
     };
 
     Ok(language.to_string())
@@ -426,7 +426,7 @@ fn create_js_astgrep_project(project_path: &Path, config: &ProjectConfig) -> Res
     fs::create_dir_all(&scripts_dir)?;
 
     let codemod_script = match config.language.as_str() {
-        "javascript" => JS_APPLY_SCRIPT_FOR_JAVASCRIPT.to_string(),
+        "javascript" | "typescript" => JS_APPLY_SCRIPT_FOR_JAVASCRIPT.to_string(),
         "python" => JS_APPLY_SCRIPT_FOR_PYTHON.to_string(),
         "rust" => JS_APPLY_SCRIPT_FOR_RUST.to_string(),
         "go" => JS_APPLY_SCRIPT_FOR_GO.to_string(),
@@ -450,7 +450,7 @@ fn create_astgrep_yaml_project(project_path: &Path, config: &ProjectConfig) -> R
     fs::create_dir_all(&rules_dir)?;
 
     let config_file = match config.language.as_str() {
-        "javascript" => ASTGREP_PATTERNS_FOR_JAVASCRIPT,
+        "javascript" | "typescript" => ASTGREP_PATTERNS_FOR_JAVASCRIPT,
         "python" => ASTGREP_PATTERNS_FOR_PYTHON,
         "rust" => ASTGREP_PATTERNS_FOR_RUST,
         "go" => ASTGREP_PATTERNS_FOR_GO,
