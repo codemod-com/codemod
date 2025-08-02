@@ -67,13 +67,19 @@ impl TestSummary {
 pub struct TestRunner {
     options: TestOptions,
     test_directory: PathBuf,
+    jssg_extra_capabilities: Vec<String>,
 }
 
 impl TestRunner {
-    pub fn new(options: TestOptions, test_directory: PathBuf) -> Self {
+    pub fn new(
+        options: TestOptions,
+        test_directory: PathBuf,
+        jssg_extra_capabilities: Vec<String>,
+    ) -> Self {
         Self {
             options,
             test_directory,
+            jssg_extra_capabilities,
         }
     }
 
@@ -179,7 +185,13 @@ impl TestRunner {
         for test_case in filtered_test_cases {
             let result = timeout(
                 self.options.timeout,
-                Self::execute_test_case(&engine, test_case, codemod_path, &self.options),
+                Self::execute_test_case(
+                    &engine,
+                    test_case,
+                    codemod_path,
+                    &self.options,
+                    self.jssg_extra_capabilities.clone(),
+                ),
             )
             .await;
 
@@ -228,6 +240,7 @@ impl TestRunner {
         test_case: &TestCase,
         codemod_path: &Path,
         options: &TestOptions,
+        jssg_extra_capabilities: Vec<String>,
     ) -> Result<()> {
         let should_expect_error = test_case.should_expect_error(&options.expect_errors);
 
@@ -239,7 +252,13 @@ impl TestRunner {
         {
             if options.update_snapshots {
                 // Create expected files by running the codemod
-                return Self::create_expected_files(engine, test_case, codemod_path).await;
+                return Self::create_expected_files(
+                    engine,
+                    test_case,
+                    codemod_path,
+                    jssg_extra_capabilities,
+                )
+                .await;
             } else {
                 return Err(anyhow::anyhow!(
                     "No expected file found for {} in {}. Run with --update-snapshots to create it.",
@@ -260,7 +279,7 @@ impl TestRunner {
                     codemod_path,
                     &input_file.path,
                     &input_file.content,
-                    None,
+                    Some(jssg_extra_capabilities.clone()),
                 )
                 .await
                 .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
@@ -318,6 +337,7 @@ impl TestRunner {
         engine: &ExecutionEngine<RealFileSystem, OxcResolver>,
         test_case: &TestCase,
         codemod_path: &Path,
+        jssg_extra_capabilities: Vec<String>,
     ) -> Result<()> {
         for input_file in &test_case.input_files {
             let execution_output = engine
@@ -325,7 +345,7 @@ impl TestRunner {
                     codemod_path,
                     &input_file.path,
                     &input_file.content,
-                    None,
+                    Some(jssg_extra_capabilities.clone()),
                 )
                 .await
                 .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
