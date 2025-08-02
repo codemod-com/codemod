@@ -66,6 +66,14 @@ pub struct Command {
     /// Test patterns that are expected to produce errors (comma-separated)
     #[arg(long)]
     pub expect_errors: Option<String>,
+
+    /// Allow fetch capability
+    #[arg(long)]
+    pub allow_fetch: bool,
+
+    /// Allow fs capability
+    #[arg(long)]
+    pub allow_fs: bool,
 }
 
 pub async fn handler(args: &Command) -> Result<()> {
@@ -106,8 +114,16 @@ pub async fn handler(args: &Command) -> Result<()> {
         expect_errors,
     };
 
+    let mut extra_capabilities = Vec::new();
+    if args.allow_fetch {
+        extra_capabilities.push("fetch".to_string());
+    }
+    if args.allow_fs {
+        extra_capabilities.push("fs".to_string());
+    }
+
     // Create and run test runner
-    let mut runner = TestRunner::new(options, test_directory);
+    let mut runner = TestRunner::new(options, test_directory, extra_capabilities);
     let summary = runner.run_tests(codemod_path, &args.language).await?;
 
     // Display test summary
