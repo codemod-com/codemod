@@ -30,6 +30,23 @@ export function useFormSubmission(options: { recaptcha?: boolean } = {}) {
     }
   }, [options.recaptcha, siteKey]);
 
+  async function waitForRecaptcha(): Promise<any | null> {
+    if ((window as any).grecaptcha) return (window as any).grecaptcha;
+    return new Promise((resolve) => {
+      const maxWait = 5000;
+      const start = Date.now();
+      const interval = setInterval(() => {
+        if ((window as any).grecaptcha) {
+          clearInterval(interval);
+          resolve((window as any).grecaptcha);
+        } else if (Date.now() - start > maxWait) {
+          clearInterval(interval);
+          resolve(null);
+        }
+      }, 100);
+    });
+  }
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -43,17 +60,25 @@ export function useFormSubmission(options: { recaptcha?: boolean } = {}) {
 
     // Attach reCAPTCHA token if enabled
     if (options.recaptcha && siteKey && typeof window !== "undefined") {
-      const grecaptcha = (window as any).grecaptcha;
-      if (grecaptcha) {
+      const grecaptcha = await waitForRecaptcha();
+      if (!grecaptcha) {
+        setErrorMessage(
+          "Captcha could not be loaded. Please refresh and try again.",
+        );
+        setFormState("error");
+        return;
+      }
+      try {
         await new Promise((resolve) => grecaptcha.ready(resolve));
-        try {
-          const token = await grecaptcha.execute(siteKey, {
-            action: "newsletter",
-          });
-          formData.append("captchaToken", token);
-        } catch (err) {
-          console.error("Failed to execute reCAPTCHA", err);
-        }
+        const token = await grecaptcha.execute(siteKey, {
+          action: "newsletter",
+        });
+        formData.append("captchaToken", token);
+      } catch (err) {
+        console.error("Failed to execute reCAPTCHA", err);
+        setErrorMessage("Captcha verification failed. Please try again.");
+        setFormState("error");
+        return;
       }
     }
 
