@@ -74,8 +74,10 @@ pub fn execute_ast_grep_on_globs(
         config_file,
         working_dir,
         false,
-        dry_run,
-        dry_run_callback,
+        &DryRunContext {
+            dry_run,
+            dry_run_callback: dry_run_callback.clone(),
+        },
     )
 }
 
@@ -96,9 +98,16 @@ pub fn execute_ast_grep_on_globs_with_fixes(
         config_file,
         working_dir,
         true,
-        dry_run,
-        dry_run_callback,
+        &DryRunContext {
+            dry_run,
+            dry_run_callback: dry_run_callback.clone(),
+        },
     )
+}
+
+struct DryRunContext {
+    dry_run: bool,
+    dry_run_callback: Option<DryRunCallback>,
 }
 
 fn execute_ast_grep_on_globs_with_options(
@@ -108,8 +117,7 @@ fn execute_ast_grep_on_globs_with_options(
     config_file: &str,
     working_dir: Option<&Path>,
     apply_fixes: bool,
-    dry_run: bool,
-    dry_run_callback: &Option<DryRunCallback>,
+    dry_run_context: &DryRunContext,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -256,8 +264,8 @@ fn execute_ast_grep_on_globs_with_options(
                 &combined_scan,
                 &rule_configs,
                 apply_fixes,
-                dry_run,
-                dry_run_callback,
+                dry_run_context.dry_run,
+                &dry_run_context.dry_run_callback,
             )?;
             all_matches.extend(matches);
         }
@@ -323,8 +331,10 @@ fn scan_file(
         combined_scan,
         rule_configs,
         apply_fixes,
-        dry_run,
-        dry_run_callback,
+        &DryRunContext {
+            dry_run,
+            dry_run_callback: dry_run_callback.clone(),
+        },
     )
 }
 
@@ -335,8 +345,7 @@ fn scan_content(
     combined_scan: &CombinedScan<SupportLang>,
     _rule_configs: &[RuleConfig<SupportLang>],
     apply_fixes: bool,
-    dry_run: bool,
-    dry_run_callback: &Option<DryRunCallback>,
+    dry_run_context: &DryRunContext,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     let doc = StrDoc::new(content, language);
     let root = AstGrep::doc(doc);
@@ -458,8 +467,8 @@ fn scan_content(
     }
 
     // Write the modified content back to the file if fixes were applied
-    if file_modified && dry_run {
-        if let Some(callback_fn) = dry_run_callback {
+    if file_modified && dry_run_context.dry_run {
+        if let Some(callback_fn) = dry_run_context.dry_run_callback.as_ref() {
             callback_fn(content, &new_content, file_path);
         }
     } else if file_modified {
