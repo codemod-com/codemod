@@ -63,6 +63,25 @@ const config = {
   experimental: {
     taint: true,
   },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value:
+              "default-src 'self'; " +
+              "script-src 'self' https://www.google.com/recaptcha/ 'unsafe-inline' 'unsafe-eval'; " +
+              "frame-src https://www.google.com/recaptcha/; " +
+              "style-src 'self' 'unsafe-inline'; " +
+              "img-src * data: blob:; " +
+              "connect-src *;",
+          },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       {
