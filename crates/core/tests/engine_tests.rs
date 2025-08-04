@@ -440,7 +440,10 @@ async fn test_run_workflow() {
     let workflow = create_test_workflow();
     let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -463,7 +466,10 @@ async fn test_get_workflow_status() {
     let workflow = create_test_workflow();
     let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -483,7 +489,7 @@ async fn test_get_tasks() {
     let params = HashMap::new();
 
     let workflow_run_id = engine
-        .run_workflow(workflow.clone(), params, None)
+        .run_workflow(workflow.clone(), params, None, &None)
         .await
         .unwrap();
 
@@ -511,11 +517,11 @@ async fn test_list_workflow_runs() {
     let params = HashMap::new();
 
     let workflow_run_id1 = engine
-        .run_workflow(workflow.clone(), params.clone(), None)
+        .run_workflow(workflow.clone(), params.clone(), None, &None)
         .await
         .unwrap();
     let workflow_run_id2 = engine
-        .run_workflow(workflow.clone(), params.clone(), None)
+        .run_workflow(workflow.clone(), params.clone(), None, &None)
         .await
         .unwrap();
 
@@ -541,7 +547,10 @@ async fn test_cancel_workflow() {
     let workflow = create_test_workflow();
     let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -562,7 +571,10 @@ async fn test_manual_trigger_workflow() {
     let workflow = create_manual_trigger_workflow();
     let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -578,7 +590,7 @@ async fn test_manual_trigger_workflow() {
 
     // Trigger the task using resume_workflow
     engine
-        .resume_workflow(workflow_run_id, vec![node2_task.id])
+        .resume_workflow(workflow_run_id, vec![node2_task.id], &None)
         .await
         .unwrap();
 
@@ -609,7 +621,10 @@ async fn test_manual_node_workflow() {
     let workflow = create_manual_node_workflow();
     let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -625,7 +640,7 @@ async fn test_manual_node_workflow() {
 
     // Trigger the task using resume_workflow
     engine
-        .resume_workflow(workflow_run_id, vec![node2_task.id])
+        .resume_workflow(workflow_run_id, vec![node2_task.id], &None)
         .await
         .unwrap();
 
@@ -656,7 +671,10 @@ async fn test_matrix_workflow() {
     let workflow = create_matrix_workflow();
     let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -683,7 +701,10 @@ async fn test_template_workflow() {
     let workflow = create_template_workflow();
     let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -719,7 +740,10 @@ async fn test_trigger_all() {
     let workflow = create_manual_trigger_workflow();
     let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -731,7 +755,7 @@ async fn test_trigger_all() {
     assert!(status == WorkflowStatus::AwaitingTrigger || status == WorkflowStatus::Running);
 
     // Trigger all awaiting tasks
-    engine.trigger_all(workflow_run_id).await.unwrap();
+    engine.trigger_all(workflow_run_id, &None).await.unwrap();
 
     // Allow some time for the tasks to complete
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -1080,7 +1104,10 @@ async fn test_env_var_workflow() {
     let workflow = create_env_var_workflow();
     let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -1127,7 +1154,10 @@ async fn test_variable_resolution_workflow() {
         "https://github.com/example/repo".to_string(),
     );
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -1195,7 +1225,10 @@ async fn test_workflow_with_params() {
     let mut params = HashMap::new();
     params.insert("test_param".to_string(), "test_value".to_string());
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -1215,7 +1248,10 @@ async fn test_codemod_environment_variables() {
     let workflow = create_env_vars_test_workflow();
     let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to complete
     tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
@@ -1363,7 +1399,10 @@ echo "env_vars_in_matrix=true""#
 
     let params = HashMap::new();
 
-    let workflow_run_id = engine.run_workflow(workflow, params, None).await.unwrap();
+    let workflow_run_id = engine
+        .run_workflow(workflow, params, None, &None)
+        .await
+        .unwrap();
 
     // Allow some time for the workflow to complete
     tokio::time::sleep(tokio::time::Duration::from_millis(1000)).await;
@@ -1478,7 +1517,7 @@ async fn test_cyclic_dependency_workflow() {
     let params = HashMap::new();
 
     // Running this workflow should fail due to the cyclic dependency
-    let result = engine.run_workflow(workflow, params, None).await;
+    let result = engine.run_workflow(workflow, params, None, &None).await;
 
     // The result should be an error
     assert!(result.is_err());
@@ -1525,7 +1564,7 @@ async fn test_invalid_template_reference() {
     let params = HashMap::new();
 
     // Running this workflow should fail due to the invalid template reference
-    let result = engine.run_workflow(workflow, params, None).await;
+    let result = engine.run_workflow(workflow, params, None, &None).await;
 
     // The result should be an error
     assert!(result.is_err());
@@ -1643,6 +1682,8 @@ message: "Found var declaration"
                 config_file: "ast-grep-rules.yaml".to_string(),
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -1707,6 +1748,8 @@ message: "Found interface declaration"
                 config_file: "ts-rules.yaml".to_string(),
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -1736,6 +1779,8 @@ async fn test_execute_ast_grep_step_nonexistent_config() {
                 config_file: "nonexistent.yaml".to_string(),
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -1788,6 +1833,8 @@ message: "Found console.log statement"
                 config_file: "rules.yaml".to_string(),
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -1859,6 +1906,8 @@ function helper() {
                 language: Some("javascript".to_string()),
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -1935,6 +1984,8 @@ interface ApiResponse {
                 language: Some("typescript".to_string()),
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -1989,6 +2040,8 @@ var count = 0;
                 language: Some("javascript".to_string()),
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -2023,6 +2076,8 @@ async fn test_execute_js_ast_grep_step_nonexistent_js_file() {
                 language: None,
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -2085,6 +2140,8 @@ build/
                 language: Some("javascript".to_string()),
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -2109,6 +2166,8 @@ build/
                 language: Some("javascript".to_string()),
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -2159,6 +2218,8 @@ export default function transform(ast) {
                 language: Some("javascript".to_string()),
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -2204,6 +2265,8 @@ export default function transform(ast) {
                 language: None,
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -2250,6 +2313,8 @@ export default function transform(ast) {
                 language: Some("invalid-language".to_string()), // Invalid language
             },
             Some(temp_path),
+            &HashMap::new(),
+            &None,
         )
         .await;
 
@@ -2330,7 +2395,7 @@ export default function transform(ast) {
     let params = HashMap::new();
 
     let workflow_run_id = engine
-        .run_workflow(workflow, params, Some(temp_path.to_path_buf()))
+        .run_workflow(workflow, params, Some(temp_path.to_path_buf()), &None)
         .await
         .unwrap();
 

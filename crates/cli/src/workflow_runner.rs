@@ -4,10 +4,9 @@ use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
 use log::{error, info};
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 use uuid::Uuid;
-
-/// Configuration for running a workflow
 pub struct WorkflowRunConfig {
     pub workflow_file_path: PathBuf,
     pub bundle_path: PathBuf,
@@ -15,6 +14,85 @@ pub struct WorkflowRunConfig {
     pub wait_for_completion: bool,
 }
 
+pub fn dry_run_callback(old: &str, new: &str, target_file_path: &Path) {
+    let filename = target_file_path
+        .file_name()
+        .unwrap_or_default()
+        .to_string_lossy();
+
+    let path = target_file_path.display();
+
+    let temp_dir = std::env::temp_dir();
+    let old_file = temp_dir.join(format!("old_{filename}"));
+    let new_file = temp_dir.join(format!("new_{filename}"));
+
+    if let Err(e) = std::fs::write(&old_file, old) {
+        eprintln!("Failed to write old content: {e}");
+        return;
+    }
+    if let Err(e) = std::fs::write(&new_file, new) {
+        eprintln!("Failed to write new content: {e}");
+        return;
+    }
+
+    let output = Command::new("diff")
+        .arg("-u")
+        .arg(&old_file)
+        .arg(&new_file)
+        .output();
+
+    match output {
+        Ok(result) => {
+            if result.status.success() || result.status.code() == Some(1) {
+                if let Ok(diff_output) = String::from_utf8(result.stdout) {
+                    let lines = diff_output.lines();
+                    println!("\nComparing changes in: \x1b[1;34m{path}\x1b[0m");
+                    for line in lines {
+                        if line.starts_with("+++") || line.starts_with("---") {
+                            continue;
+                        } else if line.starts_with("@@") {
+                            println!("\x1b[36m{line}\x1b[0m");
+                        } else if line.starts_with('+') {
+                            println!("\x1b[32m{line}\x1b[0m");
+                        } else if line.starts_with('-') {
+                            println!("\x1b[31m{line}\x1b[0m");
+                        } else {
+                            println!("{line}");
+                        }
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            eprintln!("Failed to run diff command: {e}");
+            println!("\nComparing changes in: \x1b[1;34m{path}\x1b[0m");
+
+            let old_lines: Vec<&str> = old.lines().collect();
+            let new_lines: Vec<&str> = new.lines().collect();
+            let max_lines = old_lines.len().max(new_lines.len());
+
+            for i in 0..max_lines {
+                let old_line = old_lines.get(i).unwrap_or(&"");
+                let new_line = new_lines.get(i).unwrap_or(&"");
+
+                if old_line != new_line {
+                    if !old_line.is_empty() {
+                        println!("\x1b[31m-{old_line}\x1b[0m");
+                    }
+                    if !new_line.is_empty() {
+                        println!("\x1b[32m+{new_line}\x1b[0m");
+                    }
+                } else {
+                    println!("{old_line}");
+                }
+            }
+        }
+    }
+
+    let _ = std::fs::remove_file(&old_file);
+    let _ = std::fs::remove_file(&new_file);
+    println!();
+}
 /// Run a workflow with the given configuration
 pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<String> {
     // Parse workflow file
@@ -24,8 +102,15 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
     ))?;
 
     // Run workflow
+    let dry_run_callback = Some(std::sync::Arc::new(dry_run_callback)
+        as std::sync::Arc<dyn Fn(&str, &str, &Path) + Send + Sync>);
     let workflow_run_id = engine
-        .run_workflow(workflow, config.params, Some(config.bundle_path))
+        .run_workflow(
+            workflow,
+            config.params,
+            Some(config.bundle_path),
+            &dry_run_callback,
+        )
         .await
         .context("Failed to run workflow")?;
 

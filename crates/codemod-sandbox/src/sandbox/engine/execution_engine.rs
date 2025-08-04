@@ -15,6 +15,8 @@ use std::path::Path;
 use std::sync::Arc;
 use tokio::io::AsyncWriteExt;
 
+pub type DryRunCallback = Arc<dyn Fn(&str, &str, &Path) + Send + Sync>;
+
 /// Statistics about the execution results
 #[derive(Debug, Clone, Default)]
 pub struct ExecutionStats {
@@ -166,6 +168,7 @@ where
         &self,
         script_path: &Path,
         target_dir: &Path,
+        dry_run_callback: &Option<DryRunCallback>,
     ) -> Result<ExecutionStats, ExecutionError> {
         // Check if target directory exists
         if !self.config.filesystem.exists(target_dir).await {
@@ -204,6 +207,7 @@ where
 
         // Execute in a blocking context since WalkParallel is synchronous
         let target_dir = target_dir.to_path_buf();
+        let dry_run_callback = dry_run_callback.clone();
         tokio::task::spawn_blocking(move || {
             let mut walk_builder = WalkBuilder::new(&target_dir);
             walk_builder
@@ -265,6 +269,7 @@ where
                 let errors = Arc::clone(&errors);
                 let script_path = Arc::clone(&script_path);
                 let ts_extensions = Arc::clone(&ts_extensions);
+                let dry_run_callback = dry_run_callback.as_ref().map(|cb| Arc::clone(cb));
 
                 Box::new(move |entry_result| {
                     match entry_result {
@@ -294,8 +299,13 @@ where
                                 .unwrap();
 
                             rt.block_on(async {
-                                match Self::execute_on_single_file(&config, &script_path, file_path)
-                                    .await
+                                match Self::execute_on_single_file(
+                                    &config,
+                                    &script_path,
+                                    file_path,
+                                    &dry_run_callback,
+                                )
+                                .await
                                 {
                                     Ok(ExecutionResult::Modified) => {
                                         modified_count
@@ -364,10 +374,12 @@ where
         config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
+        dry_run_callback: &Option<DryRunCallback>,
     ) -> Result<ExecutionResult, ExecutionError> {
         #[cfg(feature = "native")]
         {
-            Self::execute_with_quickjs(config, script_path, target_file_path).await
+            Self::execute_with_quickjs(config, script_path, target_file_path, dry_run_callback)
+                .await
         }
 
         #[cfg(not(feature = "native"))]
@@ -384,6 +396,7 @@ where
         config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
+        dry_run_callback: &Option<DryRunCallback>,
     ) -> Result<ExecutionResult, ExecutionError> {
         // Read the original file content
         let original_content = tokio::fs::read_to_string(target_file_path)
@@ -408,6 +421,12 @@ where
                 modified: true,
                 error: None,
             } => {
+                if config.dry_run {
+                    if let Some(callback) = dry_run_callback {
+                        callback(&original_content, &new_content, target_file_path);
+                    }
+                    return Ok(ExecutionResult::Modified);
+                }
                 // Write the modified content back to the file
                 let mut file = tokio::fs::File::create(target_file_path)
                     .await

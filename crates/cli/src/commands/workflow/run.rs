@@ -19,6 +19,10 @@ pub struct Command {
     /// Allow dirty git status
     #[arg(long)]
     allow_dirty: bool,
+
+    /// Perform a dry run without making changes
+    #[arg(long)]
+    dry_run: bool,
 }
 
 /// Run a workflow
@@ -27,7 +31,9 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     let (workflow_file_path, bundle_path) = resolve_workflow_source(&args.workflow)?;
 
     // Parse parameters
-    let params = utils::parse_params(&args.params).context("Failed to parse parameters")?;
+    let mut params = utils::parse_params(&args.params).context("Failed to parse parameters")?;
+
+    params.insert("dry_run".to_string(), args.dry_run.to_string());
 
     // Create workflow run configuration
     let config = WorkflowRunConfig {
