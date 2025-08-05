@@ -467,12 +467,14 @@ fn scan_content(
     }
 
     // Write the modified content back to the file if fixes were applied
-    if file_modified && dry_run_context.dry_run {
-        if let Some(callback_fn) = dry_run_context.dry_run_callback.as_ref() {
-            callback_fn(content, &new_content, file_path);
+    if file_modified {
+        if dry_run_context.dry_run {
+            if let Some(callback_fn) = dry_run_context.dry_run_callback.as_ref() {
+                callback_fn(content, &new_content, file_path);
+            }
+        } else {
+            fs::write(file_path, new_content)?;
         }
-    } else if file_modified {
-        fs::write(file_path, new_content)?;
     }
 
     Ok(matches)

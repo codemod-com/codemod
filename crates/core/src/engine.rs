@@ -136,7 +136,7 @@ impl Engine {
         let dry_run_callback = dry_run_callback.clone();
         tokio::spawn(async move {
             if let Err(e) = engine
-                .execute_workflow(workflow_run_id, &dry_run_callback)
+                .execute_workflow(workflow_run_id, dry_run_callback)
                 .await
             {
                 error!("Workflow execution failed: {e}");
@@ -229,7 +229,7 @@ impl Engine {
         let dry_run_callback = dry_run_callback.clone();
         tokio::spawn(async move {
             if let Err(e) = engine
-                .execute_workflow(workflow_run_id, &dry_run_callback)
+                .execute_workflow(workflow_run_id, dry_run_callback)
                 .await
             {
                 error!("Workflow execution failed: {e}");
@@ -367,7 +367,7 @@ impl Engine {
         let dry_run_callback = dry_run_callback.clone();
         tokio::spawn(async move {
             if let Err(e) = engine
-                .execute_workflow(workflow_run_id, &dry_run_callback)
+                .execute_workflow(workflow_run_id, dry_run_callback)
                 .await
             {
                 error!("Workflow execution failed: {e}");
@@ -648,7 +648,7 @@ impl Engine {
     async fn execute_workflow(
         &self,
         workflow_run_id: Uuid,
-        dry_run_callback: &Option<DryRunCallback>,
+        dry_run_callback: Option<DryRunCallback>,
     ) -> Result<()> {
         // Get the workflow run
         let workflow_run = self
