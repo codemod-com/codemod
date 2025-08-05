@@ -1,10 +1,13 @@
 use std::collections::HashMap;
 use std::env;
 use std::fs;
+use std::path::Path;
 
 use butterflow_core::utils;
 use butterflow_core::NodeType;
 use butterflow_models::step::StepAction;
+use butterflow_models::step::UseAstGrep;
+use butterflow_models::step::UseJSAstGrep;
 use butterflow_models::strategy::StrategyType;
 use butterflow_models::{Error, Node, Step, Strategy, Template, TemplateOutput, Workflow};
 
@@ -147,7 +150,7 @@ fn test_validate_workflow_valid() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation succeeds
     assert!(result.is_ok());
@@ -189,7 +192,7 @@ fn test_validate_workflow_duplicate_node_id() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -223,7 +226,7 @@ fn test_validate_workflow_nonexistent_dependency() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -271,7 +274,7 @@ fn test_validate_workflow_cyclic_dependency() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -374,7 +377,7 @@ fn test_validate_workflow_duplicate_template_id() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -424,7 +427,7 @@ fn test_validate_workflow_nonexistent_template_reference() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -462,7 +465,7 @@ fn test_validate_workflow_invalid_matrix_strategy() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -523,7 +526,7 @@ fn test_validate_workflow_complex_cyclic_dependency() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -640,7 +643,7 @@ fn test_validate_workflow_self_dependency() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation fails
     assert!(result.is_err());
@@ -693,7 +696,7 @@ fn test_validate_workflow_valid_matrix_strategy_with_values() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation succeeds
     assert!(result.is_ok());
@@ -725,7 +728,7 @@ fn test_validate_workflow_valid_matrix_strategy_with_from_state() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation succeeds
     assert!(result.is_ok());
@@ -755,7 +758,7 @@ fn test_validate_workflow_with_template_outputs() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation succeeds
     assert!(result.is_ok());
@@ -790,10 +793,123 @@ fn test_validate_workflow_with_step_env_vars() {
     };
 
     // Validate the workflow
-    let result = utils::validate_workflow(&workflow);
+    let result = utils::validate_workflow(&workflow, Path::new(""));
 
     // Verify that validation succeeds
     assert!(result.is_ok());
+}
+
+#[test]
+fn test_validate_workflow_with_bundle_path() {
+    let temp_dir = tempfile::tempdir().unwrap();
+    let bundle_path = temp_dir.path().join("bundle");
+    fs::create_dir_all(&bundle_path).unwrap();
+
+    let ast_grep_file = bundle_path.join("config.yml");
+    fs::write(
+        &ast_grep_file,
+        "id: replace-console-log
+language: javascript
+rule:
+  any:
+    - pattern: console.log($ARG)
+    - pattern: console.debug($ARG)
+fix:
+  logger.log($ARG)
+",
+    )
+    .unwrap();
+
+    let js_file = bundle_path.join("codemod.ts");
+    fs::write(&js_file, "console.log('Hello, World!');").unwrap();
+
+    // Create a workflow with a bundle path
+    let workflow = Workflow {
+        version: "1".to_string(),
+        state: None,
+        templates: vec![],
+        nodes: vec![Node {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            description: None,
+            r#type: NodeType::Automatic,
+            depends_on: vec![],
+            trigger: None,
+            strategy: None,
+            runtime: None,
+            steps: vec![
+                Step {
+                    name: "Step 1".to_string(),
+                    action: StepAction::AstGrep(UseAstGrep {
+                        include: Some(vec!["**/*.ts".to_string()]),
+                        exclude: Some(vec!["**/node_modules/**".to_string()]),
+                        base_path: Some(".".to_string()),
+                        config_file: "config.yml".to_string(),
+                    }),
+                    env: None,
+                },
+                Step {
+                    name: "Step 2".to_string(),
+                    action: StepAction::JSAstGrep(UseJSAstGrep {
+                        js_file: "codemod.ts".to_string(),
+                        include: Some(vec!["**/*.ts".to_string()]),
+                        exclude: Some(vec!["**/node_modules/**".to_string()]),
+                        base_path: Some(".".to_string()),
+                        no_gitignore: Some(true),
+                        include_hidden: Some(true),
+                        max_threads: Some(10),
+                        dry_run: Some(true),
+                        language: Some("typescript".to_string()),
+                    }),
+                    env: None,
+                },
+            ],
+            env: HashMap::new(),
+        }],
+    };
+
+    // Validate the workflow
+    let result = utils::validate_workflow(&workflow, bundle_path.as_path());
+
+    // Verify that validation succeeds
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_validate_workflow_with_invalid_config_path() {
+    // Create a workflow with an invalid config path
+    let workflow = Workflow {
+        version: "1".to_string(),
+        state: None,
+        templates: vec![],
+        nodes: vec![Node {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            description: None,
+            r#type: NodeType::Automatic,
+            depends_on: vec![],
+            trigger: None,
+            strategy: None,
+            runtime: None,
+            steps: vec![Step {
+                name: "Step 1".to_string(),
+                action: StepAction::AstGrep(UseAstGrep {
+                    config_file: "config.yaml".to_string(),
+                    include: Some(vec!["**/*.ts".to_string()]),
+                    exclude: Some(vec!["**/node_modules/**".to_string()]),
+                    base_path: Some(".".to_string()),
+                }),
+                env: None,
+            }],
+            env: HashMap::new(),
+        }],
+    };
+
+    // Validate the workflow
+    let result = utils::validate_workflow(&workflow, Path::new("."));
+
+    // Verify that validation fails
+    assert!(result.is_err());
 }
 
 #[test]
