@@ -124,7 +124,7 @@ pub async fn handler(args: &Command) -> Result<()> {
         extra_capabilities.push("fs".to_string());
     }
     let stats = engine
-        .execute_on_directory(js_file_path, target_directory, Some(extra_capabilities))
+        .execute_on_directory(js_file_path, target_directory, &Some(extra_capabilities))
         .await?;
 
     println!("Modified files: {:?}", stats.files_modified);

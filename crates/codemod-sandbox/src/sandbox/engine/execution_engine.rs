@@ -147,7 +147,7 @@ where
         script_path: &Path,
         file_path: &Path,
         content: &str,
-        capabilities: Option<Vec<String>>,
+        capabilities: &Option<Vec<String>>,
     ) -> Result<ExecutionOutput, ExecutionError> {
         #[cfg(feature = "native")]
         {
@@ -174,7 +174,7 @@ where
         &self,
         script_path: &Path,
         target_dir: &Path,
-        capabilities: Option<Vec<String>>,
+        capabilities: &Option<Vec<String>>,
     ) -> Result<ExecutionStats, ExecutionError> {
         // Check if target directory exists
         if !self.config.filesystem.exists(target_dir).await {
@@ -210,7 +210,7 @@ where
                     .map(|s| s.to_string())
                     .collect()
             }));
-
+        let capabilities = Arc::new(capabilities.clone());
         // Execute in a blocking context since WalkParallel is synchronous
         let target_dir = target_dir.to_path_buf();
         tokio::task::spawn_blocking(move || {
@@ -274,7 +274,7 @@ where
                 let errors = Arc::clone(&errors);
                 let script_path = Arc::clone(&script_path);
                 let ts_extensions = Arc::clone(&ts_extensions);
-                let capabilities = capabilities.clone();
+                let capabilities = Arc::clone(&capabilities);
 
                 Box::new(move |entry_result| {
                     match entry_result {
@@ -308,7 +308,7 @@ where
                                     &config,
                                     &script_path,
                                     file_path,
-                                    capabilities.clone(),
+                                    &capabilities,
                                 )
                                 .await
                                 {
@@ -379,7 +379,7 @@ where
         config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
-        capabilities: Option<Vec<String>>,
+        capabilities: &Option<Vec<String>>,
     ) -> Result<ExecutionResult, ExecutionError> {
         #[cfg(feature = "native")]
         {
@@ -400,7 +400,7 @@ where
         config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
-        capabilities: Option<Vec<String>>,
+        capabilities: &Option<Vec<String>>,
     ) -> Result<ExecutionResult, ExecutionError> {
         // Read the original file content
         let original_content = tokio::fs::read_to_string(target_file_path)
@@ -469,7 +469,7 @@ where
         script_path: &Path,
         file_path: &Path,
         content: &str,
-        capabilities: Option<Vec<String>>,
+        capabilities: &Option<Vec<String>>,
     ) -> Result<ExecutionOutput, ExecutionError> {
         use crate::utils::quickjs_utils::maybe_promise;
 
@@ -513,7 +513,7 @@ where
                     "exceptions" => {}
                     "os" => {}
                     "path" => {}
-                    "pref_hooks" => {}
+                    "perf_hooks" => {}
                     "process" => {}
                     "stream_web" => {}
                     "string_decoder" => {}

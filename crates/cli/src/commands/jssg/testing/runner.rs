@@ -190,7 +190,7 @@ impl TestRunner {
                     test_case,
                     codemod_path,
                     &self.options,
-                    self.jssg_extra_capabilities.clone(),
+                    &self.jssg_extra_capabilities.to_vec(),
                 ),
             )
             .await;
@@ -240,7 +240,7 @@ impl TestRunner {
         test_case: &TestCase,
         codemod_path: &Path,
         options: &TestOptions,
-        jssg_extra_capabilities: Vec<String>,
+        jssg_extra_capabilities: &[String],
     ) -> Result<()> {
         let should_expect_error = test_case.should_expect_error(&options.expect_errors);
 
@@ -279,7 +279,7 @@ impl TestRunner {
                     codemod_path,
                     &input_file.path,
                     &input_file.content,
-                    Some(jssg_extra_capabilities.clone()),
+                    &Some(jssg_extra_capabilities.to_vec()),
                 )
                 .await
                 .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
@@ -337,7 +337,7 @@ impl TestRunner {
         engine: &ExecutionEngine<RealFileSystem, OxcResolver>,
         test_case: &TestCase,
         codemod_path: &Path,
-        jssg_extra_capabilities: Vec<String>,
+        jssg_extra_capabilities: &[String],
     ) -> Result<()> {
         for input_file in &test_case.input_files {
             let execution_output = engine
@@ -345,7 +345,7 @@ impl TestRunner {
                     codemod_path,
                     &input_file.path,
                     &input_file.content,
-                    Some(jssg_extra_capabilities.clone()),
+                    &Some(jssg_extra_capabilities.to_vec()),
                 )
                 .await
                 .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
