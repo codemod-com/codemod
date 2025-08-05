@@ -1492,10 +1492,14 @@ impl Engine {
                 if codemod_sandbox::sandbox::engine::llrt_module_builder::UNSAFE_MODULES
                     .contains(&capability.as_str())
                 {
-                    yes_or_no_callback.as_ref().unwrap()(&format!(
-                        "🛡️ Security Notice: This action will grant access to `{capability}`, which may perform sensitive operations, Are you sure you want to continue?"
-                    ))
-                    .map_err(|e| Error::Other(format!("Failed to execute step: {e}")))?;
+                    let yes_or_no_callback = yes_or_no_callback
+                        .as_ref()
+                        .ok_or_else(|| Error::Other("callback is missing".to_string()))?;
+
+                    yes_or_no_callback(&format!(
+                    "🛡️ Security Notice: This action will grant access to `{capability}`, which may perform sensitive operations. Are you sure you want to continue?"
+                ))
+                .map_err(|e| Error::Other(format!("Failed to execute step: {e}")))?;
                 }
             }
         }
