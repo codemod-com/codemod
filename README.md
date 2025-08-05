@@ -23,24 +23,27 @@
 
 Codemod is the AI-powered, community-led platform for automating code migrations, framework upgrades, and large-scale changes.
 
-This monorepo is centered around the **Codemod CLI**, the command-line interface that allows you to build, test, and run codemod workflows in your terminal.
+This repo houses the **Codemod CLI** and its underlying **workflow engine** – everything you need to scaffold, test, and run codemods locally or in CI. The CLI can also connect to Codemod’s hosted Registry and Platform when you want to publish or orchestrate migrations across many repositories.
 
 ## Key Features
 
 - **Workflows** – Scaffold, test, and orchestrate complex, multi-step migrations with ast-grep YAML or JavaScipt ast-grep (jssg).
-- **Codemod Registry** – Share or discover codemods via `npx codemod@next publish` or `npx codemod@next search`.
+- **Codemod Registry** – Share or discover community codemods via `npx codemod@next publish` or `npx codemod@next search`.
 
 ## Getting Started
 
 ```bash
-# Initialize a new codemod project
+# 1) Scaffold a new codemod project
 npx codemod@next init my-codemod
 
-# Publish it to the Codemod Registry
+# 2) Test it locally
+npx codemod@next workflow run -w my-codemod/workflow.yaml
+
+# 3) Publish it when you're ready
 npx codemod@next publish my-codemod
 
-# Run it on your codebase
-npx codemod@next workflow run -w my-codemod/workflow.yaml
+# 4) Run it from the Registry
+npx codemod@next @codemod-com/my-codemod
 ```
 
 See the full [CLI reference](https://docs.codemod.com/cli/cli-reference) for every command and option.
