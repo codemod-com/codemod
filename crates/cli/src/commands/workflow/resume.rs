@@ -1,8 +1,10 @@
+use crate::workflow_runner::dry_run_callback;
 use anyhow::{Context, Result};
 use butterflow_core::engine::Engine;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
 use clap::Args;
 use log::{error, info};
+use std::sync::Arc;
 use uuid::Uuid;
 
 #[derive(Args, Debug)]
@@ -27,7 +29,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     if args.trigger_all {
         // Trigger all awaiting tasks
         engine
-            .trigger_all(args.id)
+            .trigger_all(args.id, &Some(Arc::new(dry_run_callback)))
             .await
             .context("Failed to trigger all tasks")?;
 
@@ -35,7 +37,11 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     } else if !args.task.is_empty() {
         // Trigger specific tasks
         engine
-            .resume_workflow(args.id, args.task.to_vec())
+            .resume_workflow(
+                args.id,
+                args.task.to_vec(),
+                &Some(Arc::new(dry_run_callback)),
+            )
             .await
             .context("Failed to resume workflow")?;
 

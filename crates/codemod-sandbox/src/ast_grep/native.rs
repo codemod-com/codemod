@@ -14,6 +14,7 @@ use serde_json;
 use thiserror::Error;
 
 use crate::sandbox::engine::language_data::get_extensions_for_language;
+use crate::sandbox::engine::DryRunCallback;
 
 #[derive(Error, Debug)]
 pub enum AstGrepError {
@@ -63,6 +64,8 @@ pub fn execute_ast_grep_on_globs(
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
+    dry_run: bool,
+    dry_run_callback: &Option<DryRunCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         include_globs,
@@ -71,6 +74,10 @@ pub fn execute_ast_grep_on_globs(
         config_file,
         working_dir,
         false,
+        &DryRunContext {
+            dry_run,
+            dry_run_callback: dry_run_callback.clone(),
+        },
     )
 }
 
@@ -81,6 +88,8 @@ pub fn execute_ast_grep_on_globs_with_fixes(
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
+    dry_run: bool,
+    dry_run_callback: &Option<DryRunCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         include_globs,
@@ -89,7 +98,16 @@ pub fn execute_ast_grep_on_globs_with_fixes(
         config_file,
         working_dir,
         true,
+        &DryRunContext {
+            dry_run,
+            dry_run_callback: dry_run_callback.clone(),
+        },
     )
+}
+
+struct DryRunContext {
+    dry_run: bool,
+    dry_run_callback: Option<DryRunCallback>,
 }
 
 fn execute_ast_grep_on_globs_with_options(
@@ -99,6 +117,7 @@ fn execute_ast_grep_on_globs_with_options(
     config_file: &str,
     working_dir: Option<&Path>,
     apply_fixes: bool,
+    dry_run_context: &DryRunContext,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -240,7 +259,14 @@ fn execute_ast_grep_on_globs_with_options(
         let entry = entry.map_err(|e| AstGrepError::Io(std::io::Error::other(e)))?;
 
         if entry.file_type().is_some_and(|ft| ft.is_file()) {
-            let matches = scan_file(entry.path(), &combined_scan, &rule_configs, apply_fixes)?;
+            let matches = scan_file(
+                entry.path(),
+                &combined_scan,
+                &rule_configs,
+                apply_fixes,
+                dry_run_context.dry_run,
+                &dry_run_context.dry_run_callback,
+            )?;
             all_matches.extend(matches);
         }
     }
@@ -292,6 +318,8 @@ fn scan_file(
     combined_scan: &CombinedScan<SupportLang>,
     rule_configs: &[RuleConfig<SupportLang>],
     apply_fixes: bool,
+    dry_run: bool,
+    dry_run_callback: &Option<DryRunCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     let content = fs::read_to_string(file_path)?;
     let language = detect_language(file_path)?;
@@ -303,6 +331,10 @@ fn scan_file(
         combined_scan,
         rule_configs,
         apply_fixes,
+        &DryRunContext {
+            dry_run,
+            dry_run_callback: dry_run_callback.clone(),
+        },
     )
 }
 
@@ -313,6 +345,7 @@ fn scan_content(
     combined_scan: &CombinedScan<SupportLang>,
     _rule_configs: &[RuleConfig<SupportLang>],
     apply_fixes: bool,
+    dry_run_context: &DryRunContext,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     let doc = StrDoc::new(content, language);
     let root = AstGrep::doc(doc);
@@ -435,7 +468,13 @@ fn scan_content(
 
     // Write the modified content back to the file if fixes were applied
     if file_modified {
-        fs::write(file_path, new_content)?;
+        if dry_run_context.dry_run {
+            if let Some(callback_fn) = dry_run_context.dry_run_callback.as_ref() {
+                callback_fn(content, &new_content, file_path);
+            }
+        } else {
+            fs::write(file_path, new_content)?;
+        }
     }
 
     Ok(matches)
@@ -496,8 +535,18 @@ pub fn execute_ast_grep_on_paths(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
+    dry_run: bool,
+    dry_run_callback: &Option<DryRunCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs(Some(paths), None, None, config_file, working_dir)
+    execute_ast_grep_on_globs(
+        Some(paths),
+        None,
+        None,
+        config_file,
+        working_dir,
+        dry_run,
+        dry_run_callback,
+    )
 }
 
 /// Backward compatibility function - converts paths to include globs with fixes
@@ -505,8 +554,18 @@ pub fn execute_ast_grep_on_paths_with_fixes(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
+    dry_run: bool,
+    dry_run_callback: &Option<DryRunCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs_with_fixes(Some(paths), None, None, config_file, working_dir)
+    execute_ast_grep_on_globs_with_fixes(
+        Some(paths),
+        None,
+        None,
+        config_file,
+        working_dir,
+        dry_run,
+        dry_run_callback,
+    )
 }
 
 #[cfg(test)]
@@ -595,6 +654,8 @@ message: "Found var declaration"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            &None,
         )
         .unwrap();
 
@@ -659,6 +720,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            &None,
         )
         .unwrap();
 
@@ -703,6 +766,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            &None,
         )
         .unwrap();
 
@@ -750,6 +815,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            &None,
         )
         .unwrap();
 
@@ -783,6 +850,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            &None,
         )
         .unwrap();
 
@@ -815,6 +884,8 @@ rule:
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            &None,
         );
 
         // Should return empty results, not error
@@ -855,6 +926,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            &None,
         )
         .unwrap();
 
@@ -881,6 +954,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            &None,
         )
         .unwrap();
 
@@ -945,6 +1020,8 @@ message: "Found var declaration"
             None,
             "rules.yaml",
             Some(temp_path),
+            false,
+            &None,
         )
         .unwrap();
 
@@ -1004,6 +1081,8 @@ message: "Found console.log statement in TSX"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            &None,
         )
         .unwrap();
 
@@ -1084,6 +1163,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            &None,
         )
         .unwrap();
 

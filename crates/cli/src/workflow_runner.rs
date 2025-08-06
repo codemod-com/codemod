@@ -3,11 +3,10 @@ use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
 use log::{error, info};
+use similar::{ChangeTag, TextDiff};
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use uuid::Uuid;
-
-/// Configuration for running a workflow
 pub struct WorkflowRunConfig {
     pub workflow_file_path: PathBuf,
     pub bundle_path: PathBuf,
@@ -15,6 +14,44 @@ pub struct WorkflowRunConfig {
     pub wait_for_completion: bool,
 }
 
+pub fn dry_run_callback(old: &str, new: &str, target_file_path: &Path) {
+    let path = target_file_path.display();
+    println!("\nComparing changes in: \x1b[1;34m{path}\x1b[0m");
+
+    let diff = TextDiff::from_lines(old, new);
+
+    for (idx, group) in diff.grouped_ops(3).iter().enumerate() {
+        if idx > 0 {
+            println!("...");
+        }
+        let old_range = group.first().unwrap().old_range();
+        let new_range = group.first().unwrap().new_range();
+        println!(
+            "\x1b[36m@@ -{},{:?} +{},{:?} @@\x1b[0m",
+            old_range.start + 1,
+            old_range.len(),
+            new_range.start + 1,
+            new_range.len()
+        );
+
+        for op in group {
+            for change in diff.iter_changes(op) {
+                let (sign, s) = match change.tag() {
+                    ChangeTag::Delete => ("-", "\x1b[31m"),
+                    ChangeTag::Insert => ("+", "\x1b[32m"),
+                    ChangeTag::Equal => (" ", "\x1b[0m"),
+                };
+
+                let line = change.value().trim_end();
+                if !line.is_empty() {
+                    println!("{s}{sign}{line}\x1b[0m");
+                }
+            }
+        }
+    }
+
+    println!();
+}
 /// Run a workflow with the given configuration
 pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<String> {
     // Parse workflow file
@@ -24,8 +61,15 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
     ))?;
 
     // Run workflow
+    let dry_run_callback = Some(std::sync::Arc::new(dry_run_callback)
+        as std::sync::Arc<dyn Fn(&str, &str, &Path) + Send + Sync>);
     let workflow_run_id = engine
-        .run_workflow(workflow, config.params, Some(config.bundle_path))
+        .run_workflow(
+            workflow,
+            config.params,
+            Some(config.bundle_path),
+            &dry_run_callback,
+        )
         .await
         .context("Failed to run workflow")?;
 

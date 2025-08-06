@@ -7,7 +7,7 @@ use codemod_sandbox::sandbox::{
 };
 use std::{path::Path, sync::Arc};
 
-use crate::dirty_git_check;
+use crate::{dirty_git_check, workflow_runner::dry_run_callback};
 use codemod_sandbox::utils::project_discovery::find_tsconfig;
 
 #[derive(Args, Debug)]
@@ -109,7 +109,11 @@ pub async fn handler(args: &Command) -> Result<()> {
     // Create and run the execution engine
     let engine = ExecutionEngine::new(config);
     let stats = engine
-        .execute_on_directory(js_file_path, target_directory)
+        .execute_on_directory(
+            js_file_path,
+            target_directory,
+            &Some(Arc::new(dry_run_callback) as Arc<dyn Fn(&str, &str, &Path) + Send + Sync>),
+        )
         .await?;
 
     println!("Modified files: {:?}", stats.files_modified);
