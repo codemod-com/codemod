@@ -43,5 +43,5 @@ jobs:
           version="${{ steps.extract-version.outputs.version }}"
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git tag "codemod-next@$version"
-          git push origin "codemod-next@$version" 
+          git tag "codemod-cli@$version"
+          git push origin "codemod-cli@$version" 
