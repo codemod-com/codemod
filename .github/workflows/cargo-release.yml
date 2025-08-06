@@ -3,7 +3,7 @@ name: Cargo Release
 on:
   push:
     tags:
-      - "codemod-next@*"
+      - "codemod-cli@*"
   workflow_dispatch:
     inputs:
       version:
@@ -250,9 +250,9 @@ jobs:
             VERSION="${{ github.event.inputs.version }}"
             NPM_TAG="alpha"
           else
-            # Extract version from tag (e.g., codemod-next@0.1.0 -> 0.1.0-next.1)
-            VERSION=$(echo "${{ github.ref_name }}" | sed 's/codemod-next@//')
-            NPM_TAG="next"
+            # Extract version from tag (e.g., codemod-cli@0.1.0 -> 0.1.0)
+            VERSION=$(echo "${{ github.ref_name }}" | sed 's/codemod-cli@//')
+            NPM_TAG="latest"
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "npm_tag=$NPM_TAG" >> "$GITHUB_OUTPUT"
