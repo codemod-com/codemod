@@ -31,6 +31,8 @@ tar = { workspace = true }
 tempfile = { workspace = true }
 walkdir = { workspace = true }
 dirs = { workspace = true }
+bytes = "1.10.1"
+futures-util = "0.3.31"
 
 [dev-dependencies]
 tempfile = { workspace = true }

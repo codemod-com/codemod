@@ -7,6 +7,7 @@ mod auth_provider;
 mod commands;
 mod dirty_git_check;
 mod engine;
+mod progress_bar;
 mod workflow_runner;
 use ascii_art::print_ascii_art;
 use codemod_telemetry::{

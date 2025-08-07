@@ -9,6 +9,8 @@ use std::process::Command as ProcessCommand;
 use tokio::sync::Mutex;
 
 use crate::auth_provider::CliAuthProvider;
+use crate::dirty_git_check;
+use crate::progress_bar::download_progress_bar;
 use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
 use butterflow_core::engine::{Engine, GLOBAL_STATS};
 use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
@@ -68,6 +70,10 @@ pub async fn handler(
         "Running codemod: {} from registry: {}",
         args.package, registry_url
     );
+    println!(
+        "Running codemod: {} from registry: {}",
+        args.package, registry_url
+    );
 
     // Create registry configuration
     let registry_config = RegistryConfig {
@@ -79,13 +85,20 @@ pub async fn handler(
     let registry_client = RegistryClient::new(registry_config, Some(Box::new(auth_provider)));
 
     // Resolve the package (local path or registry package)
+    let download_progress_bar = Some(download_progress_bar());
     let resolved_package = match registry_client
-        .resolve_package(&args.package, Some(&registry_url), args.force)
+        .resolve_package(
+            &args.package,
+            Some(&registry_url),
+            args.force,
+            download_progress_bar,
+        )
         .await
     {
         Ok(package) => package,
         Err(RegistryError::LegacyPackage { package }) => {
             info!("Package {package} is legacy, running npx codemod@legacy");
+            println!("Package {package} is legacy");
             return run_legacy_codemod(args).await;
         }
         Err(e) => return Err(anyhow::anyhow!("Registry error: {}", e)),
@@ -106,6 +119,10 @@ pub async fn handler(
         args.dry_run,
     )
     .await;
+
+    println!("Modified files: {:?}", stats.files_modified);
+    println!("Unmodified files: {:?}", stats.files_unmodified);
+    println!("Files with errors: {:?}", stats.files_with_errors);
 
     let cli_version = env!("CARGO_PKG_VERSION");
 

@@ -616,7 +616,7 @@ impl Engine {
 
         // Resolve the package
         let resolved_package = registry_client
-            .resolve_package(source, None, false)
+            .resolve_package(source, None, false, None)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve codemod {source}: {e}")))?;
 
@@ -1575,7 +1575,7 @@ impl Engine {
 
         // Resolve the package (local path or registry package)
         let resolved_package = registry_client
-            .resolve_package(&codemod.source, None, false)
+            .resolve_package(&codemod.source, None, false, None)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve package: {e}")))?;
 
