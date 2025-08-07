@@ -2,9 +2,12 @@ use anyhow::{Context, Result};
 use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
+use indicatif::ProgressBar;
 use log::{error, info};
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::thread;
+use std::time::Duration;
 use uuid::Uuid;
 
 /// Configuration for running a workflow
@@ -23,6 +26,12 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
         config.workflow_file_path.display()
     ))?;
 
+    let pb = ProgressBar::new(1024);
+    for _ in 0..1024 {
+        thread::sleep(Duration::from_millis(5));
+        pb.inc(1);
+    }
+    pb.finish_with_message("done");
     // Run workflow
     let workflow_run_id = engine
         .run_workflow(workflow, config.params, Some(config.bundle_path))

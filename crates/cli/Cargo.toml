@@ -60,6 +60,7 @@ ast-grep-language.workspace = true
 tabled = "0.20.0"
 posthog-rs = "0.3.7"
 async-trait.workspace = true
+indicatif = "0.18.0"
 
 [features]
 default = []
