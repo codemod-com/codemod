@@ -122,12 +122,7 @@ pub async fn handler(
     )
     .await;
 
-    println!("Modified files: {:?}", stats.files_modified);
-    println!("Unmodified files: {:?}", stats.files_unmodified);
-    println!("Files with errors: {:?}", stats.files_with_errors);
-
     let cli_version = env!("CARGO_PKG_VERSION");
-
     if let Err(e) = stats {
         let _ = telemetry
             .send_event(
@@ -149,6 +144,9 @@ pub async fn handler(
     }
 
     let stats = stats.unwrap();
+    println!("Modified files: {:?}", stats.files_modified);
+    println!("Unmodified files: {:?}", stats.files_unmodified);
+    println!("Files with errors: {:?}", stats.files_with_errors);
 
     let cli_version = env!("CARGO_PKG_VERSION");
     let execution_id: [u8; 20] = rand::thread_rng().gen();

@@ -418,28 +418,70 @@ impl RegistryClient {
                                         download_response.download_url
                                     );
 
-                                    // Download from the actual URL
-                                    let actual_response = self
+                                    package_data = BytesMut::new();
+
+                                    let head_response = self
                                         .client
-                                        .get(&download_response.download_url)
+                                        .head(&download_response.download_url)
+                                        .header("Authorization", format!("Bearer {access_token}"))
                                         .send()
                                         .await?;
 
-                                    if !actual_response.status().is_success() {
-                                        let status = actual_response.status();
-                                        let error_text =
-                                            actual_response.text().await.unwrap_or_default();
+                                    let total_size = head_response
+                                        .headers()
+                                        .get(CONTENT_LENGTH)
+                                        .and_then(|val| val.to_str().ok()?.parse().ok())
+                                        .unwrap_or(0);
+
+                                    let response = self
+                                        .client
+                                        .get(&download_response.download_url)
+                                        .header("Authorization", format!("Bearer {access_token}"))
+                                        .send()
+                                        .await
+                                        .map_err(|e| RegistryError::DownloadFailed {
+                                            status: e
+                                                .status()
+                                                .unwrap_or(
+                                                    reqwest::StatusCode::INTERNAL_SERVER_ERROR,
+                                                )
+                                                .into(),
+                                            message: e.to_string(),
+                                        })?;
+
+                                    if !response.status().is_success() {
+                                        let status = response.status();
+                                        let error_text = response.text().await.unwrap_or_default();
                                         return Err(RegistryError::CdnDownloadFailed {
                                             status: status.into(),
                                             message: error_text,
                                         });
                                     }
 
-                                    let actual_package_data = actual_response.bytes().await?;
+                                    let mut stream = response.bytes_stream();
+
+                                    let mut downloaded = 0u64;
+                                    while let Some(chunk) = stream.next().await {
+                                        let chunk =
+                                            chunk.map_err(|e| RegistryError::DownloadFailed {
+                                                status: e
+                                                    .status()
+                                                    .unwrap_or(
+                                                        reqwest::StatusCode::INTERNAL_SERVER_ERROR,
+                                                    )
+                                                    .into(),
+                                                message: e.to_string(),
+                                            })?;
+                                        package_data.extend_from_slice(&chunk);
+                                        downloaded += chunk.len() as u64;
+                                        if let Some(ref callback) = progress_bar {
+                                            callback(downloaded, total_size);
+                                        }
+                                    }
 
                                     // Verify this is actually a gzip file
-                                    if actual_package_data.len() >= 2 {
-                                        let actual_magic = &actual_package_data[0..2];
+                                    if package_data.len() >= 2 {
+                                        let actual_magic = &package_data[0..2];
                                         if actual_magic != [0x1f, 0x8b] {
                                             return Err(RegistryError::InvalidCdnGzipFile {
                                                 magic: format!(
@@ -451,8 +493,7 @@ impl RegistryClient {
                                     }
 
                                     // Extract the actual package data
-                                    self.extract_package(&actual_package_data, cache_dir)
-                                        .await?;
+                                    self.extract_package(&package_data, cache_dir).await?;
                                     info!("Package cached to: {}", cache_dir.display());
                                     return Ok(cache_dir.to_path_buf());
                                 }
