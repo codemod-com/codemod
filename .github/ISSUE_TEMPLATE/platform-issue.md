@@ -7,58 +7,15 @@ assignees: ''
 
 ---
 
-### Platform Area(s) Affected
+# Platform Issues
 
-Select all that apply:
-- [ ] Migrations (Automated code migrations)
-- [ ] Insights (Analytics, reporting)
-- [ ] Codemod Studio (AI codemod authoring)
-- [ ] Workflows (Orchestration, campaign management)
-- [ ] CLI (Command-line tool)
-- [ ] UI/UX
-- [ ] Other (please specify)
+**This repository is for open-source contributions to Codemod CLI and related tools.**
 
-### Technical details
-- Browser version, screen recording, console logs, network requests (optional).
-- Node.js version
-- Anything else that you think could be an issue.
+For issues, feedback, or feature requests related to **Codemod Platform**, please use one of these channels:
 
-### Issue Description
-A quick description of the issue you ran into. If you checked a specific area above, please provide details:
-- **Scanner:** Affected codebase, migration name, CLI/Studio/Platform context
-- **Migrations:** Migration name, before/after code, CLI/Studio/Platform context
-- **Insights:** Report type, data source, expected/actual output
-- **Codemod Studio:** Codemod name, before/after code, AI feedback
-- **Workflows:** Workflow name, orchestration steps
-- **CLI:** Command used, CLI version, error output
-
-### Steps to Reproduce
-
-1. (for example) Went to ...
-2. Clicked on...
-3. ...
-
-### Actual Results
-What is happening right now that is different from what is expected. Include code snippets or logs if relevant.
-
-### Expected Results
-The expected correct result. Include code snippets or screenshots if relevant.
-
-### Screenshots/Attachments
-Add any screenshots, logs, or screen recordings that might help us understand the issue.
-
-### Related Codemod/Registry Link
-If this issue is related to a specific codemod, please provide a link to the registry entry or repository.
-
-### Privacy Notice
-> **Do not include sensitive credentials or proprietary code in public issues.**
+- **[Feedback Board](https://feedback.codemod.com)** - Submit bugs, feature requests, and general feedback
+- **[Slack Community](https://go.codemod.com/community)** - Discuss issues and get help from the community
 
 ---
 
-#### Learn more about the Codemod Platform:
-- [Scanner](https://docs.codemod.com/scanner)
-- [Migrations](https://docs.codemod.com/migrations)
-- [Insights](https://docs.codemod.com/insights)
-- [Codemod Studio](https://docs.codemod.com/codemod-studio)
-- [Workflows](https://docs.codemod.com/platform/workflows)
-- [CLI](https://docs.codemod.com/cli/cli-reference)
+**If you're here to report an issue with the open-source CLI or contribute to the codebase, please use the appropriate issue template instead.**
