@@ -1676,6 +1676,7 @@ message: "Found var declaration"
     let engine = Engine::new();
     let result = engine
         .execute_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseAstGrep {
                 include: Some(vec!["src/**/*.js".to_string()]),
                 exclude: None,
@@ -1742,6 +1743,7 @@ message: "Found interface declaration"
     let engine = Engine::new();
     let result = engine
         .execute_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseAstGrep {
                 include: Some(vec!["src/**/*.ts".to_string()]),
                 exclude: None,
@@ -1773,6 +1775,7 @@ async fn test_execute_ast_grep_step_nonexistent_config() {
     let engine = Engine::new();
     let result = engine
         .execute_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseAstGrep {
                 include: Some(vec!["test.js".to_string()]),
                 exclude: None,
@@ -1827,6 +1830,7 @@ message: "Found console.log statement"
     let engine = Engine::new();
     let result = engine
         .execute_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseAstGrep {
                 include: Some(vec!["test.js".to_string()]),
                 exclude: None,
@@ -1895,6 +1899,7 @@ function helper() {
     let engine = Engine::new();
     let result = engine
         .execute_js_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseJSAstGrep {
                 js_file: "codemod.js".to_string(),
                 base_path: Some("src".to_string()),
@@ -1973,6 +1978,7 @@ interface ApiResponse {
     let engine = Engine::new();
     let result = engine
         .execute_js_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseJSAstGrep {
                 js_file: "ts-codemod.js".to_string(),
                 base_path: Some("src".to_string()),
@@ -2029,6 +2035,7 @@ var count = 0;
     let engine = Engine::new();
     let result = engine
         .execute_js_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseJSAstGrep {
                 js_file: "dry-run-codemod.js".to_string(),
                 base_path: None, // Use current directory
@@ -2065,6 +2072,7 @@ async fn test_execute_js_ast_grep_step_nonexistent_js_file() {
     let engine = Engine::new();
     let result = engine
         .execute_js_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseJSAstGrep {
                 js_file: "nonexistent-codemod.js".to_string(),
                 base_path: None,
@@ -2129,6 +2137,7 @@ build/
     let engine = Engine::new();
     let result = engine
         .execute_js_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseJSAstGrep {
                 js_file: "gitignore-codemod.js".to_string(),
                 base_path: None,
@@ -2155,6 +2164,7 @@ build/
     // Test without respecting gitignore
     let result_no_gitignore = engine
         .execute_js_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseJSAstGrep {
                 js_file: "gitignore-codemod.js".to_string(),
                 base_path: None,
@@ -2207,6 +2217,7 @@ export default function transform(ast) {
     let engine = Engine::new();
     let result = engine
         .execute_js_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseJSAstGrep {
                 js_file: "hidden-codemod.js".to_string(),
                 base_path: None,
@@ -2254,6 +2265,7 @@ export default function transform(ast) {
     let engine = Engine::new();
     let result = engine
         .execute_js_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseJSAstGrep {
                 js_file: "codemod.js".to_string(),
                 base_path: None,
@@ -2302,6 +2314,7 @@ export default function transform(ast) {
     let engine = Engine::new();
     let result = engine
         .execute_js_ast_grep_step_with_dir(
+            "test-node".to_string(),
             &UseJSAstGrep {
                 js_file: "codemod.js".to_string(),
                 base_path: None,

@@ -1,14 +1,12 @@
 use crate::dirty_git_check;
+use crate::progress_bar;
 use anyhow::{Context, Result};
 use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
-use indicatif::ProgressBar;
 use log::{error, info};
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::thread;
-use std::time::Duration;
 use uuid::Uuid;
 
 /// Configuration for running a workflow
@@ -28,6 +26,8 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
     ))?;
 
     let dirty_check = dirty_git_check::dirty_check();
+    let progress_bar = progress_bar::step_by_step_progress_bar();
+
     // Run workflow
     let workflow_run_id = engine
         .run_workflow(
@@ -35,6 +35,7 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
             config.params,
             Some(config.bundle_path),
             Some(dirty_check),
+            Some(&progress_bar),
         )
         .await
         .context("Failed to run workflow")?;

@@ -7,7 +7,7 @@ use codemod_sandbox::sandbox::{
 };
 use std::{path::Path, sync::Arc};
 
-use crate::dirty_git_check;
+use crate::{dirty_git_check, progress_bar::step_by_step_progress_bar};
 use codemod_sandbox::utils::project_discovery::find_tsconfig;
 
 #[derive(Args, Debug)]
@@ -109,8 +109,14 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     // Create and run the execution engine
     let engine = ExecutionEngine::new(config);
+    let progress_bar = step_by_step_progress_bar();
     let stats = engine
-        .execute_on_directory(js_file_path, target_directory)
+        .execute_on_directory(
+            "jssg".to_string(),
+            js_file_path,
+            target_directory,
+            Some(&progress_bar),
+        )
         .await?;
 
     println!("Modified files: {:?}", stats.files_modified);

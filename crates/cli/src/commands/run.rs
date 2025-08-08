@@ -1,6 +1,7 @@
 use anyhow::Result;
 use butterflow_core::utils::get_cache_dir;
 use clap::Args;
+use console::style;
 use log::info;
 use rand::Rng;
 use std::collections::HashMap;
@@ -70,10 +71,6 @@ pub async fn handler(
         "Running codemod: {} from registry: {}",
         args.package, registry_url
     );
-    println!(
-        "Running codemod: {} from registry: {}",
-        args.package, registry_url
-    );
 
     // Create registry configuration
     let registry_config = RegistryConfig {
@@ -86,6 +83,11 @@ pub async fn handler(
 
     // Resolve the package (local path or registry package)
     let download_progress_bar = Some(download_progress_bar());
+    println!(
+        "{} 🔍 Resolving package from registry: {} ...",
+        style("[1/2]").bold().dim(),
+        registry_url
+    );
     let resolved_package = match registry_client
         .resolve_package(
             &args.package,
@@ -98,7 +100,15 @@ pub async fn handler(
         Ok(package) => package,
         Err(RegistryError::LegacyPackage { package }) => {
             info!("Package {package} is legacy, running npx codemod@legacy");
-            println!("Package {package} is legacy");
+            println!(
+                "{}",
+                style(format!("⚠️ Package {package} is legacy")).yellow()
+            );
+            println!(
+                "{} 🏁 Running codemod: {}",
+                style("[2/2]").bold().dim(),
+                args.package,
+            );
             return run_legacy_codemod(args).await;
         }
         Err(e) => return Err(anyhow::anyhow!("Registry error: {}", e)),
@@ -108,6 +118,12 @@ pub async fn handler(
         "Resolved codemod package: {} -> {}",
         args.package,
         resolved_package.package_dir.display()
+    );
+
+    println!(
+        "{} 🏁 Running codemod: {}",
+        style("[2/2]").bold().dim(),
+        args.package,
     );
 
     // Execute the codemod
@@ -142,9 +158,9 @@ pub async fn handler(
     }
 
     let stats = stats.unwrap();
-    println!("Modified files: {:?}", stats.files_modified);
-    println!("Unmodified files: {:?}", stats.files_unmodified);
-    println!("Files with errors: {:?}", stats.files_with_errors);
+    println!("\n📝 Modified files: {:?}", stats.files_modified);
+    println!("✅ Unmodified files: {:?}", stats.files_unmodified);
+    println!("❌ Files with errors: {:?}", stats.files_with_errors);
 
     let cli_version = env!("CARGO_PKG_VERSION");
     let execution_id: [u8; 20] = rand::thread_rng().gen();
