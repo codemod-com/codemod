@@ -27,7 +27,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     if args.trigger_all {
         // Trigger all awaiting tasks
         engine
-            .trigger_all(args.id)
+            .trigger_all(args.id, None)
             .await
             .context("Failed to trigger all tasks")?;
 
@@ -35,7 +35,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     } else if !args.task.is_empty() {
         // Trigger specific tasks
         engine
-            .resume_workflow(args.id, args.task.to_vec())
+            .resume_workflow(args.id, args.task.to_vec(), None)
             .await
             .context("Failed to resume workflow")?;
 
