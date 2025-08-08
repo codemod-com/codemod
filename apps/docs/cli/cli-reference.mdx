@@ -227,12 +227,12 @@ npx codemod@next workflow cancel -i <ID>
 
 ### `codemod@next jssg`
 
-jssg is a toolkit for running JavaScript/TypeScript codemods using the high-performance ast-grep engine. It enables fast, large-scale code transformations with a familiar API and robust language support.
+JS ast-grep (jssg) is a toolkit for running JavaScript/TypeScript codemods using the high-performance ast-grep engine. It enables fast, large-scale code transformations with a familiar API and robust language support.
 
 `codemod@next jssg` lets you run ast-grep codemods directly from the CLI, without needing to define a workflow. It's built for speed and simplicity, making ast-grep codemods a first-class experience.
 
 <Tip>
-  **When should I use jssg?**
+  **When should I use JS ast-grep (jssg)?**
 
   - When you want to quickly run or test an ast-grep codemod on your codebase.
   - For for more complex transformations that require granular AST access and manipulation than a YAML rule can provide. Read more about [when to define workflows](#when-should-i-define-a-workflow-instead).
@@ -274,14 +274,14 @@ jssg is a toolkit for running JavaScript/TypeScript codemods using the high-perf
 
 **`jssg run`**
 
-Run a jssg codemod.
+Run a JS ast-grep (jssg) codemod.
 
 ```bash
 npx codemod@next jssg run <codemod_file> <target_directory> [options]
 ```
 
 <ResponseField name="codemod_file" type="string" required>
-  Path to the jssg codemod file (JS/TS).
+  Path to the JS ast-grep (jssg) codemod file (JS/TS).
 </ResponseField>
 
 <ResponseField name="target_directory" type="string" required>
@@ -314,14 +314,14 @@ npx codemod@next jssg run <codemod_file> <target_directory> [options]
 
 **`jssg test`**
 
-Test a jssg codemod using before/after fixtures.
+Test a JS ast-grep(jssg) codemod using before/after fixtures.
 
 ```bash
 npx codemod@next jssg test <codemod_file> [options]
 ```
 
 <ResponseField name="codemod_file" type="string" required>
-  Path to the jssg codemod file, which is a JS/TS file.
+  Path to the JS ast-grep (jssg) codemod file, which is a JS/TS file.
 </ResponseField>
 
 <ResponseField name="--language" type="string" required>
