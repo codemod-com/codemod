@@ -19,36 +19,33 @@ import { APIKeyDemo } from "/snippets/api-key-demo.mdx";
 <Steps>
   <Step title="Initialize a new codemod project">
     ```bash
-    npx codemod@next init my-codemod
+    npx codemod@next init
     ```
 
-    This scaffolds a new codemod project in the `my-codemod` directory.
+    This scaffolds a new codemod project in the current directory.
+  </Step>
+  <Step title="Run and test your codemod">
+    ```bash
+    cd /path/to/project-to-migrate
+
+    npx codemod@next workflow run -w /path/to/my-codemod/workflow.yaml
+    ```
+
+    This runs your local codemod workflow on your codebase to test it before publishing.
   </Step>
   <Step title="Publish your codemod">
     ```bash
-    npx codemod@next publish my-codemod
+    npx codemod@next publish
     ```
 
     This publishes your codemod to the registry (you may need to <a href="#codemod%40next-login">login</a> first).
   </Step>
-  <Step title="Run your codemod">
-    <Tabs>
-    <Tab title="Local Workflow">
-    ```bash
-    npx codemod@next workflow run -w my-codemod/workflow.yaml
-    ```
-    
-    This runs your local codemod workflow on your codebase.
-    </Tab>
-    
-    <Tab title="Registry Package">
+  <Step title="Run the published codemod">
     ```bash
     npx codemod@next @codemod-com/my-test-pkg
     ```
-    
-    Run published codemods directly from the [Codemod Registry](https://app.codemod.com/registry).
-    </Tab>
-    </Tabs>
+
+    Run your published codemod directly from the [Codemod Registry](https://app.codemod.com/registry).
   </Step>
 </Steps>
 
