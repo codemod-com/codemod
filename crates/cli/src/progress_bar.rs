@@ -7,6 +7,7 @@ pub fn download_progress_bar() -> Arc<Box<dyn Fn(u64, u64) + Send + Sync>> {
 
     println!("Downloading progress bar");
     Arc::new(Box::new(move |downloaded: u64, total: u64| {
+        println!("Downloading progress bar: {downloaded}/{total}");
         let mut pb_guard = progress_bar.lock().unwrap();
         if pb_guard.is_none() && total > 0 {
             let pb = ProgressBar::new(total);
