@@ -1,6 +1,6 @@
 ---
 name: Platform Issue
-about: Report any issues, feedback, or feature requests for Codemod Platform.
+about: Report any issues, feedback, or feature requests for the Codemod Platform, including Scanner, Migrations, Insights, Studio, Workflows, and CLI.
 title: "[issue-name]"
 labels: platform
 assignees: ''

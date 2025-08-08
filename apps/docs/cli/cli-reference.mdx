@@ -29,14 +29,26 @@ import { APIKeyDemo } from "/snippets/api-key-demo.mdx";
     npx codemod@next publish my-codemod
     ```
 
-    This publishes your codemod to the registry (you may need to [login](#codemod%40next-login) first).
+    This publishes your codemod to the registry (you may need to <a href="#codemod%40next-login">login</a> first).
   </Step>
   <Step title="Run your codemod">
+    <Tabs>
+    <Tab title="Local Workflow">
     ```bash
     npx codemod@next workflow run -w my-codemod/workflow.yaml
     ```
-
-    This runs your codemod workflow on your codebase.
+    
+    This runs your local codemod workflow on your codebase.
+    </Tab>
+    
+    <Tab title="Registry Package">
+    ```bash
+    npx codemod@next @codemod-com/my-test-pkg
+    ```
+    
+    Run published codemods directly from the [Codemod Registry](https://app.codemod.com/registry).
+    </Tab>
+    </Tabs>
   </Step>
 </Steps>
 
@@ -46,8 +58,8 @@ For more details on building and running workflows, see the [Workflows documenta
 
 ## Advanced Concepts
 
-- **Workflows:** Orchestrate complex, multi-step codemod processes.
-- **jssg:** Run JavaScript/TypeScript codemods using the high-performance ast-grep engine.
+- <a href="#codemod%40next-workflow">**Workflows:**</a> Orchestrate complex, multi-step codemod processes.
+- <a href="#codemod%40next-jssg">**JS ast-grep (jssg):**</a> Run codemods written in JavaScript/TypeScript to transform code in any language using the high-performance ast-grep engine.
 
 ---
 
@@ -63,9 +75,23 @@ Manage and execute workflow YAMLs.
 
 Run a workflow.
 
-```bash
+<CodeGroup>
+
+```bash Running a local workflow
 npx codemod@next workflow run -w <workflow.yaml|directory> [--param key=value]
 ```
+
+```bash Running a workflow from Codemod Registry
+npx codemod@next workflow run <package-name> [--param key=value]
+```
+
+</CodeGroup>
+
+<Info>
+**Local workflows vs. Registry packages:** 
+- Use `npx codemod@next workflow run -w <path>` for local workflow files and directories
+- Use `npx codemod@next <package-name>` to run packages directly from the [Codemod Registry](https://app.codemod.com/registry)
+</Info>
 
 <ResponseField name="-w, --workflow <PATH>" type="string" required>
   Path to workflow file or directory.
@@ -74,6 +100,36 @@ npx codemod@next workflow run -w <workflow.yaml|directory> [--param key=value]
 <ResponseField name="--param <KEY=VALUE>" type="string">
   Workflow parameters (format: key=value).
 </ResponseField>
+
+
+<Accordion title="Examples">
+
+**Running a local workflow**:
+
+```bash
+# Run a local workflow file
+npx codemod@next workflow run -w ./my-workflow.yaml
+
+# Run a workflow from a local directory
+npx codemod@next workflow run -w ./my-codemod
+
+# Run with parameters
+npx codemod@next workflow run -w ./my-codemod --param version=latest --param target=src
+```
+
+**Running a workflow from the registry**:
+
+```bash
+# Run a workflow package from the registry
+npx codemod@next @codemod-com/my-test-pkg
+
+# Run with parameters
+npx codemod@next @codemod-com/my-test-pkg --param version=latest --param target=src
+```
+
+Explore available packages on [Codemod Registry](https://app.codemod.com/registry).
+
+</Accordion>
 
 **`workflow resume`**
 
@@ -171,12 +227,12 @@ npx codemod@next workflow cancel -i <ID>
 
 ### `codemod@next jssg`
 
-jssg is a toolkit for running JavaScript/TypeScript codemods using the high-performance ast-grep engine. It enables fast, large-scale code transformations with a familiar API and robust language support.
+JS ast-grep (jssg) is a toolkit for running JavaScript/TypeScript codemods using the high-performance ast-grep engine. It enables fast, large-scale code transformations with a familiar API and robust language support.
 
 `codemod@next jssg` lets you run ast-grep codemods directly from the CLI, without needing to define a workflow. It's built for speed and simplicity, making ast-grep codemods a first-class experience.
 
 <Tip>
-  **When should I use jssg?**
+  **When should I use JS ast-grep (jssg)?**
 
   - When you want to quickly run or test an ast-grep codemod on your codebase.
   - For for more complex transformations that require granular AST access and manipulation than a YAML rule can provide. Read more about [when to define workflows](#when-should-i-define-a-workflow-instead).
@@ -218,14 +274,14 @@ jssg is a toolkit for running JavaScript/TypeScript codemods using the high-perf
 
 **`jssg run`**
 
-Run a jssg codemod.
+Run a JS ast-grep (jssg) codemod.
 
 ```bash
 npx codemod@next jssg run <codemod_file> <target_directory> [options]
 ```
 
 <ResponseField name="codemod_file" type="string" required>
-  Path to the jssg codemod file (JS/TS).
+  Path to the JS ast-grep (jssg) codemod file (JS/TS).
 </ResponseField>
 
 <ResponseField name="target_directory" type="string" required>
@@ -258,14 +314,14 @@ npx codemod@next jssg run <codemod_file> <target_directory> [options]
 
 **`jssg test`**
 
-Test a jssg codemod using before/after fixtures.
+Test a JS ast-grep(jssg) codemod using before/after fixtures.
 
 ```bash
 npx codemod@next jssg test <codemod_file> [options]
 ```
 
 <ResponseField name="codemod_file" type="string" required>
-  Path to the jssg codemod file, which is a JS/TS file.
+  Path to the JS ast-grep (jssg) codemod file, which is a JS/TS file.
 </ResponseField>
 
 <ResponseField name="--language" type="string" required>
@@ -338,13 +394,6 @@ npx codemod@next jssg test <codemod_file> [options]
     - It's built into the CLI, so you can run it directly without needing to install it separately.
     - It's built for speed and simplicity, making ast-grep codemods a first-class experience.
     - It's built for speed and simplicity, making ast-grep codemods a first-class experience.
-  </Accordion>
-  <Accordion title="Advanced Usage & Best Practices">
-    - Use `--dry-run` to preview changes.
-    - Use `--max-threads` to control concurrency.
-    - For large codebases, filter files with `--extensions` and `--include-hidden`.
-    - Use `--update-snapshots` to automatically update your expected outputs when your codemod changes.
-    - See the **Testing Framework Details** accordion for more.
   </Accordion>
 </AccordionGroup>
 
@@ -543,6 +592,9 @@ npx codemod@next publish [PATH] [options]
     
     # Publish under an organization scope (requires GitHub App installation)
     npx codemod@next publish ./my-codemod --scope nodejs
+    
+    # After publishing, run your package from the registry
+    npx codemod@next @your-scope/my-codemod
     ```
   </Accordion>
 </AccordionGroup>

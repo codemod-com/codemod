@@ -217,7 +217,7 @@ fn print_table(result: &SearchResponse, args: &Command) -> Result<()> {
         .iter()
         .map(|package| {
             let name = match &package.scope {
-                Some(scope) => format!("{}/{}", scope, package.name),
+                Some(scope) => format!("@{}/{}", scope, package.name),
                 None => package.name.clone(),
             };
 

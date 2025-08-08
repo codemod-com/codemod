@@ -4,5 +4,4 @@ id: replace-println-with-logging
 language: rust
 rule:
   pattern: println!($$$ARGS)
-fix:
-  log::info!($$$ARGS)
+fix: log::info!($$$ARGS)
