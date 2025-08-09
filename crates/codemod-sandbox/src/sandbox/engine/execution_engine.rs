@@ -17,6 +17,15 @@ use std::pin::Pin;
 use std::sync::Arc;
 use tokio::io::AsyncWriteExt;
 
+// Type alias for progress callback to reduce complexity
+pub type ProgressCallback = Option<
+    Arc<
+        dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+            + Send
+            + Sync,
+    >,
+>;
+
 /// Statistics about the execution results
 #[derive(Debug, Clone, Default)]
 pub struct ExecutionStats {
@@ -169,13 +178,7 @@ where
         id: &str,
         script_path: &Path,
         target_dir: &Path,
-        progress_callback: Option<
-            Arc<
-                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
-                    + Send
-                    + Sync,
-            >,
-        >,
+        progress_callback: ProgressCallback,
     ) -> Result<ExecutionStats, ExecutionError> {
         // Check if target directory exists
         if !self.config.filesystem.exists(target_dir).await {

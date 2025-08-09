@@ -1,6 +1,6 @@
 use crate::dirty_git_check;
 use crate::progress_bar::{
-    progress_bar_for_multi_progress, ActionType, MultiProgressProgressBarCallback,
+    progress_bar_for_multi_progress, ActionType, MultiProgressProgressBarCallback, ProgressCallback,
 };
 use anyhow::{Context, Result};
 use butterflow_core::engine::Engine;
@@ -35,7 +35,7 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
 
     // The closure now needs to be put in a Box to be a trait object
     // and passed to run_workflow, which likely expects a Box<dyn Fn...>
-    let callback = Arc::new(
+    let callback: ProgressCallback = Arc::new(
         move |id: &str,
               current_file: &str,
               action_type: &str,

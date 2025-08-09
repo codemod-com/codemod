@@ -1,7 +1,19 @@
 use std::fs;
+use std::future::Future;
 use std::path::{Path, PathBuf};
+use std::pin::Pin;
 use std::str::FromStr;
 use std::sync::Arc;
+use thiserror::Error;
+
+// Type alias for progress callback to reduce complexity
+pub type ProgressCallback = Option<
+    Arc<
+        dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+            + Send
+            + Sync,
+    >,
+>;
 
 use crate::sandbox::engine::language_data::get_extensions_for_language;
 use ast_grep_config::{from_yaml_string, CombinedScan, RuleConfig};
@@ -13,9 +25,6 @@ use ignore::{
     WalkBuilder,
 };
 use serde_json;
-use std::future::Future;
-use std::pin::Pin;
-use thiserror::Error;
 
 type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
 
@@ -70,13 +79,7 @@ pub async fn execute_ast_grep_on_globs(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_callback: Option<
-        Arc<
-            dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
-                + Send
-                + Sync,
-        >,
-    >,
+    progress_callback: ProgressCallback,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         id.clone(),
@@ -105,13 +108,7 @@ pub async fn execute_ast_grep_on_globs_with_fixes(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_callback: Option<
-        Arc<
-            dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
-                + Send
-                + Sync,
-        >,
-    >,
+    progress_callback: ProgressCallback,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         id.clone(),
@@ -144,13 +141,7 @@ async fn execute_ast_grep_on_globs_with_options(
     apply_fixes: bool,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_callback: Option<
-        Arc<
-            dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
-                + Send
-                + Sync,
-        >,
-    >,
+    progress_callback: ProgressCallback,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -601,13 +592,7 @@ pub async fn execute_ast_grep_on_paths(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_callback: Option<
-        Arc<
-            dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
-                + Send
-                + Sync,
-        >,
-    >,
+    progress_callback: ProgressCallback,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs(
         id,
@@ -631,13 +616,7 @@ pub async fn execute_ast_grep_on_paths_with_fixes(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_callback: Option<
-        Arc<
-            dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
-                + Send
-                + Sync,
-        >,
-    >,
+    progress_callback: ProgressCallback,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_fixes(
         id,

@@ -6,6 +6,10 @@ use std::pin::Pin;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
+pub type ProgressCallback = Arc<
+    dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>> + Send + Sync,
+>;
+
 pub fn download_progress_bar() -> Arc<Box<dyn Fn(u64, u64) + Send + Sync>> {
     let progress_bar = Arc::new(Mutex::new(None::<ProgressBar>));
     let progress_bar_clone = Arc::clone(&progress_bar);
