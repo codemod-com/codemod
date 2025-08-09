@@ -226,7 +226,9 @@ pub fn handler(args: &Command) -> Result<()> {
     // Run post init commands
     run_post_init_commands(&project_path, &config, args.no_interactive)?;
 
-    print_next_steps(&project_path, &config)?;
+    let project_absolute_path = project_path.canonicalize()?;
+
+    print_next_steps(&project_absolute_path, &config)?;
 
     Ok(())
 }
@@ -400,7 +402,8 @@ fn create_workflow(project_path: &Path, config: &ProjectConfig) -> Result<()> {
         ProjectType::Shell => SHELL_WORKFLOW_TEMPLATE,
         ProjectType::AstGrepJs => JS_ASTGREP_WORKFLOW_TEMPLATE,
         ProjectType::AstGrepYaml => ASTGREP_YAML_WORKFLOW_TEMPLATE,
-    };
+    }
+    .replace("{language}", &config.language);
 
     fs::write(project_path.join("workflow.yaml"), workflow_content)?;
     Ok(())
@@ -652,33 +655,36 @@ fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     println!("{}", style("Next steps:").bold());
 
     println!();
-    println!("  {}", style("# Validate your workflow").dim());
+    println!("  {}", style("Validate your workflow").bold().cyan());
     println!(
         "  {}",
         style(format!(
             "npx codemod@next workflow validate -w {}/workflow.yaml",
             project_path.display()
         ))
-        .cyan()
+        .dim()
     );
     println!();
-    println!("  {}", style("# Run your codemod").dim());
+    println!("  {}", style("Run your codemod locally").bold().cyan());
     println!(
         "  {}",
         style(format!(
             "npx codemod@next workflow run -w {}/workflow.yaml",
             project_path.display()
         ))
-        .cyan()
+        .dim()
     );
     println!();
-    println!("  {}", style("# Publish when ready").dim());
     println!(
         "  {}",
-        style(format!("cd {}", project_path.display())).cyan()
+        style("👉 Check out the docs to learn how to publish your codemod!")
+            .bold()
+            .cyan()
     );
-    println!("  {}", style("npx codemod@next login").cyan());
-    println!("  {}", style("npx codemod@next publish").cyan());
+    println!(
+        "  {}",
+        style("https://go.codemod.com/docs").underlined().dim()
+    );
 
     Ok(())
 }

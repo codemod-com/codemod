@@ -3,13 +3,6 @@ nodes:
   - id: apply-rules
     name: Apply AST-grep Rules
     steps:
-      - name: "Scan TypeScript files only"
+      - name: "Scan {language} files and apply fixes"
         ast-grep:
-          include:
-            - "**/*.ts"
-            - "**/*.tsx"
-          exclude:
-            - "**/*.test.ts"
-            - "**/*.spec.ts"
-          base_path: "src"
           config_file: "rules/config.yml"
