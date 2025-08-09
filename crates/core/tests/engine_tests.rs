@@ -1676,7 +1676,7 @@ message: "Found var declaration"
     let engine = Engine::new();
     let result = engine
         .execute_ast_grep_step_with_dir(
-            "test-node".to_string(),
+            "test".to_string(),
             &UseAstGrep {
                 include: Some(vec!["src/**/*.js".to_string()]),
                 exclude: None,

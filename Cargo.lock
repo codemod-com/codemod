@@ -507,6 +507,7 @@ dependencies = [
  "butterflow-state",
  "bytes",
  "chrono",
+ "codemod-progress-bar",
  "codemod-sandbox",
  "dirs",
  "flate2",
@@ -780,6 +781,7 @@ dependencies = [
  "butterflow-state",
  "chrono",
  "clap",
+ "codemod-progress-bar",
  "codemod-sandbox",
  "codemod-telemetry",
  "console 0.15.11",
@@ -789,7 +791,6 @@ dependencies = [
  "humantime",
  "hyper 0.14.32",
  "hyper-rustls 0.24.2",
- "indicatif",
  "inquire",
  "libtest-mimic",
  "log",
@@ -820,6 +821,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "codemod-progress-bar"
+version = "1.0.0-rc.22"
+dependencies = [
+ "console 0.16.0",
+ "indicatif",
+ "tokio",
+]
+
+[[package]]
 name = "codemod-sandbox"
 version = "1.0.0-rc.22"
 dependencies = [
@@ -827,6 +837,7 @@ dependencies = [
  "ast-grep-core",
  "ast-grep-language",
  "bytes",
+ "codemod-progress-bar",
  "ignore",
  "js-sys",
  "llrt_modules",

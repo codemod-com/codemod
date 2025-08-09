@@ -8,6 +8,9 @@ use ast_grep_config::{from_yaml_string, CombinedScan, RuleConfig};
 use ast_grep_core::tree_sitter::StrDoc;
 use ast_grep_core::AstGrep;
 use ast_grep_language::SupportLang;
+use codemod_progress_bar::{
+    ActionType, MultiProgressProgressBar, MultiProgressProgressBarCallback,
+};
 use ignore::{
     overrides::{Override, OverrideBuilder},
     WalkBuilder,
@@ -15,17 +18,7 @@ use ignore::{
 use serde_json;
 use std::future::Future;
 use std::pin::Pin;
-use std::sync::Mutex;
 use thiserror::Error;
-
-type ProgressBarFn = Box<dyn Fn() -> Pin<Box<dyn Future<Output = ()> + Send>> + Send + Sync>;
-type ProgressBar = Arc<
-    Box<
-        dyn Fn(String, String, u64, u64, ProgressBarFn) -> Pin<Box<dyn Future<Output = ()> + Send>>
-            + Send
-            + Sync,
-    >,
->;
 
 type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
 
@@ -80,10 +73,10 @@ pub async fn execute_ast_grep_on_globs(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_bar: Option<&ProgressBar>,
+    progress_bar: Option<&MultiProgressProgressBar>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
-        id,
+        id.clone(),
         Globs {
             include: include_globs.map(|globs| globs.to_vec()),
             exclude: exclude_globs.map(|globs| globs.to_vec()),
@@ -109,10 +102,10 @@ pub async fn execute_ast_grep_on_globs_with_fixes(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_bar: Option<&ProgressBar>,
+    progress_bar: Option<&MultiProgressProgressBar>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
-        id,
+        id.clone(),
         Globs {
             include: include_globs.map(|globs| globs.to_vec()),
             exclude: exclude_globs.map(|globs| globs.to_vec()),
@@ -142,7 +135,7 @@ async fn execute_ast_grep_on_globs_with_options(
     apply_fixes: bool,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_bar: Option<&ProgressBar>,
+    progress_bar: Option<&MultiProgressProgressBar>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -273,104 +266,68 @@ async fn execute_ast_grep_on_globs_with_options(
         &search_base,
     )?;
 
-    // Use WalkBuilder with globs
-    let walker = WalkBuilder::new(&search_base)
-        .follow_links(false)
-        .git_ignore(true)
-        .ignore(true)
-        .hidden(false)
-        .overrides(globs)
-        .build();
+    // Move owned data into the closure
+    let progress_bar = progress_bar.cloned();
+    let rule_configs = rule_configs;
+    let id = id.clone();
 
-    let entries: Vec<_> = walker
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| AstGrepError::Io(std::io::Error::other(e)))?;
+    let all_matches = tokio::task::spawn_blocking(move || {
+        // Create combined scan inside the closure
+        let rule_refs: Vec<&RuleConfig<SupportLang>> = rule_configs.iter().collect();
+        let combined_scan = CombinedScan::new(rule_refs);
+        let mut all_matches = Vec::new();
+        // Use WalkBuilder with globs
+        let walker = WalkBuilder::new(&search_base)
+            .follow_links(false)
+            .git_ignore(true)
+            .ignore(true)
+            .hidden(false)
+            .overrides(globs)
+            .build();
 
-    // we can now use count and enumerate safely
-    let count = entries.len();
-    let all_matches = Arc::new(Mutex::new(Vec::new()));
+        let entries: Vec<_> = walker
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| AstGrepError::Io(std::io::Error::other(e)))
+            .unwrap();
+        let walker_count = entries.len();
 
-    for (index, entry) in entries.into_iter().enumerate() {
-        let filename = Path::new(entry.path())
-            .file_name()
-            .unwrap()
-            .to_string_lossy()
-            .to_string();
-        let entry = entry.clone();
-        if let Some(progress_bar) = progress_bar {
-            let entry_path = entry.path().to_path_buf();
-            let config_file_clone = config_file.to_string();
-            let all_matches_clone = Arc::clone(&all_matches);
-            let progress_bar_clone = Arc::clone(progress_bar);
-            let id_clone = id.clone();
-            tokio::spawn(async move {
-                let _ = progress_bar_clone(
-                    id_clone,
-                    filename,
-                    count as u64,
-                    index as u64,
-                    Box::new(move || {
-                        let config_file = config_file_clone.clone();
-                        let all_matches = Arc::clone(&all_matches_clone);
-                        let entry_path = entry_path.clone();
-                        Box::pin(async move {
-                            if entry_path.is_file() {
-                                // Recreate the scan configuration inside the closure using logic from line 145
-                                let config_path = PathBuf::from(&config_file);
-                                if let Ok(config_content) = fs::read_to_string(&config_path) {
-                                    let rule_configs = if config_path
-                                        .extension()
-                                        .and_then(|ext| ext.to_str())
-                                        .map(|ext| ext.to_lowercase())
-                                        == Some("json".to_string())
-                                    {
-                                        let json_rules: Vec<serde_json::Value> =
-                                            serde_json::from_str(&config_content)
-                                                .unwrap_or_default();
-                                        let mut configs = Vec::new();
-                                        for rule_value in json_rules {
-                                            if let Ok(yaml_string) =
-                                                serde_yaml::to_string(&rule_value)
-                                            {
-                                                if let Ok(mut rules) = from_yaml_string(
-                                                    &yaml_string,
-                                                    &Default::default(),
-                                                ) {
-                                                    configs.append(&mut rules);
-                                                }
-                                            }
-                                        }
-                                        configs
-                                    } else {
-                                        from_yaml_string(&config_content, &Default::default())
-                                            .unwrap_or_default()
-                                    };
+        for (index, entry) in entries.into_iter().enumerate() {
+            let filename = entry.path().file_name().unwrap();
+            if let Some(progress_bar) = progress_bar.as_ref() {
+                let rt = tokio::runtime::Handle::current();
+                rt.block_on(progress_bar(MultiProgressProgressBarCallback {
+                    id: id.clone(),
+                    current_file: filename.to_string_lossy().to_string(),
+                    count: walker_count as u64,
+                    index: index as u64,
+                    action_type: ActionType::SetText,
+                }));
+            }
 
-                                    if !rule_configs.is_empty() {
-                                        let rule_refs: Vec<&RuleConfig<SupportLang>> =
-                                            rule_configs.iter().collect();
-                                        let combined_scan = CombinedScan::new(rule_refs);
-                                        if let Ok(matches) = scan_file(
-                                            &entry_path,
-                                            &combined_scan,
-                                            &rule_configs,
-                                            apply_fixes,
-                                        ) {
-                                            all_matches.lock().unwrap().extend(matches);
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    }),
-                )
-                .await;
-            });
+            if entry.file_type().is_some_and(|ft| ft.is_file()) {
+                let matches = scan_file(entry.path(), &combined_scan, &rule_configs, apply_fixes)
+                    .map_err(|e| AstGrepError::Io(std::io::Error::other(e)))
+                    .unwrap();
+                all_matches.extend(matches);
+            }
+
+            if let Some(progress_bar) = progress_bar.as_ref() {
+                let rt = tokio::runtime::Handle::current();
+                rt.block_on(progress_bar(MultiProgressProgressBarCallback {
+                    id: id.clone(),
+                    current_file: filename.to_string_lossy().to_string(),
+                    count: walker_count as u64,
+                    index: index as u64,
+                    action_type: ActionType::Next,
+                }));
+            }
         }
-    }
+        all_matches
+    })
+    .await
+    .unwrap();
 
-    let result = all_matches.lock().unwrap().clone();
-    Ok(result)
+    Ok(all_matches)
 }
 
 /// Check if a glob pattern is generic and should be enhanced with language-specific extensions
@@ -624,7 +581,7 @@ pub async fn execute_ast_grep_on_paths(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_bar: Option<&ProgressBar>,
+    progress_bar: Option<&MultiProgressProgressBar>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs(
         id,
@@ -648,7 +605,7 @@ pub async fn execute_ast_grep_on_paths_with_fixes(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_bar: Option<&ProgressBar>,
+    progress_bar: Option<&MultiProgressProgressBar>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_fixes(
         id,

@@ -6,15 +6,6 @@ use std::pin::Pin;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
-type ProgressBarFn = Box<dyn Fn() -> Pin<Box<dyn Future<Output = ()> + Send>> + Send + Sync>;
-type StepProgressBar = Arc<
-    Box<
-        dyn Fn(String, String, u64, u64, ProgressBarFn) -> Pin<Box<dyn Future<Output = ()> + Send>>
-            + Send
-            + Sync,
-    >,
->;
-
 pub fn download_progress_bar() -> Arc<Box<dyn Fn(u64, u64) + Send + Sync>> {
     let progress_bar = Arc::new(Mutex::new(None::<ProgressBar>));
     let progress_bar_clone = Arc::clone(&progress_bar);
@@ -44,7 +35,28 @@ pub fn download_progress_bar() -> Arc<Box<dyn Fn(u64, u64) + Send + Sync>> {
     }))
 }
 
-pub fn step_by_step_progress_bar() -> StepProgressBar {
+pub enum ActionType {
+    SetText,
+    Next,
+}
+
+pub struct MultiProgressProgressBarCallback {
+    pub id: String,
+    pub current_file: String,
+    pub count: u64,
+    pub index: u64,
+    pub action_type: ActionType,
+}
+
+pub type MultiProgressProgressBar = Arc<
+    Box<
+        dyn Fn(MultiProgressProgressBarCallback) -> Pin<Box<dyn Future<Output = ()> + Send>>
+            + Send
+            + Sync,
+    >,
+>;
+
+pub fn progress_bar_for_multi_progress() -> MultiProgressProgressBar {
     let started = Instant::now();
     let spinner_style = ProgressStyle::with_template("{prefix:.bold.dim} {spinner} {wide_msg}")
         .unwrap()
@@ -54,21 +66,26 @@ pub fn step_by_step_progress_bar() -> StepProgressBar {
     let bars = Arc::new(Mutex::new(HashMap::new()));
 
     Arc::new(Box::new(
-        move |id: String, current_file: String, count: u64, index: u64, task_fn: ProgressBarFn| {
+        move |properties: MultiProgressProgressBarCallback| {
             let bars = Arc::clone(&bars);
             let m = Arc::clone(&m);
             let started = started;
-            let id_clone = id.clone();
+            let id_clone = properties.id.clone();
             let spinner_style = spinner_style.clone();
+            // eprintln!(
+            //     "DEBUG: progress_bar called with properties: {:?}",
+            //     properties
+            // );
             Box::pin(async move {
+                // eprintln!("DEBUG: inside async block with id_clone: {:?}", id_clone);
                 // Use atomic check-and-insert to prevent race condition
                 let _pb_created = {
                     let mut bars_lock = bars.lock().unwrap();
                     if !bars_lock.contains_key(&id_clone) {
-                        let pb = m.add(ProgressBar::new(count));
+                        let pb = m.add(ProgressBar::new(properties.count));
                         pb.set_prefix(id_clone.clone());
                         pb.set_style(spinner_style);
-                        bars_lock.insert(id_clone.clone(), (pb, count));
+                        bars_lock.insert(id_clone.clone(), (pb, properties.count));
                         true
                     } else {
                         false
@@ -84,14 +101,21 @@ pub fn step_by_step_progress_bar() -> StepProgressBar {
                 };
 
                 if let Some(pb) = maybe_pb {
-                    pb.set_message(format!(
-                        "scanning [{index}/{total_count}] {}",
-                        style(current_file.clone()).green()
-                    ));
-
-                    let _ = task_fn().await;
-
-                    pb.inc(1);
+                    // eprintln!(
+                    //     "DEBUG: processing action_type: {:?}",
+                    //     properties.action_type
+                    // );
+                    match properties.action_type {
+                        ActionType::SetText => {
+                            // println!("setting text");
+                            pb.set_message(format!(
+                                "scanning [{}/{total_count}] {}",
+                                properties.index,
+                                style(properties.current_file.clone()).green()
+                            ));
+                        }
+                        ActionType::Next => pb.inc(1),
+                    }
 
                     // Only finish and remove when all tasks for this ID are complete
                     let should_finish = {

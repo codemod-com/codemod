@@ -1,0 +1,15 @@
+[package]
+name = "codemod-progress-bar"
+version.workspace = true
+edition = "2021"
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+repository.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+console = "0.16.0"
+indicatif = "0.18.0"
+tokio.workspace = true
