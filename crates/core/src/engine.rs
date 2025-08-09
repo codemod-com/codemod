@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::env;
 use std::fs::File;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -1234,16 +1235,14 @@ impl Engine {
         bundle_path: Option<&std::path::Path>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
-        let working_dir = bundle_path
+        let bundle_path = bundle_path
             .map(|p| p.to_path_buf())
             .or_else(|| std::env::current_dir().ok());
-        let working_dir_ref = working_dir.as_deref();
+        let working_dir = env::current_dir().ok();
 
         // Resolve config file path relative to bundle path
         let config_path = if let Some(bundle) = bundle_path {
             bundle.join(&ast_grep.config_file)
-        } else if let Some(wd) = working_dir_ref {
-            wd.join(&ast_grep.config_file)
         } else {
             std::path::PathBuf::from(&ast_grep.config_file)
         };
@@ -1269,7 +1268,7 @@ impl Engine {
                 ast_grep.exclude.as_deref(),
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
-                working_dir_ref,
+                working_dir.as_deref(),
             )
             .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {e}")))?
         } else {
@@ -1278,7 +1277,7 @@ impl Engine {
                 ast_grep.exclude.as_deref(),
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
-                working_dir_ref,
+                working_dir.as_deref(),
             )
             .map_err(|e| Error::Other(format!("AST grep execution failed: {e}")))?
         };
