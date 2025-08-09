@@ -199,11 +199,11 @@ impl Engine {
                     .await?;
 
                 let engine = self.clone();
+                let progress_bar = progress_bar.cloned();
                 let git_dirty_check_callback = git_dirty_check_callback.clone();
-                let progress_bar = progress_bar.unwrap().clone();
                 tokio::spawn(async move {
                     if let Err(e) = engine
-                        .execute_task(task_id, git_dirty_check_callback, &progress_bar)
+                        .execute_task(task_id, git_dirty_check_callback, progress_bar.as_ref())
                         .await
                     {
                         error!("Task execution failed: {e}");
@@ -348,11 +348,11 @@ impl Engine {
 
             let engine = self.clone();
             let task_id = task.id;
+            let progress_bar = progress_bar.cloned();
             let git_dirty_check_callback = git_dirty_check_callback.clone();
-            let progress_bar = progress_bar.unwrap().clone();
             tokio::spawn(async move {
                 if let Err(e) = engine
-                    .execute_task(task_id, git_dirty_check_callback, &progress_bar)
+                    .execute_task(task_id, git_dirty_check_callback, progress_bar.as_ref())
                     .await
                 {
                     error!("Task execution failed: {e}");
@@ -897,11 +897,11 @@ impl Engine {
                 // Start task execution
                 let engine = self.clone();
                 let task_id = task.id;
+                let progress_bar = progress_bar.cloned();
                 let git_dirty_check_callback = git_dirty_check_callback.clone();
-                let progress_bar = progress_bar.unwrap().clone();
                 tokio::spawn(async move {
                     if let Err(e) = engine
-                        .execute_task(task_id, git_dirty_check_callback, &progress_bar)
+                        .execute_task(task_id, git_dirty_check_callback, progress_bar.as_ref())
                         .await
                     {
                         error!("Task execution failed: {e}");
@@ -979,7 +979,7 @@ impl Engine {
         &self,
         task_id: Uuid,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: &MultiProgressProgressBar,
+        progress_bar: Option<&MultiProgressProgressBar>,
     ) -> Result<()> {
         let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
@@ -1075,7 +1075,7 @@ impl Engine {
                     &workflow_run.workflow,
                     &workflow_run.bundle_path,
                     git_dirty_check_callback.clone(),
-                    Some(progress_bar),
+                    progress_bar,
                 )
                 .await;
 
