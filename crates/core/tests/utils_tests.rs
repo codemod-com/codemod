@@ -860,6 +860,7 @@ fix:
                         max_threads: Some(10),
                         dry_run: Some(true),
                         language: Some("typescript".to_string()),
+                        capabilities: None,
                     }),
                     env: None,
                 },

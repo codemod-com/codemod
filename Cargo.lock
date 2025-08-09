@@ -2549,16 +2549,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "llrt_dns"
-version = "0.5.1-beta"
-dependencies = [
- "llrt_context",
- "llrt_dns_cache",
- "llrt_utils",
- "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
-]
-
-[[package]]
 name = "llrt_dns_cache"
 version = "0.5.1-beta"
 dependencies = [
@@ -2683,13 +2673,10 @@ dependencies = [
  "llrt_child_process",
  "llrt_console",
  "llrt_crypto",
- "llrt_dns",
  "llrt_events",
  "llrt_exceptions",
  "llrt_fetch",
  "llrt_fs",
- "llrt_navigator",
- "llrt_net",
  "llrt_os",
  "llrt_path",
  "llrt_perf_hooks",
@@ -2703,28 +2690,6 @@ dependencies = [
  "llrt_utils",
  "llrt_zlib",
  "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
-]
-
-[[package]]
-name = "llrt_navigator"
-version = "0.5.1-beta"
-dependencies = [
- "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
-]
-
-[[package]]
-name = "llrt_net"
-version = "0.5.1-beta"
-dependencies = [
- "itoa",
- "llrt_buffer",
- "llrt_context",
- "llrt_events",
- "llrt_stream",
- "llrt_utils",
- "rquickjs 0.9.0 (git+https://github.com/DelSkayn/rquickjs.git)",
- "tokio",
- "tracing",
 ]
 
 [[package]]

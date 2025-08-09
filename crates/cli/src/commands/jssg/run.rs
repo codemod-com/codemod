@@ -45,6 +45,14 @@ pub struct Command {
     /// Allow dirty git status
     #[arg(long)]
     pub allow_dirty: bool,
+
+    /// Allow fetch capability
+    #[arg(long)]
+    pub allow_fetch: bool,
+
+    /// Allow fs capability
+    #[arg(long)]
+    pub allow_fs: bool,
 }
 
 pub async fn handler(args: &Command) -> Result<()> {
@@ -108,8 +116,15 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     // Create and run the execution engine
     let engine = ExecutionEngine::new(config);
+    let mut extra_capabilities = Vec::new();
+    if args.allow_fetch {
+        extra_capabilities.push("fetch".to_string());
+    }
+    if args.allow_fs {
+        extra_capabilities.push("fs".to_string());
+    }
     let stats = engine
-        .execute_on_directory(js_file_path, target_directory)
+        .execute_on_directory(js_file_path, target_directory, &Some(extra_capabilities))
         .await?;
 
     println!("Modified files: {:?}", stats.files_modified);

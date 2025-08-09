@@ -1,5 +1,6 @@
 use super::config::ExecutionConfig;
 use super::language_data::get_extensions_for_language;
+use super::llrt_module_builder::LlrtModuleBuilder;
 use super::quickjs_adapters::{QuickJSLoader, QuickJSResolver};
 use crate::ast_grep::AstGrepModule;
 use crate::rquickjs_compat::{CatchResultExt, Function, Module};
@@ -8,7 +9,6 @@ use crate::sandbox::filesystem::FileSystem;
 use crate::sandbox::resolvers::ModuleResolver;
 use ast_grep_language::SupportLang;
 use ignore::{overrides::OverrideBuilder, WalkBuilder, WalkState};
-use llrt_modules::module_builder::ModuleBuilder;
 use rquickjs_git::{async_with, AsyncContext, AsyncRuntime};
 use std::fmt;
 use std::path::Path;
@@ -147,10 +147,18 @@ where
         script_path: &Path,
         file_path: &Path,
         content: &str,
+        capabilities: &Option<Vec<String>>,
     ) -> Result<ExecutionOutput, ExecutionError> {
         #[cfg(feature = "native")]
         {
-            Self::execute_codemod_with_quickjs(&self.config, script_path, file_path, content).await
+            Self::execute_codemod_with_quickjs(
+                &self.config,
+                script_path,
+                file_path,
+                content,
+                capabilities,
+            )
+            .await
         }
 
         #[cfg(not(feature = "native"))]
@@ -166,6 +174,7 @@ where
         &self,
         script_path: &Path,
         target_dir: &Path,
+        capabilities: &Option<Vec<String>>,
     ) -> Result<ExecutionStats, ExecutionError> {
         // Check if target directory exists
         if !self.config.filesystem.exists(target_dir).await {
@@ -201,7 +210,7 @@ where
                     .map(|s| s.to_string())
                     .collect()
             }));
-
+        let capabilities = Arc::new(capabilities.clone());
         // Execute in a blocking context since WalkParallel is synchronous
         let target_dir = target_dir.to_path_buf();
         tokio::task::spawn_blocking(move || {
@@ -265,6 +274,7 @@ where
                 let errors = Arc::clone(&errors);
                 let script_path = Arc::clone(&script_path);
                 let ts_extensions = Arc::clone(&ts_extensions);
+                let capabilities = Arc::clone(&capabilities);
 
                 Box::new(move |entry_result| {
                     match entry_result {
@@ -294,8 +304,13 @@ where
                                 .unwrap();
 
                             rt.block_on(async {
-                                match Self::execute_on_single_file(&config, &script_path, file_path)
-                                    .await
+                                match Self::execute_on_single_file(
+                                    &config,
+                                    &script_path,
+                                    file_path,
+                                    &capabilities,
+                                )
+                                .await
                                 {
                                     Ok(ExecutionResult::Modified) => {
                                         modified_count
@@ -364,10 +379,11 @@ where
         config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
+        capabilities: &Option<Vec<String>>,
     ) -> Result<ExecutionResult, ExecutionError> {
         #[cfg(feature = "native")]
         {
-            Self::execute_with_quickjs(config, script_path, target_file_path).await
+            Self::execute_with_quickjs(config, script_path, target_file_path, capabilities).await
         }
 
         #[cfg(not(feature = "native"))]
@@ -384,6 +400,7 @@ where
         config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
+        capabilities: &Option<Vec<String>>,
     ) -> Result<ExecutionResult, ExecutionError> {
         // Read the original file content
         let original_content = tokio::fs::read_to_string(target_file_path)
@@ -398,6 +415,7 @@ where
             script_path,
             target_file_path,
             &original_content,
+            capabilities,
         )
         .await?;
 
@@ -451,6 +469,7 @@ where
         script_path: &Path,
         file_path: &Path,
         content: &str,
+        capabilities: &Option<Vec<String>>,
     ) -> Result<ExecutionOutput, ExecutionError> {
         use crate::utils::quickjs_utils::maybe_promise;
 
@@ -472,9 +491,50 @@ where
         })?;
 
         // Set up built-in modules
-        let module_builder = ModuleBuilder::default();
+        let mut module_builder = LlrtModuleBuilder::build();
+        if let Some(capabilities) = capabilities {
+            for capability in capabilities {
+                match capability.as_str() {
+                    "fetch" => {
+                        module_builder.enable_fetch();
+                    }
+                    "fs" => {
+                        module_builder.enable_fs();
+                    }
+                    "child_process" => {
+                        module_builder.enable_child_process();
+                    }
+                    "abort" => {}
+                    "assert" => {}
+                    "buffer" => {}
+                    "console" => {}
+                    "crypto" => {}
+                    "events" => {}
+                    "exceptions" => {}
+                    "os" => {}
+                    "path" => {}
+                    "perf_hooks" => {}
+                    "process" => {}
+                    "stream_web" => {}
+                    "string_decoder" => {}
+                    "timers" => {}
+                    "tty" => {}
+                    "url" => {}
+                    "util" => {}
+                    "zlib" => {}
+                    _ => {
+                        return Err(ExecutionError::Runtime {
+                            source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                                message: format!("Unknown capability: {capability:?}"),
+                            },
+                        });
+                    }
+                }
+            }
+        }
+
         let (mut built_in_resolver, mut built_in_loader, global_attachment) =
-            module_builder.build();
+            module_builder.builder.build();
 
         // Add AstGrepModule
         built_in_resolver = built_in_resolver.add_name("codemod:ast-grep");

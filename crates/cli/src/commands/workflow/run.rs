@@ -1,10 +1,9 @@
+use crate::dirty_git_check;
+use crate::workflow_runner::{resolve_workflow_source, run_workflow, WorkflowRunConfig};
 use anyhow::{Context, Result};
 use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use clap::Args;
-
-use crate::dirty_git_check;
-use crate::workflow_runner::{resolve_workflow_source, run_workflow, WorkflowRunConfig};
 
 #[derive(Args, Debug)]
 pub struct Command {

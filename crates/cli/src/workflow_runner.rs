@@ -5,7 +5,10 @@ use butterflow_models::{Task, TaskStatus, WorkflowStatus};
 use log::{error, info};
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::Arc;
 use uuid::Uuid;
+
+use crate::capability_check_warning_callback;
 
 /// Configuration for running a workflow
 pub struct WorkflowRunConfig {
@@ -25,7 +28,15 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
 
     // Run workflow
     let workflow_run_id = engine
-        .run_workflow(workflow, config.params, Some(config.bundle_path))
+        .run_workflow(
+            workflow,
+            config.params,
+            Some(config.bundle_path),
+            Some(Arc::new(|msg: &str| {
+                capability_check_warning_callback(msg)
+                    .map_err(|e| butterflow_core::Error::Other(e.to_string()))
+            })),
+        )
         .await
         .context("Failed to run workflow")?;
 
