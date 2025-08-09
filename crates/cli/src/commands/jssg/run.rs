@@ -5,10 +5,11 @@ use codemod_sandbox::sandbox::{
     filesystem::{RealFileSystem, WalkOptions},
     resolvers::OxcResolver,
 };
-use std::{path::Path, sync::Arc};
+use std::{future::Future, path::Path, pin::Pin, sync::Arc};
 
 use crate::dirty_git_check;
-use codemod_progress_bar::progress_bar_for_multi_progress;
+use crate::progress_bar::progress_bar_for_multi_progress;
+use crate::progress_bar::{ActionType, MultiProgressProgressBarCallback};
 use codemod_sandbox::utils::project_discovery::find_tsconfig;
 
 #[derive(Args, Debug)]
@@ -111,13 +112,34 @@ pub async fn handler(args: &Command) -> Result<()> {
     // Create and run the execution engine
     let engine = ExecutionEngine::new(config);
     let progress_bar = progress_bar_for_multi_progress();
+
+    let callback = Arc::new(
+        move |id: &str, current_file: &str, action_type: &str, count: &u64, index: &u64| {
+            let progress_bar = progress_bar.clone();
+            let id = id.to_string();
+            let current_file = current_file.to_string();
+            let action_type = match action_type {
+                "set_text" => ActionType::SetText,
+                "next" => ActionType::Next,
+                _ => ActionType::SetText,
+            };
+            let count = *count;
+            let index = *index;
+            Box::pin(async move {
+                progress_bar(MultiProgressProgressBarCallback {
+                    id,
+                    current_file,
+                    action_type,
+                    count,
+                    index,
+                })
+                .await;
+            }) as Pin<Box<dyn Future<Output = ()> + Send + 'static>>
+        },
+    );
+
     let stats = engine
-        .execute_on_directory(
-            "jssg",
-            js_file_path,
-            target_directory,
-            Some(progress_bar.clone()),
-        )
+        .execute_on_directory("jssg", js_file_path, target_directory, Some(callback))
         .await?;
 
     println!("Modified files: {:?}", stats.files_modified);

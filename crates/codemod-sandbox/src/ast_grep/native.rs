@@ -8,9 +8,6 @@ use ast_grep_config::{from_yaml_string, CombinedScan, RuleConfig};
 use ast_grep_core::tree_sitter::StrDoc;
 use ast_grep_core::AstGrep;
 use ast_grep_language::SupportLang;
-use codemod_progress_bar::{
-    ActionType, MultiProgressProgressBar, MultiProgressProgressBarCallback,
-};
 use ignore::{
     overrides::{Override, OverrideBuilder},
     WalkBuilder,
@@ -73,7 +70,13 @@ pub async fn execute_ast_grep_on_globs(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_bar: Option<&MultiProgressProgressBar>,
+    progress_callback: Option<
+        Arc<
+            dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                + Send
+                + Sync,
+        >,
+    >,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         id.clone(),
@@ -87,7 +90,7 @@ pub async fn execute_ast_grep_on_globs(
         false,
         allow_dirty,
         git_dirty_check_callback,
-        progress_bar,
+        progress_callback,
     )
     .await
 }
@@ -102,7 +105,13 @@ pub async fn execute_ast_grep_on_globs_with_fixes(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_bar: Option<&MultiProgressProgressBar>,
+    progress_callback: Option<
+        Arc<
+            dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                + Send
+                + Sync,
+        >,
+    >,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         id.clone(),
@@ -116,7 +125,7 @@ pub async fn execute_ast_grep_on_globs_with_fixes(
         true,
         allow_dirty,
         git_dirty_check_callback,
-        progress_bar,
+        progress_callback,
     )
     .await
 }
@@ -135,7 +144,13 @@ async fn execute_ast_grep_on_globs_with_options(
     apply_fixes: bool,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_bar: Option<&MultiProgressProgressBar>,
+    progress_callback: Option<
+        Arc<
+            dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                + Send
+                + Sync,
+        >,
+    >,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -267,7 +282,6 @@ async fn execute_ast_grep_on_globs_with_options(
     )?;
 
     // Move owned data into the closure
-    let progress_bar = progress_bar.cloned();
     let rule_configs = rule_configs;
     let id = id.clone();
 
@@ -293,15 +307,18 @@ async fn execute_ast_grep_on_globs_with_options(
 
         for (index, entry) in entries.into_iter().enumerate() {
             let filename = entry.path().file_name().unwrap();
-            if let Some(progress_bar) = progress_bar.as_ref() {
+            if let Some(progress_callback) = progress_callback.as_ref() {
                 let rt = tokio::runtime::Handle::current();
-                rt.block_on(progress_bar(MultiProgressProgressBarCallback {
-                    id: id.clone(),
-                    current_file: filename.to_string_lossy().to_string(),
-                    count: walker_count as u64,
-                    index: index as u64,
-                    action_type: ActionType::SetText,
-                }));
+                rt.block_on(async {
+                    progress_callback(
+                        &id,
+                        filename.to_string_lossy().as_ref(),
+                        "set_text",
+                        &(walker_count as u64),
+                        &(index as u64),
+                    )
+                    .await
+                });
             }
 
             if entry.file_type().is_some_and(|ft| ft.is_file()) {
@@ -311,15 +328,18 @@ async fn execute_ast_grep_on_globs_with_options(
                 all_matches.extend(matches);
             }
 
-            if let Some(progress_bar) = progress_bar.as_ref() {
+            if let Some(progress_callback) = progress_callback.as_ref() {
                 let rt = tokio::runtime::Handle::current();
-                rt.block_on(progress_bar(MultiProgressProgressBarCallback {
-                    id: id.clone(),
-                    current_file: filename.to_string_lossy().to_string(),
-                    count: walker_count as u64,
-                    index: index as u64,
-                    action_type: ActionType::Next,
-                }));
+                rt.block_on(async {
+                    progress_callback(
+                        &id,
+                        filename.to_string_lossy().as_ref(),
+                        "next",
+                        &(walker_count as u64),
+                        &(index as u64),
+                    )
+                    .await
+                });
             }
         }
         all_matches
@@ -581,7 +601,13 @@ pub async fn execute_ast_grep_on_paths(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_bar: Option<&MultiProgressProgressBar>,
+    progress_callback: Option<
+        Arc<
+            dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                + Send
+                + Sync,
+        >,
+    >,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs(
         id,
@@ -592,7 +618,7 @@ pub async fn execute_ast_grep_on_paths(
         working_dir,
         allow_dirty,
         git_dirty_check_callback,
-        progress_bar,
+        progress_callback,
     )
     .await
 }
@@ -605,7 +631,13 @@ pub async fn execute_ast_grep_on_paths_with_fixes(
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_bar: Option<&MultiProgressProgressBar>,
+    progress_callback: Option<
+        Arc<
+            dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                + Send
+                + Sync,
+        >,
+    >,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_fixes(
         id,
@@ -616,7 +648,7 @@ pub async fn execute_ast_grep_on_paths_with_fixes(
         working_dir,
         allow_dirty,
         git_dirty_check_callback,
-        progress_bar,
+        progress_callback,
     )
     .await
 }

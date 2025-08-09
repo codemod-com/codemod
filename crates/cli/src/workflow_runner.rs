@@ -1,12 +1,17 @@
 use crate::dirty_git_check;
+use crate::progress_bar::{
+    progress_bar_for_multi_progress, ActionType, MultiProgressProgressBarCallback,
+};
 use anyhow::{Context, Result};
 use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
-use codemod_progress_bar::progress_bar_for_multi_progress;
 use log::{error, info};
 use std::collections::HashMap;
+use std::future::Future;
 use std::path::PathBuf;
+use std::pin::Pin;
+use std::sync::Arc;
 use uuid::Uuid;
 
 /// Configuration for running a workflow
@@ -28,6 +33,38 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
     let dirty_check = dirty_git_check::dirty_check();
     let progress_bar = progress_bar_for_multi_progress();
 
+    // The closure now needs to be put in a Box to be a trait object
+    // and passed to run_workflow, which likely expects a Box<dyn Fn...>
+    let callback = Arc::new(
+        move |id: &str,
+              current_file: &str,
+              action_type: &str,
+              count: &u64,
+              index: &u64|
+              -> Pin<Box<dyn Future<Output = ()> + Send>> {
+            let progress_bar = progress_bar.clone();
+            let id = id.to_string();
+            let current_file = current_file.to_string();
+            let action_type = match action_type {
+                "set_text" => ActionType::SetText,
+                "next" => ActionType::Next,
+                _ => ActionType::SetText,
+            };
+            let count = *count;
+            let index = *index;
+            Box::pin(async move {
+                progress_bar(MultiProgressProgressBarCallback {
+                    id,
+                    current_file,
+                    action_type,
+                    count,
+                    index,
+                })
+                .await;
+            })
+        },
+    );
+
     // Run workflow
     let workflow_run_id = engine
         .run_workflow(
@@ -35,7 +72,7 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
             config.params,
             Some(config.bundle_path),
             Some(dirty_check),
-            Some(&progress_bar),
+            Some(callback),
         )
         .await
         .context("Failed to run workflow")?;

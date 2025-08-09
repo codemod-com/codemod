@@ -7,14 +7,13 @@ use crate::sandbox::errors::ExecutionError;
 use crate::sandbox::filesystem::FileSystem;
 use crate::sandbox::resolvers::ModuleResolver;
 use ast_grep_language::SupportLang;
-use codemod_progress_bar::{
-    ActionType, MultiProgressProgressBar, MultiProgressProgressBarCallback,
-};
 use ignore::{overrides::OverrideBuilder, WalkBuilder, WalkState};
 use llrt_modules::module_builder::ModuleBuilder;
 use rquickjs_git::{async_with, AsyncContext, AsyncRuntime};
 use std::fmt;
+use std::future::Future;
 use std::path::{Path, PathBuf};
+use std::pin::Pin;
 use std::sync::Arc;
 use tokio::io::AsyncWriteExt;
 
@@ -170,7 +169,13 @@ where
         id: &str,
         script_path: &Path,
         target_dir: &Path,
-        progress_bar: Option<MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<ExecutionStats, ExecutionError> {
         // Check if target directory exists
         if !self.config.filesystem.exists(target_dir).await {
@@ -209,7 +214,7 @@ where
 
         // Execute in a blocking context since WalkParallel is synchronous
         let target_dir = target_dir.to_path_buf();
-        let progress_bar = progress_bar.clone();
+        let progress_callback = progress_callback;
         let id = id.to_string();
         tokio::task::spawn_blocking(move || {
             let mut walk_builder = WalkBuilder::new(&target_dir);
@@ -313,15 +318,18 @@ where
             for (file_index, file_path) in paths_to_process.into_iter().enumerate() {
                 let file_name = file_path.file_name().unwrap().to_string_lossy().to_string();
 
-                if let Some(progress_bar) = progress_bar.as_ref() {
+                if let Some(progress_callback) = &progress_callback {
                     let rt = tokio::runtime::Handle::current();
-                    rt.block_on(progress_bar(MultiProgressProgressBarCallback {
-                        id: id.clone(),
-                        current_file: file_name.clone(),
-                        count: count as u64,
-                        index: file_index as u64,
-                        action_type: ActionType::SetText,
-                    }));
+                    rt.block_on(async {
+                        progress_callback(
+                            &id,
+                            &file_name,
+                            "set_text",
+                            &(count as u64),
+                            &(file_index as u64),
+                        )
+                        .await
+                    });
                 }
 
                 let rt = tokio::runtime::Builder::new_current_thread()
@@ -362,15 +370,18 @@ where
                     }
                 }
 
-                if let Some(progress_bar) = progress_bar.as_ref() {
+                if let Some(progress_callback) = &progress_callback {
                     let rt = tokio::runtime::Handle::current();
-                    rt.block_on(progress_bar(MultiProgressProgressBarCallback {
-                        id: id.clone(),
-                        current_file: file_name,
-                        count: count as u64,
-                        index: file_index as u64,
-                        action_type: ActionType::Next,
-                    }));
+                    rt.block_on(async {
+                        progress_callback(
+                            &id,
+                            &file_name,
+                            "next",
+                            &(count as u64),
+                            &(file_index as u64),
+                        )
+                        .await
+                    });
                 }
             }
 

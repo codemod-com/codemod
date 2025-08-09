@@ -11,10 +11,10 @@ use tokio::sync::Mutex;
 
 use crate::auth_provider::CliAuthProvider;
 use crate::dirty_git_check;
+use crate::progress_bar::download_progress_bar;
 use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
 use butterflow_core::engine::{Engine, GLOBAL_STATS};
 use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
-use codemod_progress_bar::download_progress_bar;
 use codemod_sandbox::sandbox::engine::ExecutionStats;
 use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 

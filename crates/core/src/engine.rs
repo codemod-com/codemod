@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
+use std::future::Future;
 use std::path::PathBuf;
+use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -31,7 +33,6 @@ use butterflow_runners::Runner;
 use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
-use codemod_progress_bar::MultiProgressProgressBar;
 use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
 use codemod_sandbox::{
     sandbox::{
@@ -114,7 +115,13 @@ impl Engine {
         params: HashMap<String, String>,
         bundle_path: Option<PathBuf>,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: Option<&MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<Uuid> {
         utils::validate_workflow(&workflow, bundle_path.as_deref().unwrap_or(Path::new("")))?;
         self.validate_codemod_dependencies(&workflow, &[]).await?;
@@ -138,15 +145,11 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
+        let progress_callback = progress_callback.clone();
         let git_dirty_check_callback = git_dirty_check_callback.clone();
-        let progress_bar = progress_bar.cloned();
         tokio::spawn(async move {
             if let Err(e) = engine
-                .execute_workflow(
-                    workflow_run_id,
-                    git_dirty_check_callback,
-                    progress_bar.as_ref(),
-                )
+                .execute_workflow(workflow_run_id, git_dirty_check_callback, progress_callback)
                 .await
             {
                 error!("Workflow execution failed: {e}");
@@ -162,7 +165,13 @@ impl Engine {
         workflow_run_id: Uuid,
         task_ids: Vec<Uuid>,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: Option<&MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
@@ -199,11 +208,11 @@ impl Engine {
                     .await?;
 
                 let engine = self.clone();
-                let progress_bar = progress_bar.cloned();
+                let progress_callback = progress_callback.clone();
                 let git_dirty_check_callback = git_dirty_check_callback.clone();
                 tokio::spawn(async move {
                     if let Err(e) = engine
-                        .execute_task(task_id, git_dirty_check_callback, progress_bar.as_ref())
+                        .execute_task(task_id, git_dirty_check_callback, progress_callback)
                         .await
                     {
                         error!("Task execution failed: {e}");
@@ -241,15 +250,11 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
+        let progress_callback = progress_callback.clone();
         let git_dirty_check_callback = git_dirty_check_callback.clone();
-        let progress_bar = progress_bar.cloned();
         tokio::spawn(async move {
             if let Err(e) = engine
-                .execute_workflow(
-                    workflow_run_id,
-                    git_dirty_check_callback,
-                    progress_bar.as_ref(),
-                )
+                .execute_workflow(workflow_run_id, git_dirty_check_callback, progress_callback)
                 .await
             {
                 error!("Workflow execution failed: {e}");
@@ -264,7 +269,13 @@ impl Engine {
         &self,
         workflow_run_id: Uuid,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: Option<&MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
@@ -348,11 +359,11 @@ impl Engine {
 
             let engine = self.clone();
             let task_id = task.id;
-            let progress_bar = progress_bar.cloned();
+            let progress_callback = progress_callback.clone();
             let git_dirty_check_callback = git_dirty_check_callback.clone();
             tokio::spawn(async move {
                 if let Err(e) = engine
-                    .execute_task(task_id, git_dirty_check_callback, progress_bar.as_ref())
+                    .execute_task(task_id, git_dirty_check_callback, progress_callback)
                     .await
                 {
                     error!("Task execution failed: {e}");
@@ -389,15 +400,11 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
+        let progress_callback = progress_callback.clone();
         let git_dirty_check_callback = git_dirty_check_callback.clone();
-        let progress_bar = progress_bar.cloned();
         tokio::spawn(async move {
             if let Err(e) = engine
-                .execute_workflow(
-                    workflow_run_id,
-                    git_dirty_check_callback,
-                    progress_bar.as_ref(),
-                )
+                .execute_workflow(workflow_run_id, git_dirty_check_callback, progress_callback)
                 .await
             {
                 error!("Workflow execution failed: {e}");
@@ -678,7 +685,13 @@ impl Engine {
         &self,
         workflow_run_id: Uuid,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: Option<&MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<()> {
         // Get the workflow run
         let workflow_run = self
@@ -897,11 +910,11 @@ impl Engine {
                 // Start task execution
                 let engine = self.clone();
                 let task_id = task.id;
-                let progress_bar = progress_bar.cloned();
+                let progress_callback = progress_callback.clone();
                 let git_dirty_check_callback = git_dirty_check_callback.clone();
                 tokio::spawn(async move {
                     if let Err(e) = engine
-                        .execute_task(task_id, git_dirty_check_callback, progress_bar.as_ref())
+                        .execute_task(task_id, git_dirty_check_callback, progress_callback)
                         .await
                     {
                         error!("Task execution failed: {e}");
@@ -979,7 +992,13 @@ impl Engine {
         &self,
         task_id: Uuid,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: Option<&MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<()> {
         let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
@@ -1075,7 +1094,7 @@ impl Engine {
                     &workflow_run.workflow,
                     &workflow_run.bundle_path,
                     git_dirty_check_callback.clone(),
-                    progress_bar,
+                    progress_callback.clone(),
                 )
                 .await;
 
@@ -1199,7 +1218,13 @@ impl Engine {
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: Option<&MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<()> {
         self.execute_step_action_with_chain(
             runner,
@@ -1213,7 +1238,7 @@ impl Engine {
             bundle_path,
             &[],
             git_dirty_check_callback,
-            progress_bar,
+            progress_callback,
         )
         .await
     }
@@ -1233,7 +1258,13 @@ impl Engine {
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: Option<&MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<()> {
         match action {
             StepAction::RunScript(run) => {
@@ -1276,7 +1307,7 @@ impl Engine {
                         bundle_path,
                         dependency_chain,
                         git_dirty_check_callback.clone(),
-                        progress_bar,
+                        progress_callback.clone(),
                     ))
                     .await?;
                 }
@@ -1288,7 +1319,7 @@ impl Engine {
                     ast_grep,
                     bundle_path.as_deref(),
                     git_dirty_check_callback,
-                    progress_bar,
+                    progress_callback.clone(),
                 )
                 .await
             }
@@ -1298,7 +1329,7 @@ impl Engine {
                     js_ast_grep,
                     bundle_path.as_deref(),
                     git_dirty_check_callback,
-                    progress_bar,
+                    progress_callback.clone(),
                 )
                 .await
             }
@@ -1313,7 +1344,7 @@ impl Engine {
                     bundle_path,
                     dependency_chain,
                     git_dirty_check_callback,
-                    progress_bar,
+                    progress_callback.clone(),
                 ))
                 .await
             }
@@ -1326,7 +1357,13 @@ impl Engine {
         ast_grep: &UseAstGrep,
         bundle_path: Option<&std::path::Path>,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: Option<&MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let bundle_path = bundle_path
@@ -1365,7 +1402,7 @@ impl Engine {
                 working_dir.as_deref(),
                 ast_grep.allow_dirty.unwrap_or(false),
                 git_dirty_check_callback.clone(),
-                progress_bar,
+                progress_callback.clone(),
             )
             .await
             .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {e}")))?
@@ -1379,7 +1416,7 @@ impl Engine {
                 working_dir.as_deref(),
                 ast_grep.allow_dirty.unwrap_or(false),
                 git_dirty_check_callback.clone(),
-                progress_bar,
+                progress_callback.clone(),
             )
             .await
             .map_err(|e| Error::Other(format!("AST grep execution failed: {e}")))?
@@ -1423,7 +1460,13 @@ impl Engine {
         js_ast_grep: &UseJSAstGrep,
         bundle_path: Option<&std::path::Path>,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: Option<&MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
@@ -1546,7 +1589,7 @@ impl Engine {
         // Create and run the execution engine
         let engine = ExecutionEngine::new(config);
         let stats = engine
-            .execute_on_directory(&id, &js_file_path, &base_path, progress_bar.cloned())
+            .execute_on_directory(&id, &js_file_path, &base_path, progress_callback)
             .await
             .map_err(|e| Error::Other(format!("JavaScript execution failed: {e}")))?;
 
@@ -1580,7 +1623,13 @@ impl Engine {
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: Option<&MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<()> {
         info!("Executing codemod step: {}", codemod.source);
 
@@ -1656,7 +1705,7 @@ impl Engine {
             bundle_path,
             &new_chain,
             git_dirty_check_callback.clone(),
-            progress_bar,
+            progress_callback,
         )
         .await
     }
@@ -1674,7 +1723,13 @@ impl Engine {
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_bar: Option<&MultiProgressProgressBar>,
+        progress_callback: Option<
+            Arc<
+                dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
+                    + Send
+                    + Sync,
+            >,
+        >,
     ) -> Result<()> {
         let workflow_path = resolved_package.package_dir.join("workflow.yaml");
 
@@ -1770,7 +1825,7 @@ impl Engine {
                     &Some(resolved_package.package_dir.clone()),
                     dependency_chain,
                     git_dirty_check_callback.clone(),
-                    progress_bar,
+                    progress_callback.clone(),
                 ))
                 .await?;
             }
