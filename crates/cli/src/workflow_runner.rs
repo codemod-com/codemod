@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
+use codemod_progress_bar::progress_bar_for_multi_progress;
 use log::{error, info};
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -23,9 +24,16 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
         config.workflow_file_path.display()
     ))?;
 
+    let progress_bar = progress_bar_for_multi_progress();
+
     // Run workflow
     let workflow_run_id = engine
-        .run_workflow(workflow, config.params, Some(config.bundle_path))
+        .run_workflow(
+            workflow,
+            config.params,
+            Some(config.bundle_path),
+            Some(&progress_bar),
+        )
         .await
         .context("Failed to run workflow")?;
 

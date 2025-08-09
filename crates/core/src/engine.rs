@@ -31,6 +31,7 @@ use butterflow_runners::Runner;
 use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
+use codemod_progress_bar::MultiProgressProgressBar;
 use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
 use codemod_sandbox::{
     sandbox::{
@@ -110,6 +111,7 @@ impl Engine {
         workflow: Workflow,
         params: HashMap<String, String>,
         bundle_path: Option<PathBuf>,
+        progress_bar: Option<&MultiProgressProgressBar>,
     ) -> Result<Uuid> {
         utils::validate_workflow(&workflow, bundle_path.as_deref().unwrap_or(Path::new("")))?;
         self.validate_codemod_dependencies(&workflow, &[]).await?;
@@ -133,8 +135,12 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
+        let progress_bar = progress_bar.cloned();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, progress_bar.as_ref())
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -143,7 +149,12 @@ impl Engine {
     }
 
     /// Resume a workflow run
-    pub async fn resume_workflow(&self, workflow_run_id: Uuid, task_ids: Vec<Uuid>) -> Result<()> {
+    pub async fn resume_workflow(
+        &self,
+        workflow_run_id: Uuid,
+        task_ids: Vec<Uuid>,
+        progress_bar: Option<&MultiProgressProgressBar>,
+    ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
             .state_adapter
@@ -179,8 +190,9 @@ impl Engine {
                     .await?;
 
                 let engine = self.clone();
+                let progress_bar = progress_bar.cloned();
                 tokio::spawn(async move {
-                    if let Err(e) = engine.execute_task(task_id).await {
+                    if let Err(e) = engine.execute_task(task_id, progress_bar.as_ref()).await {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -216,8 +228,12 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
+        let progress_bar = progress_bar.cloned();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, progress_bar.as_ref())
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -226,7 +242,11 @@ impl Engine {
     }
 
     /// Trigger all awaiting tasks in a workflow run
-    pub async fn trigger_all(&self, workflow_run_id: Uuid) -> Result<()> {
+    pub async fn trigger_all(
+        &self,
+        workflow_run_id: Uuid,
+        progress_bar: Option<&MultiProgressProgressBar>,
+    ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
             .state_adapter
@@ -309,8 +329,9 @@ impl Engine {
 
             let engine = self.clone();
             let task_id = task.id;
+            let progress_bar = progress_bar.cloned();
             tokio::spawn(async move {
-                if let Err(e) = engine.execute_task(task_id).await {
+                if let Err(e) = engine.execute_task(task_id, progress_bar.as_ref()).await {
                     error!("Task execution failed: {e}");
                 }
             });
@@ -345,12 +366,15 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
+        let progress_bar = progress_bar.cloned();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, progress_bar.as_ref())
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
-
         Ok(())
     }
 
@@ -590,7 +614,7 @@ impl Engine {
 
         // Resolve the package
         let resolved_package = registry_client
-            .resolve_package(source, None, false)
+            .resolve_package(source, None, false, None)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve codemod {source}: {e}")))?;
 
@@ -622,7 +646,11 @@ impl Engine {
     }
 
     /// Execute a workflow
-    async fn execute_workflow(&self, workflow_run_id: Uuid) -> Result<()> {
+    async fn execute_workflow(
+        &self,
+        workflow_run_id: Uuid,
+        progress_bar: Option<&MultiProgressProgressBar>,
+    ) -> Result<()> {
         // Get the workflow run
         let workflow_run = self
             .state_adapter
@@ -840,8 +868,9 @@ impl Engine {
                 // Start task execution
                 let engine = self.clone();
                 let task_id = task.id;
+                let progress_bar = progress_bar.cloned();
                 tokio::spawn(async move {
-                    if let Err(e) = engine.execute_task(task_id).await {
+                    if let Err(e) = engine.execute_task(task_id, progress_bar.as_ref()).await {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -913,7 +942,11 @@ impl Engine {
     }
 
     /// Execute a task
-    async fn execute_task(&self, task_id: Uuid) -> Result<()> {
+    async fn execute_task(
+        &self,
+        task_id: Uuid,
+        progress_bar: Option<&MultiProgressProgressBar>,
+    ) -> Result<()> {
         let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
         let workflow_run = self
@@ -1007,6 +1040,7 @@ impl Engine {
                     &state,
                     &workflow_run.workflow,
                     &workflow_run.bundle_path,
+                    progress_bar,
                 )
                 .await;
 
@@ -1129,6 +1163,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
+        progress_bar: Option<&MultiProgressProgressBar>,
     ) -> Result<()> {
         self.execute_step_action_with_chain(
             runner,
@@ -1141,6 +1176,7 @@ impl Engine {
             workflow,
             bundle_path,
             &[],
+            progress_bar,
         )
         .await
     }
@@ -1159,6 +1195,7 @@ impl Engine {
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        progress_bar: Option<&MultiProgressProgressBar>,
     ) -> Result<()> {
         match action {
             StepAction::RunScript(run) => {
@@ -1200,18 +1237,29 @@ impl Engine {
                         workflow,
                         bundle_path,
                         dependency_chain,
+                        progress_bar,
                     ))
                     .await?;
                 }
                 Ok(())
             }
             StepAction::AstGrep(ast_grep) => {
-                self.execute_ast_grep_step_with_dir(ast_grep, bundle_path.as_deref())
-                    .await
+                self.execute_ast_grep_step_with_dir(
+                    node.id.clone(),
+                    ast_grep,
+                    bundle_path.as_deref(),
+                    progress_bar,
+                )
+                .await
             }
             StepAction::JSAstGrep(js_ast_grep) => {
-                self.execute_js_ast_grep_step_with_dir(js_ast_grep, bundle_path.as_deref())
-                    .await
+                self.execute_js_ast_grep_step_with_dir(
+                    node.id.clone(),
+                    js_ast_grep,
+                    bundle_path.as_deref(),
+                    progress_bar,
+                )
+                .await
             }
             StepAction::Codemod(codemod) => {
                 Box::pin(self.execute_codemod_step_with_chain(
@@ -1223,6 +1271,7 @@ impl Engine {
                     state,
                     bundle_path,
                     dependency_chain,
+                    progress_bar,
                 ))
                 .await
             }
@@ -1231,8 +1280,10 @@ impl Engine {
 
     pub async fn execute_ast_grep_step_with_dir(
         &self,
+        id: String,
         ast_grep: &UseAstGrep,
         bundle_path: Option<&std::path::Path>,
+        progress_bar: Option<&MultiProgressProgressBar>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let bundle_path = bundle_path
@@ -1264,21 +1315,27 @@ impl Engine {
                 config_path.display()
             );
             execute_ast_grep_on_globs_with_fixes(
+                id,
                 ast_grep.include.as_deref(),
                 ast_grep.exclude.as_deref(),
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir.as_deref(),
+                progress_bar,
             )
+            .await
             .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {e}")))?
         } else {
             execute_ast_grep_on_globs(
+                id,
                 ast_grep.include.as_deref(),
                 ast_grep.exclude.as_deref(),
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir.as_deref(),
+                progress_bar,
             )
+            .await
             .map_err(|e| Error::Other(format!("AST grep execution failed: {e}")))?
         };
 
@@ -1316,8 +1373,10 @@ impl Engine {
 
     pub async fn execute_js_ast_grep_step_with_dir(
         &self,
+        id: String,
         js_ast_grep: &UseJSAstGrep,
         bundle_path: Option<&std::path::Path>,
+        progress_bar: Option<&MultiProgressProgressBar>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
@@ -1433,7 +1492,7 @@ impl Engine {
         // Create and run the execution engine
         let engine = ExecutionEngine::new(config);
         let stats = engine
-            .execute_on_directory(&js_file_path, &base_path)
+            .execute_on_directory(&id, &js_file_path, &base_path, progress_bar.cloned())
             .await
             .map_err(|e| Error::Other(format!("JavaScript execution failed: {e}")))?;
 
@@ -1466,6 +1525,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        progress_bar: Option<&MultiProgressProgressBar>,
     ) -> Result<()> {
         info!("Executing codemod step: {}", codemod.source);
 
@@ -1513,7 +1573,7 @@ impl Engine {
 
         // Resolve the package (local path or registry package)
         let resolved_package = registry_client
-            .resolve_package(&codemod.source, None, false)
+            .resolve_package(&codemod.source, None, false, None)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve package: {e}")))?;
 
@@ -1540,6 +1600,7 @@ impl Engine {
             state,
             bundle_path,
             &new_chain,
+            progress_bar,
         )
         .await
     }
@@ -1556,6 +1617,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        progress_bar: Option<&MultiProgressProgressBar>,
     ) -> Result<()> {
         let workflow_path = resolved_package.package_dir.join("workflow.yaml");
 
@@ -1650,6 +1712,7 @@ impl Engine {
                     &codemod_workflow,
                     &Some(resolved_package.package_dir.clone()),
                     dependency_chain,
+                    progress_bar,
                 ))
                 .await?;
             }
@@ -2138,6 +2201,7 @@ mod tests {
                 &state,
                 &bundle_path,
                 &dependency_chain,
+                None,
             )
             .await;
 

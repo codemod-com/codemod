@@ -15,6 +15,7 @@ butterflow-runners = { workspace = true }
 butterflow-state = { workspace = true }
 butterflow-scheduler = { workspace = true }
 codemod-sandbox = { path = "../codemod-sandbox", features = ["native"] }
+codemod-progress-bar = {workspace = true}
 tokio = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -31,6 +32,8 @@ tar = { workspace = true }
 tempfile = { workspace = true }
 walkdir = { workspace = true }
 dirs = { workspace = true }
+bytes = "1.10.1"
+futures-util = "0.3.31"
 
 [dev-dependencies]
 tempfile = { workspace = true }
