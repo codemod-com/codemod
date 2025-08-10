@@ -33,8 +33,10 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     let oidc_client = OidcClient::new(registry_url.clone(), registry_config)?;
 
-    match oidc_client.get_auth_status()? {
-        Some(stored_auth) => {
+    let auth_file = oidc_client.get_auth_status()?;
+
+    match auth_file {
+        Some(stored_auth) if oidc_client.is_token_valid(&stored_auth.tokens) => {
             print_ascii_art();
             println!("✓ Logged in to: {registry_url}");
             println!("Username: {}", stored_auth.user.username);
@@ -77,7 +79,7 @@ pub async fn handler(args: &Command) -> Result<()> {
                 );
             }
         }
-        None => {
+        _ => {
             println!("✗ Not logged in to {registry_url}");
             println!("\nRun 'codemod login' to authenticate");
             std::process::exit(1);

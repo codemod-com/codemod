@@ -221,7 +221,7 @@ impl OidcClient {
         self.storage.load_auth(&self.registry_url)
     }
 
-    fn is_token_valid(&self, tokens: &AuthTokens) -> bool {
+    pub fn is_token_valid(&self, tokens: &AuthTokens) -> bool {
         if let Some(expires_at) = tokens.expires_at {
             // Consider token invalid if it expires within the next 5 minutes
             let buffer = Duration::minutes(5);
