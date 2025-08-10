@@ -71,8 +71,8 @@ pub fn execute_ast_grep_on_globs(
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         Globs {
-            include: include_globs.unwrap_or(&[]).to_vec(),
-            exclude: exclude_globs.unwrap_or(&[]).to_vec(),
+            include: Some(include_globs.unwrap_or(&[]).to_vec()),
+            exclude: exclude_globs.map(|globs| globs.to_vec()),
         },
         base_path,
         config_file,
@@ -95,8 +95,8 @@ pub fn execute_ast_grep_on_globs_with_fixes(
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         Globs {
-            include: include_globs.unwrap_or(&[]).to_vec(),
-            exclude: exclude_globs.unwrap_or(&[]).to_vec(),
+            include: Some(include_globs.unwrap_or(&[]).to_vec()),
+            exclude: exclude_globs.map(|globs| globs.to_vec()),
         },
         base_path,
         config_file,
@@ -108,8 +108,8 @@ pub fn execute_ast_grep_on_globs_with_fixes(
 }
 
 struct Globs {
-    include: Vec<String>,
-    exclude: Vec<String>,
+    include: Option<Vec<String>>,
+    exclude: Option<Vec<String>>,
 }
 
 fn execute_ast_grep_on_globs_with_options(
@@ -179,15 +179,15 @@ fn execute_ast_grep_on_globs_with_options(
     }
 
     // Enhance include globs with language-specific extensions if needed
-    let enhanced_include_globs = if !globs.include.is_empty() {
-        if globs.include.is_empty() {
+    let enhanced_include_globs = if let Some(include) = globs.include.as_ref() {
+        if include.is_empty() {
             // If empty array provided, use all applicable extensions
             applicable_extensions.into_iter().collect::<Vec<_>>()
         } else {
             // Check if include patterns are very generic (like **, *.*, etc.)
             // and enhance them with language-specific extensions
             let mut enhanced = Vec::new();
-            for glob in globs.include.iter() {
+            for glob in include.iter() {
                 if is_generic_glob_pattern(glob) {
                     // For generic patterns, add language-specific variants
                     for ext_pattern in &applicable_extensions {
@@ -207,7 +207,7 @@ fn execute_ast_grep_on_globs_with_options(
 
             // If no enhancements were made, use original patterns
             if enhanced.is_empty() {
-                globs.include.clone()
+                include.clone()
             } else {
                 enhanced
             }
@@ -250,7 +250,7 @@ fn execute_ast_grep_on_globs_with_options(
     // Build glob overrides using the enhanced include patterns
     let globs = build_globs(
         &enhanced_include_globs,
-        Some(globs.exclude.as_slice()),
+        globs.exclude.as_deref(),
         &search_base,
     )?;
 
