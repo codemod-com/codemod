@@ -75,6 +75,11 @@ pub struct UseAstGrep {
 
     /// Path to the ast-grep config file (.yaml)
     pub config_file: String,
+
+    /// Allow dirty files (optional, defaults to false)
+    #[serde(default)]
+    #[ts(optional, as = "Option<bool>")]
+    pub allow_dirty: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]
@@ -122,6 +127,11 @@ pub struct UseJSAstGrep {
     #[serde(default)]
     #[ts(optional, as = "Option<String>")]
     pub language: Option<String>,
+
+    /// Allow dirty files (optional, defaults to false)
+    #[serde(default)]
+    #[ts(optional, as = "Option<bool>")]
+    pub allow_dirty: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]

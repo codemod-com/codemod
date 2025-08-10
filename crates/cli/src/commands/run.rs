@@ -9,7 +9,6 @@ use std::process::Command as ProcessCommand;
 use tokio::sync::Mutex;
 
 use crate::auth_provider::CliAuthProvider;
-use crate::dirty_git_check;
 use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
 use butterflow_core::engine::{Engine, GLOBAL_STATS};
 use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
@@ -54,8 +53,6 @@ pub async fn handler(
 ) -> Result<()> {
     // Create auth provider
     let auth_provider = CliAuthProvider::new()?;
-
-    dirty_git_check::dirty_check(args.allow_dirty)?;
 
     // Get cache directory and default registry from config
     let cache_dir = get_cache_dir()?;

@@ -51,7 +51,7 @@ pub async fn handler(args: &Command) -> Result<()> {
     let js_file_path = Path::new(&args.js_file);
     let target_directory = Path::new(&args.target_directory);
 
-    dirty_git_check::dirty_check(args.allow_dirty)?;
+    dirty_git_check::dirty_check(target_directory, args.allow_dirty)?;
 
     // Verify the JavaScript file exists
     if !js_file_path.exists() {

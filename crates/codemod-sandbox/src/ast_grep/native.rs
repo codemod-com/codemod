@@ -63,6 +63,8 @@ pub fn execute_ast_grep_on_globs(
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
+    allow_dirty: bool,
+    git_dirty_check_callback: Option<fn(&Path, bool)>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         include_globs,
@@ -71,6 +73,8 @@ pub fn execute_ast_grep_on_globs(
         config_file,
         working_dir,
         false,
+        allow_dirty,
+        git_dirty_check_callback,
     )
 }
 
@@ -81,6 +85,8 @@ pub fn execute_ast_grep_on_globs_with_fixes(
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
+    allow_dirty: bool,
+    git_dirty_check_callback: Option<fn(&Path, bool)>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
         include_globs,
@@ -89,6 +95,8 @@ pub fn execute_ast_grep_on_globs_with_fixes(
         config_file,
         working_dir,
         true,
+        allow_dirty,
+        git_dirty_check_callback,
     )
 }
 
@@ -99,6 +107,8 @@ fn execute_ast_grep_on_globs_with_options(
     config_file: &str,
     working_dir: Option<&Path>,
     apply_fixes: bool,
+    allow_dirty: bool,
+    git_dirty_check_callback: Option<fn(&Path, bool)>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -221,6 +231,10 @@ fn execute_ast_grep_on_globs_with_options(
             .map(|p| p.to_path_buf())
             .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")))
     };
+
+    if let Some(git_dirty_check_callback) = git_dirty_check_callback {
+        git_dirty_check_callback(search_base.as_path(), allow_dirty);
+    }
 
     // Build glob overrides using the enhanced include patterns
     let globs = build_globs(&enhanced_include_globs, exclude_globs, &search_base)?;
@@ -496,8 +510,18 @@ pub fn execute_ast_grep_on_paths(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
+    allow_dirty: bool,
+    git_dirty_check_callback: Option<fn(&Path, bool)>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs(Some(paths), None, None, config_file, working_dir)
+    execute_ast_grep_on_globs(
+        Some(paths),
+        None,
+        None,
+        config_file,
+        working_dir,
+        allow_dirty,
+        git_dirty_check_callback,
+    )
 }
 
 /// Backward compatibility function - converts paths to include globs with fixes
@@ -505,8 +529,18 @@ pub fn execute_ast_grep_on_paths_with_fixes(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
+    allow_dirty: bool,
+    git_dirty_check_callback: Option<fn(&Path, bool)>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs_with_fixes(Some(paths), None, None, config_file, working_dir)
+    execute_ast_grep_on_globs_with_fixes(
+        Some(paths),
+        None,
+        None,
+        config_file,
+        working_dir,
+        allow_dirty,
+        git_dirty_check_callback,
+    )
 }
 
 #[cfg(test)]
@@ -595,6 +629,8 @@ message: "Found var declaration"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -659,6 +695,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -703,6 +741,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -750,6 +790,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -783,6 +825,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -815,6 +859,8 @@ rule:
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         );
 
         // Should return empty results, not error
@@ -855,6 +901,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -881,6 +929,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -945,6 +995,8 @@ message: "Found var declaration"
             None,
             "rules.yaml",
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -1004,6 +1056,8 @@ message: "Found console.log statement in TSX"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -1084,6 +1138,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
