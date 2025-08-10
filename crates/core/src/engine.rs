@@ -144,7 +144,6 @@ impl Engine {
         let git_dirty_check_callback = git_dirty_check_callback.clone();
         let progress_callback = progress_callback.clone();
         tokio::spawn(async move {
-            tokio::time::sleep(Duration::from_secs(1000)).await;
             if let Err(e) = engine
                 .execute_workflow(workflow_run_id, git_dirty_check_callback, progress_callback)
                 .await
