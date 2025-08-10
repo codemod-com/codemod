@@ -71,7 +71,7 @@ pub fn progress_bar_for_multi_progress() -> (MultiProgressProgressBar, Instant) 
                 let m = Arc::clone(&m);
                 let id_clone = properties.id.clone();
                 let spinner_style = spinner_style.clone();
-                // Use atomic check-and-insert to prevent race condition
+                // Use mutex lock to perform check-and-insert and prevent race condition
                 let _pb_created = {
                     let mut bars_lock = bars.lock().unwrap();
                     if !bars_lock.contains_key(&id_clone) {
@@ -99,11 +99,7 @@ pub fn progress_bar_for_multi_progress() -> (MultiProgressProgressBar, Instant) 
                             pb.set_message(format!(
                                 "scanning [{}/{}] {}",
                                 properties.index,
-                                if properties.count.is_some() {
-                                    properties.count.unwrap().to_string()
-                                } else {
-                                    "?".to_string()
-                                },
+                                properties.count.map_or("?".to_string(), |c| c.to_string()),
                                 style(properties.current_file.clone()).green()
                             ));
                             pb.tick(); // Force a redraw

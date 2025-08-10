@@ -398,7 +398,7 @@ impl RegistryClient {
                     })?;
                     package_data.extend_from_slice(&chunk);
                     downloaded += chunk.len() as u64;
-                    if let Some(ref callback) = progress_bar {
+                    if let Some(callback) = progress_bar.clone() {
                         callback(downloaded, total_size);
                     }
                 }
@@ -474,7 +474,7 @@ impl RegistryClient {
                                             })?;
                                         package_data.extend_from_slice(&chunk);
                                         downloaded += chunk.len() as u64;
-                                        if let Some(ref callback) = progress_bar {
+                                        if let Some(callback) = progress_bar.clone() {
                                             callback(downloaded, total_size);
                                         }
                                     }
