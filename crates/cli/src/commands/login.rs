@@ -122,24 +122,29 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     // Check current auth status
     if let Ok(Some(stored_auth)) = oidc_client.get_auth_status() {
-        println!(
-            "✓ Already logged in as {} ({})",
-            stored_auth.user.username, registry_url
-        );
-
-        if let Some(organizations) = &stored_auth.user.organizations {
+        if oidc_client.is_token_valid(&stored_auth.tokens) {
             println!(
-                "Organizations: {}",
-                organizations
-                    .iter()
-                    .map(|org| format!("{} ({})", org.name, org.role))
-                    .collect::<Vec<_>>()
-                    .join(", ")
+                "✓ Already logged in as {} ({})",
+                stored_auth.user.username, registry_url
             );
-        }
 
-        println!("Use 'codemod logout' to log out or 'codemod login --registry <url>' to log in to a different registry.");
-        return Ok(());
+            if let Some(organizations) = &stored_auth.user.organizations {
+                println!(
+                    "Organizations: {}",
+                    organizations
+                        .iter()
+                        .map(|org| format!("{} ({})", org.name, org.role))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                );
+            }
+
+            println!("Use 'codemod logout' to log out or 'codemod login --registry <url>' to log in to a different registry.");
+            return Ok(());
+        } else {
+            println!("Token is invalid, logging out");
+            oidc_client.logout()?;
+        }
     }
 
     // Start OIDC login flow
