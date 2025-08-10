@@ -2,6 +2,9 @@ use anyhow::Result;
 use inquire::Confirm;
 use std::path::Path;
 use std::process::Command;
+use std::sync::{Arc, Mutex};
+
+type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
 
 fn ask_for_git_init(path: &Path) -> Result<bool> {
     let answer = Confirm::new(&format!(
@@ -15,53 +18,59 @@ fn ask_for_git_init(path: &Path) -> Result<bool> {
     Ok(answer)
 }
 
-pub fn dirty_check(path: &Path, allow_dirty: bool) -> Result<()> {
-    if !allow_dirty && Command::new("git").arg("--version").output().is_ok() {
-        let output = Command::new("git")
-            .args(["rev-parse", "--is-inside-work-tree"])
-            .current_dir(path)
-            .output();
+pub fn dirty_check() -> GitDirtyCheckCallback {
+    let paths = Arc::new(Mutex::new(vec![]));
 
-        match output {
-            Ok(output) if output.status.success() => {
-                let result = String::from_utf8_lossy(&output.stdout).trim().to_string();
-                if result == "true" || Path::new(".git").exists() {
-                    let output = Command::new("git")
-                        .args(["status", "--porcelain"])
-                        .current_dir(path)
-                        .output()
-                        .expect("Failed to run git");
+    Arc::new(Box::new(move |path: &Path, allow_dirty: bool| {
+        let mut paths = paths.lock().unwrap();
+        if !paths.contains(&path.to_path_buf()) {
+            paths.push(path.to_path_buf());
 
-                    if !output.stdout.is_empty() {
-                        let answer = Confirm::new(
-                            &format!(
-                                "⚠️  You have uncommitted changes in this path {}. Do you want to continue anyway?",
-                                path.display()
-                            ),
-                        )
-                        .with_default(false)
-                        .with_help_message("Press 'y' to continue or 'n' to abort")
-                        .prompt()?;
+            if !allow_dirty && Command::new("git").arg("--version").output().is_ok() {
+                let output = Command::new("git")
+                    .args(["rev-parse", "--is-inside-work-tree"])
+                    .current_dir(path)
+                    .output();
 
-                        if !answer {
-                            return Err(anyhow::anyhow!("Aborting due to uncommitted changes"));
+                match output {
+                    Ok(output) if output.status.success() => {
+                        let result = String::from_utf8_lossy(&output.stdout).trim().to_string();
+                        if result == "true" || Path::new(".git").exists() {
+                            let output = Command::new("git")
+                                .args(["status", "--porcelain"])
+                                .current_dir(path)
+                                .output()
+                                .expect("Failed to run git");
+
+                            if !output.stdout.is_empty() {
+                                let answer = Confirm::new(
+                                    &format!(
+                                        "⚠️  You have uncommitted changes in this path {}. Do you want to continue anyway?",
+                                        path.display()
+                                    ),
+                                )
+                                .with_default(false)
+                                .with_help_message("Press 'y' to continue or 'n' to abort")
+                                .prompt();
+
+                                if answer.is_err() || !answer.unwrap() {
+                                    eprintln!("Error: Aborting due to uncommitted changes");
+                                    std::process::exit(1);
+                                }
+                            }
+                        } else if ask_for_git_init(path).is_err() {
+                            eprintln!("Error: Aborting due to uninitialized Git repository");
+                            std::process::exit(1);
                         }
                     }
-                } else if !ask_for_git_init(path)? {
-                    return Err(anyhow::anyhow!(
-                        "Aborting due to uninitialized Git repository"
-                    ));
-                }
-            }
-            _ => {
-                if !ask_for_git_init(path)? {
-                    return Err(anyhow::anyhow!(
-                        "Aborting due to uninitialized Git repository"
-                    ));
+                    _ => {
+                        if ask_for_git_init(path).is_err() {
+                            eprintln!("Error: Aborting due to uninitialized Git repository");
+                            std::process::exit(1);
+                        }
+                    }
                 }
             }
         }
-    }
-
-    Ok(())
+    }))
 }

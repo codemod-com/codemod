@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
+use std::sync::Arc;
 
 use ast_grep_config::{from_yaml_string, CombinedScan, RuleConfig};
 use ast_grep_core::tree_sitter::StrDoc;
@@ -14,6 +15,8 @@ use serde_json;
 use thiserror::Error;
 
 use crate::sandbox::engine::language_data::get_extensions_for_language;
+
+type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
 
 #[derive(Error, Debug)]
 pub enum AstGrepError {
@@ -64,11 +67,13 @@ pub fn execute_ast_grep_on_globs(
     config_file: &str,
     working_dir: Option<&Path>,
     allow_dirty: bool,
-    git_dirty_check_callback: Option<fn(&Path, bool)>,
+    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
-        include_globs,
-        exclude_globs,
+        Globs {
+            include: include_globs.unwrap_or(&[]).to_vec(),
+            exclude: exclude_globs.unwrap_or(&[]).to_vec(),
+        },
         base_path,
         config_file,
         working_dir,
@@ -86,11 +91,13 @@ pub fn execute_ast_grep_on_globs_with_fixes(
     config_file: &str,
     working_dir: Option<&Path>,
     allow_dirty: bool,
-    git_dirty_check_callback: Option<fn(&Path, bool)>,
+    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
-        include_globs,
-        exclude_globs,
+        Globs {
+            include: include_globs.unwrap_or(&[]).to_vec(),
+            exclude: exclude_globs.unwrap_or(&[]).to_vec(),
+        },
         base_path,
         config_file,
         working_dir,
@@ -100,15 +107,19 @@ pub fn execute_ast_grep_on_globs_with_fixes(
     )
 }
 
+struct Globs {
+    include: Vec<String>,
+    exclude: Vec<String>,
+}
+
 fn execute_ast_grep_on_globs_with_options(
-    include_globs: Option<&[String]>,
-    exclude_globs: Option<&[String]>,
+    globs: Globs,
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
     apply_fixes: bool,
     allow_dirty: bool,
-    git_dirty_check_callback: Option<fn(&Path, bool)>,
+    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -168,15 +179,15 @@ fn execute_ast_grep_on_globs_with_options(
     }
 
     // Enhance include globs with language-specific extensions if needed
-    let enhanced_include_globs = if let Some(globs) = include_globs {
-        if globs.is_empty() {
+    let enhanced_include_globs = if !globs.include.is_empty() {
+        if globs.include.is_empty() {
             // If empty array provided, use all applicable extensions
             applicable_extensions.into_iter().collect::<Vec<_>>()
         } else {
             // Check if include patterns are very generic (like **, *.*, etc.)
             // and enhance them with language-specific extensions
             let mut enhanced = Vec::new();
-            for glob in globs {
+            for glob in globs.include.iter() {
                 if is_generic_glob_pattern(glob) {
                     // For generic patterns, add language-specific variants
                     for ext_pattern in &applicable_extensions {
@@ -196,7 +207,7 @@ fn execute_ast_grep_on_globs_with_options(
 
             // If no enhancements were made, use original patterns
             if enhanced.is_empty() {
-                globs.to_vec()
+                globs.include.clone()
             } else {
                 enhanced
             }
@@ -237,7 +248,11 @@ fn execute_ast_grep_on_globs_with_options(
     }
 
     // Build glob overrides using the enhanced include patterns
-    let globs = build_globs(&enhanced_include_globs, exclude_globs, &search_base)?;
+    let globs = build_globs(
+        &enhanced_include_globs,
+        Some(globs.exclude.as_slice()),
+        &search_base,
+    )?;
 
     // Use WalkBuilder with globs
     let walker = WalkBuilder::new(&search_base)
@@ -511,7 +526,7 @@ pub fn execute_ast_grep_on_paths(
     config_file: &str,
     working_dir: Option<&Path>,
     allow_dirty: bool,
-    git_dirty_check_callback: Option<fn(&Path, bool)>,
+    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs(
         Some(paths),
@@ -530,7 +545,7 @@ pub fn execute_ast_grep_on_paths_with_fixes(
     config_file: &str,
     working_dir: Option<&Path>,
     allow_dirty: bool,
-    git_dirty_check_callback: Option<fn(&Path, bool)>,
+    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_fixes(
         Some(paths),

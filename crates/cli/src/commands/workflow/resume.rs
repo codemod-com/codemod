@@ -26,16 +26,12 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     info!("Resuming workflow {}...", args.id);
 
     // Create a wrapper for the git dirty check callback
-    let git_check_wrapper = |path: &std::path::Path, allow_dirty: bool| {
-        if let Err(e) = dirty_git_check::dirty_check(path, allow_dirty) {
-            error!("Git dirty check failed: {}", e);
-        }
-    };
+    let dirty_check = dirty_git_check::dirty_check();
 
     if args.trigger_all {
         // Trigger all awaiting tasks
         engine
-            .trigger_all(args.id, Some(git_check_wrapper))
+            .trigger_all(args.id, Some(dirty_check))
             .await
             .context("Failed to trigger all tasks")?;
 
@@ -43,7 +39,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
     } else if !args.task.is_empty() {
         // Trigger specific tasks
         engine
-            .resume_workflow(args.id, args.task.to_vec(), Some(git_check_wrapper))
+            .resume_workflow(args.id, args.task.to_vec(), Some(dirty_check))
             .await
             .context("Failed to resume workflow")?;
 
