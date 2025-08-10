@@ -279,18 +279,13 @@ where
                 walk_builder.overrides(overrides);
             }
 
-            let index = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+            let final_paths = Arc::new(std::sync::Mutex::new(Vec::new()));
             walk_builder.build_parallel().run(|| {
                 let config = Arc::clone(&config);
-                let modified_count = Arc::clone(&modified_count);
-                let unmodified_count = Arc::clone(&unmodified_count);
                 let error_count = Arc::clone(&error_count);
                 let errors = Arc::clone(&errors);
-                let script_path = Arc::clone(&script_path);
                 let ts_extensions = Arc::clone(&ts_extensions);
-                let index = Arc::clone(&index);
-                let progress_callback = progress_callback.clone();
-                let id = id.to_string();
+                let final_paths = Arc::clone(&final_paths);
 
                 Box::new(move |entry_result| {
                     match entry_result {
@@ -313,77 +308,7 @@ where
                                 return WalkState::Continue;
                             }
 
-                            index.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                            let file_name = file_path.file_name();
-                            if let Some(progress_callback) = progress_callback.clone() {
-                                progress_callback(
-                                    &id,
-                                    &file_name.unwrap_or_default().to_string_lossy(),
-                                    "set_text",
-                                    None,
-                                    &(index.load(std::sync::atomic::Ordering::Relaxed) as u64),
-                                );
-                                // tokio::spawn(future);
-                            }
-
-                            // Create a runtime for this thread
-                            let rt = tokio::runtime::Builder::new_current_thread()
-                                .enable_all()
-                                .build()
-                                .unwrap();
-
-                            let id = id.clone();
-                            let progress_callback = progress_callback.clone();
-                            rt.block_on(async {
-                                match Self::execute_on_single_file(
-                                    &config,
-                                    &script_path,
-                                    file_path,
-                                    ProgressCallbackEntries {
-                                        count: None,
-                                        index: index.load(std::sync::atomic::Ordering::Relaxed)
-                                            as u64,
-                                        id,
-                                        callback: progress_callback.clone(),
-                                    },
-                                )
-                                .await
-                                {
-                                    Ok(ExecutionResult::Modified) => {
-                                        modified_count
-                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                                    }
-                                    Ok(ExecutionResult::Unmodified) => {
-                                        unmodified_count
-                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                                    }
-                                    Ok(ExecutionResult::Error(msg)) => {
-                                        error_count
-                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                                        let error_msg = format!(
-                                            "Error processing file {}: {}",
-                                            file_path.display(),
-                                            msg
-                                        );
-                                        errors.lock().unwrap().push(error_msg);
-                                    }
-                                    Err(e) => {
-                                        error_count
-                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                                        let error_msg = format!(
-                                            "Error processing file {}: {}",
-                                            file_path.display(),
-                                            match e {
-                                                ExecutionError::Runtime { source } => {
-                                                    source.to_string()
-                                                }
-                                                _ => e.to_string(),
-                                            }
-                                        );
-                                        errors.lock().unwrap().push(error_msg);
-                                    }
-                                }
-                            });
+                            final_paths.lock().unwrap().push(file_path.to_path_buf());
                         }
                         Err(err) => {
                             error_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
@@ -394,6 +319,81 @@ where
                     WalkState::Continue
                 })
             });
+
+            let mut handles = Vec::new();
+            let entries = final_paths.lock().unwrap().clone();
+            let count = entries.len();
+
+            for (index, file_path) in entries.into_iter().enumerate() {
+                let config = Arc::clone(&config);
+                let script_path = Arc::clone(&script_path);
+                let modified_count = Arc::clone(&modified_count);
+                let unmodified_count = Arc::clone(&unmodified_count);
+                let error_count = Arc::clone(&error_count);
+                let errors = Arc::clone(&errors);
+                let progress_callback = progress_callback.clone();
+                let id = id.clone();
+                handles.push(tokio::task::spawn_blocking(move || {
+                    tokio::runtime::Handle::current().block_on(async move {
+                        let file_name = file_path.file_name();
+                        if let Some(progress_callback) = progress_callback.clone() {
+                            progress_callback(
+                                &id,
+                                &file_name.unwrap_or_default().to_string_lossy(),
+                                "set_text",
+                                Some(&(count as u64)),
+                                &(index as u64),
+                            );
+                        }
+
+                        let id = id.clone();
+                        let progress_callback = progress_callback.clone();
+                        match Self::execute_on_single_file(
+                            &config,
+                            &script_path,
+                            file_path.as_path(),
+                            ProgressCallbackEntries {
+                                count: Some(count as u64),
+                                index: index as u64,
+                                id,
+                                callback: progress_callback.clone(),
+                            },
+                        )
+                        .await
+                        {
+                            Ok(ExecutionResult::Modified) => {
+                                modified_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                            }
+                            Ok(ExecutionResult::Unmodified) => {
+                                unmodified_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                            }
+                            Ok(ExecutionResult::Error(msg)) => {
+                                error_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                let error_msg = format!(
+                                    "Error processing file {}: {}",
+                                    file_path.display(),
+                                    msg
+                                );
+                                errors.lock().unwrap().push(error_msg);
+                            }
+                            Err(e) => {
+                                error_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                let error_msg = format!(
+                                    "Error processing file {}: {}",
+                                    file_path.display(),
+                                    match e {
+                                        ExecutionError::Runtime { source } => {
+                                            source.to_string()
+                                        }
+                                        _ => e.to_string(),
+                                    }
+                                );
+                                errors.lock().unwrap().push(error_msg);
+                            }
+                        }
+                    })
+                }));
+            }
 
             let modified = modified_count.load(std::sync::atomic::Ordering::Relaxed);
             let unmodified = unmodified_count.load(std::sync::atomic::Ordering::Relaxed);
