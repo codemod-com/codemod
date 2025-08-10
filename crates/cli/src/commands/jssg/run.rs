@@ -139,9 +139,9 @@ pub async fn handler(args: &Command) -> Result<()> {
         .execute_on_directory("jssg", js_file_path, target_directory, Some(callback))
         .await?;
 
-    println!("Modified files: {:?}", stats.files_modified);
-    println!("Unmodified files: {:?}", stats.files_unmodified);
-    println!("Files with errors: {:?}", stats.files_with_errors);
+    println!("📝 Modified files: {:?}", stats.files_modified);
+    println!("✅ Unmodified files: {:?}", stats.files_unmodified);
+    println!("❌ Files with errors: {:?}", stats.files_with_errors);
 
     let seconds = started.elapsed().as_millis() as f64 / 1000.0;
     println!("✨ Done in {seconds:.3}s");

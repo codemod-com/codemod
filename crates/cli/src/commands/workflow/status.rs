@@ -3,15 +3,40 @@ use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus};
 use clap::Args;
-use log::info;
 use std::collections::HashMap;
+use tabled::settings::{object::Columns, Alignment, Modify, Style};
+use tabled::{Table, Tabled};
 use uuid::Uuid;
+
+use super::list::WorkflowRunRow;
 
 #[derive(Args, Debug)]
 pub struct Command {
     /// Workflow run ID
     #[arg(short, long)]
     id: Uuid,
+}
+
+#[derive(Tabled)]
+pub struct TaskRow {
+    #[tabled(rename = "ID")]
+    pub id: String,
+    #[tabled(rename = "Node ID")]
+    pub node_id: String,
+    #[tabled(rename = "Status")]
+    pub status: String,
+    #[tabled(rename = "Matrix Info")]
+    pub matrix_info: String,
+}
+
+#[derive(Tabled)]
+struct ManualTriggerRow {
+    #[tabled(rename = "ID")]
+    id: String,
+    #[tabled(rename = "Node ID")]
+    node_id: String,
+    #[tabled(rename = "Matrix Info")]
+    matrix_info: String,
 }
 
 /// Show workflow status
@@ -28,37 +53,37 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
         .await
         .context("Failed to get tasks")?;
 
-    // Print workflow info
-    info!(
-        "Workflow: {} (ID: {})",
-        workflow_run
+    let rows = vec![WorkflowRunRow {
+        id: workflow_run.id.to_string(),
+        name: workflow_run
             .workflow
             .nodes
             .first()
-            .map(|n| n.name.as_str())
-            .unwrap_or("unknown"),
-        args.id
-    );
-    info!("Status: {:?}", workflow_run.status);
-    info!("Started: {}", workflow_run.started_at);
+            .map(|n| n.name.clone())
+            .unwrap_or("unknown".to_string()),
+        status: format!("{:?}", workflow_run.status),
+        started_at: workflow_run.started_at.to_string(),
+        ended_at: workflow_run
+            .ended_at
+            .map(|d| d.to_string())
+            .unwrap_or("unknown".to_string()),
+        duration: utils::format_duration(
+            workflow_run
+                .ended_at
+                .map(|d| {
+                    d.signed_duration_since(workflow_run.started_at)
+                        .num_seconds() as u64
+                })
+                .unwrap_or(0),
+        ),
+    }];
+    let mut table = Table::new(rows);
 
-    if let Some(ended_at) = workflow_run.ended_at {
-        info!("Completed: {ended_at}");
-        let duration = ended_at.signed_duration_since(workflow_run.started_at);
-        info!(
-            "Duration: {}",
-            utils::format_duration(duration.num_seconds() as u64)
-        );
-    } else {
-        let duration = chrono::Utc::now().signed_duration_since(workflow_run.started_at);
-        info!(
-            "Duration: {} (running)",
-            utils::format_duration(duration.num_seconds() as u64)
-        );
-    }
+    table
+        .with(Style::rounded())
+        .with(Modify::new(Columns::new(..)).with(Alignment::left())); // align all columns left
 
-    info!("");
-    info!("Tasks:");
+    println!("{table}");
 
     // Group tasks by node
     let mut tasks_by_node: HashMap<String, Vec<&Task>> = HashMap::new();
@@ -68,6 +93,7 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
             .or_default()
             .push(task);
     }
+    let mut tasks_rows = Vec::new();
 
     // Print tasks
     for node in &workflow_run.workflow.nodes {
@@ -80,10 +106,12 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
             .find(|t| t.master_task_id.is_none() && t.matrix_values.is_none());
 
         if let Some(master_task) = master_task {
-            info!(
-                "- {} (master) ({}): {:?}",
-                node.id, master_task.id, master_task.status
-            );
+            tasks_rows.push(TaskRow {
+                id: master_task.id.to_string(),
+                node_id: node.id.clone(),
+                status: format!("{:?}", master_task.status),
+                matrix_info: "-".to_string(),
+            });
 
             // Print matrix tasks
             for task in node_tasks.iter().filter(|t| t.master_task_id.is_some()) {
@@ -97,19 +125,35 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
                             .join(", ")
                     })
                     .unwrap_or_else(|| "unknown".to_string());
-                info!(
-                    "  - {} ({}, {}): {:?}",
-                    node.id, task.id, matrix_info, task.status
-                );
+                tasks_rows.push(TaskRow {
+                    id: master_task.id.to_string(),
+                    node_id: node.id.clone(),
+                    status: format!("{:?}", master_task.status),
+                    matrix_info,
+                });
             }
         } else if !node_tasks.is_empty() {
             // Print regular task
             let task = node_tasks[0];
-            info!("- {} ({}): {:?}", node.id, task.id, task.status);
+            tasks_rows.push(TaskRow {
+                id: task.id.to_string(),
+                node_id: node.id.clone(),
+                status: format!("{:?}", task.status),
+                matrix_info: "-".to_string(),
+            });
         } else {
-            info!("- {}: No tasks", node.id);
+            println!("Not found task for node: {}", node.id);
         }
     }
+
+    let mut tasks_table = Table::new(tasks_rows);
+
+    tasks_table
+        .with(Style::rounded())
+        .with(Modify::new(Columns::new(..)).with(Alignment::left()));
+
+    println!("Tasks:");
+    println!("{tasks_table}");
 
     // Print manual triggers
     let awaiting_tasks: Vec<&Task> = tasks
@@ -117,32 +161,44 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
         .filter(|t| t.status == TaskStatus::AwaitingTrigger)
         .collect();
 
-    if !awaiting_tasks.is_empty() {
-        info!("");
-        info!("Manual triggers required:");
-        for task in awaiting_tasks {
-            let node = workflow_run
-                .workflow
-                .nodes
-                .iter()
-                .find(|n| n.id == task.node_id)
-                .unwrap();
-            let matrix_info = task
-                .matrix_values
-                .as_ref()
-                .map(|m| {
-                    m.iter()
-                        .map(|(k, v)| format!("{k}: {v}"))
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                })
-                .unwrap_or_else(|| "".to_string());
-            info!("- {} ({}, {})", task.id, node.id, matrix_info);
-        }
+    if awaiting_tasks.is_empty() {
+        println!("Manual triggers: None");
     } else {
-        info!("");
-        info!("Manual triggers required: None");
-    }
+        let manual_trigger_rows: Vec<ManualTriggerRow> = awaiting_tasks
+            .iter()
+            .map(|t| {
+                let node = workflow_run
+                    .workflow
+                    .nodes
+                    .iter()
+                    .find(|n| n.id == t.node_id)
+                    .unwrap();
+                let matrix_info = t
+                    .matrix_values
+                    .as_ref()
+                    .map(|m| {
+                        m.iter()
+                            .map(|(k, v)| format!("{k}: {v}"))
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    })
+                    .unwrap_or_else(|| "-".to_string());
 
+                ManualTriggerRow {
+                    id: t.id.to_string(),
+                    node_id: node.id.clone(),
+                    matrix_info,
+                }
+            })
+            .collect();
+
+        let mut manual_triggers_table = Table::new(manual_trigger_rows);
+        manual_triggers_table
+            .with(Style::rounded())
+            .with(Modify::new(Columns::new(..)).with(Alignment::left())); // align all columns left
+
+        println!("Manual triggers:");
+        println!("{manual_triggers_table}");
+    }
     Ok(())
 }

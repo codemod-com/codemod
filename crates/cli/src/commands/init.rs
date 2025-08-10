@@ -668,8 +668,14 @@ fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     println!("  {}", style("Run your codemod locally").bold().cyan());
     println!(
         "  {}",
+        style("Warning: Target path is where you are and please run it on git tracked path")
+            .yellow()
+            .bold()
+    );
+    println!(
+        "  {}",
         style(format!(
-            "npx codemod@next workflow run -w {}/workflow.yaml",
+            "npx codemod@next workflow run -w {}/workflow.yaml # --param target ./some/target/path",
             project_path.display()
         ))
         .dim()

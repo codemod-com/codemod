@@ -518,7 +518,7 @@ impl RegistryClient {
         // Extract tar.gz
         let tar_gz = flate2::read::GzDecoder::new(package_data);
         let mut archive = tar::Archive::new(tar_gz);
-        println!("Extracting to: {}", temp_path.display());
+        info!("Extracting to: {}", temp_path.display());
         archive.unpack(temp_path)?;
 
         // Move to cache directory
@@ -635,7 +635,7 @@ fn validate_package_structure(package_dir: &Path) -> Result<()> {
 }
 
 fn copy_dir_recursively(src: &Path, dst: &Path) -> Result<()> {
-    println!(
+    info!(
         "Copying directory recursively from: {} to: {}",
         src.display(),
         dst.display()
