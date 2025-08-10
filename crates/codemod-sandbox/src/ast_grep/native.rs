@@ -1,21 +1,8 @@
 use std::fs;
-use std::future::Future;
 use std::path::{Path, PathBuf};
-use std::pin::Pin;
 use std::str::FromStr;
 use std::sync::Arc;
-use thiserror::Error;
 
-// Type alias for progress callback to reduce complexity
-pub type ProgressCallback = Option<
-    Arc<
-        dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
-            + Send
-            + Sync,
-    >,
->;
-
-use crate::sandbox::engine::language_data::get_extensions_for_language;
 use ast_grep_config::{from_yaml_string, CombinedScan, RuleConfig};
 use ast_grep_core::tree_sitter::StrDoc;
 use ast_grep_core::AstGrep;
@@ -25,6 +12,11 @@ use ignore::{
     WalkBuilder,
 };
 use serde_json;
+use thiserror::Error;
+
+use crate::sandbox::engine::language_data::get_extensions_for_language;
+
+pub type ProgressCallback = Option<Arc<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync>>;
 
 type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
 
@@ -70,78 +62,76 @@ pub struct AstGrepMatch {
 ///
 /// # Returns
 /// Vector of matches found across all files
-pub async fn execute_ast_grep_on_globs(
-    id: String,
-    include_globs: Option<&[String]>,
-    exclude_globs: Option<&[String]>,
-    base_path: Option<&str>,
-    config_file: &str,
-    working_dir: Option<&Path>,
-    allow_dirty: bool,
-    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_callback: ProgressCallback,
-) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs_with_options(
-        id.clone(),
-        Globs {
-            include: include_globs.map(|globs| globs.to_vec()),
-            exclude: exclude_globs.map(|globs| globs.to_vec()),
-        },
-        base_path,
-        config_file,
-        working_dir,
-        false,
-        allow_dirty,
-        git_dirty_check_callback,
-        progress_callback,
-    )
-    .await
-}
-
-/// Execute ast-grep on the given globs with option to apply fixes
-pub async fn execute_ast_grep_on_globs_with_fixes(
-    id: String,
-    include_globs: Option<&[String]>,
-    exclude_globs: Option<&[String]>,
-    base_path: Option<&str>,
-    config_file: &str,
-    working_dir: Option<&Path>,
-    allow_dirty: bool,
-    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-    progress_callback: ProgressCallback,
-) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs_with_options(
-        id.clone(),
-        Globs {
-            include: include_globs.map(|globs| globs.to_vec()),
-            exclude: exclude_globs.map(|globs| globs.to_vec()),
-        },
-        base_path,
-        config_file,
-        working_dir,
-        true,
-        allow_dirty,
-        git_dirty_check_callback,
-        progress_callback,
-    )
-    .await
-}
-
-struct Globs {
-    include: Option<Vec<String>>,
-    exclude: Option<Vec<String>>,
-}
-
-async fn execute_ast_grep_on_globs_with_options(
+pub fn execute_ast_grep_on_globs(
     id: String,
     globs: Globs,
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
-    apply_fixes: bool,
-    allow_dirty: bool,
-    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+    git_dirty: GitDirty,
     progress_callback: ProgressCallback,
+) -> Result<Vec<AstGrepMatch>, AstGrepError> {
+    execute_ast_grep_on_globs_with_options(
+        globs,
+        base_path,
+        config_file,
+        working_dir,
+        false,
+        git_dirty,
+        ProgressEntries {
+            id: id.clone(),
+            callback: progress_callback,
+        },
+    )
+}
+
+/// Execute ast-grep on the given globs with option to apply fixes
+pub fn execute_ast_grep_on_globs_with_fixes(
+    id: String,
+    globs: Globs,
+    base_path: Option<&str>,
+    config_file: &str,
+    working_dir: Option<&Path>,
+    git_dirty: GitDirty,
+    progress_callback: ProgressCallback,
+) -> Result<Vec<AstGrepMatch>, AstGrepError> {
+    execute_ast_grep_on_globs_with_options(
+        globs,
+        base_path,
+        config_file,
+        working_dir,
+        true,
+        git_dirty,
+        ProgressEntries {
+            id: id.clone(),
+            callback: progress_callback,
+        },
+    )
+}
+
+pub struct Globs {
+    pub include: Option<Vec<String>>,
+    pub exclude: Option<Vec<String>>,
+}
+
+pub struct GitDirty {
+    pub allow_dirty: bool,
+    pub git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+}
+
+struct ProgressEntries {
+    id: String,
+    callback: ProgressCallback,
+}
+
+fn execute_ast_grep_on_globs_with_options(
+    globs: Globs,
+    base_path: Option<&str>,
+    config_file: &str,
+    working_dir: Option<&Path>,
+    apply_fixes: bool,
+    git_dirty: GitDirty,
+    progress_callback: ProgressEntries,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -239,6 +229,10 @@ async fn execute_ast_grep_on_globs_with_options(
         applicable_extensions.into_iter().collect::<Vec<_>>()
     };
 
+    // Create combined scan
+    let rule_refs: Vec<&RuleConfig<SupportLang>> = rule_configs.iter().collect();
+    let combined_scan = CombinedScan::new(rule_refs);
+
     // Determine the search base path
     let search_base = if let Some(base) = base_path {
         let base_path_buf = PathBuf::from(base);
@@ -261,8 +255,8 @@ async fn execute_ast_grep_on_globs_with_options(
             .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")))
     };
 
-    if let Some(git_dirty_check_callback) = git_dirty_check_callback {
-        git_dirty_check_callback(search_base.as_path(), allow_dirty);
+    if let Some(git_dirty_check_callback) = git_dirty.git_dirty_check_callback {
+        git_dirty_check_callback(search_base.as_path(), git_dirty.allow_dirty);
     }
 
     // Build glob overrides using the enhanced include patterns
@@ -272,71 +266,51 @@ async fn execute_ast_grep_on_globs_with_options(
         &search_base,
     )?;
 
-    // Move owned data into the closure
-    let rule_configs = rule_configs;
-    let id = id.clone();
+    // Use WalkBuilder with globs
+    let walker = WalkBuilder::new(&search_base)
+        .follow_links(false)
+        .git_ignore(true)
+        .ignore(true)
+        .hidden(false)
+        .overrides(globs)
+        .build();
 
-    let all_matches = tokio::task::spawn_blocking(move || {
-        // Create combined scan inside the closure
-        let rule_refs: Vec<&RuleConfig<SupportLang>> = rule_configs.iter().collect();
-        let combined_scan = CombinedScan::new(rule_refs);
-        let mut all_matches = Vec::new();
-        // Use WalkBuilder with globs
-        let walker = WalkBuilder::new(&search_base)
-            .follow_links(false)
-            .git_ignore(true)
-            .ignore(true)
-            .hidden(false)
-            .overrides(globs)
-            .build();
+    let mut all_matches = Vec::new();
 
-        let entries: Vec<_> = walker
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| AstGrepError::Io(std::io::Error::other(e)))
-            .unwrap();
-        let walker_count = entries.len();
+    let walker_entries: Vec<_> = walker.collect();
+    let walker_count = walker_entries.len();
 
-        for (index, entry) in entries.into_iter().enumerate() {
-            let filename = entry.path().file_name().unwrap();
-            if let Some(progress_callback) = progress_callback.as_ref() {
-                let rt = tokio::runtime::Handle::current();
-                rt.block_on(async {
-                    progress_callback(
-                        &id,
-                        filename.to_string_lossy().as_ref(),
-                        "set_text",
-                        &(walker_count as u64),
-                        &(index as u64),
-                    )
-                    .await
-                });
-            }
+    for (index, entry) in walker_entries.into_iter().enumerate() {
+        let entry = entry.map_err(|e| AstGrepError::Io(std::io::Error::other(e)))?;
+        let file_path = entry.path();
+        let file_name = file_path.file_name();
 
-            if entry.file_type().is_some_and(|ft| ft.is_file()) {
-                let matches = scan_file(entry.path(), &combined_scan, &rule_configs, apply_fixes)
-                    .map_err(|e| AstGrepError::Io(std::io::Error::other(e)))
-                    .unwrap();
-                all_matches.extend(matches);
-            }
-
-            if let Some(progress_callback) = progress_callback.as_ref() {
-                let rt = tokio::runtime::Handle::current();
-                rt.block_on(async {
-                    progress_callback(
-                        &id,
-                        filename.to_string_lossy().as_ref(),
-                        "next",
-                        &(walker_count as u64),
-                        &(index as u64),
-                    )
-                    .await
-                });
-            }
+        if let Some(callback) = progress_callback.callback.clone() {
+            callback(
+                &progress_callback.id,
+                &file_name.unwrap_or_default().to_string_lossy(),
+                "set_text",
+                Some(&(walker_count as u64)),
+                &(index as u64),
+            );
         }
-        all_matches
-    })
-    .await
-    .unwrap();
+
+        if entry.file_type().is_some_and(|ft| ft.is_file()) {
+            let matches = scan_file(
+                file_path,
+                &combined_scan,
+                &rule_configs,
+                apply_fixes,
+                ProgressCallbackEntries {
+                    index: index as u64,
+                    count: walker_count as u64,
+                    id: progress_callback.id.clone(),
+                    callback: progress_callback.callback.clone(),
+                },
+            )?;
+            all_matches.extend(matches);
+        }
+    }
 
     Ok(all_matches)
 }
@@ -380,11 +354,19 @@ fn build_globs(
         .map_err(|e| AstGrepError::Glob(format!("Failed to build glob overrides: {e}")))
 }
 
+struct ProgressCallbackEntries {
+    count: u64,
+    index: u64,
+    id: String,
+    callback: ProgressCallback,
+}
+
 fn scan_file(
     file_path: &Path,
     combined_scan: &CombinedScan<SupportLang>,
     rule_configs: &[RuleConfig<SupportLang>],
     apply_fixes: bool,
+    progress_callback: ProgressCallbackEntries,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     let content = fs::read_to_string(file_path)?;
     let language = detect_language(file_path)?;
@@ -396,6 +378,7 @@ fn scan_file(
         combined_scan,
         rule_configs,
         apply_fixes,
+        progress_callback,
     )
 }
 
@@ -406,6 +389,7 @@ fn scan_content(
     combined_scan: &CombinedScan<SupportLang>,
     _rule_configs: &[RuleConfig<SupportLang>],
     apply_fixes: bool,
+    progress_callback: ProgressCallbackEntries,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     let doc = StrDoc::new(content, language);
     let root = AstGrep::doc(doc);
@@ -531,6 +515,16 @@ fn scan_content(
         fs::write(file_path, new_content)?;
     }
 
+    if let Some(callback) = progress_callback.callback {
+        callback(
+            &progress_callback.id,
+            &file_path.to_string_lossy(),
+            "next",
+            Some(&progress_callback.count),
+            &progress_callback.index,
+        );
+    }
+
     Ok(matches)
 }
 
@@ -585,7 +579,7 @@ fn detect_language(file_path: &Path) -> Result<SupportLang, AstGrepError> {
 }
 
 /// Backward compatibility function - converts paths to include globs
-pub async fn execute_ast_grep_on_paths(
+pub fn execute_ast_grep_on_paths(
     id: String,
     paths: &[String],
     config_file: &str,
@@ -596,20 +590,23 @@ pub async fn execute_ast_grep_on_paths(
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs(
         id,
-        Some(paths),
-        None,
+        Globs {
+            include: Some(paths.to_vec()),
+            exclude: None,
+        },
         None,
         config_file,
         working_dir,
-        allow_dirty,
-        git_dirty_check_callback,
+        GitDirty {
+            allow_dirty,
+            git_dirty_check_callback,
+        },
         progress_callback,
     )
-    .await
 }
 
 /// Backward compatibility function - converts paths to include globs with fixes
-pub async fn execute_ast_grep_on_paths_with_fixes(
+pub fn execute_ast_grep_on_paths_with_fixes(
     id: String,
     paths: &[String],
     config_file: &str,
@@ -620,16 +617,19 @@ pub async fn execute_ast_grep_on_paths_with_fixes(
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_fixes(
         id,
-        Some(paths),
-        None,
+        Globs {
+            include: Some(paths.to_vec()),
+            exclude: None,
+        },
         None,
         config_file,
         working_dir,
-        allow_dirty,
-        git_dirty_check_callback,
+        GitDirty {
+            allow_dirty,
+            git_dirty_check_callback,
+        },
         progress_callback,
     )
-    .await
 }
 
 #[cfg(test)]
@@ -681,8 +681,8 @@ mod tests {
         assert!(detect_language(Path::new("test.unknown")).is_err());
     }
 
-    #[tokio::test]
-    async fn test_execute_ast_grep_on_globs_with_javascript() {
+    #[test]
+    fn test_execute_ast_grep_on_globs_with_javascript() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -714,16 +714,19 @@ message: "Found var declaration"
         // Execute ast-grep
         let matches = execute_ast_grep_on_globs(
             "test".to_string(),
-            Some(&["test.js".to_string()]),
-            None,
+            Globs {
+                include: Some(vec!["test.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
-            None,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
-        .await
         .unwrap();
 
         // Should find console.log and var declaration
@@ -748,8 +751,8 @@ message: "Found var declaration"
         assert!(!var_matches.is_empty(), "Should find var declaration match");
     }
 
-    #[tokio::test]
-    async fn test_execute_ast_grep_on_globs_with_typescript() {
+    #[test]
+    fn test_execute_ast_grep_on_globs_with_typescript() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -783,16 +786,19 @@ message: "Found console.log statement"
         // Execute ast-grep
         let matches = execute_ast_grep_on_globs(
             "test".to_string(),
-            Some(&["test.ts".to_string()]),
-            None,
+            Globs {
+                include: Some(vec!["test.ts".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
-            None,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
-        .await
         .unwrap();
 
         // Should find function declaration and console.log
@@ -810,8 +816,8 @@ message: "Found console.log statement"
         }
     }
 
-    #[tokio::test]
-    async fn test_execute_ast_grep_on_multiple_files() {
+    #[test]
+    fn test_execute_ast_grep_on_multiple_files() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -832,16 +838,19 @@ message: "Found console.log statement"
         // Execute ast-grep on src directory using proper glob pattern
         let matches = execute_ast_grep_on_globs(
             "test".to_string(),
-            Some(&["src/**/*.js".to_string()]),
-            None,
+            Globs {
+                include: Some(vec!["src/**/*.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
-            None,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
-        .await
         .unwrap();
 
         // Should find console.log in both JS files but not the Python file
@@ -858,8 +867,8 @@ message: "Found console.log statement"
         assert_eq!(js_matches.len(), 2, "Should find exactly 2 JS matches");
     }
 
-    #[tokio::test]
-    async fn test_execute_ast_grep_with_json_config() {
+    #[test]
+    fn test_execute_ast_grep_with_json_config() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -884,16 +893,19 @@ message: "Found console.log statement"
         // Execute ast-grep
         let matches = execute_ast_grep_on_globs(
             "test".to_string(),
-            Some(&["test.js".to_string()]),
-            None,
+            Globs {
+                include: Some(vec!["test.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
-            None,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
-        .await
         .unwrap();
 
         assert!(
@@ -902,8 +914,8 @@ message: "Found console.log statement"
         );
     }
 
-    #[tokio::test]
-    async fn test_execute_ast_grep_no_matches() {
+    #[test]
+    fn test_execute_ast_grep_no_matches() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -922,16 +934,19 @@ message: "Found console.log statement"
         // Execute ast-grep
         let matches = execute_ast_grep_on_globs(
             "test".to_string(),
-            Some(&["test.js".to_string()]),
-            None,
+            Globs {
+                include: Some(vec!["test.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
-            None,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
-        .await
         .unwrap();
 
         // Should find no matches
@@ -943,8 +958,8 @@ message: "Found console.log statement"
         );
     }
 
-    #[tokio::test]
-    async fn test_execute_ast_grep_nonexistent_file() {
+    #[test]
+    fn test_execute_ast_grep_nonexistent_file() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -959,24 +974,28 @@ rule:
         // Execute ast-grep on nonexistent file - should handle gracefully
         let result = execute_ast_grep_on_globs(
             "test".to_string(),
-            Some(&["nonexistent.js".to_string()]),
-            None,
+            Globs {
+                include: Some(vec!["nonexistent.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
-            None,
-        )
-        .await
-        .unwrap();
+        );
 
         // Should return empty results, not error
-        assert_eq!(result.len(), 0);
+        assert!(result.is_ok());
+        let matches = result.unwrap();
+        assert_eq!(matches.len(), 0);
     }
 
-    #[tokio::test]
-    async fn test_execute_ast_grep_with_recursive_glob() {
+    #[test]
+    fn test_execute_ast_grep_with_recursive_glob() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -1003,16 +1022,19 @@ message: "Found console.log statement"
         // Test recursive glob pattern
         let matches = execute_ast_grep_on_globs(
             "test".to_string(),
-            Some(&["**/*.js".to_string()]),
-            None,
+            Globs {
+                include: Some(vec!["**/*.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
-            None,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
-        .await
         .unwrap();
 
         // Should find console.log in all JS files but not in .tsx or .md files
@@ -1034,16 +1056,19 @@ message: "Found console.log statement"
         // Test more specific pattern
         let matches = execute_ast_grep_on_globs(
             "test".to_string(),
-            Some(&["src/**/*.js".to_string()]),
-            None,
+            Globs {
+                include: Some(vec!["src/**/*.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
-            None,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
-        .await
         .unwrap();
 
         // Should find console.log in src/ JS files only (not tests/)
@@ -1063,8 +1088,8 @@ message: "Found console.log statement"
         }
     }
 
-    #[tokio::test]
-    async fn test_execute_ast_grep_with_fixes() {
+    #[test]
+    fn test_execute_ast_grep_with_fixes() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -1103,16 +1128,19 @@ message: "Found var declaration"
         // Execute with fixes
         let matches = execute_ast_grep_on_globs_with_fixes(
             "test".to_string(),
-            Some(&["test.js".to_string()]),
-            None,
+            Globs {
+                include: Some(vec!["test.js".to_string()]),
+                exclude: None,
+            },
             None,
             "rules.yaml",
             Some(temp_path),
-            false,
-            None,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
-        .await
         .unwrap();
 
         // Should find matches
@@ -1130,8 +1158,8 @@ message: "Found var declaration"
         assert!(!modified_content.contains("var userCount"));
     }
 
-    #[tokio::test]
-    async fn test_automatic_language_extension_inference() {
+    #[test]
+    fn test_automatic_language_extension_inference() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -1167,16 +1195,19 @@ message: "Found console.log statement in TSX"
         // Test with empty include patterns - should auto-infer extensions
         let matches = execute_ast_grep_on_globs(
             "test".to_string(),
-            None, // None means auto-infer from rule languages
-            None,
+            Globs {
+                include: None,
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
-            None,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
-        .await
         .unwrap();
 
         // Debug: print all matches
@@ -1229,8 +1260,8 @@ message: "Found console.log statement in TSX"
         }
     }
 
-    #[tokio::test]
-    async fn test_generic_glob_enhancement() {
+    #[test]
+    fn test_generic_glob_enhancement() {
         let temp_dir = TempDir::new().unwrap();
         let temp_path = temp_dir.path();
 
@@ -1252,16 +1283,19 @@ message: "Found console.log statement"
         // Test with generic glob pattern "**" - should be enhanced to "**/*.js", "**/*.mjs", "**/*.cjs"
         let matches = execute_ast_grep_on_globs(
             "test".to_string(),
-            Some(&["**".to_string()]),
-            None,
+            Globs {
+                include: Some(vec!["**".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
-            None,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
-        .await
         .unwrap();
 
         // Should find matches in JS files only, not TS, MD, or PY

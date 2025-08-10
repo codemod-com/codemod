@@ -8,9 +8,7 @@ use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
 use log::{error, info};
 use std::collections::HashMap;
-use std::future::Future;
 use std::path::PathBuf;
-use std::pin::Pin;
 use std::sync::Arc;
 use uuid::Uuid;
 
@@ -31,17 +29,13 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
     ))?;
 
     let dirty_check = dirty_git_check::dirty_check();
-    let progress_bar = progress_bar_for_multi_progress();
+
+    let (progress_bar, started) = progress_bar_for_multi_progress();
 
     // The closure now needs to be put in a Box to be a trait object
     // and passed to run_workflow, which likely expects a Box<dyn Fn...>
     let callback: ProgressCallback = Arc::new(
-        move |id: &str,
-              current_file: &str,
-              action_type: &str,
-              count: &u64,
-              index: &u64|
-              -> Pin<Box<dyn Future<Output = ()> + Send>> {
+        move |id: &str, current_file: &str, action_type: &str, count: Option<&u64>, index: &u64| {
             let progress_bar = progress_bar.clone();
             let id = id.to_string();
             let current_file = current_file.to_string();
@@ -50,18 +44,15 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
                 "next" => ActionType::Next,
                 _ => ActionType::SetText,
             };
-            let count = *count;
+            let count = count.cloned();
             let index = *index;
-            Box::pin(async move {
-                progress_bar(MultiProgressProgressBarCallback {
-                    id,
-                    current_file,
-                    action_type,
-                    count,
-                    index,
-                })
-                .await;
-            })
+            progress_bar(MultiProgressProgressBarCallback {
+                id,
+                current_file,
+                action_type,
+                count,
+                index,
+            });
         },
     );
 
@@ -82,6 +73,9 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
     if config.wait_for_completion {
         wait_for_workflow_completion(engine, workflow_run_id.to_string()).await?;
     }
+
+    let seconds = started.elapsed().as_millis() as f64 / 1000.0;
+    println!("✨ Done in {seconds:.3}s");
 
     Ok(workflow_run_id.to_string())
 }

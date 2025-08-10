@@ -1,14 +1,11 @@
 use console::style;
 use indicatif::{MultiProgress, ProgressBar, ProgressState, ProgressStyle};
 use std::collections::HashMap;
-use std::future::Future;
-use std::pin::Pin;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
-pub type ProgressCallback = Arc<
-    dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>> + Send + Sync,
->;
+pub type ProgressCallback =
+    Arc<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync + 'static>;
 
 pub fn download_progress_bar() -> Arc<Box<dyn Fn(u64, u64) + Send + Sync>> {
     let progress_bar = Arc::new(Mutex::new(None::<ProgressBar>));
@@ -47,20 +44,15 @@ pub enum ActionType {
 pub struct MultiProgressProgressBarCallback {
     pub id: String,
     pub current_file: String,
-    pub count: u64,
+    pub count: Option<u64>,
     pub index: u64,
     pub action_type: ActionType,
 }
 
-pub type MultiProgressProgressBar = Arc<
-    Box<
-        dyn Fn(MultiProgressProgressBarCallback) -> Pin<Box<dyn Future<Output = ()> + Send>>
-            + Send
-            + Sync,
-    >,
->;
+pub type MultiProgressProgressBar =
+    Arc<Box<dyn Fn(MultiProgressProgressBarCallback) + Send + Sync + 'static>>;
 
-pub fn progress_bar_for_multi_progress() -> MultiProgressProgressBar {
+pub fn progress_bar_for_multi_progress() -> (MultiProgressProgressBar, Instant) {
     let started = Instant::now();
     let spinner_style = ProgressStyle::with_template("{prefix:.bold.dim} {spinner} {wide_msg}")
         .unwrap()
@@ -69,24 +61,21 @@ pub fn progress_bar_for_multi_progress() -> MultiProgressProgressBar {
     let m = Arc::new(MultiProgress::new());
     let bars = Arc::new(Mutex::new(HashMap::new()));
 
-    Arc::new(Box::new(
-        move |properties: MultiProgressProgressBarCallback| {
-            let bars = Arc::clone(&bars);
-            let m = Arc::clone(&m);
-            let started = started;
-            let id_clone = properties.id.clone();
-            let spinner_style = spinner_style.clone();
-            // eprintln!(
-            //     "DEBUG: progress_bar called with properties: {:?}",
-            //     properties
-            // );
-            Box::pin(async move {
-                // eprintln!("DEBUG: inside async block with id_clone: {:?}", id_clone);
+    // Enable auto-refresh for the MultiProgress
+    m.set_draw_target(indicatif::ProgressDrawTarget::stderr());
+
+    (
+        Arc::new(Box::new(
+            move |properties: MultiProgressProgressBarCallback| {
+                let bars = Arc::clone(&bars);
+                let m = Arc::clone(&m);
+                let id_clone = properties.id.clone();
+                let spinner_style = spinner_style.clone();
                 // Use atomic check-and-insert to prevent race condition
                 let _pb_created = {
                     let mut bars_lock = bars.lock().unwrap();
                     if !bars_lock.contains_key(&id_clone) {
-                        let pb = m.add(ProgressBar::new(properties.count));
+                        let pb = m.add(ProgressBar::new(properties.count.unwrap_or(0)));
                         pb.set_prefix(id_clone.clone());
                         pb.set_style(spinner_style);
                         bars_lock.insert(id_clone.clone(), (pb, properties.count));
@@ -100,25 +89,29 @@ pub fn progress_bar_for_multi_progress() -> MultiProgressProgressBar {
                     let mut bars_lock = bars.lock().unwrap();
                     match bars_lock.get_mut(&id_clone) {
                         Some((pb, count)) => (Some(pb.clone()), *count),
-                        None => (None, 0),
+                        None => (None, None),
                     }
                 };
 
                 if let Some(pb) = maybe_pb {
-                    // eprintln!(
-                    //     "DEBUG: processing action_type: {:?}",
-                    //     properties.action_type
-                    // );
                     match properties.action_type {
                         ActionType::SetText => {
-                            // println!("setting text");
                             pb.set_message(format!(
-                                "scanning [{}/{total_count}] {}",
+                                "scanning [{}/{}] {}",
                                 properties.index,
+                                if properties.count.is_some() {
+                                    properties.count.unwrap().to_string()
+                                } else {
+                                    "?".to_string()
+                                },
                                 style(properties.current_file.clone()).green()
                             ));
+                            pb.tick(); // Force a redraw
                         }
-                        ActionType::Next => pb.inc(1),
+                        ActionType::Next => {
+                            pb.inc(1);
+                            pb.tick(); // Force a redraw
+                        }
                     }
 
                     // Only finish and remove when all tasks for this ID are complete
@@ -126,7 +119,11 @@ pub fn progress_bar_for_multi_progress() -> MultiProgressProgressBar {
                         let bars_lock = bars.lock().unwrap();
                         if let Some((pb_ref, _)) = bars_lock.get(&id_clone) {
                             let current_pos = pb_ref.position();
-                            current_pos >= total_count
+                            if let Some(count) = total_count {
+                                current_pos >= count
+                            } else {
+                                false
+                            }
                         } else {
                             false
                         }
@@ -135,15 +132,10 @@ pub fn progress_bar_for_multi_progress() -> MultiProgressProgressBar {
                     if should_finish {
                         pb.finish_with_message("✅ finished");
                         bars.lock().unwrap().remove(&id_clone);
-
-                        // Only print "Done" when ALL progress bars are finished
-                        if bars.lock().unwrap().is_empty() {
-                            let seconds = started.elapsed().as_millis() as f64 / 1000.0;
-                            println!("✨ Done in {seconds:.3}s");
-                        }
                     }
                 }
-            })
-        },
-    ))
+            },
+        )),
+        started,
+    )
 }

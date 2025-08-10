@@ -1,20 +1,12 @@
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
-use std::future::Future;
 use std::path::PathBuf;
-use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Duration;
 
-// Type alias for progress callback to reduce complexity
-pub type ProgressCallback = Option<
-    Arc<
-        dyn Fn(&str, &str, &str, &u64, &u64) -> Pin<Box<dyn Future<Output = ()> + Send>>
-            + Send
-            + Sync,
-    >,
->;
+pub type ProgressCallback =
+    Option<Arc<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync + 'static>>;
 
 use crate::registry::Result as RegistryResult;
 use chrono::Utc;
@@ -42,7 +34,9 @@ use butterflow_runners::Runner;
 use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
-use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
+use codemod_sandbox::{
+    execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes, GitDirty, Globs,
+};
 use codemod_sandbox::{
     sandbox::{
         engine::{
@@ -55,7 +49,6 @@ use codemod_sandbox::{
     utils::project_discovery::find_tsconfig,
 };
 use std::sync::OnceLock;
-
 pub static GLOBAL_STATS: OnceLock<Mutex<ExecutionStats>> = OnceLock::new();
 
 pub type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
@@ -1356,30 +1349,36 @@ impl Engine {
             );
             execute_ast_grep_on_globs_with_fixes(
                 id,
-                ast_grep.include.as_deref(),
-                ast_grep.exclude.as_deref(),
+                Globs {
+                    include: ast_grep.include.as_deref().map(|v| v.to_vec()),
+                    exclude: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
+                },
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir.as_deref(),
-                ast_grep.allow_dirty.unwrap_or(false),
-                git_dirty_check_callback.clone(),
+                GitDirty {
+                    allow_dirty: ast_grep.allow_dirty.unwrap_or(false),
+                    git_dirty_check_callback: git_dirty_check_callback.clone(),
+                },
                 progress_callback.clone(),
             )
-            .await
             .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {e}")))?
         } else {
             execute_ast_grep_on_globs(
                 id,
-                ast_grep.include.as_deref(),
-                ast_grep.exclude.as_deref(),
+                Globs {
+                    include: ast_grep.include.as_deref().map(|v| v.to_vec()),
+                    exclude: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
+                },
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir.as_deref(),
-                ast_grep.allow_dirty.unwrap_or(false),
-                git_dirty_check_callback.clone(),
+                GitDirty {
+                    allow_dirty: ast_grep.allow_dirty.unwrap_or(false),
+                    git_dirty_check_callback: git_dirty_check_callback.clone(),
+                },
                 progress_callback.clone(),
             )
-            .await
             .map_err(|e| Error::Other(format!("AST grep execution failed: {e}")))?
         };
 
