@@ -15,16 +15,16 @@ use std::path::Path;
 use std::sync::Arc;
 use tokio::io::AsyncWriteExt;
 
-type ProgressCallback =
-    Option<Arc<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync + 'static>>;
+pub type ProgressCallback =
+    Arc<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync + 'static>;
 
-#[derive(Clone)]
-pub struct ProgressCallbackEntries {
-    pub count: Option<u64>,
-    pub index: u64,
+pub struct MultiProgressCallback {
     pub id: String,
+    pub file_name: String,
     pub callback: ProgressCallback,
+    pub index: u64,
 }
+
 /// Statistics about the execution results
 #[derive(Debug, Clone, Default)]
 pub struct ExecutionStats {
@@ -157,18 +157,10 @@ where
         script_path: &Path,
         file_path: &Path,
         content: &str,
-        progress_callback: Option<ProgressCallbackEntries>,
     ) -> Result<ExecutionOutput, ExecutionError> {
         #[cfg(feature = "native")]
         {
-            Self::execute_codemod_with_quickjs(
-                &self.config,
-                script_path,
-                file_path,
-                content,
-                progress_callback,
-            )
-            .await
+            Self::execute_codemod_with_quickjs(&self.config, script_path, file_path, content).await
         }
 
         #[cfg(not(feature = "native"))]
@@ -185,7 +177,7 @@ where
         id: &str,
         script_path: &Path,
         target_dir: &Path,
-        progress_callback: ProgressCallback,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<ExecutionStats, ExecutionError> {
         // Check if target directory exists
         if !self.config.filesystem.exists(target_dir).await {
@@ -279,14 +271,18 @@ where
                 walk_builder.overrides(overrides);
             }
 
-            let final_paths = Arc::new(std::sync::Mutex::new(Vec::new()));
+            let index = Arc::new(std::sync::atomic::AtomicUsize::new(0));
             walk_builder.build_parallel().run(|| {
                 let config = Arc::clone(&config);
+                let modified_count = Arc::clone(&modified_count);
+                let unmodified_count = Arc::clone(&unmodified_count);
                 let error_count = Arc::clone(&error_count);
                 let errors = Arc::clone(&errors);
+                let script_path = Arc::clone(&script_path);
                 let ts_extensions = Arc::clone(&ts_extensions);
-                let final_paths = Arc::clone(&final_paths);
-
+                let progress_callback = progress_callback.clone();
+                let id = id.clone();
+                let index = Arc::clone(&index);
                 Box::new(move |entry_result| {
                     match entry_result {
                         Ok(entry) => {
@@ -308,7 +304,75 @@ where
                                 return WalkState::Continue;
                             }
 
-                            final_paths.lock().unwrap().push(file_path.to_path_buf());
+                            let file_name = file_path.file_name().unwrap_or_default();
+                            if let Some(progress_callback) = progress_callback.clone() {
+                                progress_callback(
+                                    &id,
+                                    &file_name.to_string_lossy(),
+                                    "set_text",
+                                    None,
+                                    &(index.load(std::sync::atomic::Ordering::Relaxed) as u64),
+                                );
+                            }
+
+                            // Create a runtime for this thread
+                            let rt = tokio::runtime::Builder::new_current_thread()
+                                .enable_all()
+                                .build()
+                                .unwrap();
+
+                            let progress_callback = progress_callback.clone();
+                            rt.block_on(async {
+                                match Self::execute_on_single_file(
+                                    &config,
+                                    &script_path,
+                                    file_path,
+                                    Some(MultiProgressCallback {
+                                        id: id.clone(),
+                                        file_name: file_name.to_string_lossy().to_string(),
+                                        callback: progress_callback.unwrap(),
+                                        index: index.load(std::sync::atomic::Ordering::Relaxed)
+                                            as u64,
+                                    }),
+                                )
+                                .await
+                                {
+                                    Ok(ExecutionResult::Modified) => {
+                                        modified_count
+                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                    }
+                                    Ok(ExecutionResult::Unmodified) => {
+                                        unmodified_count
+                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                    }
+                                    Ok(ExecutionResult::Error(msg)) => {
+                                        error_count
+                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                        let error_msg = format!(
+                                            "Error processing file {}: {}",
+                                            file_path.display(),
+                                            msg
+                                        );
+                                        errors.lock().unwrap().push(error_msg);
+                                    }
+                                    Err(e) => {
+                                        error_count
+                                            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                        let error_msg = format!(
+                                            "Error processing file {}: {}",
+                                            file_path.display(),
+                                            match e {
+                                                ExecutionError::Runtime { source } => {
+                                                    source.to_string()
+                                                }
+                                                _ => e.to_string(),
+                                            }
+                                        );
+                                        errors.lock().unwrap().push(error_msg);
+                                    }
+                                };
+                                index.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                            });
                         }
                         Err(err) => {
                             error_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
@@ -319,81 +383,6 @@ where
                     WalkState::Continue
                 })
             });
-
-            let mut handles = Vec::new();
-            let entries = final_paths.lock().unwrap().clone();
-            let count = entries.len();
-
-            for (index, file_path) in entries.into_iter().enumerate() {
-                let config = Arc::clone(&config);
-                let script_path = Arc::clone(&script_path);
-                let modified_count = Arc::clone(&modified_count);
-                let unmodified_count = Arc::clone(&unmodified_count);
-                let error_count = Arc::clone(&error_count);
-                let errors = Arc::clone(&errors);
-                let progress_callback = progress_callback.clone();
-                let id = id.clone();
-                handles.push(tokio::task::spawn_blocking(move || {
-                    tokio::runtime::Handle::current().block_on(async move {
-                        let file_name = file_path.file_name();
-                        if let Some(progress_callback) = progress_callback.clone() {
-                            progress_callback(
-                                &id,
-                                &file_name.unwrap_or_default().to_string_lossy(),
-                                "set_text",
-                                Some(&(count as u64)),
-                                &(index as u64),
-                            );
-                        }
-
-                        let id = id.clone();
-                        let progress_callback = progress_callback.clone();
-                        match Self::execute_on_single_file(
-                            &config,
-                            &script_path,
-                            file_path.as_path(),
-                            ProgressCallbackEntries {
-                                count: Some(count as u64),
-                                index: index as u64,
-                                id,
-                                callback: progress_callback.clone(),
-                            },
-                        )
-                        .await
-                        {
-                            Ok(ExecutionResult::Modified) => {
-                                modified_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                            }
-                            Ok(ExecutionResult::Unmodified) => {
-                                unmodified_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                            }
-                            Ok(ExecutionResult::Error(msg)) => {
-                                error_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                                let error_msg = format!(
-                                    "Error processing file {}: {}",
-                                    file_path.display(),
-                                    msg
-                                );
-                                errors.lock().unwrap().push(error_msg);
-                            }
-                            Err(e) => {
-                                error_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                                let error_msg = format!(
-                                    "Error processing file {}: {}",
-                                    file_path.display(),
-                                    match e {
-                                        ExecutionError::Runtime { source } => {
-                                            source.to_string()
-                                        }
-                                        _ => e.to_string(),
-                                    }
-                                );
-                                errors.lock().unwrap().push(error_msg);
-                            }
-                        }
-                    })
-                }));
-            }
 
             let modified = modified_count.load(std::sync::atomic::Ordering::Relaxed);
             let unmodified = unmodified_count.load(std::sync::atomic::Ordering::Relaxed);
@@ -416,12 +405,17 @@ where
         config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
-        progress_callback: ProgressCallbackEntries,
+        multi_progress_callback: Option<MultiProgressCallback>,
     ) -> Result<ExecutionResult, ExecutionError> {
         #[cfg(feature = "native")]
         {
-            Self::execute_with_quickjs(config, script_path, target_file_path, progress_callback)
-                .await
+            Self::execute_with_quickjs(
+                config,
+                script_path,
+                target_file_path,
+                multi_progress_callback,
+            )
+            .await
         }
 
         #[cfg(not(feature = "native"))]
@@ -438,7 +432,7 @@ where
         config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
-        progress_callback: ProgressCallbackEntries,
+        multi_progress_callback: Option<MultiProgressCallback>,
     ) -> Result<ExecutionResult, ExecutionError> {
         // Read the original file content
         let original_content = tokio::fs::read_to_string(target_file_path)
@@ -453,9 +447,18 @@ where
             script_path,
             target_file_path,
             &original_content,
-            Some(progress_callback),
         )
         .await?;
+
+        if let Some(multi_progress_callback) = multi_progress_callback {
+            (multi_progress_callback.callback)(
+                &multi_progress_callback.id,
+                &multi_progress_callback.file_name,
+                "next",
+                None,
+                &multi_progress_callback.index,
+            );
+        }
 
         // Handle the result
         match execution_output {
@@ -507,7 +510,6 @@ where
         script_path: &Path,
         file_path: &Path,
         content: &str,
-        progress_callback: Option<ProgressCallbackEntries>,
     ) -> Result<ExecutionOutput, ExecutionError> {
         use crate::utils::quickjs_utils::maybe_promise;
 
@@ -659,18 +661,6 @@ where
             execution.await
         })
         .await;
-
-        let progress_callback = progress_callback.clone().unwrap();
-
-        if let Some(callback) = progress_callback.callback {
-            callback(
-                &progress_callback.id,
-                &file_path.to_string_lossy(),
-                "next",
-                None,
-                &progress_callback.index,
-            );
-        }
 
         // Convert the result to ExecutionOutput
         match result {

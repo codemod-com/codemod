@@ -7,9 +7,9 @@ use codemod_sandbox::sandbox::{
 };
 use std::{path::Path, sync::Arc};
 
-use crate::dirty_git_check;
 use crate::progress_bar::progress_bar_for_multi_progress;
 use crate::progress_bar::{ActionType, MultiProgressProgressBarCallback};
+use crate::{dirty_git_check, progress_bar::ProgressCallback};
 use codemod_sandbox::utils::project_discovery::find_tsconfig;
 
 #[derive(Args, Debug)]
@@ -113,7 +113,7 @@ pub async fn handler(args: &Command) -> Result<()> {
     let engine = ExecutionEngine::new(config);
     let (progress_bar, started) = progress_bar_for_multi_progress();
 
-    let callback = Arc::new(
+    let callback: ProgressCallback = Arc::new(
         move |id: &str, current_file: &str, action_type: &str, count: Option<&u64>, index: &u64| {
             let progress_bar = progress_bar.clone();
             let id = id.to_string();
