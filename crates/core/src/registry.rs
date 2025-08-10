@@ -369,7 +369,7 @@ impl RegistryClient {
                     .headers()
                     .get(CONTENT_LENGTH)
                     .and_then(|val| val.to_str().ok()?.parse().ok())
-                    .unwrap_or(0);
+                    .unwrap_or(1);
 
                 let response = self
                     .client
