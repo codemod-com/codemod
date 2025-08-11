@@ -119,7 +119,7 @@ const config = {
       {
         source: "/registry/:path*",
         destination: "https://app.codemod.com/registry/:path*",
-        permanent: false,
+        permanent: true,
       },
     ];
   },
