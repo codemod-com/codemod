@@ -47,7 +47,7 @@ use std::sync::OnceLock;
 
 pub static GLOBAL_STATS: OnceLock<Mutex<ExecutionStats>> = OnceLock::new();
 
-type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
+pub type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
 /// Workflow engine
 pub struct Engine {
     /// State adapter for persisting workflow state

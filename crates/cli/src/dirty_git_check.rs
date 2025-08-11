@@ -8,7 +8,7 @@ type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
 
 fn ask_for_git_init(path: &Path) -> Result<bool> {
     let answer = Confirm::new(&format!(
-        "⚠️  This path {} is not initialized by Git. Do you want to continue?",
+        "⚠️  The target path '{}' is not tracked by Git. Do you want to continue?",
         path.display()
     ))
     .with_default(false)
@@ -58,13 +58,13 @@ pub fn dirty_check() -> GitDirtyCheckCallback {
                                     std::process::exit(1);
                                 }
                             }
-                        } else if ask_for_git_init(path).is_err() {
+                        } else if ask_for_git_init(path).unwrap_or(false) {
                             eprintln!("Error: Aborting due to uninitialized Git repository");
                             std::process::exit(1);
                         }
                     }
                     _ => {
-                        if ask_for_git_init(path).is_err() {
+                        if ask_for_git_init(path).unwrap_or(false) {
                             eprintln!("Error: Aborting due to uninitialized Git repository");
                             std::process::exit(1);
                         }
