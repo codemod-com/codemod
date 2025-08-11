@@ -5,6 +5,9 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
+pub type ProgressCallback =
+    Option<Arc<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync + 'static>>;
+
 use crate::registry::Result as RegistryResult;
 use chrono::Utc;
 use log::{debug, error, info, warn};
@@ -31,7 +34,9 @@ use butterflow_runners::Runner;
 use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
-use codemod_sandbox::{execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes};
+use codemod_sandbox::{
+    execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes, GitDirty, Globs,
+};
 use codemod_sandbox::{
     sandbox::{
         engine::{
@@ -44,7 +49,6 @@ use codemod_sandbox::{
     utils::project_discovery::find_tsconfig,
 };
 use std::sync::OnceLock;
-
 pub static GLOBAL_STATS: OnceLock<Mutex<ExecutionStats>> = OnceLock::new();
 
 pub type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
@@ -113,6 +117,7 @@ impl Engine {
         params: HashMap<String, String>,
         bundle_path: Option<PathBuf>,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+        progress_callback: ProgressCallback,
     ) -> Result<Uuid> {
         utils::validate_workflow(&workflow, bundle_path.as_deref().unwrap_or(Path::new("")))?;
         self.validate_codemod_dependencies(&workflow, &[]).await?;
@@ -137,9 +142,10 @@ impl Engine {
 
         let engine = self.clone();
         let git_dirty_check_callback = git_dirty_check_callback.clone();
+        let progress_callback = progress_callback.clone();
         tokio::spawn(async move {
             if let Err(e) = engine
-                .execute_workflow(workflow_run_id, git_dirty_check_callback)
+                .execute_workflow(workflow_run_id, git_dirty_check_callback, progress_callback)
                 .await
             {
                 error!("Workflow execution failed: {e}");
@@ -155,6 +161,7 @@ impl Engine {
         workflow_run_id: Uuid,
         task_ids: Vec<Uuid>,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+        progress_callback: ProgressCallback,
     ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
@@ -191,9 +198,13 @@ impl Engine {
                     .await?;
 
                 let engine = self.clone();
+                let progress_callback = progress_callback.clone();
                 let git_dirty_check_callback = git_dirty_check_callback.clone();
                 tokio::spawn(async move {
-                    if let Err(e) = engine.execute_task(task_id, git_dirty_check_callback).await {
+                    if let Err(e) = engine
+                        .execute_task(task_id, git_dirty_check_callback, progress_callback)
+                        .await
+                    {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -229,10 +240,11 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
+        let progress_callback = progress_callback.clone();
         let git_dirty_check_callback = git_dirty_check_callback.clone();
         tokio::spawn(async move {
             if let Err(e) = engine
-                .execute_workflow(workflow_run_id, git_dirty_check_callback)
+                .execute_workflow(workflow_run_id, git_dirty_check_callback, progress_callback)
                 .await
             {
                 error!("Workflow execution failed: {e}");
@@ -247,6 +259,7 @@ impl Engine {
         &self,
         workflow_run_id: Uuid,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+        progress_callback: ProgressCallback,
     ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
@@ -330,9 +343,13 @@ impl Engine {
 
             let engine = self.clone();
             let task_id = task.id;
+            let progress_callback = progress_callback.clone();
             let git_dirty_check_callback = git_dirty_check_callback.clone();
             tokio::spawn(async move {
-                if let Err(e) = engine.execute_task(task_id, git_dirty_check_callback).await {
+                if let Err(e) = engine
+                    .execute_task(task_id, git_dirty_check_callback, progress_callback)
+                    .await
+                {
                     error!("Task execution failed: {e}");
                 }
             });
@@ -367,16 +384,16 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
+        let progress_callback = progress_callback.clone();
         let git_dirty_check_callback = git_dirty_check_callback.clone();
         tokio::spawn(async move {
             if let Err(e) = engine
-                .execute_workflow(workflow_run_id, git_dirty_check_callback)
+                .execute_workflow(workflow_run_id, git_dirty_check_callback, progress_callback)
                 .await
             {
                 error!("Workflow execution failed: {e}");
             }
         });
-
         Ok(())
     }
 
@@ -616,7 +633,7 @@ impl Engine {
 
         // Resolve the package
         let resolved_package = registry_client
-            .resolve_package(source, None, false)
+            .resolve_package(source, None, false, None)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve codemod {source}: {e}")))?;
 
@@ -652,6 +669,7 @@ impl Engine {
         &self,
         workflow_run_id: Uuid,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+        progress_callback: ProgressCallback,
     ) -> Result<()> {
         // Get the workflow run
         let workflow_run = self
@@ -870,9 +888,13 @@ impl Engine {
                 // Start task execution
                 let engine = self.clone();
                 let task_id = task.id;
+                let progress_callback = progress_callback.clone();
                 let git_dirty_check_callback = git_dirty_check_callback.clone();
                 tokio::spawn(async move {
-                    if let Err(e) = engine.execute_task(task_id, git_dirty_check_callback).await {
+                    if let Err(e) = engine
+                        .execute_task(task_id, git_dirty_check_callback, progress_callback)
+                        .await
+                    {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -948,6 +970,7 @@ impl Engine {
         &self,
         task_id: Uuid,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+        progress_callback: ProgressCallback,
     ) -> Result<()> {
         let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
@@ -1043,6 +1066,7 @@ impl Engine {
                     &workflow_run.workflow,
                     &workflow_run.bundle_path,
                     git_dirty_check_callback.clone(),
+                    progress_callback.clone(),
                 )
                 .await;
 
@@ -1166,6 +1190,7 @@ impl Engine {
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+        progress_callback: ProgressCallback,
     ) -> Result<()> {
         self.execute_step_action_with_chain(
             runner,
@@ -1179,6 +1204,7 @@ impl Engine {
             bundle_path,
             &[],
             git_dirty_check_callback,
+            progress_callback,
         )
         .await
     }
@@ -1198,6 +1224,7 @@ impl Engine {
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+        progress_callback: ProgressCallback,
     ) -> Result<()> {
         match action {
             StepAction::RunScript(run) => {
@@ -1240,6 +1267,7 @@ impl Engine {
                         bundle_path,
                         dependency_chain,
                         git_dirty_check_callback.clone(),
+                        progress_callback.clone(),
                     ))
                     .await?;
                 }
@@ -1247,17 +1275,21 @@ impl Engine {
             }
             StepAction::AstGrep(ast_grep) => {
                 self.execute_ast_grep_step_with_dir(
+                    node.id.clone(),
                     ast_grep,
                     bundle_path.as_deref(),
                     git_dirty_check_callback,
+                    progress_callback.clone(),
                 )
                 .await
             }
             StepAction::JSAstGrep(js_ast_grep) => {
                 self.execute_js_ast_grep_step_with_dir(
+                    node.id.clone(),
                     js_ast_grep,
                     bundle_path.as_deref(),
                     git_dirty_check_callback,
+                    progress_callback.clone(),
                 )
                 .await
             }
@@ -1272,6 +1304,7 @@ impl Engine {
                     bundle_path,
                     dependency_chain,
                     git_dirty_check_callback,
+                    progress_callback.clone(),
                 ))
                 .await
             }
@@ -1280,9 +1313,11 @@ impl Engine {
 
     pub async fn execute_ast_grep_step_with_dir(
         &self,
+        id: String,
         ast_grep: &UseAstGrep,
         bundle_path: Option<&std::path::Path>,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+        progress_callback: ProgressCallback,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let bundle_path = bundle_path
@@ -1313,24 +1348,36 @@ impl Engine {
                 config_path.display()
             );
             execute_ast_grep_on_globs_with_fixes(
-                ast_grep.include.as_deref(),
-                ast_grep.exclude.as_deref(),
+                id,
+                Globs {
+                    include: ast_grep.include.as_deref().map(|v| v.to_vec()),
+                    exclude: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
+                },
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir.as_deref(),
-                ast_grep.allow_dirty.unwrap_or(false),
-                git_dirty_check_callback.clone(),
+                GitDirty {
+                    allow_dirty: ast_grep.allow_dirty.unwrap_or(false),
+                    git_dirty_check_callback: git_dirty_check_callback.clone(),
+                },
+                progress_callback.clone(),
             )
             .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {e}")))?
         } else {
             execute_ast_grep_on_globs(
-                ast_grep.include.as_deref(),
-                ast_grep.exclude.as_deref(),
+                id,
+                Globs {
+                    include: ast_grep.include.as_deref().map(|v| v.to_vec()),
+                    exclude: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
+                },
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir.as_deref(),
-                ast_grep.allow_dirty.unwrap_or(false),
-                git_dirty_check_callback.clone(),
+                GitDirty {
+                    allow_dirty: ast_grep.allow_dirty.unwrap_or(false),
+                    git_dirty_check_callback: git_dirty_check_callback.clone(),
+                },
+                progress_callback.clone(),
             )
             .map_err(|e| Error::Other(format!("AST grep execution failed: {e}")))?
         };
@@ -1369,9 +1416,11 @@ impl Engine {
 
     pub async fn execute_js_ast_grep_step_with_dir(
         &self,
+        id: String,
         js_ast_grep: &UseJSAstGrep,
         bundle_path: Option<&std::path::Path>,
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+        progress_callback: ProgressCallback,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
@@ -1494,7 +1543,7 @@ impl Engine {
         // Create and run the execution engine
         let engine = ExecutionEngine::new(config);
         let stats = engine
-            .execute_on_directory(&js_file_path, &base_path)
+            .execute_on_directory(&id, &js_file_path, &base_path, progress_callback)
             .await
             .map_err(|e| Error::Other(format!("JavaScript execution failed: {e}")))?;
 
@@ -1528,6 +1577,7 @@ impl Engine {
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+        progress_callback: ProgressCallback,
     ) -> Result<()> {
         info!("Executing codemod step: {}", codemod.source);
 
@@ -1575,7 +1625,7 @@ impl Engine {
 
         // Resolve the package (local path or registry package)
         let resolved_package = registry_client
-            .resolve_package(&codemod.source, None, false)
+            .resolve_package(&codemod.source, None, false, None)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve package: {e}")))?;
 
@@ -1603,6 +1653,7 @@ impl Engine {
             bundle_path,
             &new_chain,
             git_dirty_check_callback.clone(),
+            progress_callback,
         )
         .await
     }
@@ -1620,6 +1671,7 @@ impl Engine {
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
         git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+        progress_callback: ProgressCallback,
     ) -> Result<()> {
         let workflow_path = resolved_package.package_dir.join("workflow.yaml");
 
@@ -1715,6 +1767,7 @@ impl Engine {
                     &Some(resolved_package.package_dir.clone()),
                     dependency_chain,
                     git_dirty_check_callback.clone(),
+                    progress_callback.clone(),
                 ))
                 .await?;
             }
@@ -2203,6 +2256,7 @@ mod tests {
                 &state,
                 &bundle_path,
                 &dependency_chain,
+                None,
                 None,
             )
             .await;

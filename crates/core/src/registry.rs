@@ -1,13 +1,19 @@
+use bytes::BytesMut;
+use futures_util::StreamExt;
 use log::{debug, info};
 use reqwest;
+use reqwest::header::CONTENT_LENGTH;
 use serde::Deserialize;
 use serde_json;
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 use tempfile::TempDir;
 use thiserror::Error;
 use walkdir::WalkDir;
+
+pub type ProgressBarCallback = Arc<Box<dyn Fn(u64, u64) + Send + Sync>>;
 
 #[derive(Error, Debug)]
 pub enum RegistryError {
@@ -69,7 +75,7 @@ pub enum RegistryError {
     WalkdirError(#[from] walkdir::Error),
 
     #[error("Auth provider error")]
-    AuthProviderError(#[from] Box<dyn std::error::Error>),
+    AuthProviderError(#[from] Box<dyn std::error::Error + Send + Sync>),
 }
 
 pub type Result<T> = std::result::Result<T, RegistryError>;
@@ -158,6 +164,7 @@ impl RegistryClient {
         source: &str,
         registry_url: Option<&str>,
         force_download: bool,
+        progress_bar: Option<ProgressBarCallback>,
     ) -> Result<ResolvedPackage> {
         // Check if it's a local path
         if source.starts_with("./") || source.starts_with("../") || source.starts_with("/") {
@@ -192,8 +199,14 @@ impl RegistryClient {
         // Check if package is cached and valid
         let package_dir = if force_download || !is_package_cached(&package_cache_dir)? {
             info!("Downloading package: {source}@{version}");
-            self.download_and_extract_package(registry, &package_spec, &version, &package_cache_dir)
-                .await?
+            self.download_and_extract_package(
+                registry,
+                &package_spec,
+                &version,
+                &package_cache_dir,
+                progress_bar,
+            )
+            .await?
         } else {
             debug!("Using cached package: {}", package_cache_dir.display());
             package_cache_dir
@@ -321,6 +334,7 @@ impl RegistryClient {
         spec: &PackageSpec,
         version: &str,
         cache_dir: &Path,
+        progress_bar: Option<ProgressBarCallback>,
     ) -> Result<PathBuf> {
         let package_path = if let Some(scope) = &spec.scope {
             format!("{}/{}", scope, spec.name)
@@ -333,91 +347,160 @@ impl RegistryClient {
 
         debug!("Downloading package from: {download_url}");
 
-        let mut request = self.client.get(&download_url);
-
-        // Add authentication header if available
+        let mut package_data = BytesMut::new();
         if let Some(auth_provider) = &self.auth_provider {
             if let Ok(Some(auth)) = auth_provider.get_auth_for_registry(registry_url) {
-                request = request.header(
-                    "Authorization",
-                    format!("Bearer {}", auth.tokens.access_token),
-                );
-            }
-        }
+                let access_token = auth.tokens.access_token;
+                let head_response = self
+                    .client
+                    .head(&download_url)
+                    .header("Authorization", format!("Bearer {access_token}"))
+                    .send()
+                    .await
+                    .map_err(|e| RegistryError::DownloadFailed {
+                        status: e
+                            .status()
+                            .unwrap_or(reqwest::StatusCode::INTERNAL_SERVER_ERROR)
+                            .into(),
+                        message: e.to_string(),
+                    })?;
 
-        let response = request.send().await?;
+                let total_size = head_response
+                    .headers()
+                    .get(CONTENT_LENGTH)
+                    .and_then(|val| val.to_str().ok()?.parse().ok())
+                    .unwrap_or(1);
 
-        if !response.status().is_success() {
-            let status = response.status();
-            let error_text = response.text().await.unwrap_or_default();
-            return Err(RegistryError::DownloadFailed {
-                status: status.into(),
-                message: error_text,
-            });
-        }
+                let response = self
+                    .client
+                    .get(&download_url)
+                    .header("Authorization", format!("Bearer {access_token}"))
+                    .send()
+                    .await
+                    .map_err(|e| RegistryError::DownloadFailed {
+                        status: e
+                            .status()
+                            .unwrap_or(reqwest::StatusCode::INTERNAL_SERVER_ERROR)
+                            .into(),
+                        message: e.to_string(),
+                    })?;
 
-        let package_data = response.bytes().await?;
+                let mut stream = response.bytes_stream();
 
-        // Check if the response is a JSON redirect with download_url
-        if package_data.len() >= 2 {
-            let magic = &package_data[0..2];
-            if magic != [0x1f, 0x8b] {
-                // Check if this is a JSON response with a download_url
-                if let Ok(text) = std::str::from_utf8(&package_data) {
-                    if text.trim().starts_with('{') {
-                        // Try to parse as JSON to get the actual download URL
-                        if let Ok(download_response) =
-                            serde_json::from_str::<DownloadResponse>(text)
-                        {
-                            debug!(
-                                "Server returned download URL: {}",
-                                download_response.download_url
-                            );
-
-                            // Download from the actual URL
-                            let actual_response = self
-                                .client
-                                .get(&download_response.download_url)
-                                .send()
-                                .await?;
-
-                            if !actual_response.status().is_success() {
-                                let status = actual_response.status();
-                                let error_text = actual_response.text().await.unwrap_or_default();
-                                return Err(RegistryError::CdnDownloadFailed {
-                                    status: status.into(),
-                                    message: error_text,
-                                });
-                            }
-
-                            let actual_package_data = actual_response.bytes().await?;
-
-                            // Verify this is actually a gzip file
-                            if actual_package_data.len() >= 2 {
-                                let actual_magic = &actual_package_data[0..2];
-                                if actual_magic != [0x1f, 0x8b] {
-                                    return Err(RegistryError::InvalidCdnGzipFile {
-                                        magic: format!(
-                                            "{:02x} {:02x}",
-                                            actual_magic[0], actual_magic[1]
-                                        ),
-                                    });
-                                }
-                            }
-
-                            // Extract the actual package data
-                            self.extract_package(&actual_package_data, cache_dir)
-                                .await?;
-                            info!("Package cached to: {}", cache_dir.display());
-                            return Ok(cache_dir.to_path_buf());
-                        }
+                let mut downloaded = 0u64;
+                while let Some(chunk) = stream.next().await {
+                    let chunk = chunk.map_err(|e| RegistryError::DownloadFailed {
+                        status: e
+                            .status()
+                            .unwrap_or(reqwest::StatusCode::INTERNAL_SERVER_ERROR)
+                            .into(),
+                        message: e.to_string(),
+                    })?;
+                    package_data.extend_from_slice(&chunk);
+                    downloaded += chunk.len() as u64;
+                    if let Some(callback) = progress_bar.clone() {
+                        callback(downloaded, total_size);
                     }
                 }
 
-                // If we get here, it's not a valid gzip file or JSON response
-                return Err(RegistryError::InvalidDownloadData {
-                    magic: format!("{:02x} {:02x}", magic[0], magic[1]),
-                });
+                if package_data.len() >= 2 {
+                    let magic = &package_data[0..2];
+                    if magic != [0x1f, 0x8b] {
+                        // Check if this is a JSON response with a download_url
+                        if let Ok(text) = std::str::from_utf8(&package_data) {
+                            if text.trim().starts_with('{') {
+                                // Try to parse as JSON to get the actual download URL
+                                if let Ok(download_response) =
+                                    serde_json::from_str::<DownloadResponse>(text)
+                                {
+                                    debug!(
+                                        "Server returned download URL: {}",
+                                        download_response.download_url
+                                    );
+
+                                    package_data = BytesMut::new();
+
+                                    let head_response = self
+                                        .client
+                                        .head(&download_response.download_url)
+                                        .header("Authorization", format!("Bearer {access_token}"))
+                                        .send()
+                                        .await?;
+
+                                    let total_size = head_response
+                                        .headers()
+                                        .get(CONTENT_LENGTH)
+                                        .and_then(|val| val.to_str().ok()?.parse().ok())
+                                        .unwrap_or(0);
+
+                                    let response = self
+                                        .client
+                                        .get(&download_response.download_url)
+                                        .header("Authorization", format!("Bearer {access_token}"))
+                                        .send()
+                                        .await
+                                        .map_err(|e| RegistryError::DownloadFailed {
+                                            status: e
+                                                .status()
+                                                .unwrap_or(
+                                                    reqwest::StatusCode::INTERNAL_SERVER_ERROR,
+                                                )
+                                                .into(),
+                                            message: e.to_string(),
+                                        })?;
+
+                                    if !response.status().is_success() {
+                                        let status = response.status();
+                                        let error_text = response.text().await.unwrap_or_default();
+                                        return Err(RegistryError::CdnDownloadFailed {
+                                            status: status.into(),
+                                            message: error_text,
+                                        });
+                                    }
+
+                                    let mut stream = response.bytes_stream();
+
+                                    let mut downloaded = 0u64;
+                                    while let Some(chunk) = stream.next().await {
+                                        let chunk =
+                                            chunk.map_err(|e| RegistryError::DownloadFailed {
+                                                status: e
+                                                    .status()
+                                                    .unwrap_or(
+                                                        reqwest::StatusCode::INTERNAL_SERVER_ERROR,
+                                                    )
+                                                    .into(),
+                                                message: e.to_string(),
+                                            })?;
+                                        package_data.extend_from_slice(&chunk);
+                                        downloaded += chunk.len() as u64;
+                                        if let Some(callback) = progress_bar.clone() {
+                                            callback(downloaded, total_size);
+                                        }
+                                    }
+
+                                    // Verify this is actually a gzip file
+                                    if package_data.len() >= 2 {
+                                        let actual_magic = &package_data[0..2];
+                                        if actual_magic != [0x1f, 0x8b] {
+                                            return Err(RegistryError::InvalidCdnGzipFile {
+                                                magic: format!(
+                                                    "{:02x} {:02x}",
+                                                    actual_magic[0], actual_magic[1]
+                                                ),
+                                            });
+                                        }
+                                    }
+
+                                    // Extract the actual package data
+                                    self.extract_package(&package_data, cache_dir).await?;
+                                    info!("Package cached to: {}", cache_dir.display());
+                                    return Ok(cache_dir.to_path_buf());
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -435,7 +518,7 @@ impl RegistryClient {
         // Extract tar.gz
         let tar_gz = flate2::read::GzDecoder::new(package_data);
         let mut archive = tar::Archive::new(tar_gz);
-        println!("Extracting to: {}", temp_path.display());
+        info!("Extracting to: {}", temp_path.display());
         archive.unpack(temp_path)?;
 
         // Move to cache directory
@@ -552,7 +635,7 @@ fn validate_package_structure(package_dir: &Path) -> Result<()> {
 }
 
 fn copy_dir_recursively(src: &Path, dst: &Path) -> Result<()> {
-    println!(
+    info!(
         "Copying directory recursively from: {} to: {}",
         src.display(),
         dst.display()

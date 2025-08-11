@@ -16,6 +16,8 @@ use thiserror::Error;
 
 use crate::sandbox::engine::language_data::get_extensions_for_language;
 
+pub type ProgressCallback = Option<Arc<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync>>;
+
 type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
 
 #[derive(Error, Debug)]
@@ -61,55 +63,65 @@ pub struct AstGrepMatch {
 /// # Returns
 /// Vector of matches found across all files
 pub fn execute_ast_grep_on_globs(
-    include_globs: Option<&[String]>,
-    exclude_globs: Option<&[String]>,
+    id: String,
+    globs: Globs,
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
-    allow_dirty: bool,
-    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+    git_dirty: GitDirty,
+    progress_callback: ProgressCallback,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
-        Globs {
-            include: Some(include_globs.unwrap_or(&[]).to_vec()),
-            exclude: exclude_globs.map(|globs| globs.to_vec()),
-        },
+        globs,
         base_path,
         config_file,
         working_dir,
         false,
-        allow_dirty,
-        git_dirty_check_callback,
+        git_dirty,
+        ProgressEntries {
+            id: id.clone(),
+            callback: progress_callback,
+        },
     )
 }
 
 /// Execute ast-grep on the given globs with option to apply fixes
 pub fn execute_ast_grep_on_globs_with_fixes(
-    include_globs: Option<&[String]>,
-    exclude_globs: Option<&[String]>,
+    id: String,
+    globs: Globs,
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
-    allow_dirty: bool,
-    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+    git_dirty: GitDirty,
+    progress_callback: ProgressCallback,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
-        Globs {
-            include: Some(include_globs.unwrap_or(&[]).to_vec()),
-            exclude: exclude_globs.map(|globs| globs.to_vec()),
-        },
+        globs,
         base_path,
         config_file,
         working_dir,
         true,
-        allow_dirty,
-        git_dirty_check_callback,
+        git_dirty,
+        ProgressEntries {
+            id: id.clone(),
+            callback: progress_callback,
+        },
     )
 }
 
-struct Globs {
-    include: Option<Vec<String>>,
-    exclude: Option<Vec<String>>,
+pub struct Globs {
+    pub include: Option<Vec<String>>,
+    pub exclude: Option<Vec<String>>,
+}
+
+pub struct GitDirty {
+    pub allow_dirty: bool,
+    pub git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+}
+
+struct ProgressEntries {
+    id: String,
+    callback: ProgressCallback,
 }
 
 fn execute_ast_grep_on_globs_with_options(
@@ -118,8 +130,8 @@ fn execute_ast_grep_on_globs_with_options(
     config_file: &str,
     working_dir: Option<&Path>,
     apply_fixes: bool,
-    allow_dirty: bool,
-    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+    git_dirty: GitDirty,
+    progress_callback: ProgressEntries,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -243,8 +255,8 @@ fn execute_ast_grep_on_globs_with_options(
             .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")))
     };
 
-    if let Some(git_dirty_check_callback) = git_dirty_check_callback {
-        git_dirty_check_callback(search_base.as_path(), allow_dirty);
+    if let Some(git_dirty_check_callback) = git_dirty.git_dirty_check_callback {
+        git_dirty_check_callback(search_base.as_path(), git_dirty.allow_dirty);
     }
 
     // Build glob overrides using the enhanced include patterns
@@ -265,11 +277,37 @@ fn execute_ast_grep_on_globs_with_options(
 
     let mut all_matches = Vec::new();
 
-    for entry in walker {
+    let walker_entries: Vec<_> = walker.collect();
+    let walker_count = walker_entries.len();
+
+    for (index, entry) in walker_entries.into_iter().enumerate() {
         let entry = entry.map_err(|e| AstGrepError::Io(std::io::Error::other(e)))?;
+        let file_path = entry.path();
+        let file_name = file_path.file_name();
+
+        if let Some(callback) = progress_callback.callback.clone() {
+            callback(
+                &progress_callback.id,
+                &file_name.unwrap_or_default().to_string_lossy(),
+                "set_text",
+                Some(&(walker_count as u64)),
+                &(index as u64),
+            );
+        }
 
         if entry.file_type().is_some_and(|ft| ft.is_file()) {
-            let matches = scan_file(entry.path(), &combined_scan, &rule_configs, apply_fixes)?;
+            let matches = scan_file(
+                file_path,
+                &combined_scan,
+                &rule_configs,
+                apply_fixes,
+                ProgressCallbackEntries {
+                    index: index as u64,
+                    count: walker_count as u64,
+                    id: progress_callback.id.clone(),
+                    callback: progress_callback.callback.clone(),
+                },
+            )?;
             all_matches.extend(matches);
         }
     }
@@ -316,11 +354,19 @@ fn build_globs(
         .map_err(|e| AstGrepError::Glob(format!("Failed to build glob overrides: {e}")))
 }
 
+struct ProgressCallbackEntries {
+    count: u64,
+    index: u64,
+    id: String,
+    callback: ProgressCallback,
+}
+
 fn scan_file(
     file_path: &Path,
     combined_scan: &CombinedScan<SupportLang>,
     rule_configs: &[RuleConfig<SupportLang>],
     apply_fixes: bool,
+    progress_callback: ProgressCallbackEntries,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     let content = fs::read_to_string(file_path)?;
     let language = detect_language(file_path)?;
@@ -332,6 +378,7 @@ fn scan_file(
         combined_scan,
         rule_configs,
         apply_fixes,
+        progress_callback,
     )
 }
 
@@ -342,6 +389,7 @@ fn scan_content(
     combined_scan: &CombinedScan<SupportLang>,
     _rule_configs: &[RuleConfig<SupportLang>],
     apply_fixes: bool,
+    progress_callback: ProgressCallbackEntries,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     let doc = StrDoc::new(content, language);
     let root = AstGrep::doc(doc);
@@ -467,6 +515,16 @@ fn scan_content(
         fs::write(file_path, new_content)?;
     }
 
+    if let Some(callback) = progress_callback.callback {
+        callback(
+            &progress_callback.id,
+            &file_path.to_string_lossy(),
+            "next",
+            Some(&progress_callback.count),
+            &progress_callback.index,
+        );
+    }
+
     Ok(matches)
 }
 
@@ -522,39 +580,55 @@ fn detect_language(file_path: &Path) -> Result<SupportLang, AstGrepError> {
 
 /// Backward compatibility function - converts paths to include globs
 pub fn execute_ast_grep_on_paths(
+    id: String,
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+    progress_callback: ProgressCallback,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs(
-        Some(paths),
-        None,
+        id,
+        Globs {
+            include: Some(paths.to_vec()),
+            exclude: None,
+        },
         None,
         config_file,
         working_dir,
-        allow_dirty,
-        git_dirty_check_callback,
+        GitDirty {
+            allow_dirty,
+            git_dirty_check_callback,
+        },
+        progress_callback,
     )
 }
 
 /// Backward compatibility function - converts paths to include globs with fixes
 pub fn execute_ast_grep_on_paths_with_fixes(
+    id: String,
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
     allow_dirty: bool,
     git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+    progress_callback: ProgressCallback,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_fixes(
-        Some(paths),
-        None,
+        id,
+        Globs {
+            include: Some(paths.to_vec()),
+            exclude: None,
+        },
         None,
         config_file,
         working_dir,
-        allow_dirty,
-        git_dirty_check_callback,
+        GitDirty {
+            allow_dirty,
+            git_dirty_check_callback,
+        },
+        progress_callback,
     )
 }
 
@@ -639,12 +713,18 @@ message: "Found var declaration"
 
         // Execute ast-grep
         let matches = execute_ast_grep_on_globs(
-            Some(&["test.js".to_string()]),
-            None,
+            "test".to_string(),
+            Globs {
+                include: Some(vec!["test.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
         .unwrap();
@@ -705,12 +785,18 @@ message: "Found console.log statement"
 
         // Execute ast-grep
         let matches = execute_ast_grep_on_globs(
-            Some(&["test.ts".to_string()]),
-            None,
+            "test".to_string(),
+            Globs {
+                include: Some(vec!["test.ts".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
         .unwrap();
@@ -751,12 +837,18 @@ message: "Found console.log statement"
 
         // Execute ast-grep on src directory using proper glob pattern
         let matches = execute_ast_grep_on_globs(
-            Some(&["src/**/*.js".to_string()]),
-            None,
+            "test".to_string(),
+            Globs {
+                include: Some(vec!["src/**/*.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
         .unwrap();
@@ -800,12 +892,18 @@ message: "Found console.log statement"
 
         // Execute ast-grep
         let matches = execute_ast_grep_on_globs(
-            Some(&["test.js".to_string()]),
-            None,
+            "test".to_string(),
+            Globs {
+                include: Some(vec!["test.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
         .unwrap();
@@ -835,12 +933,18 @@ message: "Found console.log statement"
 
         // Execute ast-grep
         let matches = execute_ast_grep_on_globs(
-            Some(&["test.js".to_string()]),
-            None,
+            "test".to_string(),
+            Globs {
+                include: Some(vec!["test.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
         .unwrap();
@@ -869,12 +973,18 @@ rule:
 
         // Execute ast-grep on nonexistent file - should handle gracefully
         let result = execute_ast_grep_on_globs(
-            Some(&["nonexistent.js".to_string()]),
-            None,
+            "test".to_string(),
+            Globs {
+                include: Some(vec!["nonexistent.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         );
 
@@ -911,12 +1021,18 @@ message: "Found console.log statement"
 
         // Test recursive glob pattern
         let matches = execute_ast_grep_on_globs(
-            Some(&["**/*.js".to_string()]),
-            None,
+            "test".to_string(),
+            Globs {
+                include: Some(vec!["**/*.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
         .unwrap();
@@ -939,12 +1055,18 @@ message: "Found console.log statement"
 
         // Test more specific pattern
         let matches = execute_ast_grep_on_globs(
-            Some(&["src/**/*.js".to_string()]),
-            None,
+            "test".to_string(),
+            Globs {
+                include: Some(vec!["src/**/*.js".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
         .unwrap();
@@ -1005,12 +1127,18 @@ message: "Found var declaration"
 
         // Execute with fixes
         let matches = execute_ast_grep_on_globs_with_fixes(
-            Some(&["test.js".to_string()]),
-            None,
+            "test".to_string(),
+            Globs {
+                include: Some(vec!["test.js".to_string()]),
+                exclude: None,
+            },
             None,
             "rules.yaml",
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
         .unwrap();
@@ -1066,12 +1194,18 @@ message: "Found console.log statement in TSX"
 
         // Test with empty include patterns - should auto-infer extensions
         let matches = execute_ast_grep_on_globs(
-            None, // None means auto-infer from rule languages
-            None,
+            "test".to_string(),
+            Globs {
+                include: None,
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
         .unwrap();
@@ -1148,12 +1282,18 @@ message: "Found console.log statement"
 
         // Test with generic glob pattern "**" - should be enhanced to "**/*.js", "**/*.mjs", "**/*.cjs"
         let matches = execute_ast_grep_on_globs(
-            Some(&["**".to_string()]),
-            None,
+            "test".to_string(),
+            Globs {
+                include: Some(vec!["**".to_string()]),
+                exclude: None,
+            },
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
-            false,
+            GitDirty {
+                allow_dirty: false,
+                git_dirty_check_callback: None,
+            },
             None,
         )
         .unwrap();

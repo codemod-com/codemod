@@ -15,6 +15,16 @@ use std::path::Path;
 use std::sync::Arc;
 use tokio::io::AsyncWriteExt;
 
+pub type ProgressCallback =
+    Arc<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync + 'static>;
+
+pub struct MultiProgressCallback {
+    pub id: String,
+    pub file_name: String,
+    pub callback: ProgressCallback,
+    pub index: u64,
+}
+
 /// Statistics about the execution results
 #[derive(Debug, Clone, Default)]
 pub struct ExecutionStats {
@@ -164,8 +174,10 @@ where
     /// Execute JavaScript code on all files in a directory using WalkParallel
     pub async fn execute_on_directory(
         &self,
+        id: &str,
         script_path: &Path,
         target_dir: &Path,
+        progress_callback: Option<ProgressCallback>,
     ) -> Result<ExecutionStats, ExecutionError> {
         // Check if target directory exists
         if !self.config.filesystem.exists(target_dir).await {
@@ -204,6 +216,8 @@ where
 
         // Execute in a blocking context since WalkParallel is synchronous
         let target_dir = target_dir.to_path_buf();
+        let progress_callback = progress_callback.clone();
+        let id = id.to_string();
         tokio::task::spawn_blocking(move || {
             let mut walk_builder = WalkBuilder::new(&target_dir);
             walk_builder
@@ -257,6 +271,7 @@ where
                 walk_builder.overrides(overrides);
             }
 
+            let index = Arc::new(std::sync::atomic::AtomicUsize::new(0));
             walk_builder.build_parallel().run(|| {
                 let config = Arc::clone(&config);
                 let modified_count = Arc::clone(&modified_count);
@@ -265,7 +280,9 @@ where
                 let errors = Arc::clone(&errors);
                 let script_path = Arc::clone(&script_path);
                 let ts_extensions = Arc::clone(&ts_extensions);
-
+                let progress_callback = progress_callback.clone();
+                let id = id.clone();
+                let index = Arc::clone(&index);
                 Box::new(move |entry_result| {
                     match entry_result {
                         Ok(entry) => {
@@ -287,15 +304,38 @@ where
                                 return WalkState::Continue;
                             }
 
+                            let file_name = file_path.file_name().unwrap_or_default();
+                            if let Some(progress_callback) = progress_callback.clone() {
+                                progress_callback(
+                                    &id,
+                                    &file_name.to_string_lossy(),
+                                    "set_text",
+                                    None,
+                                    &(index.load(std::sync::atomic::Ordering::Relaxed) as u64),
+                                );
+                            }
+
                             // Create a runtime for this thread
                             let rt = tokio::runtime::Builder::new_current_thread()
                                 .enable_all()
                                 .build()
                                 .unwrap();
 
+                            let progress_callback = progress_callback.clone();
                             rt.block_on(async {
-                                match Self::execute_on_single_file(&config, &script_path, file_path)
-                                    .await
+                                match Self::execute_on_single_file(
+                                    &config,
+                                    &script_path,
+                                    file_path,
+                                    Some(MultiProgressCallback {
+                                        id: id.clone(),
+                                        file_name: file_name.to_string_lossy().to_string(),
+                                        callback: progress_callback.unwrap(),
+                                        index: index.load(std::sync::atomic::Ordering::Relaxed)
+                                            as u64,
+                                    }),
+                                )
+                                .await
                                 {
                                     Ok(ExecutionResult::Modified) => {
                                         modified_count
@@ -330,7 +370,8 @@ where
                                         );
                                         errors.lock().unwrap().push(error_msg);
                                     }
-                                }
+                                };
+                                index.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                             });
                         }
                         Err(err) => {
@@ -364,10 +405,17 @@ where
         config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
+        multi_progress_callback: Option<MultiProgressCallback>,
     ) -> Result<ExecutionResult, ExecutionError> {
         #[cfg(feature = "native")]
         {
-            Self::execute_with_quickjs(config, script_path, target_file_path).await
+            Self::execute_with_quickjs(
+                config,
+                script_path,
+                target_file_path,
+                multi_progress_callback,
+            )
+            .await
         }
 
         #[cfg(not(feature = "native"))]
@@ -384,6 +432,7 @@ where
         config: &Arc<ExecutionConfig<F, R>>,
         script_path: &Path,
         target_file_path: &Path,
+        multi_progress_callback: Option<MultiProgressCallback>,
     ) -> Result<ExecutionResult, ExecutionError> {
         // Read the original file content
         let original_content = tokio::fs::read_to_string(target_file_path)
@@ -400,6 +449,16 @@ where
             &original_content,
         )
         .await?;
+
+        if let Some(multi_progress_callback) = multi_progress_callback {
+            (multi_progress_callback.callback)(
+                &multi_progress_callback.id,
+                &multi_progress_callback.file_name,
+                "next",
+                None,
+                &multi_progress_callback.index,
+            );
+        }
 
         // Handle the result
         match execution_output {

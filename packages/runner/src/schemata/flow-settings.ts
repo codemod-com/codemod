@@ -1,8 +1,8 @@
 import { basename, dirname, resolve } from "node:path";
 import * as v from "valibot";
 
-import { constants, access, stat } from "node:fs/promises";
-import { type Printer, chalk } from "@codemod-com/printer";
+import { type Printer } from "@codemod-com/printer";
+import { access, constants, stat } from "node:fs/promises";
 
 export const DEFAULT_EXCLUDE_PATTERNS = [
   "*.d.ts",
@@ -63,13 +63,6 @@ export const parseFlowSettings = async (
   let target =
     positionalPassedTarget ?? argTarget ?? DEFAULT_INPUT_DIRECTORY_PATH;
   if (positionalPassedTarget && argTarget) {
-    printer.printConsoleMessage(
-      "info",
-      chalk.yellow(
-        "Both positional and argument target options are passed. Defaulting to the argument target option...",
-      ),
-    );
-
     target = argTarget;
   }
 
