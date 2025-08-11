@@ -652,6 +652,14 @@
     "UseAstGrep": {
       "type": "object",
       "properties": {
+        "allow_dirty": {
+          "description": "Allow dirty files (optional, defaults to false)",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
         "base_path": {
           "description": "Base path for resolving relative globs (optional, defaults to current working directory)",
           "type": [
@@ -736,6 +744,14 @@
     "UseJSAstGrep": {
       "type": "object",
       "properties": {
+        "allow_dirty": {
+          "description": "Allow dirty files (optional, defaults to false)",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
         "base_path": {
           "description": "Base path for resolving relative globs (optional, defaults to current working directory)",
           "type": [

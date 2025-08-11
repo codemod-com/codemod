@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
+use std::sync::Arc;
 
 use ast_grep_config::{from_yaml_string, CombinedScan, RuleConfig};
 use ast_grep_core::tree_sitter::StrDoc;
@@ -14,6 +15,8 @@ use serde_json;
 use thiserror::Error;
 
 use crate::sandbox::engine::language_data::get_extensions_for_language;
+
+type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
 
 #[derive(Error, Debug)]
 pub enum AstGrepError {
@@ -63,14 +66,20 @@ pub fn execute_ast_grep_on_globs(
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
+    allow_dirty: bool,
+    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
-        include_globs,
-        exclude_globs,
+        Globs {
+            include: Some(include_globs.unwrap_or(&[]).to_vec()),
+            exclude: exclude_globs.map(|globs| globs.to_vec()),
+        },
         base_path,
         config_file,
         working_dir,
         false,
+        allow_dirty,
+        git_dirty_check_callback,
     )
 }
 
@@ -81,24 +90,36 @@ pub fn execute_ast_grep_on_globs_with_fixes(
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
+    allow_dirty: bool,
+    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     execute_ast_grep_on_globs_with_options(
-        include_globs,
-        exclude_globs,
+        Globs {
+            include: Some(include_globs.unwrap_or(&[]).to_vec()),
+            exclude: exclude_globs.map(|globs| globs.to_vec()),
+        },
         base_path,
         config_file,
         working_dir,
         true,
+        allow_dirty,
+        git_dirty_check_callback,
     )
 }
 
+struct Globs {
+    include: Option<Vec<String>>,
+    exclude: Option<Vec<String>>,
+}
+
 fn execute_ast_grep_on_globs_with_options(
-    include_globs: Option<&[String]>,
-    exclude_globs: Option<&[String]>,
+    globs: Globs,
     base_path: Option<&str>,
     config_file: &str,
     working_dir: Option<&Path>,
     apply_fixes: bool,
+    allow_dirty: bool,
+    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
     // Resolve config file path
     let config_path = if let Some(wd) = working_dir {
@@ -158,15 +179,15 @@ fn execute_ast_grep_on_globs_with_options(
     }
 
     // Enhance include globs with language-specific extensions if needed
-    let enhanced_include_globs = if let Some(globs) = include_globs {
-        if globs.is_empty() {
+    let enhanced_include_globs = if let Some(include) = globs.include.as_ref() {
+        if include.is_empty() {
             // If empty array provided, use all applicable extensions
             applicable_extensions.into_iter().collect::<Vec<_>>()
         } else {
             // Check if include patterns are very generic (like **, *.*, etc.)
             // and enhance them with language-specific extensions
             let mut enhanced = Vec::new();
-            for glob in globs {
+            for glob in include.iter() {
                 if is_generic_glob_pattern(glob) {
                     // For generic patterns, add language-specific variants
                     for ext_pattern in &applicable_extensions {
@@ -186,7 +207,7 @@ fn execute_ast_grep_on_globs_with_options(
 
             // If no enhancements were made, use original patterns
             if enhanced.is_empty() {
-                globs.to_vec()
+                include.clone()
             } else {
                 enhanced
             }
@@ -222,8 +243,16 @@ fn execute_ast_grep_on_globs_with_options(
             .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")))
     };
 
+    if let Some(git_dirty_check_callback) = git_dirty_check_callback {
+        git_dirty_check_callback(search_base.as_path(), allow_dirty);
+    }
+
     // Build glob overrides using the enhanced include patterns
-    let globs = build_globs(&enhanced_include_globs, exclude_globs, &search_base)?;
+    let globs = build_globs(
+        &enhanced_include_globs,
+        globs.exclude.as_deref(),
+        &search_base,
+    )?;
 
     // Use WalkBuilder with globs
     let walker = WalkBuilder::new(&search_base)
@@ -496,8 +525,18 @@ pub fn execute_ast_grep_on_paths(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
+    allow_dirty: bool,
+    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs(Some(paths), None, None, config_file, working_dir)
+    execute_ast_grep_on_globs(
+        Some(paths),
+        None,
+        None,
+        config_file,
+        working_dir,
+        allow_dirty,
+        git_dirty_check_callback,
+    )
 }
 
 /// Backward compatibility function - converts paths to include globs with fixes
@@ -505,8 +544,18 @@ pub fn execute_ast_grep_on_paths_with_fixes(
     paths: &[String],
     config_file: &str,
     working_dir: Option<&Path>,
+    allow_dirty: bool,
+    git_dirty_check_callback: Option<GitDirtyCheckCallback>,
 ) -> Result<Vec<AstGrepMatch>, AstGrepError> {
-    execute_ast_grep_on_globs_with_fixes(Some(paths), None, None, config_file, working_dir)
+    execute_ast_grep_on_globs_with_fixes(
+        Some(paths),
+        None,
+        None,
+        config_file,
+        working_dir,
+        allow_dirty,
+        git_dirty_check_callback,
+    )
 }
 
 #[cfg(test)]
@@ -595,6 +644,8 @@ message: "Found var declaration"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -659,6 +710,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -703,6 +756,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -750,6 +805,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -783,6 +840,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -815,6 +874,8 @@ rule:
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         );
 
         // Should return empty results, not error
@@ -855,6 +916,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -881,6 +944,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -945,6 +1010,8 @@ message: "Found var declaration"
             None,
             "rules.yaml",
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -1004,6 +1071,8 @@ message: "Found console.log statement in TSX"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 
@@ -1084,6 +1153,8 @@ message: "Found console.log statement"
             None,
             config_path.to_str().unwrap(),
             Some(temp_path),
+            false,
+            None,
         )
         .unwrap();
 

@@ -1,3 +1,4 @@
+use crate::dirty_git_check;
 use anyhow::{Context, Result};
 use butterflow_core::engine::Engine;
 use butterflow_core::utils;
@@ -23,9 +24,16 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
         config.workflow_file_path.display()
     ))?;
 
+    let dirty_check = dirty_git_check::dirty_check();
+
     // Run workflow
     let workflow_run_id = engine
-        .run_workflow(workflow, config.params, Some(config.bundle_path))
+        .run_workflow(
+            workflow,
+            config.params,
+            Some(config.bundle_path),
+            Some(dirty_check),
+        )
         .await
         .context("Failed to run workflow")?;
 

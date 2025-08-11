@@ -46,6 +46,8 @@ use codemod_sandbox::{
 use std::sync::OnceLock;
 
 pub static GLOBAL_STATS: OnceLock<Mutex<ExecutionStats>> = OnceLock::new();
+
+pub type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
 /// Workflow engine
 pub struct Engine {
     /// State adapter for persisting workflow state
@@ -110,6 +112,7 @@ impl Engine {
         workflow: Workflow,
         params: HashMap<String, String>,
         bundle_path: Option<PathBuf>,
+        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
     ) -> Result<Uuid> {
         utils::validate_workflow(&workflow, bundle_path.as_deref().unwrap_or(Path::new("")))?;
         self.validate_codemod_dependencies(&workflow, &[]).await?;
@@ -133,8 +136,12 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
+        let git_dirty_check_callback = git_dirty_check_callback.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, git_dirty_check_callback)
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -143,7 +150,12 @@ impl Engine {
     }
 
     /// Resume a workflow run
-    pub async fn resume_workflow(&self, workflow_run_id: Uuid, task_ids: Vec<Uuid>) -> Result<()> {
+    pub async fn resume_workflow(
+        &self,
+        workflow_run_id: Uuid,
+        task_ids: Vec<Uuid>,
+        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+    ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
             .state_adapter
@@ -179,8 +191,9 @@ impl Engine {
                     .await?;
 
                 let engine = self.clone();
+                let git_dirty_check_callback = git_dirty_check_callback.clone();
                 tokio::spawn(async move {
-                    if let Err(e) = engine.execute_task(task_id).await {
+                    if let Err(e) = engine.execute_task(task_id, git_dirty_check_callback).await {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -216,8 +229,12 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
+        let git_dirty_check_callback = git_dirty_check_callback.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, git_dirty_check_callback)
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -226,7 +243,11 @@ impl Engine {
     }
 
     /// Trigger all awaiting tasks in a workflow run
-    pub async fn trigger_all(&self, workflow_run_id: Uuid) -> Result<()> {
+    pub async fn trigger_all(
+        &self,
+        workflow_run_id: Uuid,
+        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+    ) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
             .state_adapter
@@ -309,8 +330,9 @@ impl Engine {
 
             let engine = self.clone();
             let task_id = task.id;
+            let git_dirty_check_callback = git_dirty_check_callback.clone();
             tokio::spawn(async move {
-                if let Err(e) = engine.execute_task(task_id).await {
+                if let Err(e) = engine.execute_task(task_id, git_dirty_check_callback).await {
                     error!("Task execution failed: {e}");
                 }
             });
@@ -345,8 +367,12 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
+        let git_dirty_check_callback = git_dirty_check_callback.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
+            if let Err(e) = engine
+                .execute_workflow(workflow_run_id, git_dirty_check_callback)
+                .await
+            {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -622,7 +648,11 @@ impl Engine {
     }
 
     /// Execute a workflow
-    async fn execute_workflow(&self, workflow_run_id: Uuid) -> Result<()> {
+    async fn execute_workflow(
+        &self,
+        workflow_run_id: Uuid,
+        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+    ) -> Result<()> {
         // Get the workflow run
         let workflow_run = self
             .state_adapter
@@ -840,8 +870,9 @@ impl Engine {
                 // Start task execution
                 let engine = self.clone();
                 let task_id = task.id;
+                let git_dirty_check_callback = git_dirty_check_callback.clone();
                 tokio::spawn(async move {
-                    if let Err(e) = engine.execute_task(task_id).await {
+                    if let Err(e) = engine.execute_task(task_id, git_dirty_check_callback).await {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -913,7 +944,11 @@ impl Engine {
     }
 
     /// Execute a task
-    async fn execute_task(&self, task_id: Uuid) -> Result<()> {
+    async fn execute_task(
+        &self,
+        task_id: Uuid,
+        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
+    ) -> Result<()> {
         let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
         let workflow_run = self
@@ -1007,6 +1042,7 @@ impl Engine {
                     &state,
                     &workflow_run.workflow,
                     &workflow_run.bundle_path,
+                    git_dirty_check_callback.clone(),
                 )
                 .await;
 
@@ -1129,6 +1165,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
+        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
     ) -> Result<()> {
         self.execute_step_action_with_chain(
             runner,
@@ -1141,6 +1178,7 @@ impl Engine {
             workflow,
             bundle_path,
             &[],
+            git_dirty_check_callback,
         )
         .await
     }
@@ -1159,6 +1197,7 @@ impl Engine {
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
     ) -> Result<()> {
         match action {
             StepAction::RunScript(run) => {
@@ -1200,18 +1239,27 @@ impl Engine {
                         workflow,
                         bundle_path,
                         dependency_chain,
+                        git_dirty_check_callback.clone(),
                     ))
                     .await?;
                 }
                 Ok(())
             }
             StepAction::AstGrep(ast_grep) => {
-                self.execute_ast_grep_step_with_dir(ast_grep, bundle_path.as_deref())
-                    .await
+                self.execute_ast_grep_step_with_dir(
+                    ast_grep,
+                    bundle_path.as_deref(),
+                    git_dirty_check_callback,
+                )
+                .await
             }
             StepAction::JSAstGrep(js_ast_grep) => {
-                self.execute_js_ast_grep_step_with_dir(js_ast_grep, bundle_path.as_deref())
-                    .await
+                self.execute_js_ast_grep_step_with_dir(
+                    js_ast_grep,
+                    bundle_path.as_deref(),
+                    git_dirty_check_callback,
+                )
+                .await
             }
             StepAction::Codemod(codemod) => {
                 Box::pin(self.execute_codemod_step_with_chain(
@@ -1223,6 +1271,7 @@ impl Engine {
                     state,
                     bundle_path,
                     dependency_chain,
+                    git_dirty_check_callback,
                 ))
                 .await
             }
@@ -1233,6 +1282,7 @@ impl Engine {
         &self,
         ast_grep: &UseAstGrep,
         bundle_path: Option<&std::path::Path>,
+        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let bundle_path = bundle_path
@@ -1256,7 +1306,6 @@ impl Engine {
 
         // TODO: Make this configurable
         let should_apply_fixes = true;
-
         // Execute ast-grep using include/exclude globs with the config file
         let matches = if should_apply_fixes {
             info!(
@@ -1269,6 +1318,8 @@ impl Engine {
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir.as_deref(),
+                ast_grep.allow_dirty.unwrap_or(false),
+                git_dirty_check_callback.clone(),
             )
             .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {e}")))?
         } else {
@@ -1278,6 +1329,8 @@ impl Engine {
                 ast_grep.base_path.as_deref(),
                 &config_path.to_string_lossy(),
                 working_dir.as_deref(),
+                ast_grep.allow_dirty.unwrap_or(false),
+                git_dirty_check_callback.clone(),
             )
             .map_err(|e| Error::Other(format!("AST grep execution failed: {e}")))?
         };
@@ -1318,6 +1371,7 @@ impl Engine {
         &self,
         js_ast_grep: &UseJSAstGrep,
         bundle_path: Option<&std::path::Path>,
+        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
     ) -> Result<()> {
         // Use bundle path as working directory, falling back to current directory
         let working_dir = bundle_path
@@ -1343,6 +1397,13 @@ impl Engine {
             // If no base path specified, use current working directory
             std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."))
         };
+
+        if let Some(git_dirty_check_callback) = git_dirty_check_callback {
+            git_dirty_check_callback(
+                base_path.as_path(),
+                js_ast_grep.allow_dirty.unwrap_or(false),
+            );
+        }
 
         // Verify the JavaScript file exists
         if !js_file_path.exists() {
@@ -1466,6 +1527,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
     ) -> Result<()> {
         info!("Executing codemod step: {}", codemod.source);
 
@@ -1540,6 +1602,7 @@ impl Engine {
             state,
             bundle_path,
             &new_chain,
+            git_dirty_check_callback.clone(),
         )
         .await
     }
@@ -1556,6 +1619,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
+        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
     ) -> Result<()> {
         let workflow_path = resolved_package.package_dir.join("workflow.yaml");
 
@@ -1650,6 +1714,7 @@ impl Engine {
                     &codemod_workflow,
                     &Some(resolved_package.package_dir.clone()),
                     dependency_chain,
+                    git_dirty_check_callback.clone(),
                 ))
                 .await?;
             }
@@ -2138,6 +2203,7 @@ mod tests {
                 &state,
                 &bundle_path,
                 &dependency_chain,
+                None,
             )
             .await;
 
