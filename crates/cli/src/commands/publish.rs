@@ -187,7 +187,7 @@ pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<
         .get_auth_for_registry(&registry_url)?
         .ok_or_else(|| {
             anyhow!(
-                "Not authenticated with registry: {}. Run 'codemod login' first.",
+                "Not authenticated with registry: {}. Run 'npx codemod@latest login' first.",
                 registry_url
             )
         })?;
@@ -573,7 +573,7 @@ async fn upload_package(
             ));
         } else if status == reqwest::StatusCode::UNAUTHORIZED {
             return Err(anyhow!(
-                "Authentication failed. Please run 'codemod login' again."
+                "Authentication failed. Please run 'npx codemod@latest login' again."
             ));
         }
 

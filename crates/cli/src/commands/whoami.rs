@@ -81,7 +81,7 @@ pub async fn handler(args: &Command) -> Result<()> {
         }
         _ => {
             println!("✗ Not logged in to {registry_url}");
-            println!("\nRun 'codemod login' to authenticate");
+            println!("\nRun 'npx codemod@latest login' to authenticate");
             std::process::exit(1);
         }
     }
