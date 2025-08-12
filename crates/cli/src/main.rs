@@ -146,7 +146,6 @@ fn is_package_name(arg: &str) -> bool {
 
 /// Handle implicit run command from trailing arguments
 async fn handle_implicit_run_command(
-    engine: &butterflow_core::engine::Engine,
     trailing_args: Vec<String>,
     telemetry_sender: &dyn TelemetrySender,
 ) -> Result<bool> {
@@ -167,7 +166,7 @@ async fn handle_implicit_run_command(
     match Cli::try_parse_from(&full_args) {
         Ok(new_cli) => {
             if let Some(Commands::Run(run_args)) = new_cli.command {
-                commands::run::handler(engine, &run_args, telemetry_sender).await?;
+                commands::run::handler(&run_args, telemetry_sender).await?;
                 Ok(true)
             } else {
                 Ok(false)
@@ -199,9 +198,6 @@ async fn main() -> Result<()> {
         std::env::set_var("RUST_LOG", "info");
     }
 
-    // Create engine
-    let engine = engine::create_engine()?;
-
     let telemetry_sender: Box<dyn codemod_telemetry::send_event::TelemetrySender> =
         if std::env::var("DISABLE_ANALYTICS") == Ok("true".to_string())
             || std::env::var("DISABLE_ANALYTICS") == Ok("1".to_string())
@@ -230,22 +226,22 @@ async fn main() -> Result<()> {
     match &cli.command {
         Some(Commands::Workflow(args)) => match &args.command {
             WorkflowCommands::Run(args) => {
-                commands::workflow::run::handler(&engine, args).await?;
+                commands::workflow::run::handler(args).await?;
             }
             WorkflowCommands::Resume(args) => {
-                commands::workflow::resume::handler(&engine, args).await?;
+                commands::workflow::resume::handler(args).await?;
             }
             WorkflowCommands::Validate(args) => {
                 commands::workflow::validate::handler(args)?;
             }
             WorkflowCommands::Status(args) => {
-                commands::workflow::status::handler(&engine, args).await?;
+                commands::workflow::status::handler(args).await?;
             }
             WorkflowCommands::List(args) => {
-                commands::workflow::list::handler(&engine, args).await?;
+                commands::workflow::list::handler(args).await?;
             }
             WorkflowCommands::Cancel(args) => {
-                commands::workflow::cancel::handler(&engine, args).await?;
+                commands::workflow::cancel::handler(args).await?;
             }
         },
         Some(Commands::Jssg(args)) => match &args.command {
@@ -278,7 +274,7 @@ async fn main() -> Result<()> {
             commands::search::handler(args).await?;
         }
         Some(Commands::Run(args)) => {
-            commands::run::handler(&engine, args, telemetry_sender.as_ref()).await?;
+            commands::run::handler(args, telemetry_sender.as_ref()).await?;
         }
         Some(Commands::Unpublish(args)) => {
             commands::unpublish::handler(args).await?;
@@ -288,9 +284,7 @@ async fn main() -> Result<()> {
         }
         None => {
             // Try to parse as implicit run command
-            if !handle_implicit_run_command(&engine, cli.trailing_args, telemetry_sender.as_ref())
-                .await?
-            {
+            if !handle_implicit_run_command(cli.trailing_args, telemetry_sender.as_ref()).await? {
                 // No valid subcommand or package name provided, show help
                 print_ascii_art();
                 eprintln!("No command provided. Use --help for usage information.");

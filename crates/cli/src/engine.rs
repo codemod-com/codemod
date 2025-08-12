@@ -1,10 +1,102 @@
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+
 use anyhow::Result;
-use butterflow_core::config::WorkflowRunConfig;
+use butterflow_core::config::{PreRunCallback, WorkflowRunConfig};
 use butterflow_core::engine::Engine;
+use butterflow_core::execution::ProgressCallback;
 use butterflow_state::cloud_adapter::CloudStateAdapter;
 
+use crate::{dirty_git_check, progress_bar};
+
 /// Create an engine based on configuration
-pub fn create_engine() -> Result<Engine> {
+pub fn create_engine(
+    workflow_file_path: PathBuf,
+    target_path: PathBuf,
+    dry_run: bool,
+    allow_dirty: bool,
+    params: HashMap<String, String>,
+) -> Result<(Engine, WorkflowRunConfig)> {
+    let dirty_check = dirty_git_check::dirty_check();
+    let bundle_path = workflow_file_path.parent().unwrap().to_path_buf();
+
+    let pre_run_callback: PreRunCallback = Box::new(move |path: &Path, dirty: bool| {
+        if !allow_dirty {
+            dirty_check(path, dirty);
+        }
+    });
+
+    let (progress_reporter, _) = progress_bar::create_multi_progress_reporter();
+
+    let progress_callback = ProgressCallback {
+        callback: Arc::new(Box::new(
+            move |task_id: &str, path: &str, status: &str, count: Option<&u64>, index: &u64| {
+                match status {
+                    "start" | "counting" => {
+                        progress_reporter(progress_bar::ProgressUpdate {
+                            task_id: task_id.to_string(),
+                            action: progress_bar::ProgressAction::Start {
+                                total_files: count.cloned(),
+                            },
+                        });
+                    }
+                    "processing" => {
+                        if !path.is_empty() {
+                            progress_reporter(progress_bar::ProgressUpdate {
+                                task_id: task_id.to_string(),
+                                action: progress_bar::ProgressAction::Update {
+                                    current_file: path.to_string(),
+                                },
+                            });
+                        }
+                    }
+                    "increment" => {
+                        progress_reporter(progress_bar::ProgressUpdate {
+                            task_id: task_id.to_string(),
+                            action: progress_bar::ProgressAction::Increment,
+                        });
+                    }
+                    "finish" => {
+                        let message = if let Some(total) = count {
+                            format!("Processed {total} files")
+                        } else {
+                            format!("Processed {index} files")
+                        };
+                        progress_reporter(progress_bar::ProgressUpdate {
+                            task_id: task_id.to_string(),
+                            action: progress_bar::ProgressAction::Finish {
+                                message: Some(message),
+                            },
+                        });
+                    }
+                    _ => {
+                        // Handle any other status by updating current file
+                        if !path.is_empty() {
+                            progress_reporter(progress_bar::ProgressUpdate {
+                                task_id: task_id.to_string(),
+                                action: progress_bar::ProgressAction::Update {
+                                    current_file: path.to_string(),
+                                },
+                            });
+                        }
+                    }
+                }
+            },
+        )),
+    };
+
+    let config = WorkflowRunConfig {
+        pre_run_callback: Arc::new(Some(pre_run_callback)),
+        progress_callback: Arc::new(Some(progress_callback)),
+        dry_run,
+        target_path,
+        workflow_file_path,
+        bundle_path,
+        params,
+        ..WorkflowRunConfig::default()
+    };
+
     // Check for environment variables first
     if let (Some(backend), Some(endpoint), auth_token) = (
         std::env::var("BUTTERFLOW_STATE_BACKEND").ok(),
@@ -16,14 +108,12 @@ pub fn create_engine() -> Result<Engine> {
         if backend == "cloud" {
             // Create API state adapter
             let state_adapter = Box::new(CloudStateAdapter::new(endpoint, auth_token));
-            return Ok(Engine::with_state_adapter(
-                state_adapter,
-                WorkflowRunConfig::default(),
+            return Ok((
+                Engine::with_state_adapter(state_adapter, config.clone()),
+                config.clone(),
             ));
         }
     }
 
-    Ok(Engine::with_workflow_run_config(
-        WorkflowRunConfig::default(),
-    ))
+    Ok((Engine::with_workflow_run_config(config.clone()), config))
 }

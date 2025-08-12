@@ -2245,7 +2245,7 @@ export default function transform(ast) {
     // Note: This test was updated because the current implementation doesn't validate language strings
     // If validation is needed, it should be added to the execute_js_ast_grep_step method
     // assert!(result.is_err(), "Should fail with invalid language");
-    println!("Result with invalid language: {:?}", result);
+    println!("Result with invalid language: {result:?}");
 }
 
 // Helper function to create a workflow with JSAstGrep step

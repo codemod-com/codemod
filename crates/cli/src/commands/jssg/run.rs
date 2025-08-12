@@ -5,7 +5,11 @@ use codemod_sandbox::sandbox::{
     engine::execute_codemod_with_quickjs, filesystem::RealFileSystem, resolvers::OxcResolver,
 };
 use log::{debug, error, info, warn};
-use std::{path::Path, sync::Arc, time::Instant};
+use std::{
+    path::{Path, PathBuf},
+    sync::Arc,
+    time::Instant,
+};
 
 use crate::dirty_git_check;
 use codemod_sandbox::utils::project_discovery::find_tsconfig;
@@ -16,7 +20,8 @@ pub struct Command {
     pub js_file: String,
 
     /// Target directory to process
-    pub target_directory: String,
+    #[arg(long = "target", short = 't')]
+    pub target_path: Option<PathBuf>,
 
     /// Set maximum number of concurrent threads (default: CPU cores)
     #[arg(long)]
@@ -37,10 +42,13 @@ pub struct Command {
 
 pub async fn handler(args: &Command) -> Result<()> {
     let js_file_path = Path::new(&args.js_file);
-    let target_directory = Path::new(&args.target_directory);
+    let target_directory = args
+        .target_path
+        .clone()
+        .unwrap_or_else(|| std::env::current_dir().unwrap());
 
     let dirty_check = dirty_git_check::dirty_check();
-    dirty_check(target_directory, args.allow_dirty);
+    dirty_check(&target_directory, args.allow_dirty);
 
     // Verify the JavaScript file exists
     if !js_file_path.exists() {
@@ -69,6 +77,7 @@ pub async fn handler(args: &Command) -> Result<()> {
         include_globs: None,
         exclude_globs: None,
         dry_run: args.dry_run,
+        language: args.language.clone(),
     };
 
     let started = Instant::now();
@@ -79,7 +88,7 @@ pub async fn handler(args: &Command) -> Result<()> {
         "typescript".parse().unwrap()
     };
 
-    config.execute(|file_path, config| {
+    let _ = config.execute(|file_path, _config| {
         // Only process files
         if !file_path.is_file() {
             return;
@@ -101,7 +110,7 @@ pub async fn handler(args: &Command) -> Result<()> {
 
             // Execute the codemod on this file
             match execute_codemod_with_quickjs(
-                &js_file_path,
+                js_file_path,
                 filesystem.clone(),
                 resolver.clone(),
                 language,

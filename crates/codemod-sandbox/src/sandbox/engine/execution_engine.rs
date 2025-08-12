@@ -9,14 +9,15 @@ use rquickjs::{async_with, AsyncContext, AsyncRuntime};
 use rquickjs::{CatchResultExt, Function, Module};
 use std::fmt;
 use std::path::Path;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
 /// Statistics about the execution results
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Default)]
 pub struct ExecutionStats {
-    pub files_modified: usize,
-    pub files_unmodified: usize,
-    pub files_with_errors: usize,
+    pub files_modified: AtomicUsize,
+    pub files_unmodified: AtomicUsize,
+    pub files_with_errors: AtomicUsize,
 }
 
 impl ExecutionStats {
@@ -26,17 +27,20 @@ impl ExecutionStats {
 
     /// Total number of files processed
     pub fn total_files(&self) -> usize {
-        self.files_modified + self.files_unmodified + self.files_with_errors
+        self.files_modified.load(Ordering::Relaxed)
+            + self.files_unmodified.load(Ordering::Relaxed)
+            + self.files_with_errors.load(Ordering::Relaxed)
     }
 
     /// Returns true if any files were processed successfully (modified or unmodified)
     pub fn has_successful_files(&self) -> bool {
-        self.files_modified > 0 || self.files_unmodified > 0
+        self.files_modified.load(Ordering::Relaxed) > 0
+            || self.files_unmodified.load(Ordering::Relaxed) > 0
     }
 
     /// Returns true if any files had errors during processing
     pub fn has_errors(&self) -> bool {
-        self.files_with_errors > 0
+        self.files_with_errors.load(Ordering::Relaxed) > 0
     }
 
     /// Returns the success rate as a percentage (0.0 to 1.0)
@@ -45,7 +49,9 @@ impl ExecutionStats {
         if total == 0 {
             0.0
         } else {
-            (self.files_modified + self.files_unmodified) as f64 / total as f64
+            (self.files_modified.load(Ordering::Relaxed)
+                + self.files_unmodified.load(Ordering::Relaxed)) as f64
+                / total as f64
         }
     }
 }
@@ -56,9 +62,9 @@ impl fmt::Display for ExecutionStats {
             f,
             "Execution Summary: {} files processed ({} modified, {} unmodified, {} errors)",
             self.total_files(),
-            self.files_modified,
-            self.files_unmodified,
-            self.files_with_errors
+            self.files_modified.load(Ordering::Relaxed),
+            self.files_unmodified.load(Ordering::Relaxed),
+            self.files_with_errors.load(Ordering::Relaxed)
         )
     }
 }

@@ -58,13 +58,13 @@ pub fn dirty_check() -> GitDirtyCheckCallback {
                                     std::process::exit(1);
                                 }
                             }
-                        } else if ask_for_git_init(path).unwrap_or(false) {
+                        } else if !ask_for_git_init(path).unwrap_or(false) {
                             eprintln!("Error: Aborting due to uninitialized Git repository");
                             std::process::exit(1);
                         }
                     }
                     _ => {
-                        if ask_for_git_init(path).unwrap_or(false) {
+                        if !ask_for_git_init(path).unwrap_or(false) {
                             eprintln!("Error: Aborting due to uninitialized Git repository");
                             std::process::exit(1);
                         }

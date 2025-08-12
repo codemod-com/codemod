@@ -1,7 +1,8 @@
 use anyhow::{Context, Result};
-use butterflow_core::engine::Engine;
 use clap::Args;
 use uuid::Uuid;
+
+use crate::engine::create_engine;
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -11,7 +12,15 @@ pub struct Command {
 }
 
 /// Cancel a workflow
-pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
+pub async fn handler(args: &Command) -> Result<()> {
+    let (engine, _) = create_engine(
+        Default::default(),
+        Default::default(),
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )?;
+
     println!("Canceling workflow run {}...", args.id);
 
     // Cancel workflow

@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::PathBuf;
+use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::config::{PreRunCallback, WorkflowRunConfig};
-use crate::execution::{CodemodExecutionConfig, ProgressCallback};
+use crate::config::WorkflowRunConfig;
+use crate::execution::CodemodExecutionConfig;
 use crate::utils::validate_workflow;
 use chrono::Utc;
 use log::{debug, error, info, warn};
@@ -32,6 +33,7 @@ use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
 use codemod_sandbox::{
+    execute_ast_grep,
     sandbox::{
         engine::{execution_engine::execute_codemod_with_quickjs, ExecutionStats},
         filesystem::RealFileSystem,
@@ -39,9 +41,6 @@ use codemod_sandbox::{
     },
     utils::project_discovery::find_tsconfig,
 };
-use std::sync::OnceLock;
-
-pub static GLOBAL_STATS: OnceLock<Mutex<ExecutionStats>> = OnceLock::new();
 
 /// Workflow engine
 pub struct Engine {
@@ -51,6 +50,8 @@ pub struct Engine {
     scheduler: Scheduler,
 
     workflow_run_config: WorkflowRunConfig,
+
+    pub execution_stats: Arc<ExecutionStats>,
 }
 
 /// Represents a codemod dependency chain for cycle detection
@@ -76,6 +77,7 @@ impl Engine {
             state_adapter: Arc::clone(&state_adapter),
             scheduler: Scheduler::new(),
             workflow_run_config: WorkflowRunConfig::default(),
+            execution_stats: Arc::new(ExecutionStats::default()),
         }
     }
 
@@ -88,6 +90,7 @@ impl Engine {
             state_adapter: Arc::clone(&state_adapter),
             scheduler: Scheduler::new(),
             workflow_run_config,
+            execution_stats: Arc::new(ExecutionStats::default()),
         }
     }
 
@@ -102,7 +105,13 @@ impl Engine {
             state_adapter: Arc::clone(&state_adapter),
             scheduler: Scheduler::new(),
             workflow_run_config,
+            execution_stats: Arc::new(ExecutionStats::default()),
         }
+    }
+
+    /// Get the workflow file path
+    pub fn get_workflow_file_path(&self) -> PathBuf {
+        self.workflow_run_config.workflow_file_path.clone()
     }
 
     /// Create initial tasks for all nodes
@@ -1222,16 +1231,60 @@ impl Engine {
             pre_run_callback: None,
             progress_callback: self.workflow_run_config.progress_callback.clone(),
             target_path: Some(self.workflow_run_config.target_path.clone()),
-            base_path: ast_grep.base_path.as_deref().map(|v| PathBuf::from(v)),
+            base_path: ast_grep.base_path.as_deref().map(PathBuf::from),
             include_globs: ast_grep.include.as_deref().map(|v| v.to_vec()),
             exclude_globs: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
             dry_run: self.workflow_run_config.dry_run,
+            language: None,
         };
 
-        execution_config.execute(|path, config| {
-            info!("Executing codemod step with path: {}", path.display());
-            info!("Executing codemod step with config: {:?}", config.base_path);
-        });
+        // Clone variables needed in the closure
+        let id_clone = id.clone();
+        let config_path_clone = config_path.clone();
+
+        execution_config
+            .execute(|path, config| {
+                // Only process files, not directories
+                if !path.is_file() {
+                    return;
+                }
+
+                info!("Executing AST grep on file: {}", path.display());
+
+                // Execute ast-grep on this file
+                match execute_ast_grep(
+                    path,
+                    &config_path_clone.to_string_lossy(),
+                    !config.dry_run, // apply_fixes = !dry_run
+                ) {
+                    Ok((matches, file_modified)) => {
+                        if !matches.is_empty() {
+                            info!("Found {} matches in {}", matches.len(), path.display());
+                        }
+                        if file_modified {
+                            self.execution_stats
+                                .files_modified
+                                .fetch_add(1, Ordering::Relaxed);
+                        } else {
+                            self.execution_stats
+                                .files_unmodified
+                                .fetch_add(1, Ordering::Relaxed);
+                        }
+                    }
+                    Err(e) => {
+                        error!("AST grep failed for {}: {:?}", path.display(), e);
+                        self.execution_stats
+                            .files_with_errors
+                            .fetch_add(1, Ordering::Relaxed);
+                    }
+                };
+
+                if let Some(callback) = self.workflow_run_config.progress_callback.as_ref() {
+                    let callback = callback.callback.clone();
+                    callback(&id_clone, &path.to_string_lossy(), "next", Some(&1), &0);
+                }
+            })
+            .map_err(Error::StepExecution)?;
 
         Ok(())
     }
@@ -1282,10 +1335,11 @@ impl Engine {
             pre_run_callback: None,
             progress_callback: self.workflow_run_config.progress_callback.clone(),
             target_path: Some(self.workflow_run_config.target_path.clone()),
-            base_path: js_ast_grep.base_path.as_deref().map(|v| PathBuf::from(v)),
+            base_path: js_ast_grep.base_path.as_deref().map(PathBuf::from),
             include_globs: js_ast_grep.include.as_deref().map(|v| v.to_vec()),
             exclude_globs: js_ast_grep.exclude.as_deref().map(|v| v.to_vec()),
             dry_run: js_ast_grep.dry_run.unwrap_or(false) || self.workflow_run_config.dry_run,
+            language: js_ast_grep.language.clone(),
         };
 
         // Set language first to get default extensions
@@ -1300,9 +1354,17 @@ impl Engine {
             })?
         };
 
+        // Capture variables for use in parallel threads
+        let runtime_handle = tokio::runtime::Handle::current();
+        let js_file_path_clone = js_file_path.clone();
+        let filesystem_clone = filesystem.clone();
+        let resolver_clone = resolver.clone();
+        let id_clone = id.clone();
+        let progress_callback = self.workflow_run_config.progress_callback.clone();
+
         // Execute the codemod on each file using the config's multi-threading
         config
-            .execute(|file_path, config| {
+            .execute(move |file_path, config| {
                 // Only process files
                 if !file_path.is_file() {
                     return;
@@ -1310,74 +1372,100 @@ impl Engine {
 
                 info!("Processing file with JS AST grep: {}", file_path.display());
 
-                // Use a tokio runtime to handle the async execution within the sync callback
-                let rt = tokio::runtime::Runtime::new().unwrap();
-                rt.block_on(async {
-                    // Read file content
-                    let content = match tokio::fs::read_to_string(&file_path).await {
-                        Ok(content) => content,
-                        Err(e) => {
-                            warn!("Failed to read file {}: {}", file_path.display(), e);
-                            return;
-                        }
-                    };
+                // Read file content synchronously
+                let content = match std::fs::read_to_string(file_path) {
+                    Ok(content) => content,
+                    Err(e) => {
+                        warn!("Failed to read file {}: {}", file_path.display(), e);
+                        return;
+                    }
+                };
 
-                    // Execute the codemod on this file
-                    match execute_codemod_with_quickjs(
-                        &js_file_path,
-                        filesystem.clone(),
-                        resolver.clone(),
+                // Execute the async codemod using the captured runtime handle
+                let execution_result = runtime_handle.block_on(async {
+                    execute_codemod_with_quickjs(
+                        &js_file_path_clone,
+                        filesystem_clone.clone(),
+                        resolver_clone.clone(),
                         language,
                         file_path,
                         &content,
                     )
                     .await
-                    {
-                        Ok(execution_output) => {
-                            debug!("Successfully processed file: {}", file_path.display());
+                });
 
-                            // Handle the execution output (write back if modified and not dry run)
-                            if let Some(ref new_content) = execution_output.content {
-                                if new_content != &content {
-                                    if !config.dry_run {
-                                        if let Err(e) =
-                                            tokio::fs::write(&file_path, new_content).await
-                                        {
-                                            error!(
-                                                "Failed to write modified file {}: {}",
-                                                file_path.display(),
-                                                e
-                                            );
-                                        } else {
-                                            debug!("Modified file: {}", file_path.display());
-                                        }
-                                    } else if config.dry_run {
-                                        debug!(
-                                            "Would modify file (dry run): {}",
-                                            file_path.display()
-                                        );
-                                    }
+                match execution_result {
+                    Ok(execution_output) => {
+                        debug!("Successfully processed file: {}", file_path.display());
+
+                        // Handle the execution output (write back if modified and not dry run)
+                        if let Some(ref new_content) = execution_output.content {
+                            if new_content != &content {
+                                if config.dry_run {
+                                    debug!("Would modify file (dry run): {}", file_path.display());
+                                    self.execution_stats
+                                        .files_modified
+                                        .fetch_add(1, Ordering::Relaxed);
+                                } else if let Err(e) = std::fs::write(file_path, new_content) {
+                                    error!(
+                                        "Failed to write modified file {}: {}",
+                                        file_path.display(),
+                                        e
+                                    );
+                                    self.execution_stats
+                                        .files_with_errors
+                                        .fetch_add(1, Ordering::Relaxed);
+                                } else {
+                                    debug!("Modified file: {}", file_path.display());
+                                    self.execution_stats
+                                        .files_modified
+                                        .fetch_add(1, Ordering::Relaxed);
                                 }
+                            } else {
+                                self.execution_stats
+                                    .files_unmodified
+                                    .fetch_add(1, Ordering::Relaxed);
                             }
-
-                            // Handle execution errors
-                            if let Some(ref error_msg) = execution_output.error {
-                                warn!(
-                                    "Execution completed with error for {}: {}",
-                                    file_path.display(),
-                                    error_msg
-                                );
-                            }
+                        } else {
+                            self.execution_stats
+                                .files_unmodified
+                                .fetch_add(1, Ordering::Relaxed);
                         }
-                        Err(e) => {
-                            error!(
-                                "Failed to execute codemod on {}: {:?}",
+
+                        // Handle execution errors
+                        if let Some(ref error_msg) = execution_output.error {
+                            warn!(
+                                "Execution completed with error for {}: {}",
                                 file_path.display(),
-                                e
+                                error_msg
                             );
+                            self.execution_stats
+                                .files_with_errors
+                                .fetch_add(1, Ordering::Relaxed);
                         }
                     }
-                });
+                    Err(e) => {
+                        error!(
+                            "Failed to execute codemod on {}: {:?}",
+                            file_path.display(),
+                            e
+                        );
+                        self.execution_stats
+                            .files_with_errors
+                            .fetch_add(1, Ordering::Relaxed);
+                    }
+                }
+
+                if let Some(callback) = progress_callback.as_ref() {
+                    let callback = callback.callback.clone();
+                    callback(
+                        &id_clone,
+                        &file_path.to_string_lossy(),
+                        "next",
+                        Some(&1),
+                        &0,
+                    );
+                }
             })
             .map_err(Error::StepExecution)?;
 
@@ -1915,6 +2003,7 @@ impl Clone for Engine {
             state_adapter: Arc::clone(&self.state_adapter),
             scheduler: Scheduler::new(),
             workflow_run_config: self.workflow_run_config.clone(),
+            execution_stats: Arc::clone(&self.execution_stats),
         }
     }
 }

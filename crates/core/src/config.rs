@@ -6,7 +6,7 @@ use std::{
 
 use crate::{execution::ProgressCallback, registry::RegistryClient};
 
-pub type PreRunCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
+pub type PreRunCallback = Box<dyn Fn(&Path, bool) + Send + Sync>;
 
 /// Configuration for running a workflow
 #[derive(Clone)]

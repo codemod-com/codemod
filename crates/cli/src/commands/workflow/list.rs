@@ -1,9 +1,10 @@
 use anyhow::{Context, Result};
-use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use clap::Args;
 use tabled::settings::{object::Columns, Alignment, Modify, Style};
 use tabled::{Table, Tabled};
+
+use crate::engine::create_engine;
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -29,7 +30,15 @@ pub struct WorkflowRunRow {
 }
 
 /// List workflow runs
-pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
+pub async fn handler(args: &Command) -> Result<()> {
+    let (engine, _) = create_engine(
+        Default::default(),
+        Default::default(),
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )?;
+
     // Get workflow runs
     let workflow_runs = engine
         .list_workflow_runs(args.limit)

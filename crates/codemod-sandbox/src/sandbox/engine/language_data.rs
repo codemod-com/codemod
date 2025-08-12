@@ -48,16 +48,6 @@ pub fn create_language_extension_map() -> HashMap<SupportLang, Vec<&'static str>
         map.insert(Scala, vec![".scala", ".sc"]);
         map.insert(Swift, vec![".swift"]);
         map.insert(Yaml, vec![".yaml", ".yml"]);
-
-        // Additional languages that might be supported in non-WASM version
-        // Note: These may vary based on the actual ast_grep_language version
-        // Uncomment and adjust as needed based on your specific version
-        // map.insert(Dart, vec![".dart"]);
-        // map.insert(Thrift, vec![".thrift"]);
-        // map.insert(Protobuf, vec![".proto"]);
-        // map.insert(Sql, vec![".sql"]);
-        // map.insert(Toml, vec![".toml"]);
-        // map.insert(Xml, vec![".xml"]);
     }
 
     map
