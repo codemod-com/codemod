@@ -14,6 +14,12 @@ pub struct AsyncFileWriter {
     sender: mpsc::UnboundedSender<FileWriteOperation>,
 }
 
+impl Default for AsyncFileWriter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AsyncFileWriter {
     pub fn new() -> Self {
         let (sender, mut receiver) = mpsc::unbounded_channel::<FileWriteOperation>();
