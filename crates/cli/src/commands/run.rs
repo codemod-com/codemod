@@ -202,10 +202,8 @@ pub async fn run_legacy_codemod_with_raw_args(raw_args: &[String]) -> Result<()>
 
 async fn run_legacy_codemod(args: &Command) -> Result<()> {
     let mut legacy_args = vec![args.package.clone()];
-    legacy_args.push(
-        args.target_path
-            .as_ref()
-            .map_or("".to_string(), |v| v.to_string_lossy().to_string()),
-    );
+    if let Some(target_path) = args.target_path.as_ref() {
+        legacy_args.push(format!("--target {}", target_path.to_string_lossy()));
+    }
     run_legacy_codemod_with_raw_args(&legacy_args).await
 }
