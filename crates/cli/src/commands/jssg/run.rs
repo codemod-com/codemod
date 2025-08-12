@@ -20,8 +20,8 @@ pub struct Command {
     /// Path to the JavaScript file to execute
     pub js_file: String,
 
-    /// Target directory to process
-    #[arg(long = "target", short = 'p')]
+    /// Optional target path to run the codemod on (default: current directory)
+    #[arg(long = "target", short = 't')]
     pub target_path: Option<PathBuf>,
 
     /// Set maximum number of concurrent threads (default: CPU cores)
