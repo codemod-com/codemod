@@ -28,22 +28,22 @@ This repo houses the **Codemod CLI** and its underlying **workflow engine** – 
 ## Key Features
 
 - **Workflows** – Scaffold, test, and orchestrate complex, multi-step migrations with ast-grep YAML or JavaScipt ast-grep (jssg).
-- **Codemod Registry** – Share or discover community codemods via `npx codemod@next publish` or `npx codemod@next search`.
+- **Codemod Registry** – Share or discover community codemods via `npx codemod publish` or `npx codemod search`.
 
 ## Getting Started
 
 ```bash
 # 1) Scaffold a new codemod project
-npx codemod@next init my-codemod
+npx codemod init my-codemod
 
 # 2) Test it locally
-npx codemod@next workflow run -w my-codemod/workflow.yaml
+npx codemod workflow run -w my-codemod/workflow.yaml
 
 # 3) Publish it when you're ready
-npx codemod@next publish my-codemod
+npx codemod publish my-codemod
 
 # 4) Run it from the Registry
-npx codemod@next @codemod-com/my-codemod
+npx codemod @codemod-com/my-codemod
 ```
 
 See the full [CLI reference](https://docs.codemod.com/cli/cli-reference) for every command and option.

@@ -12,14 +12,10 @@ import { APIKeyDemo } from "/snippets/api-key-demo.mdx";
   <CLIDemo />
 </Frame>
 
-<Warning>
-  Codemod CLI is currently released under the `@next` tag while in alpha. Core commands and schema may change as we gather feedback. Check the CLI reference for updates until we publish a stable `@latest`.
-</Warning>
-
 <Steps>
   <Step title="Initialize a new codemod project">
     ```bash
-    npx codemod@next init
+    npx codemod init
     ```
 
     This scaffolds a new codemod project in the current directory.
@@ -28,21 +24,21 @@ import { APIKeyDemo } from "/snippets/api-key-demo.mdx";
     ```bash
     cd /path/to/project-to-migrate
 
-    npx codemod@next workflow run -w /path/to/my-codemod/workflow.yaml
+    npx codemod workflow run -w /path/to/my-codemod/workflow.yaml
     ```
 
     This runs your local codemod workflow on your codebase to test it before publishing.
   </Step>
   <Step title="Publish your codemod">
     ```bash
-    npx codemod@next publish
+    npx codemod publish
     ```
 
-    This publishes your codemod to the registry (you may need to <a href="#codemod%40next-login">login</a> first).
+    This publishes your codemod to the registry (you may need to <a href="#codemod-login">login</a> first).
   </Step>
   <Step title="Run the published codemod">
     ```bash
-    npx codemod@next @codemod-com/my-test-pkg
+    npx codemod @codemod-com/my-test-pkg
     ```
 
     Run your published codemod directly from the [Codemod Registry](https://app.codemod.com/registry).
@@ -55,16 +51,16 @@ For more details on building and running workflows, see the [Workflows documenta
 
 ## Advanced Concepts
 
-- <a href="#codemod%40next-workflow">**Workflows:**</a> Orchestrate complex, multi-step codemod processes.
-- <a href="#codemod%40next-jssg">**JS ast-grep (jssg):**</a> Run codemods written in JavaScript/TypeScript to transform code in any language using the high-performance ast-grep engine.
+- <a href="#codemod-workflow">**Workflows:**</a> Orchestrate complex, multi-step codemod processes.
+- <a href="#codemod-jssg">**JS ast-grep (jssg):**</a> Run codemods written in JavaScript/TypeScript to transform code in any language using the high-performance ast-grep engine.
 
 ---
 
 # CLI Command Reference
 
-Codemod CLI (new) is accessible using the `npx codemod@next` command. The following commands and options are available:
+Codemod CLI is accessible using the `npx codemod` command. The following commands and options are available:
 
-### `codemod@next workflow`
+### `codemod workflow`
 
 Manage and execute workflow YAMLs.
 
@@ -75,19 +71,19 @@ Run a workflow.
 <CodeGroup>
 
 ```bash Running a local workflow
-npx codemod@next workflow run -w <workflow.yaml|directory> [--param key=value]
+npx codemod workflow run -w <workflow.yaml|directory> [--param key=value]
 ```
 
 ```bash Running a workflow from Codemod Registry
-npx codemod@next workflow run <package-name> [--param key=value]
+npx codemod workflow run <package-name> [--param key=value]
 ```
 
 </CodeGroup>
 
 <Info>
 **Local workflows vs. Registry packages:** 
-- Use `npx codemod@next workflow run -w <path>` for local workflow files and directories
-- Use `npx codemod@next <package-name>` to run packages directly from the [Codemod Registry](https://app.codemod.com/registry)
+- Use `npx codemod workflow run -w <path>` for local workflow files and directories
+- Use `npx codemod <package-name>` to run packages directly from the [Codemod Registry](https://app.codemod.com/registry)
 </Info>
 
 <ResponseField name="-w, --workflow <PATH>" type="string" required>
@@ -105,23 +101,23 @@ npx codemod@next workflow run <package-name> [--param key=value]
 
 ```bash
 # Run a local workflow file
-npx codemod@next workflow run -w ./my-workflow.yaml
+npx codemod workflow run -w ./my-workflow.yaml
 
 # Run a workflow from a local directory
-npx codemod@next workflow run -w ./my-codemod
+npx codemod workflow run -w ./my-codemod
 
 # Run with parameters
-npx codemod@next workflow run -w ./my-codemod --param version=latest --param target=src
+npx codemod workflow run -w ./my-codemod --param version=latest --param target=src
 ```
 
 **Running a workflow from the registry**:
 
 ```bash
 # Run a workflow package from the registry
-npx codemod@next @codemod-com/my-test-pkg
+npx codemod @codemod-com/my-test-pkg
 
 # Run with parameters
-npx codemod@next @codemod-com/my-test-pkg --param version=latest --param target=src
+npx codemod @codemod-com/my-test-pkg --param version=latest --param target=src
 ```
 
 Explore available packages on [Codemod Registry](https://app.codemod.com/registry).
@@ -133,7 +129,7 @@ Explore available packages on [Codemod Registry](https://app.codemod.com/registr
 Resume a paused workflow.
 
 ```bash
-npx codemod@next workflow resume -i <ID> [-t <TASK>] [--trigger-all]
+npx codemod workflow resume -i <ID> [-t <TASK>] [--trigger-all]
 ```
 
 <ResponseField name="-i, --id <ID>" type="string" required>
@@ -153,7 +149,7 @@ npx codemod@next workflow resume -i <ID> [-t <TASK>] [--trigger-all]
 Validate a workflow file.
 
 ```bash
-npx codemod@next workflow validate -w <workflow.yaml>
+npx codemod workflow validate -w <workflow.yaml>
 ```
 
 <ResponseField name="-w, --workflow <FILE>" type="string" required>
@@ -191,7 +187,7 @@ npx codemod@next workflow validate -w <workflow.yaml>
 Show workflow run status.
 
 ```bash
-npx codemod@next workflow status -i <ID>
+npx codemod workflow status -i <ID>
 ```
 
 <ResponseField name="-i, --id <ID>" type="string" required>
@@ -203,7 +199,7 @@ npx codemod@next workflow status -i <ID>
 List workflow runs.
 
 ```bash
-npx codemod@next workflow list [-l <LIMIT>]
+npx codemod workflow list [-l <LIMIT>]
 ```
 
 <ResponseField name="-l, --limit <LIMIT>" type="number">
@@ -215,18 +211,18 @@ npx codemod@next workflow list [-l <LIMIT>]
 Cancel a workflow run.
 
 ```bash
-npx codemod@next workflow cancel -i <ID>
+npx codemod workflow cancel -i <ID>
 ```
 
 <ResponseField name="-i, --id <ID>" type="string" required>
   Workflow run ID.
 </ResponseField>
 
-### `codemod@next jssg`
+### `codemod jssg`
 
 JS ast-grep (jssg) is a toolkit for running JavaScript/TypeScript codemods using the high-performance ast-grep engine. It enables fast, large-scale code transformations with a familiar API and robust language support.
 
-`codemod@next jssg` lets you run ast-grep codemods directly from the CLI, without needing to define a workflow. It's built for speed and simplicity, making ast-grep codemods a first-class experience.
+`codemod jssg` lets you run ast-grep codemods directly from the CLI, without needing to define a workflow. It's built for speed and simplicity, making ast-grep codemods a first-class experience.
 
 <Tip>
   **When should I use JS ast-grep (jssg)?**
@@ -241,7 +237,7 @@ JS ast-grep (jssg) is a toolkit for running JavaScript/TypeScript codemods using
   </Step>
   <Step title="Run your codemod">
     ```bash
-    npx codemod@next jssg run my-codemod.js ./src --language javascript
+    npx codemod jssg run my-codemod.js ./src --language javascript
     ```
   </Step>
   <Step title="Test your codemod">
@@ -264,7 +260,7 @@ JS ast-grep (jssg) is a toolkit for running JavaScript/TypeScript codemods using
     Then run:
 
     ```bash
-    npx codemod@next jssg test my-codemod.js --language javascript
+    npx codemod jssg test my-codemod.js --language javascript
     ```
   </Step>
 </Steps>
@@ -274,7 +270,7 @@ JS ast-grep (jssg) is a toolkit for running JavaScript/TypeScript codemods using
 Run a JS ast-grep (jssg) codemod.
 
 ```bash
-npx codemod@next jssg run <codemod_file> <target_directory> [options]
+npx codemod jssg run <codemod_file> <target_directory> [options]
 ```
 
 <ResponseField name="codemod_file" type="string" required>
@@ -314,7 +310,7 @@ npx codemod@next jssg run <codemod_file> <target_directory> [options]
 Test a JS ast-grep(jssg) codemod using before/after fixtures.
 
 ```bash
-npx codemod@next jssg test <codemod_file> [options]
+npx codemod jssg test <codemod_file> [options]
 ```
 
 <ResponseField name="codemod_file" type="string" required>
@@ -395,12 +391,12 @@ npx codemod@next jssg test <codemod_file> [options]
 
 ---
 
-### `codemod@next init`
+### `codemod init`
 
 Initialize a new workflow project.
 
 ```bash
-npx codemod@next init [PATH] [options]
+npx codemod init [PATH] [options]
 ```
 
 <ResponseField name="[PATH]" type="string">
@@ -443,12 +439,12 @@ npx codemod@next init [PATH] [options]
   Use defaults without prompts.
 </ResponseField>
 
-### `codemod@next login`
+### `codemod login`
 
 Login to a registry.
 
 ```bash
-npx codemod@next login [--api-key <API_KEY>] [--registry <REGISTRY>] [--scope <SCOPE>]
+npx codemod login [--api-key <API_KEY>] [--registry <REGISTRY>] [--scope <SCOPE>]
 ```
 
 <ResponseField name="--api-key <API_KEY>" type="string">
@@ -467,12 +463,12 @@ npx codemod@next login [--api-key <API_KEY>] [--registry <REGISTRY>] [--scope <S
   Need a key? Generate one in the Codemod app [here ->](https://app.codemod.com/api-keys).
 </Tip>
 
-### `codemod@next logout`
+### `codemod logout`
 
 Logout from a registry.
 
 ```bash
-npx codemod@next logout [--registry <REGISTRY>] [--all]
+npx codemod logout [--registry <REGISTRY>] [--all]
 ```
 
 <ResponseField name="--registry <REGISTRY>" type="string">
@@ -483,12 +479,12 @@ npx codemod@next logout [--registry <REGISTRY>] [--all]
   Logout from all registries.
 </ResponseField>
 
-### `codemod@next whoami`
+### `codemod whoami`
 
 Show current authentication status.
 
 ```bash
-npx codemod@next whoami [--registry <REGISTRY>] [--detailed]
+npx codemod whoami [--registry <REGISTRY>] [--detailed]
 ```
 
 <ResponseField name="--registry <REGISTRY>" type="string">
@@ -499,12 +495,12 @@ npx codemod@next whoami [--registry <REGISTRY>] [--detailed]
   Show detailed information including token scopes.
 </ResponseField>
 
-### `codemod@next publish`
+### `codemod publish`
 
 Publish a workflow to a registry.
 
 ```bash
-npx codemod@next publish [PATH] [options]
+npx codemod publish [PATH] [options]
 ```
 
 <ResponseField name="[PATH]" type="string">
@@ -547,7 +543,7 @@ npx codemod@next publish [PATH] [options]
         steps:
           - uses: actions/checkout@v4
           - name: Publish to Codemod Registry
-            run: npx codemod@next publish . --scope your-org --access public --tag ${{ github.sha }}
+            run: npx codemod publish . --scope your-org --access public --tag ${{ github.sha }}
             env:
               CODEMOD_TOKEN: ${{ secrets.CODEMOD_TOKEN }} # generated by GitHub App installation
     ```
@@ -570,37 +566,37 @@ npx codemod@next publish [PATH] [options]
         steps:
           - uses: actions/checkout@v4
           - name: Login to Codemod Registry with API key
-            run: npx codemod@next login --api-key ${{ secrets.CODEMOD_API_KEY }}
+            run: npx codemod login --api-key ${{ secrets.CODEMOD_API_KEY }}
           - name: Publish codemod
-            run: npx codemod@next publish . --scope your-org --access public --tag ${{ github.sha }}
+            run: npx codemod publish . --scope your-org --access public --tag ${{ github.sha }}
     ```
   </Accordion>
   <Accordion title="Examples">
     ```bash
     # Dry-run to verify bundle
-    npx codemod@next publish ./my-codemod --dry-run
+    npx codemod publish ./my-codemod --dry-run
     
     # Publish a private package tagged beta
-    npx codemod@next publish ./my-codemod --access private --tag beta
+    npx codemod publish ./my-codemod --access private --tag beta
     
     # Override version and custom registry
-    npx codemod@next publish ./my-codemod --version 1.2.0 --registry https://registry.example.com
+    npx codemod publish ./my-codemod --version 1.2.0 --registry https://registry.example.com
     
     # Publish under an organization scope (requires GitHub App installation)
-    npx codemod@next publish ./my-codemod --scope nodejs
+    npx codemod publish ./my-codemod --scope nodejs
     
     # After publishing, run your package from the registry
-    npx codemod@next @your-scope/my-codemod
+    npx codemod @your-scope/my-codemod
     ```
   </Accordion>
 </AccordionGroup>
 
-### `codemod@next unpublish`
+### `codemod unpublish`
 
 Remove a package or selected version from the registry.
 
 ```bash
-npx codemod@next unpublish <PACKAGE> [options]
+npx codemod unpublish <PACKAGE> [options]
 ```
 
 <ResponseField name="<PACKAGE>" type="string" required>
@@ -630,25 +626,25 @@ npx codemod@next unpublish <PACKAGE> [options]
 <Accordion title="Examples">
   ```bash
   # Preview removal of a single version
-  npx codemod@next unpublish my-codemod --version 0.1.0 --dry-run
+  npx codemod unpublish my-codemod --version 0.1.0 --dry-run
   
   # Remove a single version (will prompt)
-  npx codemod@next unpublish my-codemod --version 0.1.0
+  npx codemod unpublish my-codemod --version 0.1.0
   
   # Remove all versions (will prompt)
-  npx codemod@next unpublish my-codemod --force
+  npx codemod unpublish my-codemod --force
   
   # Unpublish from a custom registry
-  npx codemod@next unpublish my-codemod --force --registry https://registry.example.com
+  npx codemod unpublish my-codemod --force --registry https://registry.example.com
   ```
 </Accordion>
 
-### `codemod@next search`
+### `codemod search`
 
 Search for packages in the registry.
 
 ```bash
-npx codemod@next search [OPTIONS] [QUERY]
+npx codemod search [OPTIONS] [QUERY]
 ```
 
 <ResponseField name="[QUERY]" type="string">
@@ -691,23 +687,23 @@ npx codemod@next search [OPTIONS] [QUERY]
   Search for codemods related to React:
 
   ```bash
-  npx codemod@next search react
+  npx codemod search react
   ```
 
   Filter by language and category:
 
   ```bash
-  npx codemod@next search --language typescript --category migration
+  npx codemod search --language typescript --category migration
   ```
 
   Get results in JSON format:
 
   ```bash
-  npx codemod@next search --format json next
+  npx codemod search --format json next
   ```
 </Accordion>
 
-### `codemod@next cache`
+### `codemod cache`
 
 Manage the local package cache for codemod packages.
 
@@ -716,7 +712,7 @@ Manage the local package cache for codemod packages.
 Show cache information and statistics.
 
 ```bash
-npx codemod@next cache info
+npx codemod cache info
 ```
 
 **`cache list`**
@@ -724,7 +720,7 @@ npx codemod@next cache info
 List cached packages.
 
 ```bash
-npx codemod@next cache list [--detailed]
+npx codemod cache list [--detailed]
 ```
 
 <ResponseField name="--detailed" type="boolean">
@@ -736,7 +732,7 @@ npx codemod@next cache list [--detailed]
 Clear cache for a specific package, or all packages.
 
 ```bash
-npx codemod@next cache clear [PACKAGE] [--all]
+npx codemod cache clear [PACKAGE] [--all]
 ```
 
 <ResponseField name="[PACKAGE]" type="string">
@@ -752,7 +748,7 @@ npx codemod@next cache clear [PACKAGE] [--all]
 Prune old or unused cache entries.
 
 ```bash
-npx codemod@next cache prune [--max-age <MAX_AGE>] [--dry-run]
+npx codemod cache prune [--max-age <MAX_AGE>] [--dry-run]
 ```
 
 <ResponseField name="--max-age <MAX_AGE>" type="number">

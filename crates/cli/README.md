@@ -24,7 +24,7 @@ cargo build --release
 ### From npm registry
 
 ```bash
-npm install -g codemod@next
+npm install -g codemod
 ```
 
 ## Quick Start
