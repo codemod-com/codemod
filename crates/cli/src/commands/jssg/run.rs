@@ -12,6 +12,7 @@ use std::{
 };
 
 use crate::dirty_git_check;
+use crate::engine::create_progress_callback;
 use codemod_sandbox::utils::project_discovery::find_tsconfig;
 
 #[derive(Args, Debug)]
@@ -20,7 +21,7 @@ pub struct Command {
     pub js_file: String,
 
     /// Target directory to process
-    #[arg(long = "target", short = 't')]
+    #[arg(long = "target", short = 'p')]
     pub target_path: Option<PathBuf>,
 
     /// Set maximum number of concurrent threads (default: CPU cores)
@@ -71,7 +72,7 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     let config = CodemodExecutionConfig {
         pre_run_callback: None,
-        progress_callback: Arc::new(None),
+        progress_callback: Arc::new(Some(create_progress_callback())),
         target_path: Some(target_directory.to_path_buf()),
         base_path: None,
         include_globs: None,

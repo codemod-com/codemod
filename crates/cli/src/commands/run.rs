@@ -8,12 +8,14 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::process::Command as ProcessCommand;
 use std::sync::atomic::Ordering;
+use std::sync::Arc;
 
 use crate::auth_provider::CliAuthProvider;
 use crate::engine::create_engine;
 use crate::progress_bar::download_progress_bar;
 use crate::workflow_runner::run_workflow;
-use butterflow_core::registry::{RegistryClient, RegistryError};
+use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
+use butterflow_core::utils::get_cache_dir;
 use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 
 #[derive(Args, Debug)]
@@ -43,7 +45,7 @@ pub struct Command {
     allow_dirty: bool,
 
     /// Optional target path to run the codemod on
-    #[arg(long = "target", short = 't')]
+    #[arg(long = "target", short = 'p')]
     target_path: Option<PathBuf>,
 }
 
@@ -60,7 +62,13 @@ pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<
         .unwrap_or(&config.default_registry)
         .clone();
 
-    let registry_client = RegistryClient::default();
+    // Create registry configuration
+    let registry_config = RegistryConfig {
+        default_registry: registry_url.clone(),
+        cache_dir: get_cache_dir().unwrap(),
+    };
+
+    let registry_client = RegistryClient::new(registry_config, Some(Arc::new(auth_provider)));
 
     // Resolve the package (local path or registry package)
     let download_progress_bar = Some(download_progress_bar());
