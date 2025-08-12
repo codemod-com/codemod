@@ -7,6 +7,7 @@ use std::time::Duration;
 
 use crate::config::WorkflowRunConfig;
 use crate::execution::CodemodExecutionConfig;
+use crate::file_ops::AsyncFileWriter;
 use crate::utils::validate_workflow;
 use chrono::Utc;
 use log::{debug, error, info, warn};
@@ -52,6 +53,9 @@ pub struct Engine {
     workflow_run_config: WorkflowRunConfig,
 
     pub execution_stats: Arc<ExecutionStats>,
+
+    /// Async file writer for batched I/O operations
+    file_writer: Arc<AsyncFileWriter>,
 }
 
 /// Represents a codemod dependency chain for cycle detection
@@ -78,6 +82,7 @@ impl Engine {
             scheduler: Scheduler::new(),
             workflow_run_config: WorkflowRunConfig::default(),
             execution_stats: Arc::new(ExecutionStats::default()),
+            file_writer: Arc::new(AsyncFileWriter::new()),
         }
     }
 
@@ -91,6 +96,7 @@ impl Engine {
             scheduler: Scheduler::new(),
             workflow_run_config,
             execution_stats: Arc::new(ExecutionStats::default()),
+            file_writer: Arc::new(AsyncFileWriter::new()),
         }
     }
 
@@ -106,6 +112,7 @@ impl Engine {
             scheduler: Scheduler::new(),
             workflow_run_config,
             execution_stats: Arc::new(ExecutionStats::default()),
+            file_writer: Arc::new(AsyncFileWriter::new()),
         }
     }
 
@@ -1241,6 +1248,8 @@ impl Engine {
         // Clone variables needed in the closure
         let id_clone = id.clone();
         let config_path_clone = config_path.clone();
+        let file_writer = Arc::clone(&self.file_writer);
+        let runtime_handle = tokio::runtime::Handle::current();
 
         execution_config
             .execute(|path, config| {
@@ -1257,11 +1266,31 @@ impl Engine {
                     &config_path_clone.to_string_lossy(),
                     !config.dry_run, // apply_fixes = !dry_run
                 ) {
-                    Ok((matches, file_modified)) => {
+                    Ok((matches, file_modified, new_content)) => {
                         if !matches.is_empty() {
                             info!("Found {} matches in {}", matches.len(), path.display());
                         }
                         if file_modified {
+                            if let Some(new_content) = new_content {
+                                // Use async file writing to avoid blocking the thread
+                                let write_result = runtime_handle.block_on(async {
+                                    file_writer
+                                        .write_file(path.to_path_buf(), new_content)
+                                        .await
+                                });
+
+                                if let Err(e) = write_result {
+                                    error!(
+                                        "Failed to write modified file {}: {}",
+                                        path.display(),
+                                        e
+                                    );
+                                    self.execution_stats
+                                        .files_with_errors
+                                        .fetch_add(1, Ordering::Relaxed);
+                                    return;
+                                }
+                            }
                             self.execution_stats
                                 .files_modified
                                 .fetch_add(1, Ordering::Relaxed);
@@ -1359,8 +1388,9 @@ impl Engine {
         let js_file_path_clone = js_file_path.clone();
         let filesystem_clone = filesystem.clone();
         let resolver_clone = resolver.clone();
-        let id_clone = id.clone();
+        let id_clone = Arc::new(id);
         let progress_callback = self.workflow_run_config.progress_callback.clone();
+        let file_writer = Arc::clone(&self.file_writer);
 
         // Execute the codemod on each file using the config's multi-threading
         config
@@ -1406,20 +1436,32 @@ impl Engine {
                                     self.execution_stats
                                         .files_modified
                                         .fetch_add(1, Ordering::Relaxed);
-                                } else if let Err(e) = std::fs::write(file_path, new_content) {
-                                    error!(
-                                        "Failed to write modified file {}: {}",
-                                        file_path.display(),
-                                        e
-                                    );
-                                    self.execution_stats
-                                        .files_with_errors
-                                        .fetch_add(1, Ordering::Relaxed);
                                 } else {
-                                    debug!("Modified file: {}", file_path.display());
-                                    self.execution_stats
-                                        .files_modified
-                                        .fetch_add(1, Ordering::Relaxed);
+                                    // Use async file writing to avoid blocking the thread
+                                    let write_result = runtime_handle.block_on(async {
+                                        file_writer
+                                            .write_file(
+                                                file_path.to_path_buf(),
+                                                new_content.clone(),
+                                            )
+                                            .await
+                                    });
+
+                                    if let Err(e) = write_result {
+                                        error!(
+                                            "Failed to write modified file {}: {}",
+                                            file_path.display(),
+                                            e
+                                        );
+                                        self.execution_stats
+                                            .files_with_errors
+                                            .fetch_add(1, Ordering::Relaxed);
+                                    } else {
+                                        debug!("Modified file: {}", file_path.display());
+                                        self.execution_stats
+                                            .files_modified
+                                            .fetch_add(1, Ordering::Relaxed);
+                                    }
                                 }
                             } else {
                                 self.execution_stats
@@ -2004,6 +2046,7 @@ impl Clone for Engine {
             scheduler: Scheduler::new(),
             workflow_run_config: self.workflow_run_config.clone(),
             execution_stats: Arc::clone(&self.execution_stats),
+            file_writer: Arc::clone(&self.file_writer),
         }
     }
 }
