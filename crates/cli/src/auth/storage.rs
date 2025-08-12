@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use butterflow_core::registry::RegistryConfig;
 use dirs::config_dir;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -10,11 +11,40 @@ use crate::auth::types::{AuthTokens, UserInfo};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub default_registry: String,
-    pub registries: HashMap<String, RegistryConfig>,
+    pub registries: HashMap<String, RegistryAuthConfig>,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        let mut registries = HashMap::new();
+        let default_registry_config = RegistryConfig::default();
+        let registry_url = default_registry_config.default_registry;
+
+        registries.insert(
+            registry_url.to_string(),
+            RegistryAuthConfig {
+                auth_url: format!("{registry_url}/api/auth/oauth2/authorize"),
+                token_url: format!("{registry_url}/api/auth/oauth2/token"),
+                client_id: "LaqxmrfBSiCAGzVywTqUxGgqgKVdzaLg".to_string(),
+                scopes: vec![
+                    "read".to_string(),
+                    "write".to_string(),
+                    "publish".to_string(),
+                    "email".to_string(),
+                    "profile".to_string(),
+                ],
+            },
+        );
+
+        Self {
+            default_registry: registry_url.to_string(),
+            registries,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RegistryConfig {
+pub struct RegistryAuthConfig {
     pub auth_url: String,
     pub token_url: String,
     pub client_id: String,
@@ -49,7 +79,7 @@ impl TokenStorage {
         let config_path = self.config_dir.join("config.json");
 
         if !config_path.exists() {
-            return Ok(self.default_config());
+            return Ok(Config::default());
         }
 
         let content = fs::read_to_string(&config_path)
@@ -132,32 +162,5 @@ impl TokenStorage {
             .replace("://", "_")
             .replace("/", "_")
             .replace(":", "_")
-    }
-
-    fn default_config(&self) -> Config {
-        let mut registries = HashMap::new();
-        let registry_url =
-            std::env::var("CODEMOD_REGISTRY_URL").unwrap_or("https://app.codemod.com".to_string());
-
-        registries.insert(
-            registry_url.to_string(),
-            RegistryConfig {
-                auth_url: format!("{registry_url}/api/auth/oauth2/authorize"),
-                token_url: format!("{registry_url}/api/auth/oauth2/token"),
-                client_id: "LaqxmrfBSiCAGzVywTqUxGgqgKVdzaLg".to_string(),
-                scopes: vec![
-                    "read".to_string(),
-                    "write".to_string(),
-                    "publish".to_string(),
-                    "email".to_string(),
-                    "profile".to_string(),
-                ],
-            },
-        );
-
-        Config {
-            default_registry: registry_url.to_string(),
-            registries,
-        }
     }
 }

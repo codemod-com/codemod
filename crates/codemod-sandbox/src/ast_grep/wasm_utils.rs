@@ -223,7 +223,7 @@ fn dump_pattern_impl_inner(
 fn get_message(rule: &RuleConfig<WasmLang>, node: &NodeMatch) -> String {
     let parsed = Fixer::from_str(&rule.message, &rule.language).expect("should work");
     let bytes = parsed.generate_replacement(node);
-    bytes.into_iter().collect()
+    String::from_utf8_lossy(&bytes).into_owned()
 }
 
 impl WasmMatch {
@@ -252,7 +252,7 @@ fn env_to_map(env: MetaVarEnv<'_, WasmDoc>) -> BTreeMap<String, WasmNode> {
                     map.insert(name, WasmNode::from(node.clone()));
                 } else if let Some(bytes) = env.get_transformed(&name) {
                     let node = WasmNode {
-                        text: bytes.iter().collect(),
+                        text: String::from_utf8_lossy(bytes).into_owned(),
                         range: (0, 0, 0, 0),
                     };
                     map.insert(name, WasmNode::from(node));

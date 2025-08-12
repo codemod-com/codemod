@@ -1,4 +1,4 @@
-use crate::rquickjs_compat::{
+use rquickjs::{
     async_with,
     loader::{BuiltinLoader, BuiltinResolver, ModuleLoader},
     AsyncContext, AsyncRuntime, CatchResultExt, Error as RquickjsError, Function, Module, Value,
@@ -6,10 +6,11 @@ use crate::rquickjs_compat::{
 use thiserror::Error;
 use wasm_bindgen::prelude::*;
 
-use crate::ast_grep::wasm_utils::{
-    convert_to_debug_node, dump_pattern_impl, try_get_rule_config, WasmMatch,
-};
 use crate::ast_grep::AstGrepModule;
+use crate::ast_grep::{
+    scanner::scan_content,
+    wasm_utils::{convert_to_debug_node, dump_pattern_impl, try_get_rule_config, WasmMatch},
+};
 use crate::capabilities::CapabilitiesModule;
 use crate::plugins;
 use crate::utils::transpiler;
@@ -111,7 +112,7 @@ pub async fn run_module(
         let entry = js_sys::Array::from(&entries.get(i));
         let peer = entry.get(0).as_string().unwrap_or_default();
         let code = entry.get(1).as_string().unwrap_or_default();
-        let transpiled = transpiler::transpile(code).unwrap();
+        let transpiled = transpiler::transpile(code, name.clone()).unwrap();
         if !peer.is_empty() && !transpiled.is_empty() && name != peer {
             let peer_js = format!("{}.js", peer);
             peer_loader.add_module(&peer, transpiled.clone());
@@ -225,30 +226,11 @@ pub fn scan_fix(src: String, configs: Vec<JsValue>) -> std::result::Result<Strin
     let combined = CombinedScan::new(rules.iter().collect());
     let doc = WasmDoc::try_new(src.clone(), lang).map_err(|e| JsError::new(&e.to_string()))?;
     let root = AstGrep::doc(doc);
-    let diffs = combined.scan(&root, true).diffs;
-    if diffs.is_empty() {
-        return Ok(src);
-    }
-    let mut start = 0;
-    let src: Vec<_> = src.chars().collect();
-    let mut new_content = Vec::<char>::new();
-    for (rule, nm) in diffs {
-        let range = nm.range();
-        if start > range.start {
-            continue;
-        }
-        let fixer = rule
-            .get_fixer()
-            .map_err(|e| JsError::new(&e.to_string()))?
-            .expect("rule returned by diff must have fixer");
-        let edit = nm.make_edit(&rule.matcher, &fixer);
-        new_content.extend(&src[start..edit.position]);
-        new_content.extend(&edit.inserted_text);
-        start = edit.position + edit.deleted_length;
-    }
-    // add trailing statements
-    new_content.extend(&src[start..]);
-    Ok(new_content.into_iter().collect())
+
+    let file_path = "file_path";
+    let apply_fixes = true;
+    let result = scan_content(&root, &src, file_path.to_string(), &combined, apply_fixes)?;
+    Ok(result.new_content)
 }
 
 #[wasm_bindgen(js_name = dumpASTNodes)]

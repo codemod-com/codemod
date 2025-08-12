@@ -1,15 +1,13 @@
 use anyhow::Result;
+use butterflow_core::execution::CodemodExecutionConfig;
 use clap::Args;
 use codemod_sandbox::sandbox::{
-    engine::{ExecutionConfig, ExecutionEngine},
-    filesystem::{RealFileSystem, WalkOptions},
-    resolvers::OxcResolver,
+    engine::execute_codemod_with_quickjs, filesystem::RealFileSystem, resolvers::OxcResolver,
 };
-use std::{path::Path, sync::Arc};
+use log::{debug, error, info, warn};
+use std::{path::Path, sync::Arc, time::Instant};
 
-use crate::progress_bar::progress_bar_for_multi_progress;
-use crate::progress_bar::{ActionType, MultiProgressProgressBarCallback};
-use crate::{dirty_git_check, progress_bar::ProgressCallback};
+use crate::dirty_git_check;
 use codemod_sandbox::utils::project_discovery::find_tsconfig;
 
 #[derive(Args, Debug)]
@@ -19,14 +17,6 @@ pub struct Command {
 
     /// Target directory to process
     pub target_directory: String,
-
-    /// Don't respect .gitignore files
-    #[arg(long)]
-    pub no_gitignore: bool,
-
-    /// Include hidden files and directories
-    #[arg(long)]
-    pub include_hidden: bool,
 
     /// Set maximum number of concurrent threads (default: CPU cores)
     #[arg(long)]
@@ -39,10 +29,6 @@ pub struct Command {
     /// Language to process
     #[arg(long)]
     pub language: Option<String>,
-
-    /// File extensions to process (comma-separated)
-    #[arg(long)]
-    pub extensions: Option<String>,
 
     /// Allow dirty git status
     #[arg(long)]
@@ -75,73 +61,94 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     let resolver = Arc::new(OxcResolver::new(script_base_dir.clone(), tsconfig_path)?);
 
-    let mut config = ExecutionConfig::new(filesystem, resolver, script_base_dir);
-    let mut walk_options = WalkOptions::default();
+    let config = CodemodExecutionConfig {
+        pre_run_callback: None,
+        progress_callback: Arc::new(None),
+        target_path: Some(target_directory.to_path_buf()),
+        base_path: None,
+        include_globs: None,
+        exclude_globs: None,
+        dry_run: args.dry_run,
+    };
 
-    // Apply command line options
-    if args.no_gitignore {
-        walk_options.respect_gitignore = false;
-    }
+    let started = Instant::now();
 
-    if args.include_hidden {
-        walk_options.include_hidden = true;
-    }
+    let language = if let Some(language) = &args.language {
+        language.parse().unwrap()
+    } else {
+        "typescript".parse().unwrap()
+    };
 
-    if args.dry_run {
-        config = config.with_dry_run(true);
-    }
-
-    if let Some(threads) = args.max_threads {
-        if threads > 0 {
-            config = config.with_max_threads(threads);
-        } else {
-            anyhow::bail!("max-threads must be greater than 0");
+    config.execute(|file_path, config| {
+        // Only process files
+        if !file_path.is_file() {
+            return;
         }
-    }
 
-    if let Some(language) = &args.language {
-        config = config.with_language(language.parse()?);
-    }
+        info!("Processing file with JS AST grep: {}", file_path.display());
 
-    if let Some(extensions) = &args.extensions {
-        config = config.with_extensions(extensions.split(',').map(|s| s.to_string()).collect());
-    }
-
-    config = config.with_walk_options(walk_options);
-
-    // Create and run the execution engine
-    let engine = ExecutionEngine::new(config);
-    let (progress_bar, started) = progress_bar_for_multi_progress();
-
-    let callback: ProgressCallback = Arc::new(
-        move |id: &str, current_file: &str, action_type: &str, count: Option<&u64>, index: &u64| {
-            let progress_bar = progress_bar.clone();
-            let id = id.to_string();
-            let current_file = current_file.to_string();
-            let action_type = match action_type {
-                "set_text" => ActionType::SetText,
-                "next" => ActionType::Next,
-                _ => ActionType::SetText,
+        // Use a tokio runtime to handle the async execution within the sync callback
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(async {
+            // Read file content
+            let content = match tokio::fs::read_to_string(&file_path).await {
+                Ok(content) => content,
+                Err(e) => {
+                    warn!("Failed to read file {}: {}", file_path.display(), e);
+                    return;
+                }
             };
-            let count = count.cloned();
-            let index = *index;
-            progress_bar(MultiProgressProgressBarCallback {
-                id,
-                current_file,
-                action_type,
-                count,
-                index,
-            });
-        },
-    );
 
-    let stats = engine
-        .execute_on_directory("jssg", js_file_path, target_directory, Some(callback))
-        .await?;
+            // Execute the codemod on this file
+            match execute_codemod_with_quickjs(
+                &js_file_path,
+                filesystem.clone(),
+                resolver.clone(),
+                language,
+                file_path,
+                &content,
+            )
+            .await
+            {
+                Ok(execution_output) => {
+                    // Handle the execution output (write back if modified and not dry run)
+                    if let Some(ref new_content) = execution_output.content {
+                        if new_content != &content {
+                            if !config.dry_run {
+                                if let Err(e) = tokio::fs::write(&file_path, new_content).await {
+                                    error!(
+                                        "Failed to write modified file {}: {}",
+                                        file_path.display(),
+                                        e
+                                    );
+                                } else {
+                                    debug!("Modified file: {}", file_path.display());
+                                }
+                            } else if config.dry_run {
+                                debug!("Would modify file (dry run): {}", file_path.display());
+                            }
+                        }
+                    }
 
-    println!("📝 Modified files: {:?}", stats.files_modified);
-    println!("✅ Unmodified files: {:?}", stats.files_unmodified);
-    println!("❌ Files with errors: {:?}", stats.files_with_errors);
+                    // Handle execution errors
+                    if let Some(ref error_msg) = execution_output.error {
+                        warn!(
+                            "Execution completed with error for {}: {}",
+                            file_path.display(),
+                            error_msg
+                        );
+                    }
+                }
+                Err(e) => {
+                    error!(
+                        "Failed to execute codemod on {}: {:?}",
+                        file_path.display(),
+                        e
+                    );
+                }
+            }
+        });
+    });
 
     let seconds = started.elapsed().as_millis() as f64 / 1000.0;
     println!("✨ Done in {seconds:.3}s");

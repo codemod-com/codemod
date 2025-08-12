@@ -1,10 +1,10 @@
-use crate::rquickjs_compat::{Array, Ctx, FromJs, IntoJs, Object, Type, Value as QValue};
+use rquickjs::{Array, Ctx, FromJs, IntoJs, Object, Result, Type, Value as QValue};
 
 #[derive(Debug)]
 pub(crate) struct JsValue(pub serde_json::Value);
 
 impl<'js> FromJs<'js> for JsValue {
-    fn from_js(_ctx: &Ctx<'js>, v: QValue<'js>) -> crate::rquickjs_compat::Result<Self> {
+    fn from_js(_ctx: &Ctx<'js>, v: QValue<'js>) -> Result<Self> {
         let computed_value = match v.type_of() {
             Type::Uninitialized | Type::Undefined | Type::Null => serde_json::Value::Null,
             Type::Bool => {
@@ -64,7 +64,7 @@ impl<'js> FromJs<'js> for JsValue {
 }
 
 impl<'js> IntoJs<'js> for JsValue {
-    fn into_js(self, ctx: &Ctx<'js>) -> crate::rquickjs_compat::Result<QValue<'js>> {
+    fn into_js(self, ctx: &Ctx<'js>) -> Result<QValue<'js>> {
         match self.0 {
             serde_json::Value::Null => Ok(QValue::new_null(ctx.clone())),
             serde_json::Value::Bool(b) => b.into_js(ctx),

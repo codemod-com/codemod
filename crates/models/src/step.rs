@@ -103,16 +103,6 @@ pub struct UseJSAstGrep {
     #[ts(optional, as = "Option<String>")]
     pub base_path: Option<String>,
 
-    /// Don't respect .gitignore files (optional, defaults to false)
-    #[serde(default)]
-    #[ts(optional, as = "Option<bool>")]
-    pub no_gitignore: Option<bool>,
-
-    /// Include hidden files and directories (optional, defaults to false)
-    #[serde(default)]
-    #[ts(optional, as = "Option<bool>")]
-    pub include_hidden: Option<bool>,
-
     /// Set maximum number of concurrent threads (optional, defaults to CPU cores)
     #[serde(default)]
     #[ts(optional, as = "Option<usize>")]
@@ -127,11 +117,6 @@ pub struct UseJSAstGrep {
     #[serde(default)]
     #[ts(optional, as = "Option<String>")]
     pub language: Option<String>,
-
-    /// Allow dirty files (optional, defaults to false)
-    #[serde(default)]
-    #[ts(optional, as = "Option<bool>")]
-    pub allow_dirty: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, TS)]

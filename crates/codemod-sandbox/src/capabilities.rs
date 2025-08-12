@@ -3,7 +3,7 @@ mod wasm_capabilities {
 
     use std::future::Future;
 
-    use crate::rquickjs_compat::{
+    use rquickjs::{
         module::{Declarations, Exports, ModuleDef},
         prelude::Async,
         Ctx, Function, Result, Value,

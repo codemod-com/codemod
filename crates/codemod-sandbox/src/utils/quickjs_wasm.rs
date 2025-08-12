@@ -1,4 +1,4 @@
-use crate::rquickjs_compat::{Type, Value};
+use rquickjs::{Type, Value};
 use wasm_bindgen::{JsError, JsValue};
 
 pub fn quickjs_value_to_jsvalue(value: Value<'_>) -> Result<JsValue, JsError> {

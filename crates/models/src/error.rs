@@ -46,6 +46,9 @@ pub enum Error {
     #[error("HTTP error: {0}")]
     Http(#[from] reqwest::Error),
 
+    #[error("Step execution error: {0}")]
+    StepExecution(String),
+
     #[error("Other error: {0}")]
     Other(String),
 

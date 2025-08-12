@@ -1,4 +1,5 @@
 use anyhow::Result;
+use butterflow_core::config::WorkflowRunConfig;
 use butterflow_core::engine::Engine;
 use butterflow_state::cloud_adapter::CloudStateAdapter;
 
@@ -15,9 +16,14 @@ pub fn create_engine() -> Result<Engine> {
         if backend == "cloud" {
             // Create API state adapter
             let state_adapter = Box::new(CloudStateAdapter::new(endpoint, auth_token));
-            return Ok(Engine::with_state_adapter(state_adapter));
+            return Ok(Engine::with_state_adapter(
+                state_adapter,
+                WorkflowRunConfig::default(),
+            ));
         }
     }
 
-    Ok(Engine::new())
+    Ok(Engine::with_workflow_run_config(
+        WorkflowRunConfig::default(),
+    ))
 }

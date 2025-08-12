@@ -239,7 +239,7 @@ fn pre_process_pattern(expando: char, query: &str) -> Cow<str> {
 
 #[derive(Clone)]
 pub struct Wrapper {
-    inner: Vec<char>,
+    inner: Vec<u8>,
 }
 impl Wrapper {
     fn accept_edit(&mut self, edit: &Edit<Self>) -> ts::Edit {
@@ -247,10 +247,10 @@ impl Wrapper {
         let old_end_byte = edit.position + edit.deleted_length;
         let new_end_byte = edit.position + edit.inserted_text.len();
         let mut input = self.inner.to_vec();
-        let start_position = pos_for_char_offset(&input, start_byte);
-        let old_end_position = pos_for_char_offset(&input, old_end_byte);
+        let start_position = pos_for_byte_offset(&input, start_byte);
+        let old_end_position = pos_for_byte_offset(&input, old_end_byte);
         input.splice(start_byte..old_end_byte, edit.inserted_text.clone());
-        let new_end_position = pos_for_char_offset(&input, new_end_byte);
+        let new_end_position = pos_for_byte_offset(&input, new_end_byte);
         ts::Edit::new(
             start_byte as u32,
             old_end_byte as u32,
@@ -263,15 +263,15 @@ impl Wrapper {
 }
 
 impl Content for Wrapper {
-    type Underlying = char;
-    fn get_range(&self, range: Range<usize>) -> &[char] {
+    type Underlying = u8;
+    fn get_range(&self, range: Range<usize>) -> &[u8] {
         &self.inner[range]
     }
     fn decode_str(src: &str) -> Cow<[Self::Underlying]> {
-        Cow::Owned(src.chars().collect())
+        Cow::Owned(src.as_bytes().to_vec())
     }
     fn encode_bytes(bytes: &[Self::Underlying]) -> Cow<str> {
-        Cow::Owned(bytes.iter().collect())
+        Cow::Owned(String::from_utf8_lossy(bytes).into_owned())
     }
 
     fn get_char_column(&self, column: usize, _: usize) -> usize {
@@ -279,11 +279,11 @@ impl Content for Wrapper {
     }
 }
 
-fn pos_for_char_offset(input: &[char], offset: usize) -> Point {
+fn pos_for_byte_offset(input: &[u8], offset: usize) -> Point {
     debug_assert!(offset <= input.len());
     let (mut row, mut col) = (0, 0);
-    for &c in input.iter().take(offset) {
-        if '\n' == c {
+    for &b in input.iter().take(offset) {
+        if b == b'\n' {
             row += 1;
             col = 0;
         } else {
@@ -333,7 +333,7 @@ impl From<TSLanguageError> for SgWasmError {
 impl WasmDoc {
     pub fn try_new(src: String, lang: WasmLang) -> Result<Self, SgWasmError> {
         let source = Wrapper {
-            inner: src.chars().collect(),
+            inner: src.as_bytes().to_vec(),
         };
         let parser = Parser::new()?;
         let ast_grep_lang = lang.get_ts_language();
@@ -479,7 +479,7 @@ impl Doc for WasmDoc {
         parser
             .set_language(&ast_grep_lang)
             .map_err(|e| e.to_string())?;
-        let src = self.source.inner.iter().collect::<String>();
+        let src = String::from_utf8_lossy(&self.source.inner).into_owned();
         let parse_ret = parser.parse_with_string(&src.into(), Some(&self.tree), None);
         let Some(tree) = parse_ret.map_err(|e| e.to_string())? else {
             return Err("Failed to parse".to_string());

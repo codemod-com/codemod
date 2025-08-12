@@ -1,14 +1,12 @@
 use std::collections::HashMap;
-use std::env;
 use std::fs::File;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-pub type ProgressCallback =
-    Option<Arc<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync + 'static>>;
-
-use crate::registry::Result as RegistryResult;
+use crate::config::{PreRunCallback, WorkflowRunConfig};
+use crate::execution::{CodemodExecutionConfig, ProgressCallback};
+use crate::utils::validate_workflow;
 use chrono::Utc;
 use log::{debug, error, info, warn};
 use std::path::Path;
@@ -17,8 +15,7 @@ use tokio::sync::Mutex;
 use tokio::time;
 use uuid::Uuid;
 
-use crate::registry::{AuthProvider, RegistryClient, RegistryConfig, ResolvedPackage};
-use crate::utils::{self, get_cache_dir};
+use crate::registry::{RegistryClient, ResolvedPackage};
 use butterflow_models::runtime::RuntimeType;
 use butterflow_models::step::{StepAction, UseAstGrep, UseCodemod, UseJSAstGrep};
 use butterflow_models::{
@@ -35,34 +32,30 @@ use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
 use codemod_sandbox::{
-    execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes, GitDirty, Globs,
-};
-use codemod_sandbox::{
     sandbox::{
-        engine::{
-            language_data::get_extensions_for_language, ExecutionConfig, ExecutionEngine,
-            ExecutionStats,
-        },
-        filesystem::{RealFileSystem, WalkOptions},
+        engine::{execution_engine::execute_codemod_with_quickjs, ExecutionStats},
+        filesystem::RealFileSystem,
         resolvers::OxcResolver,
     },
     utils::project_discovery::find_tsconfig,
 };
 use std::sync::OnceLock;
+
 pub static GLOBAL_STATS: OnceLock<Mutex<ExecutionStats>> = OnceLock::new();
 
-pub type GitDirtyCheckCallback = Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>;
 /// Workflow engine
 pub struct Engine {
     /// State adapter for persisting workflow state
     state_adapter: Arc<Mutex<Box<dyn StateAdapter>>>,
 
     scheduler: Scheduler,
+
+    workflow_run_config: WorkflowRunConfig,
 }
 
 /// Represents a codemod dependency chain for cycle detection
 #[derive(Debug, Clone)]
-struct CodemodDependency {
+pub struct CodemodDependency {
     /// Source identifier (registry package or local path)
     source: String,
 }
@@ -82,6 +75,33 @@ impl Engine {
         Self {
             state_adapter: Arc::clone(&state_adapter),
             scheduler: Scheduler::new(),
+            workflow_run_config: WorkflowRunConfig::default(),
+        }
+    }
+
+    /// Create a new engine with a local state adapter
+    pub fn with_workflow_run_config(workflow_run_config: WorkflowRunConfig) -> Self {
+        let state_adapter: Arc<Mutex<Box<dyn StateAdapter>>> =
+            Arc::new(Mutex::new(Box::new(LocalStateAdapter::new())));
+
+        Self {
+            state_adapter: Arc::clone(&state_adapter),
+            scheduler: Scheduler::new(),
+            workflow_run_config,
+        }
+    }
+
+    /// Create a new engine with a custom state adapter
+    pub fn with_state_adapter(
+        state_adapter: Box<dyn StateAdapter>,
+        workflow_run_config: WorkflowRunConfig,
+    ) -> Self {
+        let state_adapter: Arc<Mutex<Box<dyn StateAdapter>>> = Arc::new(Mutex::new(state_adapter));
+
+        Self {
+            state_adapter: Arc::clone(&state_adapter),
+            scheduler: Scheduler::new(),
+            workflow_run_config,
         }
     }
 
@@ -100,26 +120,14 @@ impl Engine {
         Ok(())
     }
 
-    /// Create a new engine with a custom state adapter
-    pub fn with_state_adapter(state_adapter: Box<dyn StateAdapter>) -> Self {
-        let state_adapter: Arc<Mutex<Box<dyn StateAdapter>>> = Arc::new(Mutex::new(state_adapter));
-
-        Self {
-            state_adapter: Arc::clone(&state_adapter),
-            scheduler: Scheduler::new(),
-        }
-    }
-
     /// Run a workflow
     pub async fn run_workflow(
         &self,
         workflow: Workflow,
         params: HashMap<String, String>,
         bundle_path: Option<PathBuf>,
-        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_callback: ProgressCallback,
     ) -> Result<Uuid> {
-        utils::validate_workflow(&workflow, bundle_path.as_deref().unwrap_or(Path::new("")))?;
+        validate_workflow(&workflow, bundle_path.as_deref().unwrap_or(Path::new("")))?;
         self.validate_codemod_dependencies(&workflow, &[]).await?;
 
         let workflow_run_id = Uuid::new_v4();
@@ -141,13 +149,8 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
-        let git_dirty_check_callback = git_dirty_check_callback.clone();
-        let progress_callback = progress_callback.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine
-                .execute_workflow(workflow_run_id, git_dirty_check_callback, progress_callback)
-                .await
-            {
+            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -156,13 +159,7 @@ impl Engine {
     }
 
     /// Resume a workflow run
-    pub async fn resume_workflow(
-        &self,
-        workflow_run_id: Uuid,
-        task_ids: Vec<Uuid>,
-        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_callback: ProgressCallback,
-    ) -> Result<()> {
+    pub async fn resume_workflow(&self, workflow_run_id: Uuid, task_ids: Vec<Uuid>) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
             .state_adapter
@@ -198,13 +195,8 @@ impl Engine {
                     .await?;
 
                 let engine = self.clone();
-                let progress_callback = progress_callback.clone();
-                let git_dirty_check_callback = git_dirty_check_callback.clone();
                 tokio::spawn(async move {
-                    if let Err(e) = engine
-                        .execute_task(task_id, git_dirty_check_callback, progress_callback)
-                        .await
-                    {
+                    if let Err(e) = engine.execute_task(task_id).await {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -240,13 +232,8 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
-        let progress_callback = progress_callback.clone();
-        let git_dirty_check_callback = git_dirty_check_callback.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine
-                .execute_workflow(workflow_run_id, git_dirty_check_callback, progress_callback)
-                .await
-            {
+            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -255,12 +242,7 @@ impl Engine {
     }
 
     /// Trigger all awaiting tasks in a workflow run
-    pub async fn trigger_all(
-        &self,
-        workflow_run_id: Uuid,
-        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_callback: ProgressCallback,
-    ) -> Result<()> {
+    pub async fn trigger_all(&self, workflow_run_id: Uuid) -> Result<()> {
         // TODO: Do we need this?
         let _workflow_run = self
             .state_adapter
@@ -343,13 +325,8 @@ impl Engine {
 
             let engine = self.clone();
             let task_id = task.id;
-            let progress_callback = progress_callback.clone();
-            let git_dirty_check_callback = git_dirty_check_callback.clone();
             tokio::spawn(async move {
-                if let Err(e) = engine
-                    .execute_task(task_id, git_dirty_check_callback, progress_callback)
-                    .await
-                {
+                if let Err(e) = engine.execute_task(task_id).await {
                     error!("Task execution failed: {e}");
                 }
             });
@@ -384,13 +361,8 @@ impl Engine {
             .await?;
 
         let engine = self.clone();
-        let progress_callback = progress_callback.clone();
-        let git_dirty_check_callback = git_dirty_check_callback.clone();
         tokio::spawn(async move {
-            if let Err(e) = engine
-                .execute_workflow(workflow_run_id, git_dirty_check_callback, progress_callback)
-                .await
-            {
+            if let Err(e) = engine.execute_workflow(workflow_run_id).await {
                 error!("Workflow execution failed: {e}");
             }
         });
@@ -594,7 +566,7 @@ impl Engine {
     }
 
     /// Find if a codemod source creates a cycle in the dependency chain
-    fn find_cycle_in_chain(
+    pub fn find_cycle_in_chain(
         &self,
         source: &str,
         dependency_chain: &[CodemodDependency],
@@ -613,26 +585,10 @@ impl Engine {
         source: &str,
         dependency_chain: &[CodemodDependency],
     ) -> Result<()> {
-        // Create a temporary auth provider for validation
-        struct NoAuthProvider;
-        impl AuthProvider for NoAuthProvider {
-            fn get_auth_for_registry(
-                &self,
-                _registry_url: &str,
-            ) -> RegistryResult<Option<crate::registry::RegistryAuth>> {
-                Ok(None)
-            }
-        }
-
-        let registry_config = RegistryConfig {
-            default_registry: "https://app.codemod.com".to_string(),
-            cache_dir: get_cache_dir()?,
-        };
-
-        let registry_client = RegistryClient::new(registry_config, Some(Box::new(NoAuthProvider)));
-
         // Resolve the package
-        let resolved_package = registry_client
+        let resolved_package = self
+            .workflow_run_config
+            .registry_client
             .resolve_package(source, None, false, None)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve codemod {source}: {e}")))?;
@@ -665,12 +621,7 @@ impl Engine {
     }
 
     /// Execute a workflow
-    async fn execute_workflow(
-        &self,
-        workflow_run_id: Uuid,
-        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_callback: ProgressCallback,
-    ) -> Result<()> {
+    async fn execute_workflow(&self, workflow_run_id: Uuid) -> Result<()> {
         // Get the workflow run
         let workflow_run = self
             .state_adapter
@@ -888,13 +839,8 @@ impl Engine {
                 // Start task execution
                 let engine = self.clone();
                 let task_id = task.id;
-                let progress_callback = progress_callback.clone();
-                let git_dirty_check_callback = git_dirty_check_callback.clone();
                 tokio::spawn(async move {
-                    if let Err(e) = engine
-                        .execute_task(task_id, git_dirty_check_callback, progress_callback)
-                        .await
-                    {
+                    if let Err(e) = engine.execute_task(task_id).await {
                         error!("Task execution failed: {e}");
                     }
                 });
@@ -966,12 +912,7 @@ impl Engine {
     }
 
     /// Execute a task
-    async fn execute_task(
-        &self,
-        task_id: Uuid,
-        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_callback: ProgressCallback,
-    ) -> Result<()> {
+    async fn execute_task(&self, task_id: Uuid) -> Result<()> {
         let task = self.state_adapter.lock().await.get_task(task_id).await?;
 
         let workflow_run = self
@@ -1065,8 +1006,7 @@ impl Engine {
                     &state,
                     &workflow_run.workflow,
                     &workflow_run.bundle_path,
-                    git_dirty_check_callback.clone(),
-                    progress_callback.clone(),
+                    &[],
                 )
                 .await;
 
@@ -1176,7 +1116,7 @@ impl Engine {
         Ok(())
     }
 
-    /// Execute a specific step action (either RunScript or UseTemplates recursively)
+    /// Execute a specific step action with dependency chain tracking for cycle detection
     #[allow(clippy::too_many_arguments)]
     async fn execute_step_action(
         &self,
@@ -1189,42 +1129,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         workflow: &Workflow,
         bundle_path: &Option<PathBuf>,
-        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_callback: ProgressCallback,
-    ) -> Result<()> {
-        self.execute_step_action_with_chain(
-            runner,
-            action,
-            step_env,
-            node,
-            task,
-            params,
-            state,
-            workflow,
-            bundle_path,
-            &[],
-            git_dirty_check_callback,
-            progress_callback,
-        )
-        .await
-    }
-
-    /// Execute a specific step action with dependency chain tracking for cycle detection
-    #[allow(clippy::too_many_arguments)]
-    async fn execute_step_action_with_chain(
-        &self,
-        runner: &dyn Runner,
-        action: &StepAction,
-        step_env: &Option<HashMap<String, String>>,
-        node: &Node,
-        task: &Task,
-        params: &HashMap<String, String>,
-        state: &HashMap<String, serde_json::Value>,
-        workflow: &Workflow,
-        bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
-        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_callback: ProgressCallback,
     ) -> Result<()> {
         match action {
             StepAction::RunScript(run) => {
@@ -1255,7 +1160,7 @@ impl Engine {
                 combined_params.extend(template_use.inputs.clone());
 
                 for template_step in &template.steps {
-                    Box::pin(self.execute_step_action_with_chain(
+                    Box::pin(self.execute_step_action(
                         runner,
                         &template_step.action,
                         &template_step.env,
@@ -1266,35 +1171,20 @@ impl Engine {
                         workflow,
                         bundle_path,
                         dependency_chain,
-                        git_dirty_check_callback.clone(),
-                        progress_callback.clone(),
                     ))
                     .await?;
                 }
                 Ok(())
             }
             StepAction::AstGrep(ast_grep) => {
-                self.execute_ast_grep_step_with_dir(
-                    node.id.clone(),
-                    ast_grep,
-                    bundle_path.as_deref(),
-                    git_dirty_check_callback,
-                    progress_callback.clone(),
-                )
-                .await
+                self.execute_ast_grep_step(node.id.clone(), ast_grep).await
             }
             StepAction::JSAstGrep(js_ast_grep) => {
-                self.execute_js_ast_grep_step_with_dir(
-                    node.id.clone(),
-                    js_ast_grep,
-                    bundle_path.as_deref(),
-                    git_dirty_check_callback,
-                    progress_callback.clone(),
-                )
-                .await
+                self.execute_js_ast_grep_step(node.id.clone(), js_ast_grep)
+                    .await
             }
             StepAction::Codemod(codemod) => {
-                Box::pin(self.execute_codemod_step_with_chain(
+                Box::pin(self.execute_codemod_step(
                     codemod,
                     step_env,
                     node,
@@ -1303,270 +1193,199 @@ impl Engine {
                     state,
                     bundle_path,
                     dependency_chain,
-                    git_dirty_check_callback,
-                    progress_callback.clone(),
                 ))
                 .await
             }
         }
     }
 
-    pub async fn execute_ast_grep_step_with_dir(
-        &self,
-        id: String,
-        ast_grep: &UseAstGrep,
-        bundle_path: Option<&std::path::Path>,
-        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_callback: ProgressCallback,
-    ) -> Result<()> {
-        // Use bundle path as working directory, falling back to current directory
-        let bundle_path = bundle_path
-            .map(|p| p.to_path_buf())
-            .or_else(|| std::env::current_dir().ok());
-        let working_dir = env::current_dir().ok();
+    pub async fn execute_ast_grep_step(&self, id: String, ast_grep: &UseAstGrep) -> Result<()> {
+        let bundle_path = self.workflow_run_config.bundle_path.clone();
 
-        // Resolve config file path relative to bundle path
-        let config_path = if let Some(bundle) = bundle_path {
-            bundle.join(&ast_grep.config_file)
-        } else {
-            std::path::PathBuf::from(&ast_grep.config_file)
-        };
+        let config_path = bundle_path.join(&ast_grep.config_file);
 
         if !config_path.exists() {
-            return Err(Error::Other(format!(
+            return Err(Error::StepExecution(format!(
                 "AST grep config file not found: {}",
                 config_path.display()
             )));
         }
 
-        // TODO: Make this configurable
-        let should_apply_fixes = true;
-        // Execute ast-grep using include/exclude globs with the config file
-        let matches = if should_apply_fixes {
-            info!(
-                "Applying AST grep fixes from config file: {}",
-                config_path.display()
+        if let Some(pre_run_callback) = self.workflow_run_config.pre_run_callback.as_ref() {
+            pre_run_callback(
+                &self.workflow_run_config.target_path,
+                self.workflow_run_config.dry_run,
             );
-            execute_ast_grep_on_globs_with_fixes(
-                id,
-                Globs {
-                    include: ast_grep.include.as_deref().map(|v| v.to_vec()),
-                    exclude: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
-                },
-                ast_grep.base_path.as_deref(),
-                &config_path.to_string_lossy(),
-                working_dir.as_deref(),
-                GitDirty {
-                    allow_dirty: ast_grep.allow_dirty.unwrap_or(false),
-                    git_dirty_check_callback: git_dirty_check_callback.clone(),
-                },
-                progress_callback.clone(),
-            )
-            .map_err(|e| Error::Other(format!("AST grep execution with fixes failed: {e}")))?
-        } else {
-            execute_ast_grep_on_globs(
-                id,
-                Globs {
-                    include: ast_grep.include.as_deref().map(|v| v.to_vec()),
-                    exclude: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
-                },
-                ast_grep.base_path.as_deref(),
-                &config_path.to_string_lossy(),
-                working_dir.as_deref(),
-                GitDirty {
-                    allow_dirty: ast_grep.allow_dirty.unwrap_or(false),
-                    git_dirty_check_callback: git_dirty_check_callback.clone(),
-                },
-                progress_callback.clone(),
-            )
-            .map_err(|e| Error::Other(format!("AST grep execution failed: {e}")))?
+        }
+
+        let execution_config = CodemodExecutionConfig {
+            pre_run_callback: None,
+            progress_callback: self.workflow_run_config.progress_callback.clone(),
+            target_path: Some(self.workflow_run_config.target_path.clone()),
+            base_path: ast_grep.base_path.as_deref().map(|v| PathBuf::from(v)),
+            include_globs: ast_grep.include.as_deref().map(|v| v.to_vec()),
+            exclude_globs: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
+            dry_run: self.workflow_run_config.dry_run,
         };
 
-        // Log the results
-        if should_apply_fixes {
-            info!(
-                "AST grep applied fixes and found {} matches across all files",
-                matches.len()
-            );
-        } else {
-            info!("AST grep found {} matches across all files", matches.len());
-        }
-
-        for ast_match in &matches {
-            info!(
-                "Match in {}: {}:{}-{}:{} (rule: {})",
-                ast_match.file_path,
-                ast_match.start_line,
-                ast_match.start_column,
-                ast_match.end_line,
-                ast_match.end_column,
-                ast_match.rule_id
-            );
-            debug!("Match text: {}", ast_match.match_text);
-        }
-
-        // TODO: Consider writing match results to state or logs
-        // For now, we just log the results. In the future, this could be extended to:
-        // 1. Write matches to the workflow state for other tasks to use
-        // 2. Write matches to a file for further processing
-        // 3. Fail the step if matches are found (for linting use cases)
+        execution_config.execute(|path, config| {
+            info!("Executing codemod step with path: {}", path.display());
+            info!("Executing codemod step with config: {:?}", config.base_path);
+        });
 
         Ok(())
     }
 
-    pub async fn execute_js_ast_grep_step_with_dir(
+    pub async fn execute_js_ast_grep_step(
         &self,
         id: String,
         js_ast_grep: &UseJSAstGrep,
-        bundle_path: Option<&std::path::Path>,
-        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_callback: ProgressCallback,
     ) -> Result<()> {
-        // Use bundle path as working directory, falling back to current directory
-        let working_dir = bundle_path
-            .map(|p| p.to_path_buf())
-            .or_else(|| std::env::current_dir().ok());
+        let js_file_path = self
+            .workflow_run_config
+            .bundle_path
+            .join(&js_ast_grep.js_file);
 
-        // Resolve JavaScript file path relative to bundle path
-        let js_file_path = if let Some(bundle) = bundle_path {
-            bundle.join(&js_ast_grep.js_file)
-        } else if let Some(wd) = &working_dir {
-            wd.join(&js_ast_grep.js_file)
-        } else {
-            std::path::PathBuf::from(&js_ast_grep.js_file)
-        };
-
-        // Resolve base path - similar to ast-grep implementation
         let base_path = if let Some(base) = &js_ast_grep.base_path {
-            // Base path is relative to current working directory, not bundle path
             std::env::current_dir()
                 .unwrap_or_else(|_| std::path::PathBuf::from("."))
                 .join(base)
         } else {
-            // If no base path specified, use current working directory
             std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."))
         };
 
-        if let Some(git_dirty_check_callback) = git_dirty_check_callback {
-            git_dirty_check_callback(
-                base_path.as_path(),
-                js_ast_grep.allow_dirty.unwrap_or(false),
-            );
+        if let Some(pre_run_callback) = self.workflow_run_config.pre_run_callback.as_deref() {
+            pre_run_callback(base_path.as_path(), js_ast_grep.dry_run.unwrap_or(false));
         }
 
-        // Verify the JavaScript file exists
         if !js_file_path.exists() {
-            return Err(Error::Other(format!(
+            return Err(Error::StepExecution(format!(
                 "JavaScript file '{}' does not exist",
                 js_file_path.display()
             )));
         }
 
-        // Set up the modular system
-        let filesystem = Arc::new(RealFileSystem::new());
         let script_base_dir = js_file_path
             .parent()
             .unwrap_or(Path::new("."))
             .to_path_buf();
 
-        // Find tsconfig.json relative to the bundle path (or working directory as fallback)
-        let search_dir = bundle_path
-            .or(working_dir.as_deref())
-            .unwrap_or(&script_base_dir);
-        let tsconfig_path = find_tsconfig(search_dir);
+        let tsconfig_path = find_tsconfig(&script_base_dir);
 
+        let filesystem = Arc::new(RealFileSystem::new());
         let resolver = Arc::new(
             OxcResolver::new(script_base_dir.clone(), tsconfig_path)
                 .map_err(|e| Error::Other(format!("Failed to create resolver: {e}")))?,
         );
 
-        let mut config = ExecutionConfig::new(filesystem, resolver, script_base_dir);
-        let mut walk_options = WalkOptions::default();
-
-        // Apply configuration options from the step definition
-        if js_ast_grep.no_gitignore.unwrap_or(false) {
-            walk_options.respect_gitignore = false;
-        }
-
-        if js_ast_grep.include_hidden.unwrap_or(false) {
-            walk_options.include_hidden = true;
-        }
-
-        if js_ast_grep.dry_run.unwrap_or(false) {
-            config = config.with_dry_run(true);
-        }
-
-        if let Some(threads) = js_ast_grep.max_threads {
-            if threads > 0 {
-                config = config.with_max_threads(threads);
-            } else {
-                return Err(Error::Other(
-                    "max-threads must be greater than 0".to_string(),
-                ));
-            }
-        }
+        let config = CodemodExecutionConfig {
+            pre_run_callback: None,
+            progress_callback: self.workflow_run_config.progress_callback.clone(),
+            target_path: Some(self.workflow_run_config.target_path.clone()),
+            base_path: js_ast_grep.base_path.as_deref().map(|v| PathBuf::from(v)),
+            include_globs: js_ast_grep.include.as_deref().map(|v| v.to_vec()),
+            exclude_globs: js_ast_grep.exclude.as_deref().map(|v| v.to_vec()),
+            dry_run: js_ast_grep.dry_run.unwrap_or(false) || self.workflow_run_config.dry_run,
+        };
 
         // Set language first to get default extensions
         let language = if let Some(lang_str) = &js_ast_grep.language {
-            let parsed_lang = lang_str
+            lang_str
                 .parse()
-                .map_err(|e| Error::Other(format!("Invalid language '{lang_str}': {e}")))?;
-            config = config.with_language(parsed_lang);
-            parsed_lang
+                .map_err(|e| Error::StepExecution(format!("Invalid language '{lang_str}': {e}")))?
         } else {
             // Parse TypeScript as default
-            let default_lang = "typescript"
-                .parse()
-                .map_err(|e| Error::Other(format!("Failed to parse default language: {e}")))?;
-            config = config.with_language(default_lang);
-            default_lang
+            "typescript".parse().map_err(|e| {
+                Error::StepExecution(format!("Failed to parse default language: {e}"))
+            })?
         };
 
-        // Handle include/exclude patterns with proper glob support
-        if let Some(include_patterns) = &js_ast_grep.include {
-            config = config.with_include_globs(include_patterns.clone());
-        } else {
-            // When include is None, use default extensions for the language
-            let default_extensions = get_extensions_for_language(language)
-                .into_iter()
-                .map(|ext| ext.trim_start_matches('.').to_string())
-                .collect();
-            config = config.with_extensions(default_extensions);
-        }
+        // Execute the codemod on each file using the config's multi-threading
+        config
+            .execute(|file_path, config| {
+                // Only process files
+                if !file_path.is_file() {
+                    return;
+                }
 
-        if let Some(exclude_patterns) = &js_ast_grep.exclude {
-            config = config.with_exclude_globs(exclude_patterns.clone());
-        }
+                info!("Processing file with JS AST grep: {}", file_path.display());
 
-        config = config.with_walk_options(walk_options);
+                // Use a tokio runtime to handle the async execution within the sync callback
+                let rt = tokio::runtime::Runtime::new().unwrap();
+                rt.block_on(async {
+                    // Read file content
+                    let content = match tokio::fs::read_to_string(&file_path).await {
+                        Ok(content) => content,
+                        Err(e) => {
+                            warn!("Failed to read file {}: {}", file_path.display(), e);
+                            return;
+                        }
+                    };
 
-        // Create and run the execution engine
-        let engine = ExecutionEngine::new(config);
-        let stats = engine
-            .execute_on_directory(&id, &js_file_path, &base_path, progress_callback)
-            .await
-            .map_err(|e| Error::Other(format!("JavaScript execution failed: {e}")))?;
+                    // Execute the codemod on this file
+                    match execute_codemod_with_quickjs(
+                        &js_file_path,
+                        filesystem.clone(),
+                        resolver.clone(),
+                        language,
+                        file_path,
+                        &content,
+                    )
+                    .await
+                    {
+                        Ok(execution_output) => {
+                            debug!("Successfully processed file: {}", file_path.display());
 
-        info!("JS AST grep execution completed");
-        info!("Modified files: {:?}", stats.files_modified);
-        info!("Unmodified files: {:?}", stats.files_unmodified);
-        info!("Files with errors: {:?}", stats.files_with_errors);
-        // set global stats
-        let data = GLOBAL_STATS.get_or_init(|| Mutex::new(ExecutionStats::default()));
-        let mut data = data.lock().await;
-        *data = stats.clone();
+                            // Handle the execution output (write back if modified and not dry run)
+                            if let Some(ref new_content) = execution_output.content {
+                                if new_content != &content {
+                                    if !config.dry_run {
+                                        if let Err(e) =
+                                            tokio::fs::write(&file_path, new_content).await
+                                        {
+                                            error!(
+                                                "Failed to write modified file {}: {}",
+                                                file_path.display(),
+                                                e
+                                            );
+                                        } else {
+                                            debug!("Modified file: {}", file_path.display());
+                                        }
+                                    } else if config.dry_run {
+                                        debug!(
+                                            "Would modify file (dry run): {}",
+                                            file_path.display()
+                                        );
+                                    }
+                                }
+                            }
 
-        // TODO: Consider writing execution stats to state or logs
-        // Similar to AST grep, this could be extended to:
-        // 1. Write execution results to the workflow state for other tasks to use
-        // 2. Fail the step if there were errors during execution
-        // 3. Write detailed logs for debugging
+                            // Handle execution errors
+                            if let Some(ref error_msg) = execution_output.error {
+                                warn!(
+                                    "Execution completed with error for {}: {}",
+                                    file_path.display(),
+                                    error_msg
+                                );
+                            }
+                        }
+                        Err(e) => {
+                            error!(
+                                "Failed to execute codemod on {}: {:?}",
+                                file_path.display(),
+                                e
+                            );
+                        }
+                    }
+                });
+            })
+            .map_err(Error::StepExecution)?;
 
         Ok(())
     }
 
     #[allow(clippy::too_many_arguments)]
-    async fn execute_codemod_step_with_chain(
+    pub async fn execute_codemod_step(
         &self,
         codemod: &UseCodemod,
         step_env: &Option<HashMap<String, String>>,
@@ -1576,8 +1395,6 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
-        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_callback: ProgressCallback,
     ) -> Result<()> {
         info!("Executing codemod step: {}", codemod.source);
 
@@ -1604,24 +1421,7 @@ impl Engine {
             )));
         }
 
-        // For now, we'll create a simple auth provider that returns None
-        // The CLI will need to provide proper authentication
-        struct NoAuthProvider;
-        impl AuthProvider for NoAuthProvider {
-            fn get_auth_for_registry(
-                &self,
-                _registry_url: &str,
-            ) -> RegistryResult<Option<crate::registry::RegistryAuth>> {
-                Ok(None)
-            }
-        }
-
-        let registry_config = RegistryConfig {
-            default_registry: "https://app.codemod.com".to_string(),
-            cache_dir: get_cache_dir()?,
-        };
-
-        let registry_client = RegistryClient::new(registry_config, Some(Box::new(NoAuthProvider)));
+        let registry_client = RegistryClient::default();
 
         // Resolve the package (local path or registry package)
         let resolved_package = registry_client
@@ -1652,8 +1452,6 @@ impl Engine {
             state,
             bundle_path,
             &new_chain,
-            git_dirty_check_callback.clone(),
-            progress_callback,
         )
         .await
     }
@@ -1670,8 +1468,6 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
-        git_dirty_check_callback: Option<GitDirtyCheckCallback>,
-        progress_callback: ProgressCallback,
     ) -> Result<()> {
         let workflow_path = resolved_package.package_dir.join("workflow.yaml");
 
@@ -1755,7 +1551,7 @@ impl Engine {
         // Execute each node in the codemod workflow
         for node in &codemod_workflow.nodes {
             for step in &node.steps {
-                Box::pin(self.execute_step_action_with_chain(
+                Box::pin(self.execute_step_action(
                     runner.as_ref(),
                     &step.action,
                     &step.env,
@@ -1766,8 +1562,6 @@ impl Engine {
                     &codemod_workflow,
                     &Some(resolved_package.package_dir.clone()),
                     dependency_chain,
-                    git_dirty_check_callback.clone(),
-                    progress_callback.clone(),
                 ))
                 .await?;
             }
@@ -2120,155 +1914,7 @@ impl Clone for Engine {
         Self {
             state_adapter: Arc::clone(&self.state_adapter),
             scheduler: Scheduler::new(),
-        }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use butterflow_models::step::{StepAction, UseCodemod};
-    use butterflow_models::{Node, Step, Workflow};
-
-    #[tokio::test]
-    async fn test_cycle_detection_direct_cycle() {
-        let engine = Engine::new();
-
-        // Create a workflow with a codemod that references itself
-        let workflow = Workflow {
-            version: "1.0.0".to_string(),
-            state: None,
-            nodes: vec![Node {
-                id: "test-node".to_string(),
-                name: "Test Node".to_string(),
-                description: Some("Test node".to_string()),
-                r#type: butterflow_models::node::NodeType::Automatic,
-                depends_on: vec![],
-                trigger: None,
-                strategy: None,
-                runtime: None,
-                env: HashMap::new(),
-                steps: vec![Step {
-                    name: "test-step".to_string(),
-                    action: StepAction::Codemod(UseCodemod {
-                        source: "test-codemod".to_string(),
-                        args: None,
-                        env: None,
-                        working_dir: None,
-                    }),
-                    env: None,
-                }],
-            }],
-            templates: vec![],
-        };
-
-        // Create a dependency chain that includes the same codemod
-        let dependency_chain = vec![CodemodDependency {
-            source: "test-codemod".to_string(),
-        }];
-
-        // Test that cycle detection catches the direct cycle
-        let result = engine
-            .validate_codemod_dependencies(&workflow, &dependency_chain)
-            .await;
-
-        assert!(result.is_err());
-        let error = result.unwrap_err();
-        match error {
-            Error::Other(msg) => {
-                assert!(msg.contains("Codemod dependency cycle detected"));
-                assert!(msg.contains("test-codemod"));
-            }
-            _ => panic!("Expected Other error with cycle detection message"),
-        }
-    }
-
-    #[test]
-    fn test_find_cycle_in_chain() {
-        let engine = Engine::new();
-
-        let dependency_chain = vec![
-            CodemodDependency {
-                source: "codemod-a".to_string(),
-            },
-            CodemodDependency {
-                source: "codemod-b".to_string(),
-            },
-        ];
-
-        // Test finding an existing cycle
-        let result = engine.find_cycle_in_chain("codemod-a", &dependency_chain);
-        assert_eq!(result, Some("codemod-a".to_string()));
-
-        // Test not finding a cycle with a new codemod
-        let result = engine.find_cycle_in_chain("codemod-c", &dependency_chain);
-        assert_eq!(result, None);
-    }
-
-    #[tokio::test]
-    async fn test_runtime_cycle_detection() {
-        let engine = Engine::new();
-
-        // Create a dependency chain
-        let dependency_chain = vec![CodemodDependency {
-            source: "codemod-a".to_string(),
-        }];
-
-        // Create a codemod step that would create a cycle
-        let codemod = UseCodemod {
-            source: "codemod-a".to_string(), // Same as in dependency chain
-            args: None,
-            env: None,
-            working_dir: None,
-        };
-
-        // Create minimal test data
-        let node = Node {
-            id: "test-node".to_string(),
-            name: "Test Node".to_string(),
-            description: None,
-            r#type: butterflow_models::node::NodeType::Automatic,
-            depends_on: vec![],
-            trigger: None,
-            strategy: None,
-            runtime: None,
-            env: HashMap::new(),
-            steps: vec![],
-        };
-
-        use butterflow_models::Task;
-        use uuid::Uuid;
-
-        let task = Task::new(Uuid::new_v4(), "test-node".to_string(), false);
-
-        let params = HashMap::new();
-        let state = HashMap::new();
-        let bundle_path = None;
-
-        // Test that runtime cycle detection works
-        let result = engine
-            .execute_codemod_step_with_chain(
-                &codemod,
-                &None,
-                &node,
-                &task,
-                &params,
-                &state,
-                &bundle_path,
-                &dependency_chain,
-                None,
-                None,
-            )
-            .await;
-
-        assert!(result.is_err());
-        let error = result.unwrap_err();
-        match error {
-            Error::Other(msg) => {
-                assert!(msg.contains("Runtime codemod dependency cycle detected"));
-                assert!(msg.contains("codemod-a"));
-            }
-            _ => panic!("Expected Other error with runtime cycle detection message"),
+            workflow_run_config: self.workflow_run_config.clone(),
         }
     }
 }

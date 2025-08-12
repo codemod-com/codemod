@@ -17,21 +17,19 @@ use ast_grep_language::{LanguageExt, SupportLang};
 #[cfg(feature = "wasm")]
 use ast_grep_core::language::Language;
 
-use crate::rquickjs_compat::module::{Declarations, Exports, ModuleDef};
-use crate::rquickjs_compat::{prelude::Func, Class, Ctx, Exception, Object, Result};
+use rquickjs::module::{Declarations, Exports, ModuleDef};
+use rquickjs::{prelude::Func, Class, Ctx, Exception, Object, Result};
 
 use sg_node::{SgNodeRjs, SgRootRjs};
 
+pub(crate) mod scanner;
 mod serde;
 
 #[cfg(feature = "native")]
-pub use native::{
-    execute_ast_grep_on_globs, execute_ast_grep_on_globs_with_fixes, execute_ast_grep_on_paths,
-    execute_ast_grep_on_paths_with_fixes, GitDirty, Globs,
-};
+pub use native::execute_ast_grep;
 
 #[allow(dead_code)]
-pub struct AstGrepModule;
+pub(crate) struct AstGrepModule;
 
 impl ModuleDef for AstGrepModule {
     fn declare(declare: &Declarations) -> Result<()> {
