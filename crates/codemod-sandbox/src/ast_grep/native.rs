@@ -15,7 +15,7 @@ pub fn execute_ast_grep(
     file_path: &Path,
     config_file_path: &str,
     apply_fixes: bool,
-) -> Result<(Vec<AstGrepMatch>, bool), AstGrepError> {
+) -> Result<(Vec<AstGrepMatch>, bool, Option<String>), AstGrepError> {
     let config_content = fs::read_to_string(config_file_path)?;
     let rule_configs = from_yaml_string(&config_content, &Default::default())
         .map_err(|e| AstGrepError::Config(format!("Failed to parse YAML rules: {e:?}")))?;
@@ -30,7 +30,7 @@ fn scan_file(
     file_path: &Path,
     combined_scan: &CombinedScan<SupportLang>,
     apply_fixes: bool,
-) -> Result<(Vec<AstGrepMatch>, bool), AstGrepError> {
+) -> Result<(Vec<AstGrepMatch>, bool, Option<String>), AstGrepError> {
     let content = fs::read_to_string(file_path)?;
 
     let language_str = detect_language_from_extension(
@@ -55,12 +55,11 @@ fn scan_file(
     )?;
 
     let file_modified = scan_result.file_modified;
-    let new_content = scan_result.new_content;
+    let new_content = if file_modified {
+        Some(scan_result.new_content)
+    } else {
+        None
+    };
 
-    // Write the modified content back to the file if fixes were applied
-    if file_modified {
-        fs::write(file_path, new_content)?;
-    }
-
-    Ok((scan_result.matches, file_modified))
+    Ok((scan_result.matches, file_modified, new_content))
 }
