@@ -25,6 +25,20 @@ pub struct ProgressCallback {
     pub callback: Arc<ProgressCallbackFn>,
 }
 
+/// Shared execution context to minimize Arc cloning in parallel processing
+struct SharedExecutionContext<'a, F>
+where
+    F: Fn(&Path, &CodemodExecutionConfig) + Send + Sync,
+{
+    task_id: Arc<str>,
+    progress_callback: Arc<Option<ProgressCallback>>,
+    callback: Arc<F>,
+    config: &'a CodemodExecutionConfig,
+    processed_count: Arc<AtomicU64>,
+    total_files: u64,
+}
+
+#[derive(Clone)]
 pub struct CodemodExecutionConfig {
     /// Callback to run before the codemod execution
     pub pre_run_callback: Option<PreRunCallback>,
@@ -91,52 +105,47 @@ impl CodemodExecutionConfig {
             .threads(num_threads)
             .build_parallel();
 
-        // Atomic counter for progress reporting
-        let processed_count = Arc::new(AtomicU64::new(0));
-
-        // Clone task_id for use in closure
-        let task_id_clone = task_id.to_string();
-
-        // Clone necessary data for the parallel closure
-        let progress_callback = self.progress_callback.clone();
-        let callback = Arc::new(callback);
-
-        let config_for_callback = Arc::new(self);
+        // Create shared execution context to minimize cloning overhead
+        let shared_context = Arc::new(SharedExecutionContext {
+            task_id: Arc::from(task_id),
+            progress_callback: self.progress_callback.clone(),
+            callback: Arc::new(callback),
+            config: self,
+            processed_count: Arc::new(AtomicU64::new(0)),
+            total_files,
+        });
 
         // Use WalkParallel's run method for parallel processing
         walker.run(|| {
-            let processed_count = Arc::clone(&processed_count);
-            let task_id = task_id_clone.clone();
-            let progress_callback = Arc::clone(&progress_callback);
-            let callback = Arc::clone(&callback);
-            let config = Arc::clone(&config_for_callback);
+            // Single Arc clone per worker thread instead of multiple individual clones
+            let ctx = Arc::clone(&shared_context);
 
             Box::new(move |entry| match entry {
                 Ok(dir_entry) => {
                     let file_path = dir_entry.path();
 
                     if dir_entry.file_type().is_some_and(|ft| ft.is_file()) {
-                        if let Some(ref progress_cb) = progress_callback.as_ref() {
+                        if let Some(ref progress_cb) = ctx.progress_callback.as_ref() {
                             let file_path_str = file_path.to_string_lossy();
                             (progress_cb.callback)(
-                                &task_id,
+                                &ctx.task_id,
                                 &file_path_str,
                                 "processing",
-                                Some(&total_files),
-                                &processed_count.load(Ordering::Relaxed),
+                                Some(&ctx.total_files),
+                                &ctx.processed_count.load(Ordering::Relaxed),
                             );
                         }
 
-                        callback(file_path, &config);
+                        (ctx.callback)(file_path, ctx.config);
 
-                        let current_count = processed_count.fetch_add(1, Ordering::Relaxed);
+                        let current_count = ctx.processed_count.fetch_add(1, Ordering::Relaxed);
 
-                        if let Some(ref progress_cb) = progress_callback.as_ref() {
+                        if let Some(ref progress_cb) = ctx.progress_callback.as_ref() {
                             (progress_cb.callback)(
-                                &task_id,
+                                &ctx.task_id,
                                 "",
                                 "increment",
-                                Some(&total_files),
+                                Some(&ctx.total_files),
                                 &(current_count + 1),
                             );
                         }
@@ -152,7 +161,7 @@ impl CodemodExecutionConfig {
 
         // Report completion
         if let Some(ref progress_cb) = self.progress_callback.as_ref() {
-            let final_count = processed_count.load(Ordering::Relaxed);
+            let final_count = shared_context.processed_count.load(Ordering::Relaxed);
             (progress_cb.callback)(task_id, "", "finish", Some(&total_files), &final_count);
         }
 

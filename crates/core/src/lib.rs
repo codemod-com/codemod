@@ -1,7 +1,7 @@
 pub mod config;
 pub mod engine;
 pub mod execution;
-mod file_ops;
+pub mod file_ops;
 pub mod registry;
 pub mod utils;
 
