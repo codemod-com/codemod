@@ -265,6 +265,8 @@ jobs:
           mkdir -p crates/cli/npm/platforms/darwin-arm64
           mkdir -p crates/cli/npm/platforms/darwin-x64  
           mkdir -p crates/cli/npm/platforms/linux-x64-gnu
+          mkdir -p crates/cli/npm/platforms/linux-arm64-gnu
+          mkdir -p crates/cli/npm/platforms/win32-x64-msvc
           
           # Copy binaries to platform packages
           cp artifacts/aarch64-apple-darwin/codemod-darwin-aarch64 crates/cli/npm/platforms/darwin-arm64/codemod
@@ -298,11 +300,33 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # Publish each platform package
+          # Verify npm authentication
+          echo "Verifying npm authentication..."
+          npm whoami
+          
+          # Publish each platform package with error handling
           for platform in crates/cli/npm/platforms/*/; do
-            echo "Publishing $(basename $platform)..."
+            platform_name=$(basename "$platform")
+            echo "Publishing $platform_name..."
             cd "$platform"
-            npm publish
+            
+            # Show package info before publishing
+            echo "Package details:"
+            cat package.json | jq '.name, .version'
+            
+            # Check if package.json exists and is valid
+            if ! jq empty package.json 2>/dev/null; then
+              echo "Error: Invalid package.json in $platform_name"
+              exit 1
+            fi
+            
+            # Publish with explicit tag and error handling
+            if ! npm publish --tag "${{ steps.version.outputs.npm_tag }}" --access public; then
+              echo "Failed to publish $platform_name"
+              exit 1
+            fi
+            
+            echo "Successfully published $platform_name"
             cd - > /dev/null
           done
 

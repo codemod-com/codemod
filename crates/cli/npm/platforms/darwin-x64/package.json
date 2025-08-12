@@ -24,8 +24,7 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
-    "access": "public",
-    "tag": "next"
+    "access": "public"
   },
   "repository": "https://github.com/codemod-com/codemod"
 }
