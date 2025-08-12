@@ -1,5 +1,5 @@
 use anyhow::Result;
-use butterflow_core::utils::get_cache_dir;
+use butterflow_core::config::WorkflowRunConfig;
 use clap::Args;
 use console::style;
 use log::info;
@@ -7,13 +7,14 @@ use rand::Rng;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::process::Command as ProcessCommand;
+use std::sync::Arc;
 use tokio::sync::Mutex;
 
 use crate::auth_provider::CliAuthProvider;
 use crate::progress_bar::download_progress_bar;
-use crate::workflow_runner::{run_workflow, WorkflowRunConfig};
+use crate::workflow_runner::run_workflow;
 use butterflow_core::engine::{Engine, GLOBAL_STATS};
-use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
+use butterflow_core::registry::{RegistryClient, RegistryError};
 use codemod_sandbox::sandbox::engine::ExecutionStats;
 use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 
@@ -22,10 +23,6 @@ pub struct Command {
     /// Package name with optional version (e.g., @org/package@1.0.0)
     #[arg(value_name = "PACKAGE")]
     package: String,
-
-    /// Target directory to run the codemod on
-    #[arg(value_name = "PATH", default_value = ".")]
-    path: PathBuf,
 
     /// Registry URL
     #[arg(long)]
@@ -46,6 +43,10 @@ pub struct Command {
     /// Allow dirty git status
     #[arg(long)]
     allow_dirty: bool,
+
+    /// Optional target path to run the codemod on
+    #[arg(long)]
+    target_path: Option<PathBuf>,
 }
 
 pub async fn handler(
@@ -57,7 +58,6 @@ pub async fn handler(
     let auth_provider = CliAuthProvider::new()?;
 
     // Get cache directory and default registry from config
-    let cache_dir = get_cache_dir()?;
     let config = auth_provider.storage.load_config()?;
 
     let registry_url = args
@@ -66,19 +66,7 @@ pub async fn handler(
         .unwrap_or(&config.default_registry)
         .clone();
 
-    info!(
-        "Running codemod: {} from registry: {}",
-        args.package, registry_url
-    );
-
-    // Create registry configuration
-    let registry_config = RegistryConfig {
-        default_registry: registry_url.clone(),
-        cache_dir,
-    };
-
-    // Create registry client
-    let registry_client = RegistryClient::new(registry_config, Some(Box::new(auth_provider)));
+    let registry_client = RegistryClient::default();
 
     // Resolve the package (local path or registry package)
     let download_progress_bar = Some(download_progress_bar());
@@ -129,7 +117,7 @@ pub async fn handler(
     let stats = execute_codemod(
         engine,
         &resolved_package.package_dir,
-        &args.path,
+        args.target_path.as_ref().unwrap_or(&PathBuf::from(".")),
         &args.args,
         args.dry_run,
     )
@@ -210,7 +198,11 @@ pub async fn run_legacy_codemod_with_raw_args(raw_args: &[String]) -> Result<()>
 
 async fn run_legacy_codemod(args: &Command) -> Result<()> {
     let mut legacy_args = vec![args.package.clone()];
-    legacy_args.push(args.path.to_string_lossy().to_string());
+    legacy_args.push(
+        args.target_path
+            .as_ref()
+            .map_or("".to_string(), |v| v.to_string_lossy().to_string()),
+    );
     legacy_args.extend(args.args.iter().cloned());
     run_legacy_codemod_with_raw_args(&legacy_args).await
 }
@@ -252,8 +244,13 @@ async fn execute_codemod(
     let config = WorkflowRunConfig {
         workflow_file_path: workflow_path,
         bundle_path: package_dir.to_path_buf(),
+        target_path: target_path.to_path_buf(),
         params,
         wait_for_completion: true,
+        progress_callback: Arc::new(None),
+        pre_run_callback: Arc::new(None),
+        registry_client: RegistryClient::default(),
+        dry_run,
     };
 
     // Run workflow using the extracted workflow runner

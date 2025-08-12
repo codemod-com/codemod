@@ -5,13 +5,11 @@ mod capabilities;
 #[cfg(feature = "wasm")]
 mod plugins;
 #[cfg(feature = "wasm")]
-mod rquickjs_compat;
-#[cfg(feature = "wasm")]
 mod sandbox;
 #[cfg(feature = "wasm")]
 mod utils;
 
 #[cfg(feature = "wasm")]
-pub use crate::sandbox::wasm::*;
+pub use crate::sandbox::wasm_exports::*;
 
 pub fn main() {}

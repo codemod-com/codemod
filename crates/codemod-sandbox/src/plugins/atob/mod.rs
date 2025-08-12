@@ -1,8 +1,8 @@
-use crate::rquickjs_compat::{Ctx, Result, String as RquickjsString};
+use rquickjs::{Ctx, Result, String as RquickjsString};
 use wasm_bindgen::prelude::*;
 
 pub fn init(ctx: &Ctx<'_>) -> Result<()> {
-    use crate::rquickjs_compat::function::Func;
+    use rquickjs::function::Func;
     let globals = ctx.globals();
 
     globals.set("atob", Func::from(qj_atob))?;

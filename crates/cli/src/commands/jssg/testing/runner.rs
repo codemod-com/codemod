@@ -13,9 +13,7 @@ use crate::commands::jssg::testing::{
 };
 use ast_grep_language::SupportLang;
 use codemod_sandbox::sandbox::{
-    engine::{ExecutionConfig, ExecutionEngine},
-    errors::ExecutionError,
-    filesystem::RealFileSystem,
+    engine::execute_codemod_with_quickjs, errors::ExecutionError, filesystem::RealFileSystem,
     resolvers::OxcResolver,
 };
 
@@ -158,7 +156,7 @@ impl TestRunner {
             ));
         }
 
-        // Set up execution engine
+        // Set up execution components following the pattern from run.rs
         let filesystem = Arc::new(RealFileSystem::new());
         let script_base_dir = codemod_path
             .parent()
@@ -169,17 +167,19 @@ impl TestRunner {
 
         let resolver = Arc::new(OxcResolver::new(script_base_dir.clone(), tsconfig_path)?);
 
-        let config = ExecutionConfig::new(filesystem, resolver, script_base_dir)
-            .with_language(language_enum);
-
-        let engine = ExecutionEngine::new(config);
-
         // Execute only the filtered tests
         let mut test_results = Vec::new();
         for test_case in filtered_test_cases {
             let result = timeout(
                 self.options.timeout,
-                Self::execute_test_case(&engine, test_case, codemod_path, &self.options),
+                Self::execute_test_case(
+                    codemod_path,
+                    language_enum,
+                    &filesystem,
+                    &resolver,
+                    test_case,
+                    &self.options,
+                ),
             )
             .await;
 
@@ -224,9 +224,11 @@ impl TestRunner {
     }
 
     async fn execute_test_case(
-        engine: &ExecutionEngine<RealFileSystem, OxcResolver>,
-        test_case: &TestCase,
         codemod_path: &Path,
+        language: SupportLang,
+        filesystem: &Arc<RealFileSystem>,
+        resolver: &Arc<OxcResolver>,
+        test_case: &TestCase,
         options: &TestOptions,
     ) -> Result<()> {
         let should_expect_error = test_case.should_expect_error(&options.expect_errors);
@@ -239,7 +241,14 @@ impl TestRunner {
         {
             if options.update_snapshots {
                 // Create expected files by running the codemod
-                return Self::create_expected_files(engine, test_case, codemod_path).await;
+                return Self::create_expected_files(
+                    codemod_path,
+                    language,
+                    filesystem,
+                    resolver,
+                    test_case,
+                )
+                .await;
             } else {
                 return Err(anyhow::anyhow!(
                     "No expected file found for {} in {}. Run with --update-snapshots to create it.",
@@ -255,14 +264,21 @@ impl TestRunner {
             .iter()
             .zip(test_case.expected_files.iter())
         {
-            let execution_output = engine
-                .execute_codemod_on_content(codemod_path, &input_file.path, &input_file.content)
-                .await
-                .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
+            // Execute the codemod using the new pattern
+            let execution_output = execute_codemod_with_quickjs(
+                codemod_path,
+                filesystem.clone(),
+                resolver.clone(),
+                language,
+                &input_file.path,
+                &input_file.content,
+            )
+            .await
+            .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
 
             // Handle expected errors
             if should_expect_error {
-                if execution_output.is_success() {
+                if execution_output.error.is_none() {
                     return Err(anyhow::anyhow!(
                         "Test '{}' was expected to fail but succeeded",
                         test_case.name
@@ -274,7 +290,7 @@ impl TestRunner {
                 }
             }
 
-            if let Some(error) = execution_output.error {
+            if let Some(error) = &execution_output.error {
                 return Err(anyhow::anyhow!("Codemod execution failed:\n{}", error));
             }
 
@@ -310,17 +326,25 @@ impl TestRunner {
     }
 
     async fn create_expected_files(
-        engine: &ExecutionEngine<RealFileSystem, OxcResolver>,
-        test_case: &TestCase,
         codemod_path: &Path,
+        language: SupportLang,
+        filesystem: &Arc<RealFileSystem>,
+        resolver: &Arc<OxcResolver>,
+        test_case: &TestCase,
     ) -> Result<()> {
         for input_file in &test_case.input_files {
-            let execution_output = engine
-                .execute_codemod_on_content(codemod_path, &input_file.path, &input_file.content)
-                .await
-                .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
+            let execution_output = execute_codemod_with_quickjs(
+                codemod_path,
+                filesystem.clone(),
+                resolver.clone(),
+                language,
+                &input_file.path,
+                &input_file.content,
+            )
+            .await
+            .map_err(|e| anyhow::anyhow!("{}", Self::format_execution_error(&e)))?;
 
-            if let Some(error) = execution_output.error {
+            if let Some(error) = &execution_output.error {
                 return Err(anyhow::anyhow!("Codemod execution failed:\n{}", error));
             }
 

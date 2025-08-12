@@ -4,8 +4,7 @@ version.workspace = true
 edition = "2021"
 
 [dependencies]
-rquickjs-registry = { package = "rquickjs", version = "0.9.0", default-features = false, optional = true }
-rquickjs-git = { package = "rquickjs", git = "https://github.com/DelSkayn/rquickjs.git", version = "0.9.0", default-features = false, optional = true }
+rquickjs = { git = "https://github.com/DelSkayn/rquickjs.git", version = "0.9.0", default-features = false, optional = true }
 thiserror = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
@@ -59,9 +58,10 @@ wasm = [
   "wasm-bindgen-futures",
   "js-sys",
   "serde-wasm-bindgen",
-  "rquickjs-registry/loader",
-  "rquickjs-registry/futures",
-  "rquickjs-registry/macro",
+  "rquickjs/futures",
+  "rquickjs/bindgen",
+  "rquickjs/loader",
+  "rquickjs/macro",
 ]
 native = [
   "real-fs",
@@ -69,8 +69,8 @@ native = [
   "ast-grep-config/tree-sitter",
   "ast-grep-language",
   "llrt_modules",
-  "rquickjs-git",
-  "rquickjs-git/full-async",
+  "rquickjs",
+  "rquickjs/full-async",
   "tokio",
   "serde_yaml",
 ]

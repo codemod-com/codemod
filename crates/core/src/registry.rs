@@ -13,6 +13,8 @@ use tempfile::TempDir;
 use thiserror::Error;
 use walkdir::WalkDir;
 
+use crate::utils::get_cache_dir;
+
 pub type ProgressBarCallback = Arc<Box<dyn Fn(u64, u64) + Send + Sync>>;
 
 #[derive(Error, Debug)]
@@ -97,6 +99,18 @@ pub struct RegistryConfig {
     pub cache_dir: PathBuf,
 }
 
+impl Default for RegistryConfig {
+    fn default() -> Self {
+        let registry_url =
+            std::env::var("CODEMOD_REGISTRY_URL").unwrap_or("https://app.codemod.com".to_string());
+
+        Self {
+            default_registry: registry_url,
+            cache_dir: get_cache_dir().unwrap(),
+        }
+    }
+}
+
 #[derive(Deserialize, Debug)]
 struct PackageInfo {
     #[allow(dead_code)]
@@ -140,9 +154,10 @@ pub struct ResolvedPackage {
     pub package_dir: PathBuf,
 }
 
+#[derive(Clone)]
 pub struct RegistryClient {
     config: RegistryConfig,
-    auth_provider: Option<Box<dyn AuthProvider>>,
+    auth_provider: Option<Arc<dyn AuthProvider>>,
     client: reqwest::Client,
 }
 
@@ -151,7 +166,7 @@ pub trait AuthProvider: Send + Sync {
 }
 
 impl RegistryClient {
-    pub fn new(config: RegistryConfig, auth_provider: Option<Box<dyn AuthProvider>>) -> Self {
+    pub fn new(config: RegistryConfig, auth_provider: Option<Arc<dyn AuthProvider>>) -> Self {
         Self {
             config,
             auth_provider,
@@ -530,6 +545,12 @@ impl RegistryClient {
         // Copy to cache directory
         copy_dir_recursively(temp_path, cache_dir)?;
         Ok(())
+    }
+}
+
+impl Default for RegistryClient {
+    fn default() -> Self {
+        Self::new(RegistryConfig::default(), None)
     }
 }
 

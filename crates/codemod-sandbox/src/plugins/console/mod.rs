@@ -1,5 +1,5 @@
-use crate::rquickjs_compat::{function::Func, prelude::Rest, Ctx, Object, Result, Value};
 use crate::utils::quickjs_wasm::quickjs_value_to_jsvalue;
+use rquickjs::{function::Func, prelude::Rest, Ctx, Object, Result, Value};
 use wasm_bindgen::{prelude::*, JsValue};
 
 pub fn init(ctx: &Ctx<'_>) -> Result<()> {

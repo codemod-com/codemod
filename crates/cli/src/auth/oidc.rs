@@ -18,12 +18,12 @@ use std::net::{SocketAddr, TcpListener};
 use std::sync::Arc;
 use tokio::sync::oneshot;
 
-use crate::auth::storage::{RegistryConfig, StoredAuth, TokenStorage};
+use crate::auth::storage::{RegistryAuthConfig, StoredAuth, TokenStorage};
 use crate::auth::types::{AuthTokens, UserInfo};
 
 pub struct OidcClient {
     registry_url: String,
-    config: RegistryConfig,
+    config: RegistryAuthConfig,
     storage: TokenStorage,
     http_client: Client,
 }
@@ -35,7 +35,7 @@ struct CallbackData {
 }
 
 impl OidcClient {
-    pub fn new(registry_url: String, config: RegistryConfig) -> Result<Self> {
+    pub fn new(registry_url: String, config: RegistryAuthConfig) -> Result<Self> {
         let storage = TokenStorage::new()?;
         let http_client = Client::new();
 

@@ -3,22 +3,14 @@ use crate::progress_bar::{
     progress_bar_for_multi_progress, ActionType, MultiProgressProgressBarCallback, ProgressCallback,
 };
 use anyhow::{Context, Result};
+use butterflow_core::config::WorkflowRunConfig;
 use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
 use log::{error, info};
-use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use uuid::Uuid;
-
-/// Configuration for running a workflow
-pub struct WorkflowRunConfig {
-    pub workflow_file_path: PathBuf,
-    pub bundle_path: PathBuf,
-    pub params: HashMap<String, String>,
-    pub wait_for_completion: bool,
-}
 
 /// Run a workflow with the given configuration
 pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<String> {
@@ -58,13 +50,7 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
 
     // Run workflow
     let workflow_run_id = engine
-        .run_workflow(
-            workflow,
-            config.params,
-            Some(config.bundle_path),
-            Some(dirty_check),
-            Some(callback),
-        )
+        .run_workflow(workflow, config.params, Some(config.bundle_path))
         .await
         .context("Failed to run workflow")?;
 

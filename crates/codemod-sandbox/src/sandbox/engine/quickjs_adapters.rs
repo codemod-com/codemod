@@ -1,4 +1,4 @@
-use crate::rquickjs_compat::{
+use rquickjs::{
     loader::{Loader, Resolver},
     module, Ctx, Error, Module, Result,
 };

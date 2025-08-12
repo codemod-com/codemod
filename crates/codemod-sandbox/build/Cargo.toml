@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.80"
 binaryen = "0.13.0"
-cargo_toml = "0.19.2"
+cargo_toml = "0.22.3"
 clap = { version = "4.5.1", features = ["derive"] }
 tokio = { version = "1.36.0", features = ["full"] }
 wasm-bindgen = { workspace = true }

@@ -4,15 +4,10 @@ use crate::ast_grep::wasm_lang::WasmDoc;
 use ast_grep_core::tree_sitter::StrDoc as TreeSitterStrDoc;
 use ast_grep_core::{AstGrep, Node, NodeMatch};
 
-#[cfg(feature = "wasm")]
-use crate::rquickjs_compat as rquickjs_git;
-
 #[cfg(not(feature = "wasm"))]
 use ast_grep_language::SupportLang;
 
-use crate::rquickjs_compat::{
-    class, class::Trace, methods, Ctx, Exception, JsLifetime, Result, Value,
-};
+use rquickjs::{class, class::Trace, methods, Ctx, Exception, JsLifetime, Result, Value};
 use std::marker::PhantomData;
 use std::str::FromStr;
 use std::sync::Arc;

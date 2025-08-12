@@ -1,10 +1,11 @@
+use crate::ast_grep::types::AstGrepError;
 #[cfg(feature = "wasm")]
 use crate::ast_grep::wasm_lang::WasmLang as SupportLang;
-use crate::rquickjs_compat::{Ctx, Exception, FromJs, Result, Value};
 use ast_grep_config::{DeserializeEnv, RuleCore, SerializableRuleCore};
 use ast_grep_core::{matcher::KindMatcher, Pattern};
 #[cfg(not(feature = "wasm"))]
 use ast_grep_language::SupportLang;
+use rquickjs::{Ctx, Exception, FromJs, Result as QResult, Value};
 
 use super::serde::JsValue;
 
@@ -20,7 +21,7 @@ pub fn convert_matcher<'js>(
     value: Value<'js>,
     lang: SupportLang,
     ctx: &Ctx<'js>,
-) -> Result<JsMatcherRjs> {
+) -> QResult<JsMatcherRjs> {
     if value.is_string() {
         let pattern_str = value.as_string().unwrap().to_string()?;
         let pattern = Pattern::new(&pattern_str, lang);
@@ -44,4 +45,44 @@ pub fn convert_matcher<'js>(
         ctx,
         "Matcher must be an object with a 'pattern' or 'kind' property",
     ))
+}
+
+pub fn detect_language_from_extension(extension: &str) -> Result<&'static str, AstGrepError> {
+    match extension.to_lowercase().as_str() {
+        "js" | "mjs" | "cjs" => Ok("javascript"),
+        "ts" | "mts" | "cts" => Ok("typescript"),
+        "tsx" => Ok("tsx"),
+        "jsx" => Ok("javascript"), // JSX files often use .js extension
+        "py" | "pyi" => Ok("python"),
+        "rs" => Ok("rust"),
+        "go" => Ok("go"),
+        "java" => Ok("java"),
+        "c" => Ok("c"),
+        "cpp" | "cc" | "cxx" | "c++" => Ok("cpp"),
+        "h" | "hpp" | "hxx" => Ok("cpp"), // Header files
+        "cs" => Ok("csharp"),
+        "php" => Ok("php"),
+        "rb" => Ok("ruby"),
+        "swift" => Ok("swift"),
+        "kt" | "kts" => Ok("kotlin"),
+        "scala" => Ok("scala"),
+        "html" | "htm" => Ok("html"),
+        "css" => Ok("css"),
+        "scss" => Ok("scss"),
+        "less" => Ok("less"),
+        "json" => Ok("json"),
+        "yaml" | "yml" => Ok("yaml"),
+        "xml" => Ok("xml"),
+        "sql" => Ok("sql"),
+        "sh" | "bash" => Ok("bash"),
+        "lua" => Ok("lua"),
+        "dart" => Ok("dart"),
+        "elixir" | "ex" | "exs" => Ok("elixir"),
+        "elm" => Ok("elm"),
+        "haskell" | "hs" => Ok("haskell"),
+        "thrift" => Ok("thrift"),
+        _ => Err(AstGrepError::Language(format!(
+            "Unsupported file extension: {extension}"
+        ))),
+    }
 }
