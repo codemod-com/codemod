@@ -744,14 +744,6 @@
     "UseJSAstGrep": {
       "type": "object",
       "properties": {
-        "allow_dirty": {
-          "description": "Allow dirty files (optional, defaults to false)",
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "default": null
-        },
         "base_path": {
           "description": "Base path for resolving relative globs (optional, defaults to current working directory)",
           "type": [
@@ -790,14 +782,6 @@
             "type": "string"
           }
         },
-        "include_hidden": {
-          "description": "Include hidden files and directories (optional, defaults to false)",
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "default": null
-        },
         "js_file": {
           "description": "Path to the JavaScript file to execute",
           "type": "string"
@@ -819,14 +803,6 @@
           "format": "uint",
           "default": null,
           "minimum": 0
-        },
-        "no_gitignore": {
-          "description": "Don't respect .gitignore files (optional, defaults to false)",
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "default": null
         }
       },
       "required": [
