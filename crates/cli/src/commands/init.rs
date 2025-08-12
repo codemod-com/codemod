@@ -659,7 +659,7 @@ fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     println!(
         "  {}",
         style(format!(
-            "npx codemod@next workflow validate -w {}/workflow.yaml",
+            "npx codemod@latest workflow validate -w {}/workflow.yaml",
             project_path.display()
         ))
         .dim()
@@ -675,7 +675,7 @@ fn print_next_steps(project_path: &Path, config: &ProjectConfig) -> Result<()> {
     println!(
         "  {}",
         style(format!(
-            "npx codemod@next workflow run -w {}/workflow.yaml # --param target ./some/target/path",
+            "npx codemod@latest workflow run -w {}/workflow.yaml # --param target ./some/target/path",
             project_path.display()
         ))
         .dim()
