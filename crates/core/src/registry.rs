@@ -156,8 +156,8 @@ pub struct ResolvedPackage {
 
 #[derive(Clone)]
 pub struct RegistryClient {
-    config: RegistryConfig,
-    auth_provider: Option<Arc<dyn AuthProvider>>,
+    pub config: RegistryConfig,
+    pub auth_provider: Option<Arc<dyn AuthProvider>>,
     client: reqwest::Client,
 }
 

@@ -16,7 +16,7 @@ use tokio::sync::Mutex;
 use tokio::time;
 use uuid::Uuid;
 
-use crate::registry::{RegistryClient, ResolvedPackage};
+use crate::registry::ResolvedPackage;
 use butterflow_models::runtime::RuntimeType;
 use butterflow_models::step::{StepAction, UseAstGrep, UseCodemod, UseJSAstGrep};
 use butterflow_models::{
@@ -1509,10 +1509,10 @@ impl Engine {
             )));
         }
 
-        let registry_client = RegistryClient::default();
-
         // Resolve the package (local path or registry package)
-        let resolved_package = registry_client
+        let resolved_package = self
+            .workflow_run_config
+            .registry_client
             .resolve_package(&codemod.source, None, false, None)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve package: {e}")))?;

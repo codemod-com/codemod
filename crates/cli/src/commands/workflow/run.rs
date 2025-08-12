@@ -49,6 +49,7 @@ pub async fn handler(args: &Command) -> Result<()> {
         args.dry_run,
         args.allow_dirty,
         params,
+        None,
     )?;
 
     // Run workflow using the extracted workflow runner
