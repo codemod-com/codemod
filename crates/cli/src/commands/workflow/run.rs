@@ -1,12 +1,10 @@
 use std::path::PathBuf;
-use std::sync::Arc;
 
 use anyhow::{Context, Result};
-use butterflow_core::registry::RegistryClient;
 use butterflow_core::utils;
-use butterflow_core::{config::WorkflowRunConfig, engine::Engine};
 use clap::Args;
 
+use crate::engine::create_engine;
 use crate::workflow_runner::{resolve_workflow_source, run_workflow};
 
 #[derive(Args, Debug)]
@@ -24,14 +22,18 @@ pub struct Command {
     allow_dirty: bool,
 
     /// Optional target path to run the codemod on
-    #[arg(long)]
+    #[arg(long = "target", short = 't')]
     target_path: Option<PathBuf>,
+
+    /// Dry run mode - don't make actual changes
+    #[arg(long)]
+    dry_run: bool,
 }
 
 /// Run a workflow
-pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
+pub async fn handler(args: &Command) -> Result<()> {
     // Resolve workflow file and bundle path
-    let (workflow_file_path, bundle_path) = resolve_workflow_source(&args.workflow)?;
+    let (workflow_file_path, _) = resolve_workflow_source(&args.workflow)?;
 
     // Parse parameters
     let params = utils::parse_params(&args.params).context("Failed to parse parameters")?;
@@ -41,21 +43,16 @@ pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
         .clone()
         .unwrap_or_else(|| std::env::current_dir().unwrap());
 
-    // Create workflow run configuration
-    let config = WorkflowRunConfig {
+    let (engine, config) = create_engine(
         workflow_file_path,
-        bundle_path,
-        params,
         target_path,
-        wait_for_completion: true,
-        progress_callback: Arc::new(None),
-        pre_run_callback: Arc::new(None),
-        registry_client: RegistryClient::default(),
-        dry_run: false,
-    };
+        args.dry_run,
+        args.allow_dirty,
+        params,
+    )?;
 
     // Run workflow using the extracted workflow runner
-    run_workflow(engine, config).await?;
+    run_workflow(&engine, config).await?;
 
     Ok(())
 }

@@ -1,24 +1,28 @@
+use codemod_sandbox::sandbox::engine::language_data::get_extensions_for_language;
 use ignore::{
     overrides::{Override, OverrideBuilder},
-    WalkBuilder,
+    WalkBuilder, WalkState,
 };
 use std::{
     path::{Path, PathBuf},
-    sync::Arc,
+    sync::{
+        atomic::{AtomicU64, Ordering},
+        Arc,
+    },
 };
+
+type PreRunCallbackFn = Box<dyn Fn(&Path, bool) + Send + Sync>;
 
 #[derive(Clone)]
 pub struct PreRunCallback {
-    pub callback: Arc<Box<dyn Fn(&Path, bool) + Send + Sync>>,
+    pub callback: Arc<PreRunCallbackFn>,
 }
+
+type ProgressCallbackFn = Box<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync>;
 
 #[derive(Clone)]
 pub struct ProgressCallback {
-    pub callback: Arc<Box<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync>>,
-}
-
-pub struct FileCallback {
-    pub callback: Box<dyn Fn(&Path, &CodemodExecutionConfig) + Send + Sync>,
+    pub callback: Arc<ProgressCallbackFn>,
 }
 
 pub struct CodemodExecutionConfig {
@@ -36,11 +40,21 @@ pub struct CodemodExecutionConfig {
     pub exclude_globs: Option<Vec<String>>,
     /// Dry run mode
     pub dry_run: bool,
+    /// Language
+    pub language: Option<String>,
 }
 
 impl CodemodExecutionConfig {
     /// Execute the codemod by iterating through files and calling the provided callback
     pub fn execute<F>(&self, callback: F) -> Result<(), String>
+    where
+        F: Fn(&Path, &CodemodExecutionConfig) + Send + Sync,
+    {
+        self.execute_with_task_id("main", callback)
+    }
+
+    /// Execute the codemod with a specific task ID for progress tracking
+    pub fn execute_with_task_id<F>(&self, task_id: &str, callback: F) -> Result<(), String>
     where
         F: Fn(&Path, &CodemodExecutionConfig) + Send + Sync,
     {
@@ -55,43 +69,123 @@ impl CodemodExecutionConfig {
         // Build glob overrides
         let globs = self.build_globs(&search_base)?;
 
-        // Create WalkBuilder with the same configuration as native.rs
+        // Pre-scan to count total files for accurate progress reporting
+        let total_files = self.count_files(&search_base, &globs)?;
+
+        // Report start of processing
+        if let Some(ref progress_cb) = self.progress_callback.as_ref() {
+            (progress_cb.callback)(task_id, "start", "counting", Some(&total_files), &0);
+        }
+
+        let num_threads = std::thread::available_parallelism()
+            .map_or(1, |n| n.get())
+            .min(12);
+
+        // Create WalkBuilder with the same configuration
         let walker = WalkBuilder::new(&search_base)
             .follow_links(false)
             .git_ignore(true)
             .ignore(true)
             .hidden(false)
             .overrides(globs)
-            .build();
+            .threads(num_threads)
+            .build_parallel();
 
-        // Collect all entries first to get count for progress reporting
-        let walker_entries: Vec<_> = walker.collect();
-        let walker_count = walker_entries.len();
+        // Atomic counter for progress reporting
+        let processed_count = Arc::new(AtomicU64::new(0));
 
-        // Iterate through all files
-        for (index, entry) in walker_entries.into_iter().enumerate() {
-            let entry = entry.map_err(|e| format!("Walk error: {}", e))?;
-            let file_path = entry.path();
+        // Clone task_id for use in closure
+        let task_id_clone = task_id.to_string();
 
-            // Report progress if callback is provided
-            if let Some(ref progress_cb) = self.progress_callback.as_ref() {
-                let file_name = file_path.file_name().unwrap_or_default().to_string_lossy();
-                (progress_cb.callback)(
-                    "",
-                    &file_name,
-                    "processing",
-                    Some(&(walker_count as u64)),
-                    &(index as u64),
-                );
-            }
+        // Clone necessary data for the parallel closure
+        let progress_callback = self.progress_callback.clone();
+        let callback = Arc::new(callback);
 
-            // Only process files, not directories
-            if entry.file_type().is_some_and(|ft| ft.is_file()) {
-                callback(file_path, self);
-            }
+        let config_for_callback = Arc::new(self);
+
+        // Use WalkParallel's run method for parallel processing
+        walker.run(|| {
+            let processed_count = Arc::clone(&processed_count);
+            let task_id = task_id_clone.clone();
+            let progress_callback = Arc::clone(&progress_callback);
+            let callback = Arc::clone(&callback);
+            let config = Arc::clone(&config_for_callback);
+
+            Box::new(move |entry| match entry {
+                Ok(dir_entry) => {
+                    let file_path = dir_entry.path();
+
+                    if dir_entry.file_type().is_some_and(|ft| ft.is_file()) {
+                        if let Some(ref progress_cb) = progress_callback.as_ref() {
+                            let file_path_str = file_path.to_string_lossy();
+                            (progress_cb.callback)(
+                                &task_id,
+                                &file_path_str,
+                                "processing",
+                                Some(&total_files),
+                                &processed_count.load(Ordering::Relaxed),
+                            );
+                        }
+
+                        callback(file_path, &config);
+
+                        let current_count = processed_count.fetch_add(1, Ordering::Relaxed);
+
+                        if let Some(ref progress_cb) = progress_callback.as_ref() {
+                            (progress_cb.callback)(
+                                &task_id,
+                                "",
+                                "increment",
+                                Some(&total_files),
+                                &(current_count + 1),
+                            );
+                        }
+                    }
+                    WalkState::Continue
+                }
+                Err(err) => {
+                    eprintln!("Walk error: {err}");
+                    WalkState::Continue
+                }
+            })
+        });
+
+        // Report completion
+        if let Some(ref progress_cb) = self.progress_callback.as_ref() {
+            let final_count = processed_count.load(Ordering::Relaxed);
+            (progress_cb.callback)(task_id, "", "finish", Some(&total_files), &final_count);
         }
 
         Ok(())
+    }
+
+    /// Count total files that will be processed
+    fn count_files(&self, search_base: &Path, globs: &Override) -> Result<u64, String> {
+        let walker = WalkBuilder::new(search_base)
+            .follow_links(false)
+            .git_ignore(true)
+            .ignore(true)
+            .hidden(false)
+            .overrides(globs.clone())
+            .threads(1) // Single-threaded for counting
+            .build();
+
+        let mut count = 0u64;
+        for entry in walker {
+            match entry {
+                Ok(dir_entry) => {
+                    if dir_entry.file_type().is_some_and(|ft| ft.is_file()) {
+                        count += 1;
+                    }
+                }
+                Err(_) => {
+                    // Skip errors during counting
+                    continue;
+                }
+            }
+        }
+
+        Ok(count)
     }
 
     /// Get the search base path by combining target_path and base_path
@@ -123,13 +217,25 @@ impl CodemodExecutionConfig {
             for glob in include_globs {
                 builder
                     .add(glob)
-                    .map_err(|e| format!("Invalid include glob '{}': {}", glob, e))?;
+                    .map_err(|e| format!("Invalid include glob '{glob}': {e}"))?;
             }
-        } else {
-            // If no include patterns, default to all files
+        } else if let Some(lang) = &self.language {
+            let language = lang.parse();
+            if let Ok(language) = language {
+                let extensions = get_extensions_for_language(language);
+                for extension in extensions {
+                    builder
+                        .add(format!("**/*{extension}").as_str())
+                        .map_err(|e| format!("Failed to add default include pattern: {e}"))?;
+                }
+            }
             builder
                 .add("**/*")
-                .map_err(|e| format!("Failed to add default include pattern: {}", e))?;
+                .map_err(|e| format!("Failed to add default include pattern: {e}"))?;
+        } else {
+            builder
+                .add("**/*")
+                .map_err(|e| format!("Failed to add default include pattern: {e}"))?;
         }
 
         // Add exclude patterns (prefixed with !)
@@ -138,16 +244,16 @@ impl CodemodExecutionConfig {
                 let exclude_pattern = if glob.starts_with('!') {
                     glob.to_string()
                 } else {
-                    format!("!{}", glob)
+                    format!("!{glob}")
                 };
                 builder
                     .add(&exclude_pattern)
-                    .map_err(|e| format!("Invalid exclude glob '{}': {}", exclude_pattern, e))?;
+                    .map_err(|e| format!("Invalid exclude glob '{exclude_pattern}': {e}"))?;
             }
         }
 
         builder
             .build()
-            .map_err(|e| format!("Failed to build glob overrides: {}", e))
+            .map_err(|e| format!("Failed to build glob overrides: {e}"))
     }
 }

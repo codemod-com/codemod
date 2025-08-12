@@ -1,6 +1,9 @@
-use crate::dirty_git_check;
+use std::collections::HashMap;
+use std::path::PathBuf;
+
+use crate::engine::create_engine;
+use crate::workflow_runner::resolve_workflow_source;
 use anyhow::{Context, Result};
-use butterflow_core::engine::Engine;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
 use clap::Args;
 use log::error;
@@ -12,6 +15,10 @@ use super::status::TaskRow;
 
 #[derive(Args, Debug)]
 pub struct Command {
+    /// Path to workflow file or directory
+    #[arg(short, long, value_name = "PATH")]
+    workflow: String,
+
     /// Workflow run ID
     #[arg(short, long)]
     id: Uuid,
@@ -23,14 +30,39 @@ pub struct Command {
     /// Trigger all awaiting tasks
     #[arg(long)]
     trigger_all: bool,
+
+    /// Allow dirty git status
+    #[arg(long)]
+    allow_dirty: bool,
+
+    /// Dry run mode - don't make actual changes
+    #[arg(long)]
+    dry_run: bool,
+
+    /// Optional target path to run the codemod on
+    #[arg(long = "target", short = 't')]
+    target_path: Option<PathBuf>,
 }
 
 /// Resume a workflow
-pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
+pub async fn handler(args: &Command) -> Result<()> {
     println!("Resuming workflow {}...", args.id);
 
-    // Create a wrapper for the git dirty check callback
-    let dirty_check = dirty_git_check::dirty_check();
+    let target_path = args
+        .target_path
+        .clone()
+        .unwrap_or_else(|| std::env::current_dir().unwrap());
+
+    let (workflow_file_path, _) = resolve_workflow_source(&args.workflow)?;
+
+    let (engine, _) = create_engine(
+        workflow_file_path,
+        target_path,
+        args.dry_run,
+        args.allow_dirty,
+        // TODO: Load params from workflow run
+        HashMap::new(),
+    )?;
 
     if args.trigger_all {
         // Trigger all awaiting tasks

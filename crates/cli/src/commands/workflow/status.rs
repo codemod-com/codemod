@@ -1,5 +1,4 @@
 use anyhow::{Context, Result};
-use butterflow_core::engine::Engine;
 use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus};
 use clap::Args;
@@ -7,6 +6,8 @@ use std::collections::HashMap;
 use tabled::settings::{object::Columns, Alignment, Modify, Style};
 use tabled::{Table, Tabled};
 use uuid::Uuid;
+
+use crate::engine::create_engine;
 
 use super::list::WorkflowRunRow;
 
@@ -40,7 +41,15 @@ struct ManualTriggerRow {
 }
 
 /// Show workflow status
-pub async fn handler(engine: &Engine, args: &Command) -> Result<()> {
+pub async fn handler(args: &Command) -> Result<()> {
+    let (engine, _) = create_engine(
+        Default::default(),
+        Default::default(),
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )?;
+
     // Get workflow run
     let workflow_run = engine
         .get_workflow_run(args.id)

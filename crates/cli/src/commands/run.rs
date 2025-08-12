@@ -1,21 +1,19 @@
-use anyhow::Result;
-use butterflow_core::config::WorkflowRunConfig;
+use anyhow::{Context, Result};
+use butterflow_core::utils::parse_params;
 use clap::Args;
 use console::style;
 use log::info;
 use rand::Rng;
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process::Command as ProcessCommand;
-use std::sync::Arc;
-use tokio::sync::Mutex;
+use std::sync::atomic::Ordering;
 
 use crate::auth_provider::CliAuthProvider;
+use crate::engine::create_engine;
 use crate::progress_bar::download_progress_bar;
 use crate::workflow_runner::run_workflow;
-use butterflow_core::engine::{Engine, GLOBAL_STATS};
 use butterflow_core::registry::{RegistryClient, RegistryError};
-use codemod_sandbox::sandbox::engine::ExecutionStats;
 use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 
 #[derive(Args, Debug)]
@@ -38,22 +36,18 @@ pub struct Command {
 
     /// Additional arguments to pass to the codemod
     #[arg(last = true)]
-    args: Vec<String>,
+    params: Vec<String>,
 
     /// Allow dirty git status
     #[arg(long)]
     allow_dirty: bool,
 
     /// Optional target path to run the codemod on
-    #[arg(long)]
+    #[arg(long = "target", short = 't')]
     target_path: Option<PathBuf>,
 }
 
-pub async fn handler(
-    engine: &Engine,
-    args: &Command,
-    telemetry: &dyn TelemetrySender,
-) -> Result<()> {
+pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<()> {
     // Create auth provider
     let auth_provider = CliAuthProvider::new()?;
 
@@ -113,41 +107,51 @@ pub async fn handler(
         args.package,
     );
 
-    // Execute the codemod
-    let stats = execute_codemod(
-        engine,
-        &resolved_package.package_dir,
-        args.target_path.as_ref().unwrap_or(&PathBuf::from(".")),
-        &args.args,
+    let target_path = args
+        .target_path
+        .clone()
+        .unwrap_or_else(|| std::env::current_dir().unwrap());
+
+    let workflow_path = resolved_package.package_dir.join("workflow.yaml");
+
+    let params = parse_params(&args.params).context("Failed to parse parameters")?;
+
+    // Run workflow using the extracted workflow runner
+    let (engine, config) = create_engine(
+        workflow_path,
+        target_path,
         args.dry_run,
-    )
-    .await;
+        args.allow_dirty,
+        params,
+    )?;
+
+    run_workflow(&engine, config).await?;
 
     let cli_version = env!("CARGO_PKG_VERSION");
-    if let Err(e) = stats {
-        let _ = telemetry
-            .send_event(
-                BaseEvent {
-                    kind: "failedToExecuteCommand".to_string(),
-                    properties: HashMap::from([
-                        ("codemodName".to_string(), args.package.clone()),
-                        ("cliVersion".to_string(), cli_version.to_string()),
-                        (
-                            "commandName".to_string(),
-                            "codemod.executeCodemod".to_string(),
-                        ),
-                    ]),
-                },
-                None,
-            )
-            .await;
-        return Err(e);
-    }
+    telemetry
+        .send_event(
+            BaseEvent {
+                kind: "failedToExecuteCommand".to_string(),
+                properties: HashMap::from([
+                    ("codemodName".to_string(), args.package.clone()),
+                    ("cliVersion".to_string(), cli_version.to_string()),
+                    (
+                        "commandName".to_string(),
+                        "codemod.executeCodemod".to_string(),
+                    ),
+                ]),
+            },
+            None,
+        )
+        .await;
 
-    let stats = stats.unwrap();
-    println!("\n📝 Modified files: {:?}", stats.files_modified);
-    println!("✅ Unmodified files: {:?}", stats.files_unmodified);
-    println!("❌ Files with errors: {:?}", stats.files_with_errors);
+    let stats = engine.execution_stats;
+    let files_modified = stats.files_modified.load(Ordering::Relaxed);
+    let files_unmodified = stats.files_unmodified.load(Ordering::Relaxed);
+    let files_with_errors = stats.files_with_errors.load(Ordering::Relaxed);
+    println!("\n📝 Modified files: {files_modified}");
+    println!("✅ Unmodified files: {files_unmodified}");
+    println!("❌ Files with errors: {files_with_errors}");
 
     let cli_version = env!("CARGO_PKG_VERSION");
     let execution_id: [u8; 20] = rand::thread_rng().gen();
@@ -163,7 +167,7 @@ pub async fn handler(
                 properties: HashMap::from([
                     ("codemodName".to_string(), args.package.clone()),
                     ("executionId".to_string(), execution_id.clone()),
-                    ("fileCount".to_string(), stats.files_modified.to_string()),
+                    ("fileCount".to_string(), files_modified.to_string()),
                     ("cliVersion".to_string(), cli_version.to_string()),
                 ]),
             },
@@ -203,63 +207,5 @@ async fn run_legacy_codemod(args: &Command) -> Result<()> {
             .as_ref()
             .map_or("".to_string(), |v| v.to_string_lossy().to_string()),
     );
-    legacy_args.extend(args.args.iter().cloned());
     run_legacy_codemod_with_raw_args(&legacy_args).await
-}
-
-async fn execute_codemod(
-    engine: &Engine,
-    package_dir: &Path,
-    target_path: &Path,
-    additional_args: &[String],
-    dry_run: bool,
-) -> Result<ExecutionStats> {
-    let workflow_path = package_dir.join("workflow.yaml");
-
-    info!(
-        "Executing codemod on {} {}",
-        target_path.display(),
-        if dry_run { "(dry run)" } else { "" }
-    );
-
-    // Create parameters map from additional args
-    let mut params = std::collections::HashMap::new();
-    params.insert(
-        "target_path".to_string(),
-        target_path.to_string_lossy().to_string(),
-    );
-
-    if dry_run {
-        params.insert("dry_run".to_string(), "true".to_string());
-    }
-
-    // Parse additional arguments in key=value format
-    for arg in additional_args {
-        if let Some((key, value)) = arg.split_once('=') {
-            params.insert(key.to_string(), value.to_string());
-        }
-    }
-
-    // Create workflow run configuration
-    let config = WorkflowRunConfig {
-        workflow_file_path: workflow_path,
-        bundle_path: package_dir.to_path_buf(),
-        target_path: target_path.to_path_buf(),
-        params,
-        wait_for_completion: true,
-        progress_callback: Arc::new(None),
-        pre_run_callback: Arc::new(None),
-        registry_client: RegistryClient::default(),
-        dry_run,
-    };
-
-    // Run workflow using the extracted workflow runner
-    run_workflow(engine, config).await?;
-    let stats = GLOBAL_STATS
-        .get_or_init(|| Mutex::new(ExecutionStats::default()))
-        .lock()
-        .await
-        .clone();
-
-    Ok(stats)
 }

@@ -1,7 +1,3 @@
-use crate::dirty_git_check;
-use crate::progress_bar::{
-    progress_bar_for_multi_progress, ActionType, MultiProgressProgressBarCallback, ProgressCallback,
-};
 use anyhow::{Context, Result};
 use butterflow_core::config::WorkflowRunConfig;
 use butterflow_core::engine::Engine;
@@ -9,44 +5,17 @@ use butterflow_core::utils;
 use butterflow_models::{Task, TaskStatus, WorkflowStatus};
 use log::{error, info};
 use std::path::PathBuf;
-use std::sync::Arc;
 use uuid::Uuid;
 
 /// Run a workflow with the given configuration
 pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<String> {
     // Parse workflow file
-    let workflow = utils::parse_workflow_file(&config.workflow_file_path).context(format!(
+    let workflow = utils::parse_workflow_file(engine.get_workflow_file_path()).context(format!(
         "Failed to parse workflow file: {}",
-        config.workflow_file_path.display()
+        engine.get_workflow_file_path().display()
     ))?;
 
-    let dirty_check = dirty_git_check::dirty_check();
-
-    let (progress_bar, started) = progress_bar_for_multi_progress();
-
-    // The closure now needs to be put in a Box to be a trait object
-    // and passed to run_workflow, which likely expects a Box<dyn Fn...>
-    let callback: ProgressCallback = Arc::new(
-        move |id: &str, current_file: &str, action_type: &str, count: Option<&u64>, index: &u64| {
-            let progress_bar = progress_bar.clone();
-            let id = id.to_string();
-            let current_file = current_file.to_string();
-            let action_type = match action_type {
-                "set_text" => ActionType::SetText,
-                "next" => ActionType::Next,
-                _ => ActionType::SetText,
-            };
-            let count = count.cloned();
-            let index = *index;
-            progress_bar(MultiProgressProgressBarCallback {
-                id,
-                current_file,
-                action_type,
-                count,
-                index,
-            });
-        },
-    );
+    let started = std::time::Instant::now();
 
     // Run workflow
     let workflow_run_id = engine

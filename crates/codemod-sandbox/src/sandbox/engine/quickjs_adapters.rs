@@ -1,9 +1,9 @@
+use crate::sandbox::resolvers::ModuleResolver;
+use crate::utils::transpiler;
 use rquickjs::{
     loader::{Loader, Resolver},
     module, Ctx, Error, Module, Result,
 };
-use crate::sandbox::resolvers::ModuleResolver;
-use crate::utils::transpiler;
 use std::sync::Arc;
 
 /// QuickJS-compatible resolver adapter that uses any ModuleResolver

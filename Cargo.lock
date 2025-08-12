@@ -536,6 +536,7 @@ dependencies = [
  "futures-util",
  "ignore",
  "log",
+ "rayon",
  "regex",
  "reqwest 0.12.15",
  "serde",

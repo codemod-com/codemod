@@ -4,8 +4,19 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
-pub type ProgressCallback =
-    Arc<dyn Fn(&str, &str, &str, Option<&u64>, &u64) + Send + Sync + 'static>;
+/// Truncate filename to a fixed width, keeping the end characters which are usually most relevant
+fn truncate_filename(filename: &str, max_width: usize) -> String {
+    if filename.len() <= max_width {
+        // Pad with spaces to maintain consistent width
+        format!("{filename:<max_width$}")
+    } else {
+        // Show "..." + last (max_width - 3) characters
+        let suffix_len = max_width.saturating_sub(3);
+        let suffix = &filename[filename.len().saturating_sub(suffix_len)..];
+        let truncated = format!("...{suffix}");
+        format!("{truncated:<max_width$}")
+    }
+}
 
 pub fn download_progress_bar() -> Arc<Box<dyn Fn(u64, u64) + Send + Sync>> {
     let progress_bar = Arc::new(Mutex::new(None::<ProgressBar>));
@@ -17,7 +28,7 @@ pub fn download_progress_bar() -> Arc<Box<dyn Fn(u64, u64) + Send + Sync>> {
             let pb = ProgressBar::new(total);
             pb.set_style(
                 ProgressStyle::with_template(
-                    "{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({eta})"
+                    "{spinner:.green} [{elapsed_precise}] [{wide_bar:.white/blue}] {bytes}/{total_bytes} ({eta})"
                 )
                 .unwrap()
                 .with_key("eta", |state: &ProgressState, w: &mut dyn std::fmt::Write| {
@@ -36,102 +47,101 @@ pub fn download_progress_bar() -> Arc<Box<dyn Fn(u64, u64) + Send + Sync>> {
     }))
 }
 
-pub enum ActionType {
-    SetText,
-    Next,
+pub enum ProgressAction {
+    Start { total_files: Option<u64> },
+    Update { current_file: String },
+    Increment,
+    Finish { message: Option<String> },
 }
 
-pub struct MultiProgressProgressBarCallback {
-    pub id: String,
-    pub current_file: String,
-    pub count: Option<u64>,
-    pub index: u64,
-    pub action_type: ActionType,
+pub struct ProgressUpdate {
+    pub task_id: String,
+    pub action: ProgressAction,
 }
 
-pub type MultiProgressProgressBar =
-    Arc<Box<dyn Fn(MultiProgressProgressBarCallback) + Send + Sync + 'static>>;
+pub type ProgressReporter = Arc<Box<dyn Fn(ProgressUpdate) + Send + Sync + 'static>>;
 
-pub fn progress_bar_for_multi_progress() -> (MultiProgressProgressBar, Instant) {
+pub fn create_multi_progress_reporter() -> (ProgressReporter, Instant) {
     let started = Instant::now();
-    let spinner_style = ProgressStyle::with_template("{prefix:.bold.dim} {spinner} {wide_msg}")
-        .unwrap()
-        .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ ");
 
-    let m = Arc::new(MultiProgress::new());
-    let bars = Arc::new(Mutex::new(HashMap::new()));
-
-    // Enable auto-refresh for the MultiProgress
-    m.set_draw_target(indicatif::ProgressDrawTarget::stderr());
-
-    (
-        Arc::new(Box::new(
-            move |properties: MultiProgressProgressBarCallback| {
-                let bars = Arc::clone(&bars);
-                let m = Arc::clone(&m);
-                let id_clone = properties.id.clone();
-                let spinner_style = spinner_style.clone();
-                // Use mutex lock to perform check-and-insert and prevent race condition
-                let _pb_created = {
-                    let mut bars_lock = bars.lock().unwrap();
-                    if !bars_lock.contains_key(&id_clone) {
-                        let pb = m.add(ProgressBar::new(properties.count.unwrap_or(0)));
-                        pb.set_prefix(id_clone.clone());
-                        pb.set_style(spinner_style);
-                        bars_lock.insert(id_clone.clone(), (pb, properties.count));
-                        true
-                    } else {
-                        false
-                    }
-                };
-
-                let (maybe_pb, total_count) = {
-                    let mut bars_lock = bars.lock().unwrap();
-                    match bars_lock.get_mut(&id_clone) {
-                        Some((pb, count)) => (Some(pb.clone()), *count),
-                        None => (None, None),
-                    }
-                };
-
-                if let Some(pb) = maybe_pb {
-                    match properties.action_type {
-                        ActionType::SetText => {
-                            pb.set_message(format!(
-                                "scanning [{}/{}] {}",
-                                properties.index,
-                                properties.count.map_or("?".to_string(), |c| c.to_string()),
-                                style(properties.current_file.clone()).green()
-                            ));
-                            pb.tick(); // Force a redraw
-                        }
-                        ActionType::Next => {
-                            pb.inc(1);
-                            pb.tick(); // Force a redraw
-                        }
-                    }
-
-                    // Only finish and remove when all tasks for this ID are complete
-                    let should_finish = {
-                        let bars_lock = bars.lock().unwrap();
-                        if let Some((pb_ref, _)) = bars_lock.get(&id_clone) {
-                            let current_pos = pb_ref.position();
-                            if let Some(count) = total_count {
-                                current_pos >= count
-                            } else {
-                                false
-                            }
-                        } else {
-                            false
-                        }
-                    };
-
-                    if should_finish {
-                        pb.finish_with_message("✅ finished");
-                        bars.lock().unwrap().remove(&id_clone);
-                    }
-                }
-            },
-        )),
-        started,
+    // Define styles for different progress bar states
+    let progress_style = ProgressStyle::with_template(
+        "[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg}",
     )
+    .unwrap()
+    .progress_chars("##-");
+
+    let spinner_style =
+        ProgressStyle::with_template("{prefix:.bold.cyan} {spinner} {msg} [{elapsed_precise}]")
+            .unwrap()
+            .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ ");
+
+    let multi_progress = Arc::new(MultiProgress::new());
+    let progress_bars = Arc::new(Mutex::new(HashMap::<String, ProgressBar>::new()));
+
+    // Enable stderr output
+    multi_progress.set_draw_target(indicatif::ProgressDrawTarget::stderr());
+
+    let reporter: ProgressReporter = Arc::new(Box::new(move |update: ProgressUpdate| {
+        let bars = Arc::clone(&progress_bars);
+        let mp = Arc::clone(&multi_progress);
+        let task_id = update.task_id.clone();
+
+        match update.action {
+            ProgressAction::Start { total_files } => {
+                let mut bars_lock = bars.lock().unwrap();
+
+                // Remove existing bar if it exists
+                if let Some(existing_pb) = bars_lock.remove(&task_id) {
+                    mp.remove(&existing_pb);
+                }
+
+                let pb = if let Some(total) = total_files {
+                    let pb = mp.add(ProgressBar::new(total));
+                    pb.set_style(progress_style.clone());
+                    pb.set_prefix(format!("🔧 {task_id}"));
+                    pb.set_message("Starting...");
+                    pb
+                } else {
+                    let pb = mp.add(ProgressBar::new_spinner());
+                    pb.set_style(spinner_style.clone());
+                    pb.set_prefix(format!("🔧 {task_id}"));
+                    pb.set_message("Starting...");
+                    pb
+                };
+
+                bars_lock.insert(task_id, pb);
+            }
+
+            ProgressAction::Update { current_file } => {
+                let bars_lock = bars.lock().unwrap();
+                if let Some(pb) = bars_lock.get(&task_id) {
+                    let filename = std::path::Path::new(&current_file)
+                        .file_name()
+                        .unwrap_or_default()
+                        .to_string_lossy();
+                    let truncated_filename = truncate_filename(&filename, 25);
+                    pb.set_message(format!("📁 {}", style(truncated_filename).green()));
+                    pb.tick();
+                }
+            }
+
+            ProgressAction::Increment => {
+                let bars_lock = bars.lock().unwrap();
+                if let Some(pb) = bars_lock.get(&task_id) {
+                    pb.inc(1);
+                }
+            }
+
+            ProgressAction::Finish { message } => {
+                let mut bars_lock = bars.lock().unwrap();
+                if let Some(pb) = bars_lock.remove(&task_id) {
+                    let finish_message = message.unwrap_or_else(|| "✅ Completed".to_string());
+                    pb.finish_with_message(style(finish_message).green().to_string());
+                }
+            }
+        }
+    }));
+
+    (reporter, started)
 }

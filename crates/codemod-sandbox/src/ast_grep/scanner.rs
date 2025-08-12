@@ -9,8 +9,8 @@ pub(crate) struct ScanResult {
     pub new_content: String,
 }
 
-pub(crate) fn scan_content<'a, D: Doc<Lang = L>, L: Language>(
-    root: &'a AstGrep<D>,
+pub(crate) fn scan_content<D: Doc<Lang = L>, L: Language>(
+    root: &AstGrep<D>,
     content: &str,
     file_path: String,
     combined_scan: &CombinedScan<L>,
@@ -20,7 +20,7 @@ where
     <D as Doc>::Source: Content<Underlying = u8>,
 {
     // Scan with separate_fix=true when applying fixes to get diffs
-    let scan_result = combined_scan.scan(&root, apply_fixes);
+    let scan_result = combined_scan.scan(root, apply_fixes);
     let mut matches = Vec::new();
     let mut file_modified = false;
     let mut new_content = content.to_string();
