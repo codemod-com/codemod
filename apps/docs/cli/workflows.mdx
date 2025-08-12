@@ -31,7 +31,7 @@ Codemod Workflows can be run using [Codemod CLI](/cli/cli-reference) or [Codemod
 <Steps>
   <Step title="Create a new codemod project">
     ```bash
-    npx codemod@next init
+    npx codemod init
     ```
 
     When creating a new codemod project, you'll be prompted for:
@@ -243,8 +243,8 @@ Codemod Workflows can be run using [Codemod CLI](/cli/cli-reference) or [Codemod
   </Step>
   <Step title="Validate & run your workflow">
     ```bash
-    npx codemod@next workflow validate -w workflow.yaml
-    npx codemod@next workflow run -w workflow.yaml
+    npx codemod workflow validate -w workflow.yaml
+    npx codemod workflow run -w workflow.yaml
     ```
 
     This will check your workflow for errors and then run it locally.
@@ -268,7 +268,7 @@ my-workflow/
 └─ rules/
 ```
 
-The folder—called a **workflow bundle**—is the root when you run `npx codemod@next workflow run ./my-workflow/`. `$CODEMOD_PATH` points here inside every task.
+The folder—called a **workflow bundle**—is the root when you run `npx codemod workflow run ./my-workflow/`. `$CODEMOD_PATH` points here inside every task.
 
 <Accordion title="Workflow Bundle & Loading Workflows">
   A workflow bundle is a directory containing your `workflow.yaml` and any scripts, rules, or assets referenced by your workflow.
@@ -276,7 +276,7 @@ The folder—called a **workflow bundle**—is the root when you run `npx codemo
   - When you run
 
     ```bash
-    npx codemod@next workflow run ./my-workflow/
+    npx codemod workflow run ./my-workflow/
     ```
 
     the directory is used as the root for all relative paths.
@@ -285,7 +285,7 @@ The folder—called a **workflow bundle**—is the root when you run `npx codemo
     <br />
 
     ```bash
-    npx codemod@next workflow run -w workflow.yaml
+    npx codemod workflow run -w workflow.yaml
     ```
 
   <Info>
@@ -485,12 +485,12 @@ nodes:
   - All paused tasks:
 
     ```bash
-    npx codemod@next workflow resume -i <run-id> --trigger-all
+    npx codemod workflow resume -i <run-id> --trigger-all
     ```
   - A specific task:
 
     ```bash
-    npx codemod@next workflow resume -i <run-id> -t <task-uuid>
+    npx codemod workflow resume -i <run-id> -t <task-uuid>
     ```
 </Accordion>
 
@@ -557,7 +557,7 @@ nodes:
     ```
 
     <Info>
-      This error is shown when you run `npx codemod@next workflow validate` or `npx codemod@next workflow run` on a workflow with a cyclic dependency.
+      This error is shown when you run `npx codemod workflow validate` or `npx codemod workflow run` on a workflow with a cyclic dependency.
     </Info>
   </Accordion>
 </AccordionGroup>
