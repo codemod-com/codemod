@@ -6,8 +6,11 @@ use anyhow::Result;
 use butterflow_core::config::{PreRunCallback, WorkflowRunConfig};
 use butterflow_core::engine::Engine;
 use butterflow_core::execution::ProgressCallback;
+use butterflow_core::registry::{RegistryClient, RegistryConfig};
+use butterflow_core::utils::get_cache_dir;
 use butterflow_state::cloud_adapter::CloudStateAdapter;
 
+use crate::auth_provider::CliAuthProvider;
 use crate::{dirty_git_check, progress_bar};
 
 pub fn create_progress_callback() -> ProgressCallback {
@@ -77,6 +80,7 @@ pub fn create_engine(
     dry_run: bool,
     allow_dirty: bool,
     params: HashMap<String, String>,
+    registry: Option<String>,
 ) -> Result<(Engine, WorkflowRunConfig)> {
     let dirty_check = dirty_git_check::dirty_check();
     let bundle_path = if workflow_file_path.is_file() {
@@ -93,6 +97,8 @@ pub fn create_engine(
 
     let progress_callback = create_progress_callback();
 
+    let registry_client = create_registry_client(registry)?;
+
     let config = WorkflowRunConfig {
         pre_run_callback: Arc::new(Some(pre_run_callback)),
         progress_callback: Arc::new(Some(progress_callback)),
@@ -101,6 +107,7 @@ pub fn create_engine(
         workflow_file_path,
         bundle_path,
         params,
+        registry_client,
         ..WorkflowRunConfig::default()
     };
 
@@ -123,4 +130,25 @@ pub fn create_engine(
     }
 
     Ok((Engine::with_workflow_run_config(config.clone()), config))
+}
+
+pub fn create_registry_client(registry: Option<String>) -> Result<RegistryClient> {
+    // Create auth provider
+    let auth_provider = CliAuthProvider::new()?;
+
+    // Get cache directory and default registry from config
+    let config = auth_provider.storage.load_config()?;
+
+    let registry_url = registry.unwrap_or(config.default_registry);
+
+    // Create registry configuration
+    let registry_config = RegistryConfig {
+        default_registry: registry_url.clone(),
+        cache_dir: get_cache_dir().unwrap(),
+    };
+
+    Ok(RegistryClient::new(
+        registry_config,
+        Some(Arc::new(auth_provider)),
+    ))
 }

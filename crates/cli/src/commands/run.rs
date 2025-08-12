@@ -8,14 +8,11 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::process::Command as ProcessCommand;
 use std::sync::atomic::Ordering;
-use std::sync::Arc;
 
-use crate::auth_provider::CliAuthProvider;
-use crate::engine::create_engine;
+use crate::engine::{create_engine, create_registry_client};
 use crate::progress_bar::download_progress_bar;
 use crate::workflow_runner::run_workflow;
-use butterflow_core::registry::{RegistryClient, RegistryConfig, RegistryError};
-use butterflow_core::utils::get_cache_dir;
+use butterflow_core::registry::RegistryError;
 use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
 
 #[derive(Args, Debug)]
@@ -50,28 +47,10 @@ pub struct Command {
 }
 
 pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<()> {
-    // Create auth provider
-    let auth_provider = CliAuthProvider::new()?;
-
-    // Get cache directory and default registry from config
-    let config = auth_provider.storage.load_config()?;
-
-    let registry_url = args
-        .registry
-        .as_ref()
-        .unwrap_or(&config.default_registry)
-        .clone();
-
-    // Create registry configuration
-    let registry_config = RegistryConfig {
-        default_registry: registry_url.clone(),
-        cache_dir: get_cache_dir().unwrap(),
-    };
-
-    let registry_client = RegistryClient::new(registry_config, Some(Arc::new(auth_provider)));
-
     // Resolve the package (local path or registry package)
     let download_progress_bar = Some(download_progress_bar());
+    let registry_client = create_registry_client(args.registry.clone())?;
+    let registry_url = registry_client.config.default_registry.clone();
     println!(
         "{} 🔍 Resolving package from registry: {} ...",
         style("[1/2]").bold().dim(),
@@ -131,6 +110,7 @@ pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<
         args.dry_run,
         args.allow_dirty,
         params,
+        args.registry.clone(),
     )?;
 
     run_workflow(&engine, config).await?;

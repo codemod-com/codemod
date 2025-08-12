@@ -62,6 +62,7 @@ pub async fn handler(args: &Command) -> Result<()> {
         args.allow_dirty,
         // TODO: Load params from workflow run
         HashMap::new(),
+        None,
     )?;
 
     if args.trigger_all {
