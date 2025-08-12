@@ -4,8 +4,9 @@ use clap::{Args, Subcommand};
 use log::info;
 use std::fs;
 use std::path::{Path, PathBuf};
+use tabled::settings::{object::Columns, Alignment, Modify, Style};
+use tabled::{Table, Tabled};
 use walkdir::WalkDir;
-
 #[derive(Args, Debug)]
 pub struct Command {
     #[command(subcommand)]
@@ -77,6 +78,16 @@ async fn show_cache_info() -> Result<()> {
     Ok(())
 }
 
+#[derive(Tabled)]
+struct CachedPackageRow {
+    #[tabled(rename = "📦 Name")]
+    name: String,
+    #[tabled(rename = "🔑 Versions")]
+    versions: String,
+    #[tabled(rename = "💾 Total Size")]
+    total_size: String,
+}
+
 async fn list_cached_packages(detailed: bool) -> Result<()> {
     let cache_dir = get_cache_dir()?;
 
@@ -93,15 +104,50 @@ async fn list_cached_packages(detailed: bool) -> Result<()> {
     }
 
     println!("📦 Cached Packages ({}):", packages.len());
-    println!();
 
-    for package in packages {
-        if detailed {
-            print_package_detailed(&package)?;
-        } else {
-            print_package_summary(&package)?;
-        }
-    }
+    let rows = if detailed {
+        packages
+            .iter()
+            .map(|p| CachedPackageRow {
+                name: format!("{}/{}", p.scope.clone().unwrap_or_default(), p.name),
+                versions: p
+                    .versions
+                    .iter()
+                    .map(|v| {
+                        let modified_str = humantime::format_duration(
+                            std::time::SystemTime::now()
+                                .duration_since(v.modified)
+                                .unwrap_or_default(),
+                        );
+
+                        format!(
+                            "{} ({}, {} ago)",
+                            v.version,
+                            format_size(v.size),
+                            modified_str
+                        )
+                    })
+                    .collect::<Vec<String>>()
+                    .join("\n "),
+                total_size: format_size(p.total_size),
+            })
+            .collect::<Vec<CachedPackageRow>>()
+    } else {
+        packages
+            .iter()
+            .map(|p| CachedPackageRow {
+                name: format!("{}/{}", p.scope.clone().unwrap_or_default(), p.name),
+                versions: format!("{} versions", p.versions.len()),
+                total_size: format_size(p.total_size),
+            })
+            .collect::<Vec<CachedPackageRow>>()
+    };
+
+    let mut table = Table::new(rows);
+    table
+        .with(Style::rounded())
+        .with(Modify::new(Columns::new(..)).with(Alignment::left())); // align all columns left
+    println!("{table}");
 
     Ok(())
 }
@@ -335,53 +381,6 @@ fn calculate_dir_size(dir: &Path) -> Result<u64> {
     }
 
     Ok(total_size)
-}
-
-fn print_package_summary(package: &CachedPackage) -> Result<()> {
-    let package_name = if let Some(scope) = &package.scope {
-        format!("{}/{}", scope, package.name)
-    } else {
-        package.name.clone()
-    };
-
-    println!(
-        "📦 {} ({} versions, {})",
-        package_name,
-        package.versions.len(),
-        format_size(package.total_size)
-    );
-
-    Ok(())
-}
-
-fn print_package_detailed(package: &CachedPackage) -> Result<()> {
-    let package_name = if let Some(scope) = &package.scope {
-        format!("{}/{}", scope, package.name)
-    } else {
-        package.name.clone()
-    };
-
-    println!("📦 {package_name}");
-    println!("   💾 Total size: {}", format_size(package.total_size));
-    println!("   📋 Versions ({}):", package.versions.len());
-
-    for version in &package.versions {
-        let modified_str = humantime::format_duration(
-            std::time::SystemTime::now()
-                .duration_since(version.modified)
-                .unwrap_or_default(),
-        );
-
-        println!(
-            "     🏷️  {} ({}, {} ago)",
-            version.version,
-            format_size(version.size),
-            modified_str
-        );
-    }
-
-    println!();
-    Ok(())
 }
 
 fn parse_package_name(package: &str) -> Result<PackageSpec> {
