@@ -24,7 +24,7 @@ pub struct Command {
     id: Uuid,
 
     /// Task ID to trigger (can be specified multiple times)
-    #[arg(short, long)]
+    #[arg(long = "tasks_ids")]
     task: Vec<Uuid>,
 
     /// Trigger all awaiting tasks
@@ -40,7 +40,7 @@ pub struct Command {
     dry_run: bool,
 
     /// Optional target path to run the codemod on
-    #[arg(long = "target", short = 't')]
+    #[arg(long = "target", short = 'p')]
     target_path: Option<PathBuf>,
 }
 
@@ -66,10 +66,14 @@ pub async fn handler(args: &Command) -> Result<()> {
 
     if args.trigger_all {
         // Trigger all awaiting tasks
-        engine
+        let triggered = engine
             .trigger_all(args.id)
             .await
             .context("Failed to trigger all tasks")?;
+        if !triggered {
+            println!("No tasks awaiting trigger");
+            return Ok(());
+        }
 
         println!("Triggered all awaiting tasks");
     } else if !args.task.is_empty() {

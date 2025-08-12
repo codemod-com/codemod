@@ -10,26 +10,9 @@ use butterflow_state::cloud_adapter::CloudStateAdapter;
 
 use crate::{dirty_git_check, progress_bar};
 
-/// Create an engine based on configuration
-pub fn create_engine(
-    workflow_file_path: PathBuf,
-    target_path: PathBuf,
-    dry_run: bool,
-    allow_dirty: bool,
-    params: HashMap<String, String>,
-) -> Result<(Engine, WorkflowRunConfig)> {
-    let dirty_check = dirty_git_check::dirty_check();
-    let bundle_path = workflow_file_path.parent().unwrap().to_path_buf();
-
-    let pre_run_callback: PreRunCallback = Box::new(move |path: &Path, dirty: bool| {
-        if !allow_dirty {
-            dirty_check(path, dirty);
-        }
-    });
-
+pub fn create_progress_callback() -> ProgressCallback {
     let (progress_reporter, _) = progress_bar::create_multi_progress_reporter();
-
-    let progress_callback = ProgressCallback {
+    ProgressCallback {
         callback: Arc::new(Box::new(
             move |task_id: &str, path: &str, status: &str, count: Option<&u64>, index: &u64| {
                 match status {
@@ -84,7 +67,31 @@ pub fn create_engine(
                 }
             },
         )),
+    }
+}
+
+/// Create an engine based on configuration
+pub fn create_engine(
+    workflow_file_path: PathBuf,
+    target_path: PathBuf,
+    dry_run: bool,
+    allow_dirty: bool,
+    params: HashMap<String, String>,
+) -> Result<(Engine, WorkflowRunConfig)> {
+    let dirty_check = dirty_git_check::dirty_check();
+    let bundle_path = if workflow_file_path.is_file() {
+        workflow_file_path.parent().unwrap().to_path_buf()
+    } else {
+        workflow_file_path.to_path_buf()
     };
+
+    let pre_run_callback: PreRunCallback = Box::new(move |path: &Path, dirty: bool| {
+        if !allow_dirty {
+            dirty_check(path, dirty);
+        }
+    });
+
+    let progress_callback = create_progress_callback();
 
     let config = WorkflowRunConfig {
         pre_run_callback: Arc::new(Some(pre_run_callback)),

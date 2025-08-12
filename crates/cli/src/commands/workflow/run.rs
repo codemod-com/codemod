@@ -22,7 +22,7 @@ pub struct Command {
     allow_dirty: bool,
 
     /// Optional target path to run the codemod on
-    #[arg(long = "target", short = 't')]
+    #[arg(long = "target", short = 'p')]
     target_path: Option<PathBuf>,
 
     /// Dry run mode - don't make actual changes

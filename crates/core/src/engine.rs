@@ -251,7 +251,7 @@ impl Engine {
     }
 
     /// Trigger all awaiting tasks in a workflow run
-    pub async fn trigger_all(&self, workflow_run_id: Uuid) -> Result<()> {
+    pub async fn trigger_all(&self, workflow_run_id: Uuid) -> Result<bool> {
         // TODO: Do we need this?
         let _workflow_run = self
             .state_adapter
@@ -303,12 +303,12 @@ impl Engine {
                     .await?;
 
                 info!("Workflow run {workflow_run_id} is now complete");
-                return Ok(());
+                return Ok(true);
             }
 
             // If we reached here, it means the workflow is still running but no tasks need triggers
             info!("No tasks in workflow run {workflow_run_id} are awaiting triggers");
-            return Ok(());
+            return Ok(false);
         }
 
         let mut triggered = false;
@@ -347,7 +347,7 @@ impl Engine {
         // If no tasks were triggered, it means they're all done or in progress
         // We don't need to error out, just return successfully
         if !triggered {
-            return Ok(());
+            return Ok(false);
         }
 
         let mut fields = HashMap::new();
@@ -375,7 +375,7 @@ impl Engine {
                 error!("Workflow execution failed: {e}");
             }
         });
-        Ok(())
+        Ok(true)
     }
 
     /// Cancel a workflow run
