@@ -1,5 +1,11 @@
 # @codemod-com/runner
 
+## 1.3.10
+
+### Patch Changes
+
+- 49fdabe: Remove confusing logs
+
 ## 1.3.9
 
 ### Patch Changes
