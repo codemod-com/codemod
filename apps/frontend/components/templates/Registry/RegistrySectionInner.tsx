@@ -14,7 +14,7 @@ import { getFilterIcon, getFilterSection } from "./helpers";
 export default function RegistrySectionInner(props: SectionRegistryProps) {
   const [searchParams, setSearchParams] = useState(new URLSearchParams());
   const isMounted = useRef(false);
-  function handleFilterChange(key?: string, value?: string) {
+  function handleFilterChange(key?: string | null, value?: string | null) {
     if (!key) return;
     const newParams = new URLSearchParams(searchParams);
     if (!value || value === searchParams.get(key)) {
@@ -26,12 +26,16 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
   }
   const { data, fetchAutomations } = useFetchAutomations({
     initial: props.initialAutomations,
+    limit: 8,
   });
+
+  
   useDebounce(
     async () => {
       if (!isMounted.current) {
         isMounted.current = true;
-        if (!props.initialAutomations) {
+        // If there are no initial automations or the list is empty, fetch on mount
+        if (!props.initialAutomations?.length) {
           await fetchAutomations(searchParams);
         }
         return;
@@ -42,6 +46,7 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
     [searchParams],
   );
 
+
   return (
     <div className="scrollbar-color w-full">
       <div className="mx-auto mt-8 max-w-[662px]">
@@ -51,7 +56,10 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
         />
         <div className="mt-4 w-full overflow-scroll lg:overflow-clip">
           <ul className="m-0 flex justify-start gap-2 md:justify-center">
-            {props.filter?.values?.slice(0, 5).map((filter) => {
+             {props.filter?.values
+               // Only show first 5 for framework quick filters if the section is framework
+               ?.slice(0, 5)
+               .map((filter) => {
               const frameworkIcons = getFilterSection(
                 "framework",
                 props.filterIconDictionary,
@@ -61,7 +69,7 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
               return (
                 <li key={filter.id} className="min-w-fit">
                   <button
-                    onClick={() => handleFilterChange("framework", filter.id)}
+                     onClick={() => handleFilterChange("framework", filter.id)}
                   >
                     <Tag
                       intent={
@@ -108,7 +116,7 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
       </div>
 
       <div className="relative flex flex-col items-center">
-        <ul className="m-0 mx-auto flex w-full max-w-[962px] animate-fade-in flex-col gap-3 divide-y-[1px] divide-border-light dark:divide-border-dark">
+        <ul className="m-0 mx-auto grid w-full max-w-[962px] animate-fade-in grid-cols-1 gap-4 md:grid-cols-2">
           {data?.data?.length ? (
             data?.data?.map((entry) => (
               <RegistrySectionCard

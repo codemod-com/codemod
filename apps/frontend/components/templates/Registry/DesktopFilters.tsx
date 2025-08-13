@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import FilterSection from "./FilterSection";
 
 import type { RegistryIndexPayload } from "@/types";
+import { REGISTRY_FILTER_TYPES } from "@/constants";
 import React from "react";
 import { useSidebar } from "./context";
 
@@ -43,16 +44,23 @@ export default function DesktopFilters({
         animate={desktopOpen ? "open" : "closed"}
         variants={sidebarVariants}
       >
-        {automationFilters?.map((section, i, arr) => (
-          <React.Fragment key={section.title || `${i}`}>
-            <FilterSection
-              filterIconDictionary={filterIconDictionary}
-              placeholders={placeholders}
-              {...section}
-            />
-            {i === arr.length - 1 && <div className="pb-10" />}
-          </React.Fragment>
-        ))}
+        {automationFilters
+          ?.filter((section) =>
+            [
+              REGISTRY_FILTER_TYPES.useCase,
+              REGISTRY_FILTER_TYPES.framework,
+            ].includes(section.id as unknown as keyof typeof REGISTRY_FILTER_TYPES),
+          )
+          .map((section, i, arr) => (
+            <React.Fragment key={section.title || `${i}`}>
+              <FilterSection
+                filterIconDictionary={filterIconDictionary}
+                placeholders={placeholders}
+                {...section}
+              />
+              {i === arr.length - 1 && <div className="pb-10" />}
+            </React.Fragment>
+          ))}
       </motion.div>
     </div>
   );

@@ -74,6 +74,10 @@ const colorPalette = {
     light: "#0B151E1A",
     dark: "#FFFFFF26",
   },
+  mutedForeground: {
+    light: "#71717a",
+    dark: "#9ca3b0",
+  },
   emphasis: {
     light: "#0B151E0D",
     dark: "#FFFFFF1A",

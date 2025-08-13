@@ -1,5 +1,9 @@
 import Icon from "@/components/shared/Icon";
-import type { AutomationFilter, RegistryCardData } from "@/types/object.types";
+import type {
+  AutomationAPISearchResponse,
+  AutomationFilter,
+  RegistryCardData,
+} from "@/types/object.types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -41,34 +45,38 @@ export function useFetchAutomations({
 
   async function fetchAutomations(searchParams: URLSearchParams) {
     setQueryState("loading");
-
-    if (!searchParams || searchParams.toString() === "") {
-      setData({
-        data: initial,
-        filters: [],
-        page: 1,
-        size: limit || 4,
-        total: 0,
+    try {
+      const res = await fetch(`/api/load-codemods`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          pageNumber: 1,
+          searchParams: searchParams?.toString?.() ?? "",
+          entriesPerPage: limit || 4,
+        }),
       });
 
-      return;
-    }
-    const res = await fetch(`/api/load-codemods`, {
-      method: "POST",
-      body: JSON.stringify({
-        pageNumber: 1,
-        searchParams: searchParams.toString(),
-        entriesPerPage: limit || 4,
-      }),
-    });
+      const json = (await res
+        .json()
+        .catch(() => null)) as Partial<AutomationAPISearchResponse> | null;
 
-    const automationList = await res.json();
-
-    if (res.status === 200) {
-      setQueryState("success");
-
-      setData(automationList);
-    } else {
+      if (res.ok && json) {
+        setQueryState("success");
+        setData({
+          data: Array.isArray(json.data) ? json.data : [],
+          filters: Array.isArray(json.filters) ? json.filters : [],
+          page: Number(json.page ?? 1) || 1,
+          size: Number(json.size ?? (limit || 4)) || (limit || 4),
+          total: Number(json.total ?? 0) || 0,
+        });
+      } else {
+        throw new Error("Failed to load automations");
+      }
+    } catch (error) {
+      console.log(error)
       setQueryState("error");
       setData({
         data: data.data,
@@ -88,7 +96,6 @@ export function useFetchAutomations({
       });
     }
   }
-
   return {
     data,
     loaderState,
