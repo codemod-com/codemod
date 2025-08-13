@@ -370,32 +370,12 @@ async fn handle_callback(
                         }
 
                         // Return success page
-                        let html = r#"
-                            <!DOCTYPE html>
-                            <html>
-                            <head>
-                                <title>Authentication Successful</title>
-                                <style>
-                                    @media (prefers-color-scheme: dark) {
-                                        body { background-color: #121212; color: #fff; }
-                                    }
-                                    body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
-                                    .success { color: green; font-size: 24px; }
-                                    .info { color: #666; margin-top: 20px; }
-                                </style>
-                            </head>
-                            <body>
-                                <div class="success">Authentication Successful!</div>
-                                <div class="info">You can now close this browser tab and return to the CLI.</div>
-                                <div class="info">This window will close automatically in 5 seconds.</div>
-                                <script>
-                                    setTimeout(() => {
-                                        window.close();
-                                    }, 5000);
-                                </script>
-                            </body>
-                            </html>
-                        "#;
+                        let html = format!(
+                            include_str!("html/post-login.html.txt"),
+                            title = "You're signed in",
+                            description =
+                                "You can now close this browser tab and return to the CLI."
+                        );
 
                         return Ok(Response::builder()
                             .status(StatusCode::OK)
@@ -409,24 +389,10 @@ async fn handle_callback(
                             params.get("error_description").unwrap_or(&default_error);
 
                         let html = format!(
-                            r#"
-                            <!DOCTYPE html>
-                            <html>
-                            <head>
-                                <title>Authentication Failed</title>
-                                <style>
-                                    body {{ font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }}
-                                    .error {{ color: red; font-size: 24px; }}
-                                    .info {{ color: #666; margin-top: 20px; }}
-                                </style>
-                            </head>
-                            <body>
-                                <div class="error">✗ Authentication Failed</div>
-                                <div class="info">Error: {error} - {error_description}</div>
-                                <div class="info">You can close this browser tab and try again in the CLI.</div>
-                            </body>
-                            </html>
-                        "#
+                            include_str!("html/post-login.html.txt"),
+                            title = "Authentication Failed",
+                            description =
+                                format!("Error: {error}<br>Description: {error_description}")
                         );
 
                         return Ok(Response::builder()
