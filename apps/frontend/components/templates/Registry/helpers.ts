@@ -42,7 +42,7 @@ export function getAutomationFrameworkTitles(
 }
 
 export function getAutomationPathname(slug: string) {
-  return `/registry/${slug}`;
+  return `https://app.codemod.com/registry/${slug}`;
 }
 
 export function getFilterSection(
@@ -94,21 +94,10 @@ export async function getInitialAutomations(slugs?: string[]) {
   return automations;
 }
 
-function convertAutomationApplicability(applicability) {
-  if (applicability) return;
-
-  return {
-    from: applicability?.from.map((f) => ({
-      framework: f?.[0],
-      comparator: f?.[1],
-      version: f?.[2],
-    })),
-    to: applicability?.to?.map((t) => ({
-      framework: t?.[0],
-      comparator: t?.[1],
-      version: t?.[2],
-    })),
-  };
+function convertAutomationApplicability(
+  applicability: AutomationResponse["applicability"] | undefined,
+) {
+  return applicability;
 }
 
 export function transformAutomation(
@@ -130,7 +119,7 @@ export function transformAutomation(
     ...automation,
     _id: `imported-automation-${automation.id}`,
     _type: "automation",
-    pathname: `/registry/${automation.slug}`,
+    pathname: `https://app.codemod.com/registry/${automation.slug}`,
     internalTitle: unslugify(automation.name),
     publishStatus: automation.private
       ? PublishStatus.hidden
@@ -143,6 +132,7 @@ export function transformAutomation(
     visible: true,
     currentVersion,
     title: unslugify(automation.name),
+    totalRuns: automation.totalTimeSaved || 0,
   };
 }
 
