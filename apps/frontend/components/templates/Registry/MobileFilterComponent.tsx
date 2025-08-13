@@ -7,6 +7,7 @@ import type { RegistryIndexPayload } from "@/types";
 import React from "react";
 import FilterSection from "./FilterSection";
 import { useSidebar } from "./context";
+import { REGISTRY_FILTER_TYPES } from "@/constants";
 
 export default function MobileFilterComponent({
   placeholders,
@@ -41,16 +42,25 @@ export default function MobileFilterComponent({
           />
           <Drawer.Content className="scrollbar-color fixed bottom-0 left-0 right-0 z-50 flex max-h-[80%] flex-col rounded-t-[10px] bg-white pt-4 dark:bg-background-dark">
             <div className="mx-auto flex w-full max-w-lg flex-col gap-6 overflow-auto rounded-t-[10px] pl-4 pr-1">
-              {automationFilters?.map((section, i, arr) => (
-                <React.Fragment key={`${(section?.title || "") + i}`}>
-                  <FilterSection
-                    placeholders={placeholders}
-                    filterIconDictionary={filterIconDictionary}
-                    {...section}
-                  />
-                  {i === arr.length - 1 && <div className="pb-10" />}
-                </React.Fragment>
-              ))}
+              {automationFilters
+                ?.filter((section) =>
+                  [
+                    REGISTRY_FILTER_TYPES.useCase,
+                    REGISTRY_FILTER_TYPES.framework,
+                  ].includes(
+                    section.id as unknown as keyof typeof REGISTRY_FILTER_TYPES,
+                  ),
+                )
+                .map((section, i, arr) => (
+                  <React.Fragment key={`${(section?.title || "") + i}`}>
+                    <FilterSection
+                      placeholders={placeholders}
+                      filterIconDictionary={filterIconDictionary}
+                      {...section}
+                    />
+                    {i === arr.length - 1 && <div className="pb-10" />}
+                  </React.Fragment>
+                ))}
             </div>
             <div className="flex justify-between gap-[10px] border-t px-6 py-4 dark:border-white/15">
               <Button
