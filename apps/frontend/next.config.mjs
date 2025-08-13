@@ -121,6 +121,11 @@ const config = {
         destination: "/registry/:slug*",
         permanent: true,
       },
+      {
+       source: "/registry/:path*",
+        destination: "https://app.codemod.com/registry/:path*",
+        permanent: true,
+      },
     ];
   },
 };

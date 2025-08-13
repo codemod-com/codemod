@@ -126,11 +126,7 @@ export function loadBlogIndex({
 }
 
 export function loadRegistryIndex() {
-  const registryIndexQuery = buildRegistryIndexQuery();
-
-  return loadQuery<RegistryIndexPayload | null>({
-    query: registryIndexQuery,
-    params: { locale: "en", pathname: "/registry" },
-    tags: [`registryIndex:en`],
-  });
+  // Registry index is now hosted on app.codemod.com; keep function for backward compatibility if imported.
+  // Return null so callers can handle absence or rely on redirects.
+  return null as unknown as ReturnType<typeof loadQuery<RegistryIndexPayload | null>>;
 }
