@@ -85,6 +85,11 @@ const config = {
   async redirects() {
     return [
       {
+        source: "/registry",
+        destination: "https://app.codemod.com/registry",
+        permanent: true,
+      },
+      {
         source: "/studio",
         has: [
           {

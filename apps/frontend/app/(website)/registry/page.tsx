@@ -41,7 +41,11 @@ export default async function RegistryIndexRoute({
 
   initialSanityData.data.entries = automationPayload?.data;
   initialSanityData.data.entriesCount = Number(automationPayload?.data?.length);
-  initialSanityData.data.automationFilters = automationPayload?.filters;
+  // Keep filters from CMS; the new search API doesn't return filter metadata
+  // Only override if non-empty filters are provided
+  if (automationPayload?.filters && automationPayload.filters.length > 0) {
+    initialSanityData.data.automationFilters = automationPayload.filters;
+  }
   initialSanityData.data.total = Number(automationPayload?.total);
   initialSanityData.data.entriesPerPage = Number(automationPayload?.size);
 

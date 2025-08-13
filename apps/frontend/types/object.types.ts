@@ -225,6 +225,43 @@ export type AutomationResponse = {
   updatedAt: string;
   frameworks: string[];
   versions: AutomationResponseVersion[];
+  /**
+   * Optional fields populated by the new Registry Search API shape
+   */
+  pkg?: {
+    id: string;
+    name: string;
+    displayName?: string | null;
+    license?: string | null;
+    repository?: string | null;
+    homepage?: string | null;
+    documentation?: string | null;
+    bugsUrl?: string | null;
+    description?: string | null;
+    scope?: string | null;
+    visibility?: string | null;
+    access?: "public" | "private";
+    downloadCount?: number;
+    createdAt?: string;
+    updatedAt?: string;
+    latestVersion?: string | null;
+    keywords?: string[];
+    starCount?: number;
+    author?: string | null;
+  };
+  owner?: {
+    id: string | null;
+    username: string | null;
+    name: string | null;
+    avatarUrl: string | null;
+  };
+  organization?: {
+    id: string | null;
+    name: string | null;
+    slug: string | null;
+    avatarUrl: string | null;
+  } | null;
+  isLegacy?: boolean;
 };
 
 export type AutomationResponseVersion = {
