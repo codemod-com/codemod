@@ -6,25 +6,22 @@ export function buildRegistryIndexDataQuery({
   pageNumber = 1,
 }: {
   entriesPerPage: number;
-  searchParams: URLSearchParams;
+  searchParams: string | URLSearchParams;
   pageNumber: number;
 }) {
   const sParams = new URLSearchParams(searchParams || "");
-  const q = sParams.get("q") || "";
-  const useCase = sParams.get(REGISTRY_FILTER_TYPES.useCase) || "";
-  const framework = sParams.get(REGISTRY_FILTER_TYPES.framework) || "";
-  const author = sParams.get(REGISTRY_FILTER_TYPES.owner) || "";
-  const verified = sParams.get("verified");
+  const params = new URLSearchParams();
+  const q = sParams.get("q");
+  const useCase = sParams.get(REGISTRY_FILTER_TYPES.useCase);
+  const framework = sParams.get(REGISTRY_FILTER_TYPES.framework);
 
-  const filters = [
-    q && `search=${q}`,
-    useCase && `category=${useCase}`,
-    author && `author=${author}`,
-    framework && `framework=${framework}`,
-    verified && `verified=${verified}`,
-  ];
-  const filtersString = filters.filter(Boolean).join("&");
-  const queryString = `${filtersString}&page=${pageNumber}&size=${entriesPerPage}`;
 
-  return queryString;
+  if (q) params.set("q", q);
+  if (useCase) params.set("category", useCase);
+  if (framework) params.set("framework", framework);
+
+  params.set("page", String(pageNumber));
+  params.set("limit", String(entriesPerPage));
+
+  return params.toString();
 }

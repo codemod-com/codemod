@@ -1,26 +1,15 @@
 import Markdown from "@/components/global/ReactMarkdown";
 import Icon from "@/components/shared/Icon";
 import { SanityImage } from "@/components/shared/SanityImage";
-import { REGISTRY_FILTER_TYPES } from "@/constants";
-import { useRegistryFilters } from "@/hooks/useRegistryFilters";
 import type { RegistryCardData } from "@/types/object.types";
 import { capitalize, unslugify } from "@/utils/strings";
 import { vercelStegaSplit } from "@vercel/stega";
-import { prop, uniqBy } from "ramda";
 import { SanityLink } from "../../shared/SanityLink";
 import Tag from "../../shared/Tag";
-import { AuthorSection } from "../CodemodPage/AuthorSection";
 import VerifiedBadge from "./VerifiedBadge";
-import {
-  getAutomationFrameworkTitles,
-  getAutomationPathname,
-  getDescriptionShortText,
-  getFilterIcon,
-  getFilterSection,
-} from "./helpers";
+import { getAutomationPathname, getDescriptionShortText, getFilterIcon, getFilterSection } from "./helpers";
 
 export default function RegistryCard(props: RegistryCardData) {
-  const { handleFilterChange, prefetchFilterChange } = useRegistryFilters();
 
   const { cleaned: author } = vercelStegaSplit(`${props.author}`);
 
@@ -34,137 +23,117 @@ export default function RegistryCard(props: RegistryCardData) {
     props.shortDescription || "",
   );
 
-  const frameworkIcons = getFilterSection(
-    REGISTRY_FILTER_TYPES.framework,
-    props.filterIconDictionary,
-  );
-
-  const frameworks = getAutomationFrameworkTitles(props).map((framework) => ({
-    name: framework,
-    image: getFilterIcon(frameworkIcons, framework),
-  }));
-
   const authorIcons = getFilterSection("author", props.filterIconDictionary);
   const authorImage = getFilterIcon(authorIcons, author);
 
-  const categoryIcons = getFilterSection(
-    "category",
-    props.filterIconDictionary,
-  );
-
-  const categoryImage = getFilterIcon(
-    categoryIcons,
-    props.useCaseCategory?.toLocaleLowerCase() || "",
-  );
+  const latestVersion = props.versions?.[props.versions.length - 1]?.version;
+  const formattedDate = props.updatedAt
+    ? new Date(props.updatedAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : undefined;
 
   return (
-    <li className="flex flex-col items-start gap-m py-l transition-[width] focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light   dark:focus-visible:ring-border-dark">
-      <div className="flex flex-col items-start">
-        <div>
-          {props.featured && <span className="tag">Featured</span>}
-          <SanityLink
-            link={{
-              _type: "link",
-              href: getAutomationPathname(props.slug),
-            }}
-          >
-            <h3 className="xs-heading mt-3 hover:underline">
-              {unslugify(props.name || "Untitled Automation")}
-            </h3>
-          </SanityLink>
+    <li className="flex flex-col gap-m py-l transition-[width] focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark">
+      {/* Header: avatar + title + optional version */}
+      <div className="flex w-full items-start gap-s">
+        {/* Avatar */}
+        <div className="mt-1 h-8 w-8 overflow-hidden rounded-full border border-border-light dark:border-border-dark">
+          {authorImage?.image?.light ? (
+            <>
+              <SanityImage
+                maxWidth={32}
+                image={authorImage.image.light}
+                alt={authorImage.image.light.alt}
+                elProps={{ width: 32, height: 32, className: "h-8 w-8 dark:hidden" }}
+              />
+              {authorImage.image.dark && (
+                <SanityImage
+                  maxWidth={32}
+                  image={authorImage.image.dark}
+                  alt={authorImage.image.dark.alt}
+                  elProps={{ width: 32, height: 32, className: "hidden h-8 w-8 dark:block" }}
+                />
+              )}
+            </>
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <Icon name="user" className="h-4 w-4 opacity-60" />
+            </div>
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-xs">
+            <SanityLink
+              link={{ _type: "link", href: getAutomationPathname(props.slug) }}
+            >
+              <h3 className="xs-heading hover:underline truncate">
+                {unslugify(props.name || "Untitled Automation")}
+              </h3>
+            </SanityLink>
+            {latestVersion && (
+              <Tag intent="static">
+                <span className="font-mono">v{latestVersion}</span>
+              </Tag>
+            )}
+            {props.verified && <VerifiedBadge content={props.verifiedTooltip} />}
+          </div>
           {formattedDescription ? (
-            <div className="mt-4 flex-col gap-4">
+            <div className="mt-3 flex-col gap-4">
               <Markdown>{formattedDescription}</Markdown>
             </div>
           ) : null}
         </div>
       </div>
 
-      <div className="flex w-full flex-col gap-m lg:flex-row lg:justify-between lg:items-center">
-        {/* tags */}
-        <div className="flex items-center gap-xs">
-          {props.verified && <VerifiedBadge content={props.verifiedTooltip} />}
-          {uniqBy(prop("name"), frameworks).map(
-            ({ name: framework, image: frameworkImage }) => (
-              <button
-                key={framework}
-                onLoad={() =>
-                  prefetchFilterChange(
-                    REGISTRY_FILTER_TYPES.framework,
-                    framework,
-                  )
-                }
-                onClick={() =>
-                  handleFilterChange(REGISTRY_FILTER_TYPES.framework, framework)
-                }
-                type="button"
-              >
-                <Tag intent="default">
-                  <>
-                    {frameworkImage?.image.light && (
-                      <SanityImage
-                        maxWidth={20}
-                        image={frameworkImage.image.light}
-                        alt={frameworkImage.image.light.alt}
-                        elProps={{
-                          width: 20,
-                          height: 20,
-                          className: "h-5 w-5 dark:hidden",
-                        }}
-                      />
-                    )}
-
-                    {frameworkImage?.image.dark && (
-                      <SanityImage
-                        maxWidth={20}
-                        image={frameworkImage.image.dark}
-                        alt={frameworkImage.image.dark.alt}
-                        elProps={{
-                          width: 20,
-                          height: 20,
-                          className: "hidden h-5 w-5 dark:inline",
-                        }}
-                      />
-                    )}
-                  </>
-
-                  <span>{capitalize(framework)}</span>
-                </Tag>
-              </button>
-            ),
-          )}
-          {props.useCaseCategory && (
-            <button
-              onClick={() =>
-                props.useCaseCategory &&
-                handleFilterChange(
-                  REGISTRY_FILTER_TYPES.useCase,
-                  props.useCaseCategory,
-                )
-              }
-              onLoad={() =>
-                props.useCaseCategory &&
-                prefetchFilterChange(
-                  REGISTRY_FILTER_TYPES.useCase,
-                  props.useCaseCategory,
-                )
-              }
-            >
-              <Tag intent="default">
-                {categoryImage.icon && <Icon name={categoryImage.icon} />}
-                {capitalize(props.useCaseCategory)}
-              </Tag>
-            </button>
+      {/* Tags */}
+      {!!props.tags?.length && (
+        <div className="flex flex-wrap items-center gap-1">
+          {props.tags.slice(0, 2).map((tag) => (
+            <Tag key={tag} intent="default">
+              <span>#{" "}{tag}</span>
+            </Tag>
+          ))}
+          {props.tags.length > 2 && (
+            <Tag intent="static">
+              <span>+{props.tags.length - 2}</span>
+            </Tag>
           )}
         </div>
+      )}
 
-        {/* Attribution */}
-        {props.author && (
-          <AuthorSection
-            author={_author.title}
-            authorImage={authorImage}
-            href={authorHref}
-          />
+      {/* Footer: author + metrics + date */}
+      <div className="flex w-full items-center justify-between">
+        <div className="flex items-center gap-3 text-secondary-light/80 dark:text-secondary-dark/80">
+          {props.author && (
+            <div className="flex items-center gap-1">
+              <Icon name="user" className="h-4 w-4" />
+              <a
+                href={authorHref}
+                target="_blank"
+                rel="noreferrer"
+                className="body-s-medium font-mono hover:opacity-70"
+              >
+                @{_author.title}
+              </a>
+            </div>
+          )}
+          <div className="flex items-center gap-1">
+            <Icon name="star" className="h-4 w-4" />
+            <span className="body-s">{props.openedPrs ?? 0}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Icon name="file" className="h-4 w-4" />
+            <span className="body-s">{props.amountOfUses ?? 0}</span>
+          </div>
+        </div>
+        {formattedDate && (
+          <div className="flex items-center gap-1 text-secondary-light/80 dark:text-secondary-dark/80">
+            <Icon name="calendar" className="h-4 w-4" />
+            <span className="body-s">{formattedDate}</span>
+          </div>
         )}
       </div>
     </li>

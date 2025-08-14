@@ -66,7 +66,7 @@ export default function CodemodList({
             "--fade-in-duration": "700ms",
           }}
         >
-          <ul className="m-0 flex w-full animate-fade-in flex-col divide-y-[1px] divide-border-light dark:divide-border-dark">
+          <ul className="m-0 grid w-full animate-fade-in grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
             {registryCards?.length ? (
               registryCards?.map((entry) => (
                 <RegistryCard
