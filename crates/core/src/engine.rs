@@ -10,6 +10,7 @@ use crate::execution::CodemodExecutionConfig;
 use crate::file_ops::AsyncFileWriter;
 use crate::utils::validate_workflow;
 use chrono::Utc;
+use codemod_sandbox::{scan_file_with_combined_scan, with_combined_scan};
 use log::{debug, error, info, warn};
 use std::path::Path;
 use tokio::fs::read_to_string;
@@ -34,7 +35,6 @@ use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
 use codemod_sandbox::{
-    execute_ast_grep,
     sandbox::{
         engine::{execution_engine::execute_codemod_with_quickjs, ExecutionStats},
         filesystem::RealFileSystem,
@@ -1234,86 +1234,96 @@ impl Engine {
             );
         }
 
-        let execution_config = CodemodExecutionConfig {
-            pre_run_callback: None,
-            progress_callback: self.workflow_run_config.progress_callback.clone(),
-            target_path: Some(self.workflow_run_config.target_path.clone()),
-            base_path: ast_grep.base_path.as_deref().map(PathBuf::from),
-            include_globs: ast_grep.include.as_deref().map(|v| v.to_vec()),
-            exclude_globs: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
-            dry_run: self.workflow_run_config.dry_run,
-            language: None,
-        };
-
-        // Clone variables needed in the closure
-        let id_clone = id.clone();
         let config_path_clone = config_path.clone();
-        let file_writer = Arc::clone(&self.file_writer);
-        let runtime_handle = tokio::runtime::Handle::current();
 
-        execution_config
-            .execute(|path, config| {
-                // Only process files, not directories
-                if !path.is_file() {
-                    return;
-                }
+        with_combined_scan(
+            &config_path_clone.to_string_lossy(),
+            |combined_scan_with_rule| {
+                let rule_refs = combined_scan_with_rule.rule_refs.clone();
+                let languages = rule_refs.iter().map(|r| r.language).collect::<Vec<_>>();
 
-                info!("Executing AST grep on file: {}", path.display());
-
-                // Execute ast-grep on this file
-                match execute_ast_grep(
-                    path,
-                    &config_path_clone.to_string_lossy(),
-                    !config.dry_run, // apply_fixes = !dry_run
-                ) {
-                    Ok((matches, file_modified, new_content)) => {
-                        if !matches.is_empty() {
-                            info!("Found {} matches in {}", matches.len(), path.display());
-                        }
-                        if file_modified {
-                            if let Some(new_content) = new_content {
-                                // Use async file writing to avoid blocking the thread
-                                let write_result = runtime_handle.block_on(async {
-                                    file_writer
-                                        .write_file(path.to_path_buf(), new_content)
-                                        .await
-                                });
-
-                                if let Err(e) = write_result {
-                                    error!(
-                                        "Failed to write modified file {}: {}",
-                                        path.display(),
-                                        e
-                                    );
-                                    self.execution_stats
-                                        .files_with_errors
-                                        .fetch_add(1, Ordering::Relaxed);
-                                    return;
-                                }
-                            }
-                            self.execution_stats
-                                .files_modified
-                                .fetch_add(1, Ordering::Relaxed);
-                        } else {
-                            self.execution_stats
-                                .files_unmodified
-                                .fetch_add(1, Ordering::Relaxed);
-                        }
-                    }
-                    Err(e) => {
-                        error!("AST grep failed for {}: {:?}", path.display(), e);
-                        self.execution_stats
-                            .files_with_errors
-                            .fetch_add(1, Ordering::Relaxed);
-                    }
+                let execution_config = CodemodExecutionConfig {
+                    pre_run_callback: None,
+                    progress_callback: self.workflow_run_config.progress_callback.clone(),
+                    target_path: Some(self.workflow_run_config.target_path.clone()),
+                    base_path: ast_grep.base_path.as_deref().map(PathBuf::from),
+                    include_globs: ast_grep.include.as_deref().map(|v| v.to_vec()),
+                    exclude_globs: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
+                    dry_run: self.workflow_run_config.dry_run,
+                    languages: Some(languages.iter().map(|l| l.to_string()).collect()),
                 };
 
-                if let Some(callback) = self.workflow_run_config.progress_callback.as_ref() {
-                    let callback = callback.callback.clone();
-                    callback(&id_clone, &path.to_string_lossy(), "next", Some(&1), &0);
-                }
-            })
-            .map_err(Error::StepExecution)?;
+                // Clone variables needed in the closure
+                let id_clone = id.clone();
+                let file_writer = Arc::clone(&self.file_writer);
+                let runtime_handle = tokio::runtime::Handle::current();
+
+                let _ = execution_config.execute(|path, config| {
+                    // Only process files, not directories
+                    if !path.is_file() {
+                        return;
+                    }
+
+                    info!("Executing AST grep on file: {}", path.display());
+
+                    // Execute ast-grep on this file
+                    match scan_file_with_combined_scan(
+                        path,
+                        &combined_scan_with_rule.combined_scan,
+                        !config.dry_run, // apply_fixes = !dry_run
+                    ) {
+                        Ok((matches, file_modified, new_content)) => {
+                            if !matches.is_empty() {
+                                info!("Found {} matches in {}", matches.len(), path.display());
+                            }
+                            if file_modified {
+                                if let Some(new_content) = new_content {
+                                    // Use async file writing to avoid blocking the thread
+                                    let write_result = runtime_handle.block_on(async {
+                                        file_writer
+                                            .write_file(path.to_path_buf(), new_content)
+                                            .await
+                                    });
+
+                                    if let Err(e) = write_result {
+                                        error!(
+                                            "Failed to write modified file {}: {}",
+                                            path.display(),
+                                            e
+                                        );
+                                        self.execution_stats
+                                            .files_with_errors
+                                            .fetch_add(1, Ordering::Relaxed);
+                                        return;
+                                    }
+                                }
+                                self.execution_stats
+                                    .files_modified
+                                    .fetch_add(1, Ordering::Relaxed);
+                            } else {
+                                self.execution_stats
+                                    .files_unmodified
+                                    .fetch_add(1, Ordering::Relaxed);
+                            }
+                        }
+                        Err(e) => {
+                            error!("{e}");
+                            self.execution_stats
+                                .files_with_errors
+                                .fetch_add(1, Ordering::Relaxed);
+                        }
+                    };
+
+                    if let Some(callback) = self.workflow_run_config.progress_callback.as_ref() {
+                        let callback = callback.callback.clone();
+                        callback(&id_clone, &path.to_string_lossy(), "next", Some(&1), &0);
+                    }
+                });
+
+                Ok(())
+            },
+        )
+        .map_err(|e| Error::StepExecution(e.to_string()))?;
 
         Ok(())
     }
@@ -1368,7 +1378,10 @@ impl Engine {
             include_globs: js_ast_grep.include.as_deref().map(|v| v.to_vec()),
             exclude_globs: js_ast_grep.exclude.as_deref().map(|v| v.to_vec()),
             dry_run: js_ast_grep.dry_run.unwrap_or(false) || self.workflow_run_config.dry_run,
-            language: js_ast_grep.language.clone(),
+            languages: Some(vec![js_ast_grep
+                .language
+                .clone()
+                .unwrap_or("typescript".to_string())]),
         };
 
         // Set language first to get default extensions
@@ -1509,7 +1522,7 @@ impl Engine {
                     );
                 }
             })
-            .map_err(Error::StepExecution)?;
+            .map_err(|e| Error::StepExecution(e.to_string()))?;
 
         Ok(())
     }

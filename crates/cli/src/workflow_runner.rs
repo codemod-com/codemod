@@ -23,7 +23,6 @@ pub async fn run_workflow(engine: &Engine, config: WorkflowRunConfig) -> Result<
         .await
         .context("Failed to run workflow")?;
 
-    info!("Workflow started with ID: {workflow_run_id}");
     println!("💥 Workflow started with ID: {workflow_run_id}");
 
     if config.wait_for_completion {

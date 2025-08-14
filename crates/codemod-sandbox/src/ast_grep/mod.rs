@@ -26,7 +26,7 @@ pub(crate) mod scanner;
 mod serde;
 
 #[cfg(feature = "native")]
-pub use native::execute_ast_grep;
+pub use native::{scan_file_with_combined_scan, with_combined_scan};
 
 #[allow(dead_code)]
 pub(crate) struct AstGrepModule;
