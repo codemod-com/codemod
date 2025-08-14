@@ -34,7 +34,7 @@ pub struct Command {
 
     /// Language to process
     #[arg(long)]
-    pub language: Option<String>,
+    pub language: String,
 
     /// Allow dirty git status
     #[arg(long)]
@@ -78,16 +78,10 @@ pub async fn handler(args: &Command) -> Result<()> {
         include_globs: None,
         exclude_globs: None,
         dry_run: args.dry_run,
-        language: args.language.clone(),
+        languages: Some(vec![args.language.clone()]),
     };
 
     let started = Instant::now();
-
-    let language = if let Some(language) = &args.language {
-        language.parse().unwrap()
-    } else {
-        "typescript".parse().unwrap()
-    };
 
     let _ = config.execute(|file_path, _config| {
         // Only process files
@@ -114,7 +108,10 @@ pub async fn handler(args: &Command) -> Result<()> {
                 js_file_path,
                 filesystem.clone(),
                 resolver.clone(),
-                language,
+                args.language
+                    .clone()
+                    .parse()
+                    .unwrap_or_else(|_| panic!("Invalid language: {}", args.language)),
                 file_path,
                 &content,
             )

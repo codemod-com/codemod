@@ -4,6 +4,7 @@ use ignore::{
     WalkBuilder, WalkState,
 };
 use std::{
+    error::Error,
     path::{Path, PathBuf},
     sync::{
         atomic::{AtomicU64, Ordering},
@@ -55,12 +56,12 @@ pub struct CodemodExecutionConfig {
     /// Dry run mode
     pub dry_run: bool,
     /// Language
-    pub language: Option<String>,
+    pub languages: Option<Vec<String>>,
 }
 
 impl CodemodExecutionConfig {
     /// Execute the codemod by iterating through files and calling the provided callback
-    pub fn execute<F>(&self, callback: F) -> Result<(), String>
+    pub fn execute<F>(&self, callback: F) -> Result<(), Box<dyn Error>>
     where
         F: Fn(&Path, &CodemodExecutionConfig) + Send + Sync,
     {
@@ -68,7 +69,7 @@ impl CodemodExecutionConfig {
     }
 
     /// Execute the codemod with a specific task ID for progress tracking
-    pub fn execute_with_task_id<F>(&self, task_id: &str, callback: F) -> Result<(), String>
+    pub fn execute_with_task_id<F>(&self, task_id: &str, callback: F) -> Result<(), Box<dyn Error>>
     where
         F: Fn(&Path, &CodemodExecutionConfig) + Send + Sync,
     {
@@ -228,19 +229,17 @@ impl CodemodExecutionConfig {
                     .add(glob)
                     .map_err(|e| format!("Invalid include glob '{glob}': {e}"))?;
             }
-        } else if let Some(lang) = &self.language {
-            let language = lang.parse();
-            if let Ok(language) = language {
-                let extensions = get_extensions_for_language(language);
-                for extension in extensions {
-                    builder
-                        .add(format!("**/*{extension}").as_str())
-                        .map_err(|e| format!("Failed to add default include pattern: {e}"))?;
+        } else if let Some(languages) = &self.languages {
+            for language in languages {
+                let language = language.parse();
+                if let Ok(language) = language {
+                    for extension in get_extensions_for_language(language) {
+                        builder
+                            .add(format!("**/*{extension}").as_str())
+                            .map_err(|e| format!("Failed to add default include pattern: {e}"))?;
+                    }
                 }
             }
-            builder
-                .add("**/*")
-                .map_err(|e| format!("Failed to add default include pattern: {e}"))?;
         } else {
             builder
                 .add("**/*")

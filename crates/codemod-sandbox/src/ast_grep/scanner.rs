@@ -1,3 +1,5 @@
+use std::panic;
+
 use ast_grep_config::CombinedScan;
 use ast_grep_core::{replacer::Content, AstGrep, Doc, Language};
 
@@ -19,8 +21,15 @@ pub(crate) fn scan_content<D: Doc<Lang = L>, L: Language>(
 where
     <D as Doc>::Source: Content<Underlying = u8>,
 {
-    // Scan with separate_fix=true when applying fixes to get diffs
-    let scan_result = combined_scan.scan(root, apply_fixes);
+    let scan_result = panic::catch_unwind(panic::AssertUnwindSafe(|| {
+        combined_scan.scan(root, apply_fixes)
+    }));
+
+    let scan_result = scan_result.map_err(|_| {
+        AstGrepError::Config(format!(
+            "AST-grep rule configuration error for file: {file_path}. This usually indicates improper ellipsis patterns or rule syntax."
+        ))
+    })?;
     let mut matches = Vec::new();
     let mut file_modified = false;
     let mut new_content = content.to_string();

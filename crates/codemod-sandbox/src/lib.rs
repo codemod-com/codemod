@@ -6,4 +6,4 @@ pub mod sandbox;
 pub mod utils;
 
 #[cfg(feature = "native")]
-pub use ast_grep::execute_ast_grep;
+pub use ast_grep::{scan_file_with_combined_scan, with_combined_scan};
