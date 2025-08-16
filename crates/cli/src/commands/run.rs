@@ -167,12 +167,27 @@ pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<
 }
 
 pub async fn run_legacy_codemod_with_raw_args(raw_args: &[String]) -> Result<()> {
-    let mut cmd = ProcessCommand::new("npx");
-    cmd.arg("codemod@legacy");
-    cmd.args(raw_args);
+    let mut cmd = if cfg!(target_os = "windows") {
+        // On Windows, use cmd.exe to resolve npx properly
+        let mut cmd = ProcessCommand::new("cmd");
+        cmd.args(["/C", "npx", "codemod@legacy"]);
+        cmd.args(raw_args);
+        cmd
+    } else {
+        // On Unix systems, npx can be called directly
+        let mut cmd = ProcessCommand::new("npx");
+        cmd.arg("codemod@legacy");
+        cmd.args(raw_args);
+        cmd
+    };
 
     info!(
-        "Executing: npx codemod@legacy with args: {:?}",
+        "Executing: {} with args: {:?}",
+        if cfg!(target_os = "windows") {
+            "cmd /C npx codemod@legacy"
+        } else {
+            "npx codemod@legacy"
+        },
         cmd.get_args().collect::<Vec<_>>()
     );
 
