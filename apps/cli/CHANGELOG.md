@@ -1,5 +1,11 @@
 # codemod
 
+## 0.18.10
+
+### Patch Changes
+
+- c74c9f9: Remove update alert print
+
 ## 0.18.9
 
 ### Patch Changes
