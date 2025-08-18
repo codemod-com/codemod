@@ -1,15 +1,7 @@
 import Axios from "axios";
-import semver from "semver";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import { Printer, boxen, chalk } from "@codemod-com/printer";
-import {
-  NullSender,
-  PostHogSender,
-  type TelemetrySender,
-} from "@codemod-com/telemetry";
-import { doubleQuotify, execPromise } from "@codemod-com/utilities";
 import { version } from "#/../package.json";
 import {
   handleCreateAPIKeyCommand,
@@ -26,39 +18,12 @@ import { handleUnpublishCliCommand } from "#commands/unpublish.js";
 import { handleWhoAmICommand } from "#commands/whoami.js";
 import { buildGlobalOptions, buildRunOptions } from "#flags.js";
 import { type TelemetryEvent, getUserDistinctId } from "#telemetry.js";
-
-const checkLatestVersion = async () => {
-  try {
-    const npmViewOutput = (
-      await execPromise("npm view codemod version", { timeout: 3000 })
-    ).stdout.trim();
-    const latestCLIVersion = semver.coerce(npmViewOutput)?.version;
-
-    if (latestCLIVersion && semver.gt(latestCLIVersion, version)) {
-      console.log(
-        boxen(
-          chalk(
-            "Update available",
-            chalk.dim(version),
-            ">",
-            chalk.green(latestCLIVersion),
-            "\n\nRun",
-            chalk.bold.cyan(doubleQuotify("npm i -g codemod@latest")),
-            "to upgrade",
-          ),
-          {
-            padding: 1,
-            textAlignment: "center",
-            borderColor: "yellowBright",
-            borderStyle: "round",
-          },
-        ),
-      );
-    }
-  } catch (err) {
-    // npm is not installed?
-  }
-};
+import { Printer, boxen, chalk } from "@codemod-com/printer";
+import {
+  NullSender,
+  PostHogSender,
+  type TelemetrySender,
+} from "@codemod-com/telemetry";
 
 const initializeDependencies = async (argv: {
   clientIdentifier: string | undefined;
@@ -123,8 +88,6 @@ const initializeDependencies = async (argv: {
 };
 
 export const main = async () => {
-  await checkLatestVersion();
-
   const slicedArgv = hideBin(process.argv);
 
   const argvObject = buildGlobalOptions(
