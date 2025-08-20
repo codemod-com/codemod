@@ -35,9 +35,11 @@ export async function fetchWithTimeout(
 export async function loadCodemod(
   pathname: string,
   options?: Partial<RequestInit>,
+  isOldRegistry: boolean = false,
 ) {
-  const baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
+  const baseUrl = isOldRegistry ? env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT_OLD : env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
   const { cleaned: url } = vercelStegaSplit(`${baseUrl}/${pathname}`);
+  console.log("url", url);
   try {
     // API is regularly unstable, handle timeout errors
     const response = await fetchWithTimeout(url, options);
@@ -99,8 +101,8 @@ export async function loadRegistryAPIData({
       star_count: number;
       created_at: string; // date-time
       updated_at: string; // date-time
-      owner: { id: string; username: string; name: string; image?: string | null };
-      organization: { id: string; name: string; slug: string; image?: string | null } | null;
+      owner: { id: string; username: string; name: string; avatar_url?: string | null };
+      organization: { id: string; name: string; slug: string; avatar_url?: string | null } | null;
     };
     type OpenRegistrySearchResponse = {
       total: number;
@@ -150,14 +152,14 @@ export async function loadRegistryAPIData({
           id: pkg.owner?.id ?? null,
           username: pkg.owner?.username ?? null,
           name: pkg.owner?.name ?? null,
-          avatarUrl: pkg.owner?.image ?? null,
+          avatarUrl: pkg.owner?.avatar_url ?? null,
         },
         organization: pkg.organization
           ? {
               id: pkg.organization.id ?? null,
               name: pkg.organization.name ?? null,
               slug: pkg.organization.slug ?? null,
-              avatarUrl: pkg.organization.image ?? null,
+              avatarUrl: pkg.organization.avatar_url ?? null,
             }
           : null,
         isLegacy: pkg.is_legacy,
