@@ -3,12 +3,20 @@
 import Tag from "@/components/shared/Tag";
 
 import type { RegistryCardData } from "@/types/object.types";
-import {  getDescriptionShortText, getFilterIcon, getFilterSection } from "./helpers";
+import {
+  getDescriptionShortText,
+  getFilterIcon,
+  getFilterSection,
+} from "./helpers";
 import { Calendar, Download, Hash, Star, User } from "lucide-react";
-import { TooltipContent, Tooltip, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
+import {
+  TooltipContent,
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@radix-ui/react-tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Icon from "@/components/shared/Icon";
-
 
 export default function RegistrySectionCard(
   props: RegistryCardData & {
@@ -31,7 +39,8 @@ export default function RegistrySectionCard(
 
   const authorImage = props.organization?.avatarUrl || props.owner?.avatarUrl;
 
-  const latestVersion = pkg?.latestVersion ?? props.versions?.[props.versions.length - 1]?.version;
+  const latestVersion =
+    pkg?.latestVersion ?? props.versions?.[props.versions.length - 1]?.version;
   const dateSource = pkg?.updatedAt ?? props.updatedAt;
   const formattedDate = dateSource
     ? new Date(dateSource).toLocaleDateString("en-US", {
@@ -41,13 +50,16 @@ export default function RegistrySectionCard(
       })
     : undefined;
 
-
   return (
     <li className="hover:border-accent rounded-xl border-border-light dark:border-border-dark border flex h-full cursor-pointer flex-col px-5 py-4 transition-all hover:shadow-lg">
       <div className="mb-2 p-0">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <Avatar className="h-6 w-6">
-            <AvatarImage className="rounded-[4px]" src={authorImage ?? undefined} alt={authorImage ?? undefined} />
+            <AvatarImage
+              className="rounded-[4px]"
+              src={authorImage ?? undefined}
+              alt={authorImage ?? undefined}
+            />
             <AvatarFallback>
               <Icon name="user" className="h-4 w-4 opacity-60" />
             </AvatarFallback>
@@ -74,12 +86,15 @@ export default function RegistrySectionCard(
 
         <div className="mb-4 flex flex-wrap gap-1">
           {(pkg?.keywords ?? props.tags ?? []).slice(0, 2).map((keyword) => (
-            <div className="inline-flex w-fit items-center justify-center gap-1 overflow-hidden rounded-2xl border pb-0.5 text-xs font-medium whitespace-nowrap transition-colors focus-visible:ring-[3px] [&>svg]:pointer-events-none [&>svg]:-mb-0.5 [&>svg]:size-3 bg-accent/10 text-accent border-transparent h-5 px-1.5 shrink-0" key={keyword}>
+            <div
+              className="inline-flex w-fit items-center justify-center gap-1 overflow-hidden rounded-2xl border pb-0.5 text-xs font-medium whitespace-nowrap transition-colors focus-visible:ring-[3px] [&>svg]:pointer-events-none [&>svg]:-mb-0.5 [&>svg]:size-3 bg-accent/10 text-accent border-transparent h-5 px-1.5 shrink-0"
+              key={keyword}
+            >
               <Hash className="h-3 w-3" />
               {keyword}
             </div>
           ))}
-          {((pkg?.keywords?.length ?? props.tags?.length ?? 0) > 2) ? (
+          {(pkg?.keywords?.length ?? props.tags?.length ?? 0) > 2 ? (
             <div className="inline-flex w-fit items-center justify-center gap-1 overflow-hidden rounded-2xl border pb-0.5 text-xs font-medium whitespace-nowrap transition-colors focus-visible:ring-[3px] [&>svg]:pointer-events-none [&>svg]:-mb-0.5 [&>svg]:size-3 bg-accent/10 text-accent border-transparent h-5 px-1.5 shrink-0">
               +{(pkg?.keywords?.length ?? props.tags?.length ?? 0) - 2}
             </div>
@@ -89,9 +104,7 @@ export default function RegistrySectionCard(
         <div className="text-secondary-light dark:text-secondary-dark flex items-center justify-between text-xs">
           <TooltipProvider>
             <div className="flex items-center gap-3">
-              {props.isLegacy && (
-                <Tag intent="static">Legacy</Tag>
-              )}
+              {props.isLegacy && <Tag intent="static">Legacy</Tag>}
 
               <Tooltip>
                 <TooltipTrigger>
