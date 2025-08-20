@@ -215,6 +215,8 @@ pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<
                     ("codemodName".to_string(), manifest.name.clone()),
                     ("version".to_string(), manifest.version.clone()),
                     ("cliVersion".to_string(), cli_version.to_string()),
+                    ("os".to_string(), std::env::consts::OS.to_string()),
+                    ("arch".to_string(), std::env::consts::ARCH.to_string()),
                 ]),
             },
             None,
