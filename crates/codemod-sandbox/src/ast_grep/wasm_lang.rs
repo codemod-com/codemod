@@ -279,11 +279,17 @@ impl Content for Wrapper {
     }
 }
 
+fn char_offset_to_byte_offset(text: &str, char_offset: usize) -> usize {
+    text.chars().take(char_offset).map(|c| c.len_utf8()).sum()
+}
+
 fn pos_for_byte_offset(input: &[u8], offset: usize) -> Point {
     debug_assert!(offset <= input.len());
     let (mut row, mut col) = (0, 0);
-    for &b in input.iter().take(offset) {
-        if b == b'\n' {
+    let input_str = std::str::from_utf8(&input[..offset]).unwrap_or("");
+
+    for c in input_str.chars() {
+        if c == '\n' {
             row += 1;
             col = 0;
         } else {
@@ -407,21 +413,33 @@ impl<'a> SgNode<'a> for Node {
         self.0.id() as usize
     }
     fn range(&self) -> std::ops::Range<usize> {
-        (self.0.start_index() as usize)..(self.0.end_index() as usize)
+        // WASM tree-sitter returns character indices, convert to byte indices
+        let start_char_idx = self.0.start_index() as usize;
+        let end_char_idx = self.0.end_index() as usize;
+
+        let root_text = self.get_root_text();
+        let start_byte = char_offset_to_byte_offset(&root_text, start_char_idx);
+        let end_byte = char_offset_to_byte_offset(&root_text, end_char_idx);
+
+        start_byte..end_byte
     }
     fn start_pos(&self) -> Position {
         let start = self.0.start_position();
-        let offset = self.0.start_index();
-        Position::new(
-            start.row() as usize,
-            start.column() as usize,
-            offset as usize,
-        )
+        let char_offset = self.0.start_index() as usize;
+
+        let root_text = self.get_root_text();
+        let byte_offset = char_offset_to_byte_offset(&root_text, char_offset);
+
+        Position::new(start.row() as usize, start.column() as usize, byte_offset)
     }
     fn end_pos(&self) -> Position {
         let end = self.0.end_position();
-        let offset = self.0.end_index();
-        Position::new(end.row() as usize, end.column() as usize, offset as usize)
+        let char_offset = self.0.end_index() as usize;
+
+        let root_text = self.get_root_text();
+        let byte_offset = char_offset_to_byte_offset(&root_text, char_offset);
+
+        Position::new(end.row() as usize, end.column() as usize, byte_offset)
     }
     // missing node is a tree-sitter specific concept
     fn is_missing(&self) -> bool {
@@ -455,6 +473,19 @@ impl<'a> SgNode<'a> for Node {
             }
             Some(Node(ret))
         })
+    }
+}
+
+// This is a horrible idea! But it does the job for WASM for now!
+// We don't need WASM to be perfect
+// That said, we should fix this in the future!
+impl Node {
+    fn get_root_text(&self) -> String {
+        let mut current = self.0.clone();
+        while let Some(parent) = current.parent() {
+            current = parent;
+        }
+        current.text().into()
     }
 }
 
