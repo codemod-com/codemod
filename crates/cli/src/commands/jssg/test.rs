@@ -24,7 +24,7 @@ pub struct Command {
     pub filter: Option<String>,
 
     /// Update expected outputs with actual results
-    #[arg(long)]
+    #[arg(long, short)]
     pub update_snapshots: bool,
 
     /// Show detailed output for each test
