@@ -6,6 +6,8 @@ import type { RegistryCardData } from "@/types/object.types";
 import {  getDescriptionShortText, getFilterIcon, getFilterSection } from "./helpers";
 import { Calendar, Download, Hash, Star, User } from "lucide-react";
 import { TooltipContent, Tooltip, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import Icon from "@/components/shared/Icon";
 
 
 export default function RegistrySectionCard(
@@ -27,8 +29,7 @@ export default function RegistrySectionCard(
     props.shortDescription || "",
   );
 
-  const authorIcons = getFilterSection("author", props.filterIconDictionary);
-  const authorImage = getFilterIcon(authorIcons, props.author);
+  const authorImage = props.organization?.avatarUrl || props.owner?.avatarUrl;
 
   const latestVersion = pkg?.latestVersion ?? props.versions?.[props.versions.length - 1]?.version;
   const dateSource = pkg?.updatedAt ?? props.updatedAt;
@@ -40,11 +41,17 @@ export default function RegistrySectionCard(
       })
     : undefined;
 
+
   return (
     <li className="hover:border-accent rounded-xl border-border-light dark:border-border-dark border flex h-full cursor-pointer flex-col px-5 py-4 transition-all hover:shadow-lg">
       <div className="mb-2 p-0">
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          
+          <Avatar className="h-6 w-6">
+            <AvatarImage className="rounded-[4px]" src={authorImage ?? undefined} alt={authorImage ?? undefined} />
+            <AvatarFallback>
+              <Icon name="user" className="h-4 w-4 opacity-60" />
+            </AvatarFallback>
+          </Avatar>
           <h3 className="font-semibold tracking-tight truncate text-base">
             {pkgScope && (
               <span className="text-secondary-light dark:text-secondary-dark font-mono">
