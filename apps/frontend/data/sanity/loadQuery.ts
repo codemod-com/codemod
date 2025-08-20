@@ -128,5 +128,7 @@ export function loadBlogIndex({
 export function loadRegistryIndex() {
   // Registry index is now hosted on app.codemod.com; keep function for backward compatibility if imported.
   // Return null so callers can handle absence or rely on redirects.
-  return null as unknown as ReturnType<typeof loadQuery<RegistryIndexPayload | null>>;
+  return null as unknown as ReturnType<
+    typeof loadQuery<RegistryIndexPayload | null>
+  >;
 }

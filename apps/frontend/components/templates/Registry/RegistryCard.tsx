@@ -7,10 +7,14 @@ import { vercelStegaSplit } from "@vercel/stega";
 import { SanityLink } from "../../shared/SanityLink";
 import Tag from "../../shared/Tag";
 import VerifiedBadge from "./VerifiedBadge";
-import { getAutomationPathname, getDescriptionShortText, getFilterIcon, getFilterSection } from "./helpers";
+import {
+  getAutomationPathname,
+  getDescriptionShortText,
+  getFilterIcon,
+  getFilterSection,
+} from "./helpers";
 
 export default function RegistryCard(props: RegistryCardData) {
-
   const { cleaned: author } = vercelStegaSplit(`${props.author}`);
 
   const _author = {
@@ -47,14 +51,22 @@ export default function RegistryCard(props: RegistryCardData) {
                 maxWidth={32}
                 image={authorImage.image.light}
                 alt={authorImage.image.light.alt}
-                elProps={{ width: 32, height: 32, className: "h-8 w-8 dark:hidden" }}
+                elProps={{
+                  width: 32,
+                  height: 32,
+                  className: "h-8 w-8 dark:hidden",
+                }}
               />
               {authorImage.image.dark && (
                 <SanityImage
                   maxWidth={32}
                   image={authorImage.image.dark}
                   alt={authorImage.image.dark.alt}
-                  elProps={{ width: 32, height: 32, className: "hidden h-8 w-8 dark:block" }}
+                  elProps={{
+                    width: 32,
+                    height: 32,
+                    className: "hidden h-8 w-8 dark:block",
+                  }}
                 />
               )}
             </>
@@ -78,7 +90,9 @@ export default function RegistryCard(props: RegistryCardData) {
                 <span className="font-mono">v{latestVersion}</span>
               </Tag>
             )}
-            {props.verified && <VerifiedBadge content={props.verifiedTooltip} />}
+            {props.verified && (
+              <VerifiedBadge content={props.verifiedTooltip} />
+            )}
           </div>
           {formattedDescription ? (
             <div className="mt-3 flex-col gap-4">
@@ -93,7 +107,7 @@ export default function RegistryCard(props: RegistryCardData) {
         <div className="flex flex-wrap items-center gap-1">
           {props.tags.slice(0, 2).map((tag) => (
             <Tag key={tag} intent="default">
-              <span>#{" "}{tag}</span>
+              <span># {tag}</span>
             </Tag>
           ))}
           {props.tags.length > 2 && (

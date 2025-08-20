@@ -29,7 +29,6 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
     limit: 8,
   });
 
-  
   useDebounce(
     async () => {
       if (!isMounted.current) {
@@ -46,7 +45,6 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
     [searchParams],
   );
 
-
   return (
     <div className="scrollbar-color w-full">
       <div className="mx-auto mt-8 max-w-[662px]">
@@ -56,61 +54,61 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
         />
         <div className="mt-4 w-full overflow-scroll lg:overflow-clip">
           <ul className="m-0 flex justify-start gap-2 md:justify-center">
-             {props.filter?.values
-               // Only show first 5 for framework quick filters if the section is framework
-               ?.slice(0, 5)
-               .map((filter) => {
-              const frameworkIcons = getFilterSection(
-                "framework",
-                props.filterIconDictionary,
-              );
-              const frameworkImage = getFilterIcon(frameworkIcons, filter.id);
+            {props.filter?.values
+              // Only show first 5 for framework quick filters if the section is framework
+              ?.slice(0, 5)
+              .map((filter) => {
+                const frameworkIcons = getFilterSection(
+                  "framework",
+                  props.filterIconDictionary,
+                );
+                const frameworkImage = getFilterIcon(frameworkIcons, filter.id);
 
-              return (
-                <li key={filter.id} className="min-w-fit">
-                  <button
-                     onClick={() => handleFilterChange("framework", filter.id)}
-                  >
-                    <Tag
-                      intent={
-                        searchParams.get("framework") === filter.id
-                          ? "primary"
-                          : "default"
-                      }
+                return (
+                  <li key={filter.id} className="min-w-fit">
+                    <button
+                      onClick={() => handleFilterChange("framework", filter.id)}
                     >
-                      <>
-                        {frameworkImage?.image.light && (
-                          <SanityImage
-                            maxWidth={20}
-                            image={frameworkImage.image.light}
-                            alt={frameworkImage.image.light.alt}
-                            elProps={{
-                              width: 20,
-                              height: 20,
-                              className: "h-5 w-5 dark:hidden",
-                            }}
-                          />
-                        )}
+                      <Tag
+                        intent={
+                          searchParams.get("framework") === filter.id
+                            ? "primary"
+                            : "default"
+                        }
+                      >
+                        <>
+                          {frameworkImage?.image.light && (
+                            <SanityImage
+                              maxWidth={20}
+                              image={frameworkImage.image.light}
+                              alt={frameworkImage.image.light.alt}
+                              elProps={{
+                                width: 20,
+                                height: 20,
+                                className: "h-5 w-5 dark:hidden",
+                              }}
+                            />
+                          )}
 
-                        {frameworkImage?.image.dark && (
-                          <SanityImage
-                            maxWidth={20}
-                            image={frameworkImage.image.dark}
-                            alt={frameworkImage.image.dark.alt}
-                            elProps={{
-                              width: 20,
-                              height: 20,
-                              className: "hidden h-5 w-5 dark:inline",
-                            }}
-                          />
-                        )}
-                      </>
-                      <span>{capitalize(filter.id || "")}</span>
-                    </Tag>
-                  </button>
-                </li>
-              );
-            })}
+                          {frameworkImage?.image.dark && (
+                            <SanityImage
+                              maxWidth={20}
+                              image={frameworkImage.image.dark}
+                              alt={frameworkImage.image.dark.alt}
+                              elProps={{
+                                width: 20,
+                                height: 20,
+                                className: "hidden h-5 w-5 dark:inline",
+                              }}
+                            />
+                          )}
+                        </>
+                        <span>{capitalize(filter.id || "")}</span>
+                      </Tag>
+                    </button>
+                  </li>
+                );
+              })}
           </ul>
         </div>
       </div>

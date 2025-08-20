@@ -37,9 +37,10 @@ export async function loadCodemod(
   options?: Partial<RequestInit>,
   isOldRegistry: boolean = false,
 ) {
-  const baseUrl = isOldRegistry ? env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT_OLD : env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
+  const baseUrl = isOldRegistry
+    ? env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT_OLD
+    : env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
   const { cleaned: url } = vercelStegaSplit(`${baseUrl}/${pathname}`);
-  console.log("url", url);
   try {
     // API is regularly unstable, handle timeout errors
     const response = await fetchWithTimeout(url, options);
@@ -101,8 +102,18 @@ export async function loadRegistryAPIData({
       star_count: number;
       created_at: string; // date-time
       updated_at: string; // date-time
-      owner: { id: string; username: string; name: string; avatar_url?: string | null };
-      organization: { id: string; name: string; slug: string; avatar_url?: string | null } | null;
+      owner: {
+        id: string;
+        username: string;
+        name: string;
+        avatar_url?: string | null;
+      };
+      organization: {
+        id: string;
+        name: string;
+        slug: string;
+        avatar_url?: string | null;
+      } | null;
     };
     type OpenRegistrySearchResponse = {
       total: number;
@@ -169,7 +180,6 @@ export async function loadRegistryAPIData({
       page: pageNumber,
       size: entriesPerPage,
     };
-
 
     return mapped;
   } catch (error) {

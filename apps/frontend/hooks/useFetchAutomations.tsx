@@ -69,14 +69,14 @@ export function useFetchAutomations({
           data: Array.isArray(json.data) ? json.data : [],
           filters: Array.isArray(json.filters) ? json.filters : [],
           page: Number(json.page ?? 1) || 1,
-          size: Number(json.size ?? (limit || 4)) || (limit || 4),
+          size: Number(json.size ?? (limit || 4)) || limit || 4,
           total: Number(json.total ?? 0) || 0,
         });
       } else {
         throw new Error("Failed to load automations");
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setQueryState("error");
       setData({
         data: data.data,

@@ -2,16 +2,22 @@ import { loadCodemod } from "@/data/codemod/loaders";
 import type { AutomationResponse } from "@/types/object.types";
 import { type NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { codemod: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { codemod: string } },
+) {
   const { codemod } = params;
 
-
   try {
-    const initialAutomationData = await loadCodemod(codemod, {
-      next: {
-        tags: [`codemod-${codemod}`],
+    const initialAutomationData = await loadCodemod(
+      codemod,
+      {
+        next: {
+          tags: [`codemod-${codemod}`],
+        },
       },
-    }, true);
+      true,
+    );
 
     const name = (initialAutomationData as AutomationResponse).name;
 
@@ -25,8 +31,6 @@ export async function GET(req: NextRequest, { params }: { params: { codemod: str
       status: 301,
     });
   } catch (error) {
-    return NextResponse.redirect(`https://app.codemod.com/registry`, {
-      status: 301,
-    });
+    console.log(error);
   }
 }

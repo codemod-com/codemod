@@ -49,7 +49,9 @@ export default function DesktopFilters({
             [
               REGISTRY_FILTER_TYPES.useCase,
               REGISTRY_FILTER_TYPES.framework,
-            ].includes(section.id as unknown as keyof typeof REGISTRY_FILTER_TYPES),
+            ].includes(
+              section.id as unknown as keyof typeof REGISTRY_FILTER_TYPES,
+            ),
           )
           .map((section, i, arr) => (
             <React.Fragment key={section.title || `${i}`}>

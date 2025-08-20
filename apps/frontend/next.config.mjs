@@ -84,7 +84,6 @@ const config = {
   },
   async redirects() {
     return [
-
       {
         source: "/studio",
         has: [
@@ -117,7 +116,6 @@ const config = {
         destination: "/registry/:slug*",
         permanent: true,
       },
-
     ];
   },
 };

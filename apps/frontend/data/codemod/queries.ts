@@ -15,7 +15,6 @@ export function buildRegistryIndexDataQuery({
   const useCase = sParams.get(REGISTRY_FILTER_TYPES.useCase);
   const framework = sParams.get(REGISTRY_FILTER_TYPES.framework);
 
-
   if (q) params.set("q", q);
   if (useCase) params.set("category", useCase);
   if (framework) params.set("framework", framework);
