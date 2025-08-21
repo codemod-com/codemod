@@ -29,6 +29,10 @@ pub struct Command {
     #[arg(long)]
     language: Option<String>,
 
+    /// Git repository URL for the codemod source
+    #[arg(long)]
+    repository: Option<String>,
+
     /// Project description
     #[arg(long)]
     description: Option<String>,
@@ -73,6 +77,7 @@ struct ProjectConfig {
     language: String,
     private: bool,
     package_manager: Option<String>,
+    repository: Option<String>,
 }
 
 // Template constants using include_str!
@@ -195,6 +200,12 @@ pub fn handler(args: &Command) -> Result<()> {
             }
             _ => None,
         };
+        // In non-interactive mode, try to auto-detect repository if not provided
+        let detected_repo = args
+            .repository
+            .clone()
+            .or_else(|| detect_git_repository_url(Some(&project_path)));
+
         ProjectConfig {
             name: project_name,
             description: args
@@ -216,9 +227,10 @@ pub fn handler(args: &Command) -> Result<()> {
                 .ok_or_else(|| anyhow!("Language is required --language"))?,
             private: args.private,
             package_manager,
+            repository: detected_repo.map(normalize_repository_url),
         }
     } else {
-        interactive_setup(&project_name, args)?
+        interactive_setup(&project_path, &project_name, args)?
     };
 
     create_project(&project_path, &config)?;
@@ -233,7 +245,7 @@ pub fn handler(args: &Command) -> Result<()> {
     Ok(())
 }
 
-fn interactive_setup(project_name: &str, args: &Command) -> Result<ProjectConfig> {
+fn interactive_setup(project_path: &Path, project_name: &str, args: &Command) -> Result<ProjectConfig> {
     println!(
         "{} {}",
         ROCKET,
@@ -294,6 +306,36 @@ fn interactive_setup(project_name: &str, args: &Command) -> Result<ProjectConfig
             .prompt()?
     };
 
+    // Detect repository and prompt with default
+    let default_repo = args
+        .repository
+        .clone()
+        .or_else(|| detect_git_repository_url(Some(project_path)))
+        .map(normalize_repository_url);
+
+    let repository = if args.repository.is_some() {
+        args.repository.clone()
+    } else {
+        // If we have a detected repo, show it as default; allow empty to skip
+        match default_repo {
+            Some(default_url) => Some(
+                Text::new("Git repository URL:")
+                    .with_default(&default_url)
+                    .prompt()?,
+            ),
+            None => {
+                let entered = Text::new("Git repository URL (optional):")
+                    .with_default("")
+                    .prompt()?;
+                if entered.trim().is_empty() {
+                    None
+                } else {
+                    Some(entered)
+                }
+            }
+        }
+    };
+
     Ok(ProjectConfig {
         name,
         description,
@@ -303,6 +345,7 @@ fn interactive_setup(project_name: &str, args: &Command) -> Result<ProjectConfig
         language,
         private,
         package_manager: args.package_manager.clone(),
+        repository: repository.map(normalize_repository_url),
     })
 }
 
@@ -378,12 +421,19 @@ fn create_project(project_path: &Path, config: &ProjectConfig) -> Result<()> {
 }
 
 fn create_manifest(project_path: &Path, config: &ProjectConfig) -> Result<()> {
+    let repository_line = config
+        .repository
+        .as_ref()
+        .map(|url| format!("repository: \"{}\"", url))
+        .unwrap_or_else(|| "".to_string());
+
     let manifest_content = CODEMOD_TEMPLATE
         .replace("{name}", &config.name)
         .replace("{description}", &config.description)
         .replace("{author}", &config.author)
         .replace("{license}", &config.license)
         .replace("{language}", &config.language)
+        .replace("{repository_line}", &repository_line)
         .replace(
             "{access}",
             if config.private { "private" } else { "public" },
@@ -395,6 +445,60 @@ fn create_manifest(project_path: &Path, config: &ProjectConfig) -> Result<()> {
 
     fs::write(project_path.join("codemod.yaml"), manifest_content)?;
     Ok(())
+}
+
+fn detect_git_repository_url(project_path: Option<&Path>) -> Option<String> {
+    // Only detect if the provided project_path exists and is a git work tree
+    if let Some(path) = project_path {
+        if !path.exists() {
+            return None;
+        }
+        let mut check = ProcessCommand::new("git");
+        let check_out = check
+            .arg("-C")
+            .arg(path)
+            .arg("rev-parse")
+            .arg("--is-inside-work-tree")
+            .output();
+        match check_out {
+            Ok(out) if out.status.success() => {
+                let s = String::from_utf8_lossy(&out.stdout).trim().to_string();
+                if s != "true" {
+                    return None;
+                }
+            }
+            _ => return None,
+        }
+
+        let mut cmd = ProcessCommand::new("git");
+        let output = cmd
+            .arg("-C")
+            .arg(path)
+            .arg("config")
+            .arg("--local")
+            .arg("--get")
+            .arg("remote.origin.url")
+            .output();
+        return match output {
+            Ok(out) if out.status.success() => {
+                let url = String::from_utf8_lossy(&out.stdout).trim().to_string();
+                if url.is_empty() { None } else { Some(url) }
+            }
+            _ => None,
+        };
+    }
+    None
+}
+
+fn normalize_repository_url(url: String) -> String {
+    let trimmed = url.trim().trim_end_matches(".git").to_string();
+    if let Some(stripped) = trimmed.strip_prefix("git@github.com:") {
+        return format!("https://github.com/{}", stripped);
+    }
+    if let Some(stripped) = trimmed.strip_prefix("ssh://git@github.com/") {
+        return format!("https://github.com/{}", stripped);
+    }
+    trimmed
 }
 
 fn create_workflow(project_path: &Path, config: &ProjectConfig) -> Result<()> {
