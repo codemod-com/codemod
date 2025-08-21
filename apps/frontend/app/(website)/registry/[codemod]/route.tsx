@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { codemod: string } },
+  { params }: { params: { codemod: string } }
 ) {
   const { codemod } = params;
 
@@ -16,15 +16,18 @@ export async function GET(
           tags: [`codemod-${codemod}`],
         },
       },
-      true,
+      true
     );
 
     const name = (initialAutomationData as AutomationResponse).name;
 
     if (!name) {
-      return NextResponse.redirect(`https://app.codemod.com/registry`, {
-        status: 301,
-      });
+      return NextResponse.redirect(
+        `https://app.codemod.com/registry/${codemod}`,
+        {
+          status: 301,
+        }
+      );
     }
 
     return NextResponse.redirect(`https://app.codemod.com/registry/${name}`, {
@@ -32,5 +35,8 @@ export async function GET(
     });
   } catch (error) {
     console.log(error);
+    return NextResponse.redirect(`https://app.codemod.com/registry/`, {
+      status: 301,
+    });
   }
 }
