@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { codemod: string } }
+  { params }: { params: { codemod: string } },
 ) {
   const { codemod } = params;
 
@@ -16,7 +16,7 @@ export async function GET(
           tags: [`codemod-${codemod}`],
         },
       },
-      true
+      true,
     );
 
     const name = (initialAutomationData as AutomationResponse).name;
@@ -26,7 +26,7 @@ export async function GET(
         `https://app.codemod.com/registry/${codemod}`,
         {
           status: 301,
-        }
+        },
       );
     }
 
