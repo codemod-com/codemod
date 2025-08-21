@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const TAGS: Record<"framework" | "useCaseCategory", Record<string, string[]>> = {
+const TAGS: Record<
+  "framework" | "useCaseCategory",
+  Record<string, string[]>
+> = {
   framework: {
     "next.js": ["next.js", "nextjs", "next"],
     react: ["react", "reactjs", "react.js"],
@@ -29,7 +32,7 @@ const TAGS: Record<"framework" | "useCaseCategory", Record<string, string[]>> = 
   },
   useCaseCategory: {
     migration: ["migration"],
-    "best_practices": ["best practices"],
+    best_practices: ["best practices"],
     refactoring: ["refactoring"],
     cleanup: ["cleanup"],
     mining: ["mining"],
