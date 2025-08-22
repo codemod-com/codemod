@@ -21,7 +21,7 @@ import Icon from "@/components/shared/Icon";
 export default function RegistrySectionCard(
   props: RegistryCardData & {
     onFilter: (key?: string | null, value?: string | null) => void;
-  },
+  }
 ) {
   const organization = props.organization;
   const owner = props.owner;
@@ -34,7 +34,7 @@ export default function RegistrySectionCard(
   const starCount = pkg?.starCount ?? props.openedPrs ?? 0;
 
   const formattedDescription = getDescriptionShortText(
-    props.shortDescription || "",
+    props.shortDescription || ""
   );
 
   const authorImage = props.organization?.avatarUrl || props.owner?.avatarUrl;
@@ -51,7 +51,7 @@ export default function RegistrySectionCard(
     : undefined;
 
   return (
-    <li className="hover:border-accent rounded-xl border-border-light dark:border-border-dark border flex h-full cursor-pointer flex-col px-5 py-4 transition-all hover:shadow-lg">
+    <li className="flex h-full cursor-pointer flex-col rounded-xl border border-border-light px-5 py-4 transition-all hover:border-[#7faa09] hover:shadow-lg dark:border-border-dark dark:hover:border-accent">
       <div className="mb-2 p-0">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <Avatar className="h-6 w-6">
@@ -64,30 +64,30 @@ export default function RegistrySectionCard(
               <Icon name="user" className="h-4 w-4 opacity-60" />
             </AvatarFallback>
           </Avatar>
-          <h3 className="font-semibold tracking-tight truncate text-base">
+          <h3 className="truncate text-base font-semibold tracking-tight">
             {pkgScope && (
-              <span className="text-secondary-light dark:text-secondary-dark font-mono">
+              <span className="font-mono text-secondary-light dark:text-secondary-dark">
                 {pkgScope}/
               </span>
             )}
             {pkgName}
           </h3>
           {latestVersion && (
-            <div className="inline-flex w-fit items-center justify-center gap-1 overflow-hidden rounded-2xl border border-border-light dark:border-border-dark pb-0.5 text-xs font-medium transition-colors focus-visible:ring-[3px] [&>svg]:pointer-events-none bg-background text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground h-5 min-w-5 px-1 tabular-nums [&>svg]:ms-0 [&>svg]:-mb-0.5 [&>svg]:size-3 shrink-0 whitespace-nowrap">
+            <div className="[a&]:hover:text-accent-foreground inline-flex h-5 w-fit min-w-5 shrink-0 items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-2xl border border-border-light bg-background px-1 pb-0.5 font-medium text-xs tabular-nums text-foreground transition-colors focus-visible:ring-[3px] dark:border-border-dark [&>svg]:pointer-events-none [&>svg]:-mb-0.5 [&>svg]:ms-0 [&>svg]:size-3 [a&]:hover:bg-accent">
               <span className="font-mono">v{latestVersion}</span>
             </div>
           )}
         </div>
       </div>
       <div className="flex flex-1 flex-col p-0">
-        <p className="text-foreground mb-3 line-clamp-2 flex-1 text-sm">
+        <p className="mb-3 line-clamp-2 flex-1 text-sm text-foreground">
           {formattedDescription}
         </p>
 
         <div className="mb-4 flex flex-wrap gap-1">
           {(pkg?.keywords ?? props.tags ?? []).slice(0, 2).map((keyword) => (
             <div
-              className="inline-flex w-fit items-center justify-center gap-1 overflow-hidden rounded-2xl border pb-0.5 text-xs font-medium whitespace-nowrap transition-colors focus-visible:ring-[3px] [&>svg]:pointer-events-none [&>svg]:-mb-0.5 [&>svg]:size-3 bg-accent/10 text-accent border-transparent h-5 px-1.5 shrink-0"
+              className="inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-2xl border border-transparent bg-[#7faa09]/10 px-1.5 pb-0.5 font-medium text-xs text-[#7faa09] transition-colors focus-visible:ring-[3px] dark:bg-accent/10 dark:text-accent [&>svg]:pointer-events-none [&>svg]:-mb-0.5 [&>svg]:size-3"
               key={keyword}
             >
               <Hash className="h-3 w-3" />
@@ -95,13 +95,13 @@ export default function RegistrySectionCard(
             </div>
           ))}
           {(pkg?.keywords?.length ?? props.tags?.length ?? 0) > 2 ? (
-            <div className="inline-flex w-fit items-center justify-center gap-1 overflow-hidden rounded-2xl border pb-0.5 text-xs font-medium whitespace-nowrap transition-colors focus-visible:ring-[3px] [&>svg]:pointer-events-none [&>svg]:-mb-0.5 [&>svg]:size-3 bg-accent/10 text-accent border-transparent h-5 px-1.5 shrink-0">
+            <div className="inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-2xl border border-transparent bg-[#7faa09]/10 px-1.5 pb-0.5 font-medium text-xs text-[#7faa09] transition-colors focus-visible:ring-[3px] dark:bg-accent/10 dark:text-accent [&>svg]:pointer-events-none [&>svg]:-mb-0.5 [&>svg]:size-3">
               +{(pkg?.keywords?.length ?? props.tags?.length ?? 0) - 2}
             </div>
           ) : null}
         </div>
 
-        <div className="text-secondary-light dark:text-secondary-dark flex items-center justify-between text-xs">
+        <div className="flex items-center justify-between text-xs text-secondary-light dark:text-secondary-dark">
           <TooltipProvider>
             <div className="flex items-center gap-3">
               {props.isLegacy && <Tag intent="static">Legacy</Tag>}
