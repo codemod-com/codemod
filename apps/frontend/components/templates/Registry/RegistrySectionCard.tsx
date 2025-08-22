@@ -49,7 +49,9 @@ export default function RegistrySectionCard(
 
   return (
     <Link
-      href={getAutomationPathname(props.slug)}
+      href={getAutomationPathname(
+        `${pkg?.scope ? `@${pkg?.scope}/` : ""}${pkg?.name}`,
+      )}
       target="_blank"
       className="flex h-full cursor-pointer flex-col rounded-xl border border-border-light px-5 py-4 transition-all hover:border-[#7faa09] hover:shadow-lg dark:border-border-dark dark:hover:border-accent"
     >
