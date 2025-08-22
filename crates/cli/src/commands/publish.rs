@@ -19,6 +19,7 @@ use walkdir::WalkDir;
 
 use crate::auth::TokenStorage;
 use codemod_telemetry::send_event::{BaseEvent, TelemetrySender};
+use inquire::Text;
 
 #[derive(Args, Debug)]
 pub struct Command {
@@ -144,6 +145,14 @@ pub async fn handler(args: &Command, telemetry: &dyn TelemetrySender) -> Result<
             let normalized = normalize_repository_url(repo);
             info!("Using repository from local git: {}", &normalized);
             manifest.repository = Some(normalized);
+        } else {
+            // Prompt user for repository if not detectable and not present
+            let entered = Text::new("Git repository URL (optional):")
+                .with_default("")
+                .prompt()?;
+            if !entered.trim().is_empty() {
+                manifest.repository = Some(normalize_repository_url(entered));
+            }
         }
     }
 
