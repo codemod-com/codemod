@@ -1,4 +1,4 @@
-name: "Codemod CLI"
+name: "Codemod"
 description: "Run the Codemod CLI in GitHub Actions via npx."
 author: "Codemod"
 branding:
