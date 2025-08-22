@@ -3,11 +3,7 @@
 import Tag from "@/components/shared/Tag";
 
 import type { RegistryCardData } from "@/types/object.types";
-import {
-  getDescriptionShortText,
-  getFilterIcon,
-  getFilterSection,
-} from "./helpers";
+import { getAutomationPathname, getDescriptionShortText } from "./helpers";
 import { Calendar, Download, Hash, Star, User } from "lucide-react";
 import {
   TooltipContent,
@@ -17,11 +13,12 @@ import {
 } from "@radix-ui/react-tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Icon from "@/components/shared/Icon";
+import Link from "next/link";
 
 export default function RegistrySectionCard(
   props: RegistryCardData & {
     onFilter: (key?: string | null, value?: string | null) => void;
-  }
+  },
 ) {
   const organization = props.organization;
   const owner = props.owner;
@@ -34,7 +31,7 @@ export default function RegistrySectionCard(
   const starCount = pkg?.starCount ?? props.openedPrs ?? 0;
 
   const formattedDescription = getDescriptionShortText(
-    props.shortDescription || ""
+    props.shortDescription || "",
   );
 
   const authorImage = props.organization?.avatarUrl || props.owner?.avatarUrl;
@@ -51,7 +48,11 @@ export default function RegistrySectionCard(
     : undefined;
 
   return (
-    <li className="flex h-full cursor-pointer flex-col rounded-xl border border-border-light px-5 py-4 transition-all hover:border-[#7faa09] hover:shadow-lg dark:border-border-dark dark:hover:border-accent">
+    <Link
+      href={getAutomationPathname(props.slug)}
+      target="_blank"
+      className="flex h-full cursor-pointer flex-col rounded-xl border border-border-light px-5 py-4 transition-all hover:border-[#7faa09] hover:shadow-lg dark:border-border-dark dark:hover:border-accent"
+    >
       <div className="mb-2 p-0">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <Avatar className="h-6 w-6">
@@ -149,6 +150,6 @@ export default function RegistrySectionCard(
           </TooltipProvider>
         </div>
       </div>
-    </li>
+    </Link>
   );
 }
