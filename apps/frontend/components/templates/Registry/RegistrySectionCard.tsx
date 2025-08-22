@@ -21,7 +21,7 @@ import Icon from "@/components/shared/Icon";
 export default function RegistrySectionCard(
   props: RegistryCardData & {
     onFilter: (key?: string | null, value?: string | null) => void;
-  }
+  },
 ) {
   const organization = props.organization;
   const owner = props.owner;
@@ -34,7 +34,7 @@ export default function RegistrySectionCard(
   const starCount = pkg?.starCount ?? props.openedPrs ?? 0;
 
   const formattedDescription = getDescriptionShortText(
-    props.shortDescription || ""
+    props.shortDescription || "",
   );
 
   const authorImage = props.organization?.avatarUrl || props.owner?.avatarUrl;
