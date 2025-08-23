@@ -1,4 +1,6 @@
-use codemod_sandbox::sandbox::engine::language_data::get_extensions_for_language;
+use codemod_sandbox::{
+    sandbox::engine::language_data::get_extensions_for_language, tree_sitter::SupportedLanguage,
+};
 use ignore::{
     overrides::{Override, OverrideBuilder},
     WalkBuilder, WalkState,
@@ -56,7 +58,7 @@ pub struct CodemodExecutionConfig {
     /// Dry run mode
     pub dry_run: bool,
     /// Language
-    pub languages: Option<Vec<String>>,
+    pub languages: Option<Vec<SupportedLanguage>>,
 }
 
 impl CodemodExecutionConfig {
@@ -231,13 +233,10 @@ impl CodemodExecutionConfig {
             }
         } else if let Some(languages) = &self.languages {
             for language in languages {
-                let language = language.parse();
-                if let Ok(language) = language {
-                    for extension in get_extensions_for_language(language) {
-                        builder
-                            .add(format!("**/*{extension}").as_str())
-                            .map_err(|e| format!("Failed to add default include pattern: {e}"))?;
-                    }
+                for extension in get_extensions_for_language(language.to_string().as_str()) {
+                    builder
+                        .add(format!("**/*{extension}").as_str())
+                        .map_err(|e| format!("Failed to add default include pattern: {e}"))?;
                 }
             }
         } else {

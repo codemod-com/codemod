@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::time::Duration;
@@ -10,6 +11,7 @@ use crate::execution::CodemodExecutionConfig;
 use crate::file_ops::AsyncFileWriter;
 use crate::utils::validate_workflow;
 use chrono::Utc;
+use codemod_sandbox::tree_sitter::{load_tree_sitter, SupportedLanguage};
 use codemod_sandbox::{scan_file_with_combined_scan, with_combined_scan};
 use log::{debug, error, info, warn};
 use std::path::Path;
@@ -43,6 +45,12 @@ use codemod_sandbox::{
     utils::project_discovery::find_tsconfig,
 };
 
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+struct Rule {
+    language: String,
+}
 /// Workflow engine
 pub struct Engine {
     /// State adapter for persisting workflow state
@@ -1235,6 +1243,24 @@ impl Engine {
         }
 
         let config_path_clone = config_path.clone();
+        let config_content = tokio::fs::read_to_string(&config_path_clone).await?;
+        let mut languages = Vec::new();
+        for content in config_content.split("---") {
+            let parsed = serde_yaml::Deserializer::from_str(content);
+            let rule = Rule::deserialize(parsed)
+                .map_err(|e| Error::StepExecution(format!("Failed to parse rule: {e:?}")))?;
+            languages.push(SupportedLanguage::from_str(&rule.language).unwrap());
+        }
+
+        let _ = load_tree_sitter(
+            &languages,
+            self.workflow_run_config
+                .download_progress_callback
+                .as_ref()
+                .map(|c| c.callback.clone()),
+        )
+        .await
+        .map_err(|e| Error::StepExecution(format!("Failed to load tree-sitter language: {e:?}")))?;
 
         with_combined_scan(
             &config_path_clone.to_string_lossy(),
@@ -1250,7 +1276,12 @@ impl Engine {
                     include_globs: ast_grep.include.as_deref().map(|v| v.to_vec()),
                     exclude_globs: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
                     dry_run: self.workflow_run_config.dry_run,
-                    languages: Some(languages.iter().map(|l| l.to_string()).collect()),
+                    languages: Some(
+                        languages
+                            .iter()
+                            .map(|l| l.name().parse().unwrap())
+                            .collect(),
+                    ),
                 };
 
                 // Clone variables needed in the closure
@@ -1258,7 +1289,7 @@ impl Engine {
                 let file_writer = Arc::clone(&self.file_writer);
                 let runtime_handle = tokio::runtime::Handle::current();
 
-                let _ = execution_config.execute(|path, config| {
+                execution_config.execute(|path, config| {
                     // Only process files, not directories
                     if !path.is_file() {
                         return;
@@ -1318,7 +1349,7 @@ impl Engine {
                         let callback = callback.callback.clone();
                         callback(&id_clone, &path.to_string_lossy(), "next", Some(&1), &0);
                     }
-                });
+                })?;
 
                 Ok(())
             },
@@ -1370,6 +1401,21 @@ impl Engine {
                 .map_err(|e| Error::Other(format!("Failed to create resolver: {e}")))?,
         );
 
+        let _ = load_tree_sitter(
+            &[js_ast_grep
+                .language
+                .clone()
+                .unwrap_or("typescript".to_string())
+                .parse()
+                .unwrap()],
+            self.workflow_run_config
+                .download_progress_callback
+                .as_ref()
+                .map(|c| c.callback.clone()),
+        )
+        .await
+        .map_err(|e| Error::StepExecution(format!("Failed to load tree-sitter language: {e:?}")))?;
+
         let config = CodemodExecutionConfig {
             pre_run_callback: None,
             progress_callback: self.workflow_run_config.progress_callback.clone(),
@@ -1381,7 +1427,9 @@ impl Engine {
             languages: Some(vec![js_ast_grep
                 .language
                 .clone()
-                .unwrap_or("typescript".to_string())]),
+                .unwrap_or("typescript".to_string())
+                .parse()
+                .unwrap()]),
         };
 
         // Set language first to get default extensions

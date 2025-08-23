@@ -7,12 +7,14 @@ use codemod_sandbox::sandbox::{
 use log::{debug, error, info, warn};
 use std::{
     path::{Path, PathBuf},
+    str::FromStr,
     sync::Arc,
     time::Instant,
 };
 
 use crate::dirty_git_check;
-use crate::engine::create_progress_callback;
+use crate::engine::{create_download_progress_callback, create_progress_callback};
+use codemod_sandbox::tree_sitter::{load_tree_sitter, SupportedLanguage};
 use codemod_sandbox::utils::project_discovery::find_tsconfig;
 
 #[derive(Args, Debug)]
@@ -78,10 +80,15 @@ pub async fn handler(args: &Command) -> Result<()> {
         include_globs: None,
         exclude_globs: None,
         dry_run: args.dry_run,
-        languages: Some(vec![args.language.clone()]),
+        languages: Some(vec![SupportedLanguage::from_str(&args.language).unwrap()]),
     };
 
     let started = Instant::now();
+    let _ = load_tree_sitter(
+        config.languages.as_ref().unwrap(),
+        Some(create_download_progress_callback().callback.clone()),
+    )
+    .await;
 
     let _ = config.execute(|file_path, _config| {
         // Only process files

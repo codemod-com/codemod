@@ -6,6 +6,13 @@ use std::{
 
 use crate::{execution::ProgressCallback, registry::RegistryClient};
 
+type DownloadProgressCallbackFn = Box<dyn Fn(u64, u64) + Send + Sync>;
+
+#[derive(Clone)]
+pub struct DownloadProgressCallback {
+    pub callback: Arc<DownloadProgressCallbackFn>,
+}
+
 pub type PreRunCallback = Box<dyn Fn(&Path, bool) + Send + Sync>;
 
 /// Configuration for running a workflow
@@ -17,6 +24,7 @@ pub struct WorkflowRunConfig {
     pub params: HashMap<String, String>,
     pub wait_for_completion: bool,
     pub progress_callback: Arc<Option<ProgressCallback>>,
+    pub download_progress_callback: Option<DownloadProgressCallback>,
     pub pre_run_callback: Arc<Option<PreRunCallback>>,
     pub registry_client: RegistryClient,
     pub dry_run: bool,
@@ -31,6 +39,7 @@ impl Default for WorkflowRunConfig {
             params: HashMap::new(),
             wait_for_completion: true,
             progress_callback: Arc::new(None),
+            download_progress_callback: None,
             pre_run_callback: Arc::new(None),
             registry_client: RegistryClient::default(),
             dry_run: false,
