@@ -620,38 +620,78 @@ nodes:
     6. **Multi-step Tasks**: Each matrix task runs both the codemod and creates a PR
   </Tab>
   <Tab title="Migration Recipes">
-    Create a migration recipe by chaining Registry codemods as shell steps. No `.codemodrc.json` is needed.
+    <Steps>
+      <Step title="Scaffold a new workflow package">
+        ```bash
+        npx codemod init migration-recipe
+        cd migration-recipe
+        ```
 
-    ```yaml codemod.yaml
-    name: @your-scope/migration-recipe
-    version: 1.0.0
-    workflow: "workflow.yaml"
-    ```
+        When prompted, choose a `Shell command workflow codemod`.
+      </Step>
 
-    ```yaml workflow.yaml
-    version: "1"
-    nodes:
-      - id: migrate
-        name: Migration Recipe (chained codemods)
-        type: automatic
-        steps:
-          - name: Step 1
-            run: npx -y codemod@latest <registry-package-1> -t ${{params.target}} key=value
-          - name: Step 2
-            run: npx -y codemod@latest <registry-package-2> -t ${{params.target}}
-    ```
+      <Step title="Populate package manifest (codemod.yaml)">
+        ```yaml codemod.yaml
+        name: @your-scope/migration-recipe
+        version: 1.0.0
+        workflow: "workflow.yaml"
+        ```
 
-    ```bash
-    # Validate
-    npx codemod workflow validate -w ./workflow.yaml
+        This links your package to the workflow definition.
+      </Step>
 
-    # Run
-    npx codemod workflow run -w ./workflow.yaml -t /abs/path/to/repo --param target=/abs/path/to/repo
-    ```
+      <Step title="Author the recipe workflow (workflow.yaml)">
+        Chain Registry codemods as ordered steps. Use npx to call packages. Keep it minimal:
 
-    <Info>
-      Parameters: Local workflows use `--param key=value`. Registry packages use trailing `key=value` (and `-t` for target). If a package requires the legacy runner, use `npx codemod@legacy <name> —target <path>`.
-    </Info>
+        ```yaml workflow.yaml
+        version: "1"
+        nodes:
+          - id: migrate
+            name: Migration Recipe
+            type: automatic
+            steps:
+              - name: Step 1
+                run: npx -y codemod@latest <registry-package-1> -t ${{params.target}} key=value
+              - name: Step 2
+                run: npx -y codemod@latest <registry-package-2> -t ${{params.target}}
+        ```
+
+        Notes:
+        - Replace `<registry-package-1>` and `<registry-package-2>` with names from the Registry.
+        - Add trailing `key=value` arguments as needed.
+        - Pin versions by suffixing `@<version>`.
+      </Step>
+
+      <Step title="Validate the workflow">
+        ```bash
+        npx codemod workflow validate -w ./workflow.yaml
+        ```
+      </Step>
+
+      <Step title="Run the recipe on a repo">
+        Pass a target path. Parameters for local workflows use `--param`:
+
+        ```bash
+        npx codemod workflow run -w ./workflow.yaml -t /abs/path/to/repo --param target=/abs/path/to/repo
+        ```
+      </Step>
+
+      <Step title="(Optional) Publish and run from the Registry">
+        ```bash
+        # Publish from the package directory
+        npx codemod publish
+
+        # Later, run anywhere (key=value are trailing args; use -t for target)
+        npx codemod @your-scope/migration-recipe -t /abs/path/to/repo version=latest
+        ```
+      </Step>
+
+      <Step title="Tips">
+        - For packages that require the legacy runner, call: `npx codemod@legacy <name> --target <path>`
+        - Order matters: steps run top-to-bottom.
+        - Use `env:` at the node/step if environment variables are required.
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
 
