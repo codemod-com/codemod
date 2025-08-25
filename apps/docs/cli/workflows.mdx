@@ -562,6 +562,8 @@ nodes:
 
 ---
 
+## Examples
+
 <Tabs>
   <Tab title="Workflow Orchestration (Matrix + Manual)">
     This comprehensive workflow demonstrates state management, templates, matrix strategies, and manual triggers:
@@ -618,10 +620,10 @@ nodes:
     6. **Multi-step Tasks**: Each matrix task runs both the codemod and creates a PR
   </Tab>
   <Tab title="Migration Recipes">
-    Create a migration "recipe" by chaining Codemod Registry packages in a single workflow. No `.codemodrc.json` is needed.
+    Create a migration recipe by chaining Registry codemods as shell steps. No `.codemodrc.json` is needed.
 
     ```yaml codemod.yaml
-    name: @your-scope/react-19-migration-recipe
+    name: @your-scope/migration-recipe
     version: 1.0.0
     workflow: "workflow.yaml"
     ```
@@ -630,53 +632,26 @@ nodes:
     version: "1"
     nodes:
       - id: migrate
-        name: React 19 Migration Recipe
+        name: Migration Recipe (chained codemods)
         type: automatic
         steps:
-          - name: Replace ReactDOM.render
-            codemod:
-              source: "react/19/replace-reactdom-render@latest"
-          - name: Replace string refs
-            codemod:
-              source: "react/19/replace-string-ref"
-          - name: Replace act import
-            codemod:
-              source: "react/19/replace-act-import"
-          - name: Replace useFormState
-            codemod:
-              source: "react/19/replace-use-form-state"
-          - name: Migrate prop-types to TypeScript
-            codemod:
-              source: "react/prop-types-typescript"
-              # Optional per-codemod parameters (use key=value)
-              args:
-                - "dry_run=false"
+          - name: Step 1
+            run: npx -y codemod@latest <registry-package-1> -t ${{params.target}} key=value
+          - name: Step 2
+            run: npx -y codemod@latest <registry-package-2> -t ${{params.target}}
     ```
 
-    Run locally on a repo:
-
     ```bash
-    # Validate first
+    # Validate
     npx codemod workflow validate -w ./workflow.yaml
 
-    # Run against a specific repo
-    npx codemod workflow run -w ./workflow.yaml -t /abs/path/to/repo
+    # Run
+    npx codemod workflow run -w ./workflow.yaml -t /abs/path/to/repo --param target=/abs/path/to/repo
     ```
 
-    Publish and run from the Registry:
-
-    ```bash
-    # From the package directory (with codemod.yaml + workflow.yaml)
-    npx codemod publish
-
-    # Later, run anywhere (key=value params are trailing args; use -t for target)
-    npx codemod @your-scope/react-19-migration-recipe -t /abs/path/to/repo version=19
-    ```
-
-    Notes:
-    - Steps execute in order; each `codemod.source` references a Registry package. Append `@<version>` to pin.
-    - For `codemod.args`, prefer `key=value` pairs. They are forwarded to the inner workflow as parameters.
-    - Use node/step `env:` if you need environment variables.
+    <Info>
+      Parameters: Local workflows use `--param key=value`. Registry packages use trailing `key=value` (and `-t` for target). If a package requires the legacy runner, use `npx codemod@legacy <name> —target <path>`.
+    </Info>
   </Tab>
 </Tabs>
 
