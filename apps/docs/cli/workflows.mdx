@@ -562,74 +562,139 @@ nodes:
 
 ---
 
-## End-to-End Example
+<Tabs>
+  <Tab title="Workflow Orchestration (Matrix + Manual)">
+    This comprehensive workflow demonstrates state management, templates, matrix strategies, and manual triggers:
 
-This comprehensive workflow demonstrates state management, templates, matrix strategies, and manual triggers:
+    ```yaml
+    version: "1"
+    state:
+      schema:
+        - name: shards
+          type: array
+          items:
+            type: object
+            properties:
+              team: { type: string }
+              shardId: { type: string }
+    templates:
+      - id: checkout-repo
+        name: Checkout Repository
+        inputs:
+          - name: repo_url
+            type: string
+            required: true
+        steps:
+          - name: Clone
+            run: git clone ${{inputs.repo_url}} repo
+    nodes:
+      - id: make-shards
+        name: Make Shards
+        type: automatic
+        steps:
+          - name: Write shards
+            run: echo 'shards@={"team":"core","shardId":"1"}' >> "$STATE_OUTPUTS"
+      - id: matrix-codemod
+        name: Matrix Codemod
+        strategy:
+          type: matrix
+          from_state: shards
+        trigger:
+          type: manual
+        steps:
+          - name: Codemod
+            run: node codemod.js --team=$team --shard=$shardId
+          - name: PR
+            run: codemodctl pr create
+    ```
 
-```yaml
-version: "1"
-state:
-  schema:
-    - name: shards
-      type: array
-      items:
-        type: object
-        properties:
-          team: { type: string }
-          shardId: { type: string }
-templates:
-  - id: checkout-repo
-    name: Checkout Repository
-    inputs:
-      - name: repo_url
-        type: string
-        required: true
-    steps:
-      - name: Clone
-        run: git clone ${{inputs.repo_url}} repo
-nodes:
-  - id: make-shards
-    name: Make Shards
-    type: automatic
-    steps:
-      - name: Write shards
-        run: echo 'shards@={"team":"core","shardId":"1"}' >> "$STATE_OUTPUTS"
-  - id: matrix-codemod
-    name: Matrix Codemod
-    strategy:
-      type: matrix
-      from_state: shards
-    trigger:
-      type: manual
-    steps:
-      - name: Codemod
-        run: node codemod.js --team=$team --shard=$shardId
-      - name: PR
-        run: codemodctl pr create
-```
+    **What this workflow does:**
 
-**What this workflow does:**
+    1. **State Management**: Defines a `shards` array to store team and shard information
+    2. **Template Reuse**: Creates a reusable `checkout-repo` template for cloning repositories
+    3. **Dynamic State**: The `make-shards` node populates the state with shard data
+    4. **Matrix Execution**: The `matrix-codemod` node creates parallel tasks for each shard
+    5. **Manual Gates**: Requires approval before running the codemod on each shard
+    6. **Multi-step Tasks**: Each matrix task runs both the codemod and creates a PR
+  </Tab>
+  <Tab title="Migration Recipes">
+    Create a migration "recipe" by chaining Codemod Registry packages in a single workflow. No `.codemodrc.json` is needed.
 
-1. **State Management**: Defines a `shards` array to store team and shard information
-2. **Template Reuse**: Creates a reusable `checkout-repo` template for cloning repositories
-3. **Dynamic State**: The `make-shards` node populates the state with shard data
-4. **Matrix Execution**: The `matrix-codemod` node creates parallel tasks for each shard
-5. **Manual Gates**: Requires approval before running the codemod on each shard
-6. **Multi-step Tasks**: Each matrix task runs both the codemod and creates a PR
+    ```yaml codemod.yaml
+    name: @your-scope/react-19-migration-recipe
+    version: 1.0.0
+    workflow: "workflow.yaml"
+    ```
+
+    ```yaml workflow.yaml
+    version: "1"
+    nodes:
+      - id: migrate
+        name: React 19 Migration Recipe
+        type: automatic
+        steps:
+          - name: Replace ReactDOM.render
+            codemod:
+              source: "react/19/replace-reactdom-render@latest"
+          - name: Replace string refs
+            codemod:
+              source: "react/19/replace-string-ref"
+          - name: Replace act import
+            codemod:
+              source: "react/19/replace-act-import"
+          - name: Replace useFormState
+            codemod:
+              source: "react/19/replace-use-form-state"
+          - name: Migrate prop-types to TypeScript
+            codemod:
+              source: "react/prop-types-typescript"
+              # Optional per-codemod parameters (use key=value)
+              args:
+                - "dry_run=false"
+    ```
+
+    Run locally on a repo:
+
+    ```bash
+    # Validate first
+    npx codemod workflow validate -w ./workflow.yaml
+
+    # Run against a specific repo
+    npx codemod workflow run -w ./workflow.yaml -t /abs/path/to/repo
+    ```
+
+    Publish and run from the Registry:
+
+    ```bash
+    # From the package directory (with codemod.yaml + workflow.yaml)
+    npx codemod publish
+
+    # Later, run anywhere (key=value params are trailing args; use -t for target)
+    npx codemod @your-scope/react-19-migration-recipe -t /abs/path/to/repo version=19
+    ```
+
+    Notes:
+    - Steps execute in order; each `codemod.source` references a Registry package. Append `@<version>` to pin.
+    - For `codemod.args`, prefer `key=value` pairs. They are forwarded to the inner workflow as parameters.
+    - Use node/step `env:` if you need environment variables.
+  </Tab>
+</Tabs>
 
 ---
 
 ## Roadmap
 
-
-
-<Update description="Container runtime support">
-  Support for `runtime: docker` and other container runtimes, allowing tasks to run in isolated environments.
-</Update>
-
-<Update description="Nested matrix strategies">
-  Support for matrix strategies within matrix strategies, enabling more complex task fan-out.
-</Update>
+<Steps>
+  <Step title="Parameter flags" icon="check">
+    Ability to pass parameters to workflows.
+  </Step>
+  <Step title="Container runtime support" icon="flag-pennant">
+    Support for `runtime: docker` and other container runtimes, allowing tasks to run in isolated environments.
+  </Step>
+  <Step title="Nested matrix strategies" icon="flag-pennant">
+    Support for matrix strategies within matrix strategies, enabling more complex task fan-out.
+  </Step>
+</Steps>
 
 ## Next Steps
 
