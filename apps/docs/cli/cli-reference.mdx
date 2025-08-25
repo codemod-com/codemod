@@ -75,7 +75,7 @@ npx codemod workflow run -w <workflow.yaml|directory> [--param key=value]
 ```
 
 ```bash Running a workflow from Codemod Registry
-npx codemod workflow run <package-name> [--param key=value]
+npx codemod <package-name> [key=value ...]
 ```
 
 </CodeGroup>
@@ -116,8 +116,11 @@ npx codemod workflow run -w ./my-codemod --param version=latest --param target=s
 # Run a workflow package from the registry
 npx codemod @codemod-com/my-test-pkg
 
-# Run with parameters
-npx codemod @codemod-com/my-test-pkg --param version=latest --param target=src
+# Run with parameters (key=value as trailing args)
+npx codemod @codemod-com/my-test-pkg version=latest target=src
+
+# Specify a target directory
+npx codemod @codemod-com/my-test-pkg -t /abs/path/to/repo version=latest
 ```
 
 Explore available packages on [Codemod Registry](https://app.codemod.com/registry).
