@@ -651,14 +651,13 @@ nodes:
             type: automatic
             steps:
               - name: Step 1
-                run: npx -y codemod@latest <registry-package-1> -t ${{params.target}} key=value
+                run: npx -y codemod@latest <registry-package-1> -t /abs/path/to/repo
               - name: Step 2
-                run: npx -y codemod@latest <registry-package-2> -t ${{params.target}}
+                run: npx -y codemod@latest <registry-package-2> -t /abs/path/to/repo
         ```
 
         Notes:
         - Replace `<registry-package-1>` and `<registry-package-2>` with names from the Registry.
-        - Add trailing `key=value` arguments as needed.
         - Pin versions by suffixing `@<version>`.
       </Step>
 
@@ -669,10 +668,10 @@ nodes:
       </Step>
 
       <Step title="Run the recipe on a repo">
-        Pass a target path. Parameters for local workflows use `--param`:
+        Pass a target path:
 
         ```bash
-        npx codemod workflow run -w ./workflow.yaml -t /abs/path/to/repo --param target=/abs/path/to/repo
+        npx codemod workflow run -w ./workflow.yaml -t /abs/path/to/repo
         ```
       </Step>
 
