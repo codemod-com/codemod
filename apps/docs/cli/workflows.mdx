@@ -681,8 +681,8 @@ nodes:
         # Publish from the package directory
         npx codemod publish
 
-        # Later, run anywhere (key=value are trailing args; use -t for target)
-        npx codemod @your-scope/migration-recipe -t /abs/path/to/repo version=latest
+        # Later, run anywhere (use -t for target)
+        npx codemod @your-scope/migration-recipe -t /abs/path/to/repo
         ```
       </Step>
 
@@ -700,9 +700,6 @@ nodes:
 ## Roadmap
 
 <Steps>
-  <Step title="Parameter flags" icon="check">
-    Ability to pass parameters to workflows.
-  </Step>
   <Step title="Container runtime support" icon="flag-pennant">
     Support for `runtime: docker` and other container runtimes, allowing tasks to run in isolated environments.
   </Step>
