@@ -37,7 +37,7 @@ pub struct Command {
     #[arg(long, conflicts_with = "skill")]
     with_skill: bool,
 
-    /// Package manager (required with --no-interactive for ast-grep-js, hybrid, or --workspace)
+    /// Package manager (required with --no-interactive for workflow packages, i.e. any --project-type, or with --workspace)
     #[arg(long)]
     package_manager: Option<String>,
 
@@ -82,7 +82,8 @@ const INIT_AFTER_HELP: &str = "\
 Non-interactive mode (--no-interactive) requires:
   PATH, --language, --description, --author, --license
   --project-type                  for workflow packages (omit with --skill)
-  --package-manager               for --project-type ast-grep-js or hybrid, or with --workspace
+  --package-manager               for workflow packages (any --project-type, including legacy
+                                  shell/ast-grep-yaml), or with --workspace
 
 Example:
   codemod init my-codemod --no-interactive --project-type ast-grep-js \\
@@ -417,7 +418,7 @@ pub fn handler(args: &Command) -> Result<()> {
                 _,
             ) => {
                 return Err(anyhow!(
-                    "--package-manager is required when --project-type is ast-grep-js or hybrid"
+                    "--package-manager is required for workflow packages (any --project-type, including legacy shell/ast-grep-yaml)"
                 ));
             }
             (_, _, None, true) => {
@@ -2278,6 +2279,31 @@ mod tests {
         assert!(
             package_behavior_from_flags(true, true).is_err(),
             "--skill + --with-skill should be rejected"
+        );
+    }
+
+    #[test]
+    fn init_help_requires_package_manager_for_all_workflow_project_types() {
+        use clap::Args as _;
+
+        // Legacy shell/ast-grep-yaml are normalized to hybrid, which needs a
+        // package manager, so the help must not limit the requirement to
+        // ast-grep-js/hybrid.
+        assert!(
+            INIT_AFTER_HELP.contains("for workflow packages (any --project-type, including legacy")
+        );
+        assert!(INIT_AFTER_HELP.contains("shell/ast-grep-yaml), or with --workspace"));
+
+        let command = Command::augment_args(clap::Command::new("init"));
+        let package_manager_help = command
+            .get_arguments()
+            .find(|arg| arg.get_id() == "package_manager")
+            .and_then(|arg| arg.get_help())
+            .map(ToString::to_string)
+            .unwrap();
+        assert!(
+            package_manager_help.contains("for workflow packages, i.e. any --project-type"),
+            "{package_manager_help}"
         );
     }
 }
