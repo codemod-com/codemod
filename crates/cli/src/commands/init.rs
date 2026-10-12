@@ -11,8 +11,9 @@ use std::path::{Path, PathBuf};
 use std::process::Command as ProcessCommand;
 
 #[derive(Args, Debug, Default)]
+#[command(after_help = INIT_AFTER_HELP)]
 pub struct Command {
-    /// Project directory name
+    /// Project directory name (required with --no-interactive)
     #[arg(value_name = "PATH")]
     path: Option<PathBuf>,
 
@@ -24,7 +25,7 @@ pub struct Command {
     #[arg(long)]
     git_repository_url: Option<String>,
 
-    /// Project type
+    /// Project type (required with --no-interactive unless --skill is set)
     #[arg(long)]
     project_type: Option<ProjectType>,
 
@@ -36,23 +37,23 @@ pub struct Command {
     #[arg(long, conflicts_with = "skill")]
     with_skill: bool,
 
-    /// Package manager
+    /// Package manager (required with --no-interactive for ast-grep-js, hybrid, or --workspace)
     #[arg(long)]
     package_manager: Option<String>,
 
-    /// Target language
+    /// Target language (required with --no-interactive)
     #[arg(long)]
     language: Option<String>,
 
-    /// Project description
+    /// Project description (required with --no-interactive)
     #[arg(long)]
     description: Option<String>,
 
-    /// Author name and email
+    /// Author name and email (required with --no-interactive)
     #[arg(long)]
     author: Option<String>,
 
-    /// License
+    /// License (required with --no-interactive)
     #[arg(long)]
     license: Option<String>,
 
@@ -64,7 +65,7 @@ pub struct Command {
     #[arg(long)]
     force: bool,
 
-    /// Use defaults without prompts
+    /// Skip prompts; required values must then be passed as flags (see below)
     #[arg(long)]
     no_interactive: bool,
 
@@ -76,6 +77,17 @@ pub struct Command {
     #[arg(long)]
     workspace: bool,
 }
+
+const INIT_AFTER_HELP: &str = "\
+Non-interactive mode (--no-interactive) requires:
+  PATH, --language, --description, --author, --license
+  --project-type                  for workflow packages (omit with --skill)
+  --package-manager               for --project-type ast-grep-js or hybrid, or with --workspace
+
+Example:
+  codemod init my-codemod --no-interactive --project-type ast-grep-js \\
+    --package-manager npm --language typescript \\
+    --description \"Migrate X to Y\" --author \"Jane Doe <jane@example.com>\" --license MIT";
 
 #[derive(clap::ValueEnum, Clone, Debug, PartialEq)]
 enum ProjectType {
