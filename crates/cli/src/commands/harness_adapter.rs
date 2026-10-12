@@ -621,15 +621,21 @@ pub(crate) fn resolve_adapter_with_runtime(
 }
 
 fn detect_auto_harness(cwd: &Path) -> (Harness, Vec<String>) {
-    for (harness, root_dir) in [
-        (Harness::Claude, ".claude"),
-        (Harness::Goose, ".goose"),
-        (Harness::Opencode, ".opencode"),
-        (Harness::Cursor, ".cursor"),
-        (Harness::Codex, ".codex"),
-        (Harness::Antigravity, ".agents"),
+    // OpenCode projects are frequently configured with only a root-level
+    // `opencode.json`/`opencode.jsonc` (no `.opencode` directory), so treat
+    // those files as OpenCode markers too.
+    for (harness, markers) in [
+        (Harness::Claude, &[".claude"][..]),
+        (Harness::Goose, &[".goose"][..]),
+        (
+            Harness::Opencode,
+            &[".opencode", "opencode.json", "opencode.jsonc"][..],
+        ),
+        (Harness::Cursor, &[".cursor"][..]),
+        (Harness::Codex, &[".codex"][..]),
+        (Harness::Antigravity, &[".agents"][..]),
     ] {
-        if cwd.join(root_dir).exists() {
+        if markers.iter().any(|marker| cwd.join(marker).exists()) {
             return (harness, Vec::new());
         }
     }
@@ -637,7 +643,7 @@ fn detect_auto_harness(cwd: &Path) -> (Harness, Vec<String>) {
     (
         Harness::Claude,
         vec![
-            "No .claude, .goose, .opencode, .cursor, .codex, or .agents directory found; defaulting to Claude harness.".to_string(),
+            "No .claude, .goose, .opencode (or opencode.json), .cursor, .codex, or .agents found; defaulting to Claude harness. Pass --harness to choose a different harness.".to_string(),
         ],
     )
 }
@@ -743,7 +749,15 @@ fn upsert_periodic_update_trigger_with_runtime(
         updated_paths.push(runner_path.clone());
     }
 
-    if (trigger_strategy.upsert)(&trigger_strategy.integration_path, &runner_path)? {
+    if let Some(user_config_path) =
+        codex_user_notify_shadowed_by_project_install(harness, scope, runtime_paths)
+    {
+        notes.push(format!(
+            "Skipped Codex periodic update notify: {} already defines `notify`, and a project-level `notify` in {} would override it. Run `codemod ai update` manually to check for updates.",
+            user_config_path.display(),
+            trigger_strategy.integration_path.display()
+        ));
+    } else if (trigger_strategy.upsert)(&trigger_strategy.integration_path, &runner_path)? {
         updated_paths.push(trigger_strategy.integration_path.clone());
     }
 
@@ -1339,6 +1353,40 @@ fn upsert_codex_periodic_update_notify(
     document["notify"] = value(notify);
 
     write_file_if_changed(config_path, format!("{}\n", document).as_bytes())
+}
+
+/// Codex layers a project `.codex/config.toml` on top of the user config, so a
+/// project-level `notify` replaces the user's own `notify` integration. Returns
+/// the user config path when a project install would shadow a user-managed
+/// (non-Codemod) `notify` entry.
+fn codex_user_notify_shadowed_by_project_install(
+    harness: Harness,
+    scope: InstallScope,
+    runtime_paths: &RuntimePaths,
+) -> Option<PathBuf> {
+    if harness != Harness::Codex || !matches!(scope, InstallScope::Project) {
+        return None;
+    }
+    let user_config_path = runtime_paths
+        .home_dir
+        .as_ref()?
+        .join(CODEX_CONFIG_DIR_NAME)
+        .join(CODEMOD_PERIODIC_TRIGGER_CODEX_CONFIG_FILE_NAME);
+    let document = fs::read_to_string(&user_config_path)
+        .ok()?
+        .parse::<DocumentMut>()
+        .ok()?;
+    document.get("notify")?;
+    match read_notify_command(&document) {
+        Ok(Some(notify)) if is_codemod_periodic_notify_command(&notify) => None,
+        _ => Some(user_config_path),
+    }
+}
+
+fn is_codemod_periodic_notify_command(notify: &[String]) -> bool {
+    let runner_suffix = Path::new(CODEMOD_PERIODIC_UPDATE_RELATIVE_DIR)
+        .join(CODEMOD_PERIODIC_UPDATE_RUNNER_FILE_NAME);
+    matches!(notify, [shell, runner] if shell == "sh" && Path::new(runner).ends_with(&runner_suffix))
 }
 
 fn read_notify_command(document: &DocumentMut) -> AdapterResult<Option<Vec<String>>> {
@@ -3217,19 +3265,34 @@ fn skill_roots_for_listing(
     harness: Harness,
     runtime_paths: &RuntimePaths,
 ) -> AdapterResult<Vec<(InstallScope, PathBuf)>> {
-    let mut roots = vec![(
-        InstallScope::Project,
-        skills_root_for_harness(harness, InstallScope::Project, runtime_paths)?,
-    )];
+    let project_root = skills_root_for_harness(harness, InstallScope::Project, runtime_paths)?;
 
-    if runtime_paths.home_dir.is_some() {
-        roots.push((
-            InstallScope::User,
-            skills_root_for_harness(harness, InstallScope::User, runtime_paths)?,
-        ));
+    if runtime_paths.home_dir.is_none() {
+        return Ok(vec![(InstallScope::Project, project_root)]);
     }
 
-    Ok(roots)
+    let user_root = skills_root_for_harness(harness, InstallScope::User, runtime_paths)?;
+    // When run from the home directory (or a symlink to it), the project and
+    // user skill roots are the same directory; list it once as user scope so
+    // installed skills are not reported twice.
+    if same_existing_path(&project_root, &user_root) {
+        return Ok(vec![(InstallScope::User, user_root)]);
+    }
+
+    Ok(vec![
+        (InstallScope::Project, project_root),
+        (InstallScope::User, user_root),
+    ])
+}
+
+fn same_existing_path(left: &Path, right: &Path) -> bool {
+    if left == right {
+        return true;
+    }
+    match (fs::canonicalize(left), fs::canonicalize(right)) {
+        (Ok(left), Ok(right)) => left == right,
+        _ => false,
+    }
 }
 
 fn validate_embedded_mcs_bundle() -> AdapterResult<()> {
@@ -4758,6 +4821,92 @@ codemod-skill-version: 0.1.0
     }
 
     #[test]
+    fn upsert_periodic_update_trigger_preserves_existing_codex_notify() {
+        let (runtime_paths, _temp_dir) = runtime_paths_with_temp_roots();
+        let config_path =
+            expected_harness_root(&runtime_paths, Harness::Codex, InstallScope::Project)
+                .join(CODEMOD_PERIODIC_TRIGGER_CODEX_CONFIG_FILE_NAME);
+        fs::create_dir_all(config_path.parent().unwrap()).unwrap();
+        let original = "model = \"o3\"\nnotify = [\"notify-send\", \"codex\"]\n";
+        fs::write(&config_path, original).unwrap();
+
+        let result = upsert_periodic_update_trigger_with_runtime(
+            Harness::Codex,
+            InstallScope::Project,
+            PeriodicUpdatePolicy::AutoSafe,
+            &runtime_paths,
+        )
+        .unwrap();
+
+        assert!(!result.updated_paths.contains(&config_path));
+        assert_eq!(fs::read_to_string(&config_path).unwrap(), original);
+    }
+
+    #[test]
+    fn upsert_periodic_update_trigger_does_not_shadow_user_codex_notify() {
+        let (runtime_paths, _temp_dir) = runtime_paths_with_temp_roots();
+        let user_config_path = runtime_paths
+            .home_dir
+            .as_ref()
+            .unwrap()
+            .join(CODEX_CONFIG_DIR_NAME)
+            .join(CODEMOD_PERIODIC_TRIGGER_CODEX_CONFIG_FILE_NAME);
+        fs::create_dir_all(user_config_path.parent().unwrap()).unwrap();
+        let user_config = "notify = [\"python3\", \"/home/me/notify.py\"]\n";
+        fs::write(&user_config_path, user_config).unwrap();
+
+        let result = upsert_periodic_update_trigger_with_runtime(
+            Harness::Codex,
+            InstallScope::Project,
+            PeriodicUpdatePolicy::AutoSafe,
+            &runtime_paths,
+        )
+        .unwrap();
+
+        let project_config_path =
+            expected_harness_root(&runtime_paths, Harness::Codex, InstallScope::Project)
+                .join(CODEMOD_PERIODIC_TRIGGER_CODEX_CONFIG_FILE_NAME);
+        assert!(!result.updated_paths.contains(&project_config_path));
+        if project_config_path.exists() {
+            let document = fs::read_to_string(&project_config_path)
+                .unwrap()
+                .parse::<DocumentMut>()
+                .unwrap();
+            assert!(read_notify_command(&document).unwrap().is_none());
+        }
+        assert!(result
+            .notes
+            .iter()
+            .any(|note| note.contains("Skipped Codex periodic update notify")));
+        assert_eq!(fs::read_to_string(&user_config_path).unwrap(), user_config);
+    }
+
+    #[test]
+    fn upsert_periodic_update_trigger_ignores_codemod_user_codex_notify() {
+        let (runtime_paths, _temp_dir) = runtime_paths_with_temp_roots();
+        upsert_periodic_update_trigger_with_runtime(
+            Harness::Codex,
+            InstallScope::User,
+            PeriodicUpdatePolicy::AutoSafe,
+            &runtime_paths,
+        )
+        .unwrap();
+
+        let result = upsert_periodic_update_trigger_with_runtime(
+            Harness::Codex,
+            InstallScope::Project,
+            PeriodicUpdatePolicy::AutoSafe,
+            &runtime_paths,
+        )
+        .unwrap();
+
+        let project_config_path =
+            expected_harness_root(&runtime_paths, Harness::Codex, InstallScope::Project)
+                .join(CODEMOD_PERIODIC_TRIGGER_CODEX_CONFIG_FILE_NAME);
+        assert!(result.updated_paths.contains(&project_config_path));
+    }
+
+    #[test]
     fn resolve_install_scope_rejects_conflicting_flags() {
         assert!(resolve_install_scope(true, true).is_err());
     }
@@ -4799,6 +4948,18 @@ codemod-skill-version: 0.1.0
         let (harness, warnings) = detect_auto_harness(temp_dir.path());
         assert_eq!(harness, Harness::Opencode);
         assert!(warnings.is_empty());
+    }
+
+    #[test]
+    fn auto_detect_uses_opencode_when_only_opencode_config_file_exists() {
+        for config_file in ["opencode.json", "opencode.jsonc"] {
+            let temp_dir = tempdir().unwrap();
+            fs::write(temp_dir.path().join(config_file), "{}").unwrap();
+
+            let (harness, warnings) = detect_auto_harness(temp_dir.path());
+            assert_eq!(harness, Harness::Opencode, "marker: {config_file}");
+            assert!(warnings.is_empty());
+        }
     }
 
     #[test]
@@ -5694,6 +5855,30 @@ codemod-skill-version: 0.1.0
         assert!(skills
             .iter()
             .any(|skill| skill.scope == Some(InstallScope::User)));
+    }
+
+    #[test]
+    fn list_skills_does_not_duplicate_entries_when_cwd_is_home() {
+        let (mut runtime_paths, _temp_dir) = runtime_paths_with_temp_roots();
+        runtime_paths.cwd = runtime_paths.home_dir.clone().unwrap();
+        let user_request = InstallRequest {
+            scope: InstallScope::User,
+            force: false,
+        };
+
+        for harness in ALL_HARNESSES {
+            install_mcs_skill_bundle_with_runtime(harness, &user_request, &runtime_paths).unwrap();
+            let skills = list_skills_with_runtime(harness, &runtime_paths).unwrap();
+            let roots = skill_roots_for_listing(harness, &runtime_paths).unwrap();
+            let shares_root = roots.len() == 1;
+            if shares_root {
+                assert_eq!(skills.len(), 1, "harness: {}", harness.as_str());
+                assert_eq!(skills[0].scope, Some(InstallScope::User));
+            }
+            let mut paths = skills.iter().map(|skill| &skill.path).collect::<Vec<_>>();
+            paths.dedup();
+            assert_eq!(paths.len(), skills.len(), "harness: {}", harness.as_str());
+        }
     }
 
     #[test]
