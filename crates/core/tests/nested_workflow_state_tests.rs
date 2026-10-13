@@ -43,12 +43,11 @@ fn child_step(path: &Path) -> String {
 }
 
 fn state_command(assignment: &str) -> String {
-    let output = if cfg!(windows) {
-        "\"%STATE_OUTPUTS%\""
+    if cfg!(windows) {
+        format!(">> \"%STATE_OUTPUTS%\" echo {assignment}")
     } else {
-        "\"$STATE_OUTPUTS\""
-    };
-    format!("echo {assignment} >> {output}")
+        format!("echo {assignment} >> \"$STATE_OUTPUTS\"")
+    }
 }
 
 fn shell_step(name: &str, assignment: &str) -> String {
@@ -113,13 +112,23 @@ async fn nested_workflow_state_jssg_writes_are_visible_to_shell() {
         let root = test_dir();
         let bundle = root.path().join("child");
         let child = workflow(&format!(
-            "      - name: Initialize target\n        js-ast-grep:\n          js_file: init.js\n          language: json\n          include: ['**/package.json']\n{}",
+            r#"      - name: Initialize target
+        js-ast-grep:
+          js_file: init.js
+          language: json
+          include: ['**/package.json']
+{}"#,
             shell_step("Read target", "observed=${{ state.targetDirEncoded }}")
         ));
         write_package(&bundle, &child);
         fs::write(
             bundle.join("init.js"),
-            "import { setState } from 'codemod:workflow';\nexport default function transform() { setState('targetDirEncoded', 'initialized'); return null; }\n",
+            r#"import { setState } from 'codemod:workflow';
+export default function transform() {
+  setState('targetDirEncoded', 'initialized');
+  return null;
+}
+"#,
         )
         .unwrap();
         let run = if nested {
@@ -157,17 +166,39 @@ async fn nested_workflow_state_jssg_reads_observe_updates_and_removals() {
     let root = test_dir();
     let bundle = root.path().join("child");
     let child = workflow(
-        "      - name: Update state\n        js-ast-grep:\n          js_file: update.js\n          language: json\n          include: ['**/package.json']\n      - name: Read state\n        js-ast-grep:\n          js_file: read.js\n          language: json\n          include: ['**/package.json']\n",
+        r#"      - name: Update state
+        js-ast-grep:
+          js_file: update.js
+          language: json
+          include: ['**/package.json']
+      - name: Read state
+        js-ast-grep:
+          js_file: read.js
+          language: json
+          include: ['**/package.json']
+"#,
     );
     write_package(&bundle, &child);
     fs::write(
         bundle.join("update.js"),
-        "import { setState, unsetState } from 'codemod:workflow';\nexport default function transform() { setState('value', 'new'); unsetState('removed'); return null; }\n",
+        r#"import { setState, unsetState } from 'codemod:workflow';
+export default function transform() {
+  setState('value', 'new');
+  unsetState('removed');
+  return null;
+}
+"#,
     )
     .unwrap();
     fs::write(
         bundle.join("read.js"),
-        "import { getState, setState } from 'codemod:workflow';\nexport default function transform() { setState('observed', getState('value')); setState('wasRemoved', getState('removed') === undefined); return null; }\n",
+        r#"import { getState, setState } from 'codemod:workflow';
+export default function transform() {
+  setState('observed', getState('value'));
+  setState('wasRemoved', getState('removed') === undefined);
+  return null;
+}
+"#,
     )
     .unwrap();
     let parent = workflow(&format!(
