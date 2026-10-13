@@ -1,4 +1,4 @@
-use crate::utils::env_paths::home_dir_from_env;
+use crate::utils::env_paths::{codex_home_from_env, home_dir_from_env};
 use crate::utils::skill_layout::SKILL_FILE_NAME;
 use clap::ValueEnum;
 use jsonc_parser::cst::{CstInputValue, CstRootNode};
@@ -415,6 +415,8 @@ pub struct ResolvedAdapter {
 pub(crate) struct RuntimePaths {
     cwd: PathBuf,
     home_dir: Option<PathBuf>,
+    /// Where Codex reads its user config: `$CODEX_HOME`, else `~/.codex`.
+    codex_home: Option<PathBuf>,
     current_executable: Option<PathBuf>,
 }
 
@@ -439,6 +441,7 @@ impl RuntimePaths {
         Ok(Self {
             cwd,
             home_dir: home_dir_from_env(environment),
+            codex_home: codex_home_from_env(environment),
             current_executable: std::env::current_exe().ok(),
         })
     }
@@ -1410,9 +1413,8 @@ fn codex_user_notify_shadowed_by_project_install(
         return None;
     }
     let user_config_path = runtime_paths
-        .home_dir
+        .codex_home
         .as_ref()?
-        .join(CODEX_CONFIG_DIR_NAME)
         .join(CODEMOD_PERIODIC_TRIGGER_CODEX_CONFIG_FILE_NAME);
     let document = fs::read_to_string(&user_config_path)
         .ok()?
@@ -4208,6 +4210,7 @@ mod tests {
         let runtime_paths = RuntimePaths {
             cwd: temp_dir.path().join("workspace"),
             home_dir: Some(temp_dir.path().join("home")),
+            codex_home: Some(temp_dir.path().join("home").join(CODEX_CONFIG_DIR_NAME)),
             current_executable: Some(codemod_executable),
         };
         std::fs::create_dir_all(&runtime_paths.cwd).unwrap();
@@ -5023,6 +5026,32 @@ codemod-skill-version: 0.1.0
             .iter()
             .any(|note| note.contains("Skipped Codex periodic update notify")));
         assert_eq!(fs::read_to_string(&user_config_path).unwrap(), user_config);
+    }
+
+    #[test]
+    fn upsert_periodic_update_trigger_does_not_shadow_user_codex_notify_in_codex_home() {
+        let (mut runtime_paths, temp_dir) = runtime_paths_with_temp_roots();
+        let codex_home = temp_dir.path().join("custom-codex-home");
+        runtime_paths.codex_home = Some(codex_home.clone());
+        fs::create_dir_all(&codex_home).unwrap();
+        fs::write(
+            codex_home.join(CODEMOD_PERIODIC_TRIGGER_CODEX_CONFIG_FILE_NAME),
+            "notify = [\"python3\", \"/home/me/notify.py\"]\n",
+        )
+        .unwrap();
+
+        let result = upsert_periodic_update_trigger_with_runtime(
+            Harness::Codex,
+            InstallScope::Project,
+            PeriodicUpdatePolicy::AutoSafe,
+            &runtime_paths,
+        )
+        .unwrap();
+
+        assert!(result
+            .notes
+            .iter()
+            .any(|note| note.contains("Skipped Codex periodic update notify")));
     }
 
     #[test]

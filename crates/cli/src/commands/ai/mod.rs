@@ -805,7 +805,10 @@ fn run_install_flow(
         install_inputs.scope,
         periodic_policy_from_update_mode(install_inputs.update_policy),
     ) {
-        Ok(result) => Some(result),
+        Ok(result) => {
+            messages.extend(result.notes.iter().cloned());
+            Some(result)
+        }
         Err(error) => {
             warnings.push(format!(
                 "Installed skills, but failed to upsert periodic update triggers: {error}"
