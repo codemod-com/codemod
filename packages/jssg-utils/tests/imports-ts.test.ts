@@ -1,8 +1,6 @@
 import { ok as assert } from "assert";
 import { parse } from "codemod:ast-grep";
-import {
-  getAllImports,
-} from "../src/javascript/exports/imports.ts";
+import { getAllImports } from "../src/javascript/exports/imports.ts";
 import type JS from "@codemod.com/jssg-types/langs/javascript";
 import type TS from "@codemod.com/jssg-types/langs/typescript";
 import type TSX from "@codemod.com/jssg-types/langs/tsx";
@@ -47,9 +45,7 @@ function testDefaultDynamicImportArrowFunction() {
   res = getAllImports(programWithParenthesis, { type: "default", from: "test" });
   assert(res[0]!.node.text() === "mod", "Node should reflect identifier");
   assert(res[0]!.moduleType === "esm", "moduleType should be esm for dynamic()");
-
 }
-
 
 try {
   testDefaultDynamicImport();
