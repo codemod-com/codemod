@@ -7,8 +7,10 @@
 //!   and never returns, so with `npm install` (npm is `npm.cmd`) followed by
 //!   another line, the step would stop after npm. A command that resolves to
 //!   a `.bat` or `.cmd` file is therefore run with `call`, and so is one
-//!   that is not found when the script is written: a `cd` or a `PATH`
-//!   change earlier in the step can make it a batch file when it runs.
+//!   that is not found. Commands are looked up from the directory the step
+//!   has changed to with `cd`, `chdir` or `pushd`. After a change the lookup
+//!   cannot follow (`popd`, a `PATH` change, a directory named by a
+//!   variable), every command that is not a built-in is run with `call`.
 //! - cmd reads a batch file in the console code page, so the script is
 //!   written as UTF-8 and switches the code page to 65001 first. The console
 //!   is shared with this process, so its code pages are restored once no
@@ -59,7 +61,7 @@ impl Drop for TempScript {
 /// step's `PATH` and `PATHEXT`, and the current directory, which cmd searches
 /// first.
 pub(crate) fn script_for(command: &str, env: &HashMap<String, String>) -> String {
-    let mut dirs: Vec<PathBuf> = std::env::current_dir().into_iter().collect();
+    let mut dirs = vec![std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))];
     if let Some(path) = env_value(env, "PATH") {
         dirs.extend(std::env::split_paths(path));
     }
@@ -78,31 +80,133 @@ fn env_value<'a>(env: &'a HashMap<String, String>, key: &str) -> Option<&'a str>
         .map(|(_, v)| v.as_str())
 }
 
+/// Builds the batch file for `command`. `dirs` starts with the directory the
+/// step runs in, followed by the `PATH` directories.
 pub(crate) fn build_script(command: &str, dirs: &[PathBuf], pathext: &[String]) -> String {
     let mut script = String::from("@echo off\r\nchcp 65001 >nul\r\n");
+    let mut lookup = Lookup {
+        dirs: dirs.to_vec(),
+        pathext,
+        unknown: dirs.is_empty(),
+    };
     let mut lines: Vec<&str> = Vec::new();
     for line in command.lines() {
         lines.push(line);
         // cmd joins a line that ends in an unescaped `^` with the next one,
         // so the commands are found in the joined text.
         if !ends_with_continuation(&lines.concat()) {
-            push_command(&mut script, &lines, dirs, pathext);
+            push_command(&mut script, &lines, &mut lookup);
             lines.clear();
         }
     }
     if !lines.is_empty() {
-        push_command(&mut script, &lines, dirs, pathext);
+        push_command(&mut script, &lines, &mut lookup);
     }
     script
 }
 
+/// Where the script's commands are found. It follows the step's `cd`s.
+struct Lookup<'a> {
+    /// The current directory, which cmd searches first, then `PATH`.
+    dirs: Vec<PathBuf>,
+    pathext: &'a [String],
+    /// Set once the step changes the directory or `PATH` in a way this
+    /// lookup does not follow. A later command can then resolve to any
+    /// file, so every one that is not a built-in is run with `call`.
+    unknown: bool,
+}
+
+impl Lookup<'_> {
+    /// Whether a command is run with `call`: it resolves to a batch file, or
+    /// it is not found. Built-ins, labels and commands named by a variable
+    /// are not.
+    fn needs_call(&self, name: &str) -> bool {
+        if name.is_empty()
+            || name.starts_with(':')
+            || name.contains(['%', '!'])
+            || BUILTINS.iter().any(|b| b.eq_ignore_ascii_case(name))
+        {
+            return false;
+        }
+        if self.unknown {
+            return true;
+        }
+
+        let bases: Vec<PathBuf> = if name.contains(['\\', '/', ':']) {
+            vec![self.dirs[0].join(name)]
+        } else {
+            self.dirs.iter().map(|dir| dir.join(name)).collect()
+        };
+
+        let has_known_ext = Path::new(name)
+            .extension()
+            .and_then(|ext| ext.to_str())
+            .is_some_and(|ext| {
+                self.pathext
+                    .iter()
+                    .any(|known| known.trim_start_matches('.').eq_ignore_ascii_case(ext))
+            });
+
+        for base in bases {
+            if has_known_ext && base.is_file() {
+                return is_batch_file(&base);
+            }
+            for ext in self.pathext {
+                let mut candidate = base.clone().into_os_string();
+                candidate.push(ext);
+                let candidate = PathBuf::from(candidate);
+                if candidate.is_file() {
+                    return is_batch_file(&candidate);
+                }
+            }
+        }
+        true
+    }
+
+    /// Follows a command that changes the directory or `PATH`. `args` is the
+    /// text after the command name, up to the next command.
+    fn follow(&mut self, name: &str, args: &str) {
+        let is = |builtin: &str| name.eq_ignore_ascii_case(builtin);
+        let args = args.trim();
+        if is("cd") || is("chdir") || is("pushd") {
+            // `cd` without `/D` keeps the current drive, so a path on another
+            // drive does not change the current directory.
+            let (switch_drive, dir) = match args.get(..2) {
+                Some(flag) if flag.eq_ignore_ascii_case("/d") => (true, args[2..].trim_start()),
+                _ => (is("pushd"), args),
+            };
+            // A redirection or a closing `(` group can follow the directory.
+            let dir = dir.split(['<', '>', ')']).next().unwrap_or("");
+            let dir = dir.trim().trim_matches('"');
+            if dir.is_empty() {
+                // Without an argument, `cd` prints the current directory.
+                return;
+            }
+            let other_drive = dir.as_bytes().get(1) == Some(&b':');
+            if dir.contains(['%', '!', '^']) || (other_drive && !switch_drive) {
+                self.unknown = true;
+            } else {
+                self.dirs[0] = self.dirs[0].join(dir);
+            }
+        } else if is("popd")
+            || (is("path") && !args.is_empty())
+            || (is("set") && {
+                let assignment = args.trim_start_matches('"');
+                assignment
+                    .get(..5)
+                    .is_some_and(|start| start.eq_ignore_ascii_case("path="))
+            })
+        {
+            self.unknown = true;
+        }
+    }
+}
+
 /// Writes the lines of one command, which cmd joins into one, with `call`
 /// before each batch command found in the joined text.
-fn push_command(script: &mut String, lines: &[&str], dirs: &[PathBuf], pathext: &[String]) {
+fn push_command(script: &mut String, lines: &[&str], lookup: &mut Lookup) {
     let joined = lines.concat();
-    let mut calls = batch_command_starts(&joined, dirs, pathext)
-        .into_iter()
-        .peekable();
+    let mut calls = batch_command_starts(&joined, lookup).into_iter().peekable();
     let mut offset = 0;
     for line in lines {
         let end = offset + line.len();
@@ -147,9 +251,10 @@ fn ends_with_continuation(text: &str) -> bool {
 /// The byte offsets of the commands in `line` that need `call`: the first
 /// command, and each one after `&`, `&&` or `||`. Commands inside `if` or
 /// `for`, or after `(` mid-line, are left as written.
-fn batch_command_starts(line: &str, dirs: &[PathBuf], pathext: &[String]) -> Vec<usize> {
+fn batch_command_starts(line: &str, lookup: &mut Lookup) -> Vec<usize> {
     let bytes = line.as_bytes();
-    let mut starts = vec![0];
+    // Each command runs from its start up to the operator after it.
+    let mut commands = vec![(0, line.len())];
     let mut in_quotes = false;
     let mut i = 0;
     while i < bytes.len() {
@@ -157,13 +262,17 @@ fn batch_command_starts(line: &str, dirs: &[PathBuf], pathext: &[String]) -> Vec
             b'"' => in_quotes = !in_quotes,
             b'^' if !in_quotes => i += 1,
             op @ (b'&' | b'|') if !in_quotes => {
+                let operator = i;
                 let doubled = bytes.get(i + 1) == Some(&op);
                 if doubled {
                     i += 1;
                 }
                 // A single `|` is a pipe: each side runs in its own cmd.
                 if op == b'&' || doubled {
-                    starts.push(i + 1);
+                    if let Some(last) = commands.last_mut() {
+                        last.1 = operator;
+                    }
+                    commands.push((i + 1, line.len()));
                 }
             }
             _ => {}
@@ -171,16 +280,21 @@ fn batch_command_starts(line: &str, dirs: &[PathBuf], pathext: &[String]) -> Vec
         i += 1;
     }
 
-    starts
-        .into_iter()
-        .filter_map(|start| {
-            let mut pos = start;
-            while pos < bytes.len() && matches!(bytes[pos], b' ' | b'\t' | b'@' | b'(') {
-                pos += 1;
-            }
-            needs_call(command_name(&line[pos..]), dirs, pathext).then_some(pos)
-        })
-        .collect()
+    let mut calls = Vec::new();
+    for (start, end) in commands {
+        let mut pos = start;
+        while pos < end && matches!(bytes[pos], b' ' | b'\t' | b'@' | b'(') {
+            pos += 1;
+        }
+        let name = command_name(&line[pos..end]);
+        if lookup.needs_call(name) {
+            calls.push(pos);
+        }
+        if let Some(args) = line[pos..end].strip_prefix(name) {
+            lookup.follow(name, args);
+        }
+    }
+    calls
 }
 
 fn command_name(rest: &str) -> &str {
@@ -191,47 +305,6 @@ fn command_name(rest: &str) -> &str {
         .find(|c: char| c.is_whitespace() || "&|<>()^\"".contains(c))
         .unwrap_or(rest.len());
     &rest[..end]
-}
-
-/// Whether a command is run with `call`: it resolves to a batch file, or it
-/// is not found. Built-ins and commands named by a variable are not.
-fn needs_call(name: &str, dirs: &[PathBuf], pathext: &[String]) -> bool {
-    if name.is_empty()
-        || name.contains(['%', '!'])
-        || BUILTINS.iter().any(|b| b.eq_ignore_ascii_case(name))
-    {
-        return false;
-    }
-
-    let bases: Vec<PathBuf> = if name.contains(['\\', '/', ':']) {
-        vec![PathBuf::from(name)]
-    } else {
-        dirs.iter().map(|dir| dir.join(name)).collect()
-    };
-
-    let has_known_ext = Path::new(name)
-        .extension()
-        .and_then(|ext| ext.to_str())
-        .is_some_and(|ext| {
-            pathext
-                .iter()
-                .any(|known| known.trim_start_matches('.').eq_ignore_ascii_case(ext))
-        });
-
-    for base in bases {
-        if has_known_ext && base.is_file() {
-            return is_batch_file(&base);
-        }
-        for ext in pathext {
-            let mut candidate = base.clone().into_os_string();
-            candidate.push(ext);
-            let candidate = PathBuf::from(candidate);
-            if candidate.is_file() {
-                return is_batch_file(&candidate);
-            }
-        }
-    }
-    true
 }
 
 fn is_batch_file(path: &Path) -> bool {
@@ -402,6 +475,60 @@ mod tests {
                 "cd sub && call subtool install && echo after",
                 "set PATH=C:\\new;%PATH%",
                 "call newtool",
+            ]
+        );
+    }
+
+    #[test]
+    fn follows_the_current_directory() {
+        // `realtool.exe` is found from the starting directory, but from `sub`
+        // the name resolves to `sub\realtool.cmd`.
+        let tools = Tools::new();
+        std::fs::create_dir(tools.0.join("sub")).unwrap();
+        std::fs::write(tools.0.join("sub").join("realtool.cmd"), "").unwrap();
+        assert_eq!(
+            tools.script(
+                "cd sub && realtool && echo after\nrealtool\ncd ..\nrealtool\npushd \"sub\"\nrealtool"
+            ),
+            [
+                "cd sub && call realtool && echo after",
+                "call realtool",
+                "cd ..",
+                "realtool",
+                "pushd \"sub\"",
+                "call realtool",
+            ]
+        );
+    }
+
+    #[test]
+    fn calls_every_command_after_an_untracked_change() {
+        let tools = Tools::new();
+        for change in [
+            "popd",
+            "cd %DIR%",
+            "set PATH=C:\\new;%PATH%",
+            "path C:\\new",
+        ] {
+            assert_eq!(
+                tools.script(&format!("realtool\n{change}\nrealtool\necho done")),
+                ["realtool", change, "call realtool", "echo done"],
+                "after {change}"
+            );
+        }
+    }
+
+    #[test]
+    fn leaves_labels_alone() {
+        let tools = Tools::new();
+        assert_eq!(
+            tools.script("goto done\nfaketool\n:done\n:: comment\necho end"),
+            [
+                "goto done",
+                "call faketool",
+                ":done",
+                ":: comment",
+                "echo end"
             ]
         );
     }
