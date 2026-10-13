@@ -6,7 +6,9 @@
 //! - A batch file that runs another batch file by name hands control to it
 //!   and never returns, so with `npm install` (npm is `npm.cmd`) followed by
 //!   another line, the step would stop after npm. A command that resolves to
-//!   a `.bat` or `.cmd` file is therefore run with `call`.
+//!   a `.bat` or `.cmd` file is therefore run with `call`, and so is one
+//!   that is not found when the script is written: a `cd` or a `PATH`
+//!   change earlier in the step can make it a batch file when it runs.
 //! - cmd reads a batch file in the console code page, so the script is
 //!   written as UTF-8 and switches the code page to 65001 first. The console
 //!   is shared with this process, so its code pages are restored once no
@@ -78,23 +80,74 @@ fn env_value<'a>(env: &'a HashMap<String, String>, key: &str) -> Option<&'a str>
 
 pub(crate) fn build_script(command: &str, dirs: &[PathBuf], pathext: &[String]) -> String {
     let mut script = String::from("@echo off\r\nchcp 65001 >nul\r\n");
-    let mut continued = false;
+    let mut lines: Vec<&str> = Vec::new();
     for line in command.lines() {
-        if continued {
-            script.push_str(line);
-        } else {
-            script.push_str(&call_batch_commands(line, dirs, pathext));
+        lines.push(line);
+        // cmd joins a line that ends in an unescaped `^` with the next one,
+        // so the commands are found in the joined text.
+        if !ends_with_continuation(&lines.concat()) {
+            push_command(&mut script, &lines, dirs, pathext);
+            lines.clear();
         }
-        script.push_str("\r\n");
-        continued = line.trim_end().ends_with('^');
+    }
+    if !lines.is_empty() {
+        push_command(&mut script, &lines, dirs, pathext);
     }
     script
 }
 
-/// Prefixes `call` to each command of the line that resolves to a batch
-/// file: the first command, and each one after `&`, `&&` or `||`. Commands
-/// inside `if` or `for`, or after `(` mid-line, are left as written.
-fn call_batch_commands(line: &str, dirs: &[PathBuf], pathext: &[String]) -> String {
+/// Writes the lines of one command, which cmd joins into one, with `call`
+/// before each batch command found in the joined text.
+fn push_command(script: &mut String, lines: &[&str], dirs: &[PathBuf], pathext: &[String]) {
+    let joined = lines.concat();
+    let mut calls = batch_command_starts(&joined, dirs, pathext)
+        .into_iter()
+        .peekable();
+    let mut offset = 0;
+    for line in lines {
+        let end = offset + line.len();
+        let mut copied = 0;
+        while let Some(&pos) = calls.peek() {
+            if pos >= end {
+                break;
+            }
+            script.push_str(&line[copied..pos - offset]);
+            script.push_str("call ");
+            copied = pos - offset;
+            calls.next();
+        }
+        script.push_str(&line[copied..]);
+        script.push_str("\r\n");
+        offset = end;
+    }
+}
+
+/// Whether `text` ends in a `^` that escapes the line break: one outside
+/// quotes that is not itself escaped.
+fn ends_with_continuation(text: &str) -> bool {
+    let bytes = text.as_bytes();
+    let mut in_quotes = false;
+    let mut i = 0;
+    while i < bytes.len() {
+        match bytes[i] {
+            b'"' => in_quotes = !in_quotes,
+            b'^' if !in_quotes => {
+                if i + 1 == bytes.len() {
+                    return true;
+                }
+                i += 1;
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+    false
+}
+
+/// The byte offsets of the commands in `line` that need `call`: the first
+/// command, and each one after `&`, `&&` or `||`. Commands inside `if` or
+/// `for`, or after `(` mid-line, are left as written.
+fn batch_command_starts(line: &str, dirs: &[PathBuf], pathext: &[String]) -> Vec<usize> {
     let bytes = line.as_bytes();
     let mut starts = vec![0];
     let mut in_quotes = false;
@@ -118,21 +171,16 @@ fn call_batch_commands(line: &str, dirs: &[PathBuf], pathext: &[String]) -> Stri
         i += 1;
     }
 
-    let mut out = String::with_capacity(line.len() + 5 * starts.len());
-    let mut copied = 0;
-    for start in starts {
-        let mut pos = start;
-        while pos < bytes.len() && matches!(bytes[pos], b' ' | b'\t' | b'@' | b'(') {
-            pos += 1;
-        }
-        if is_batch_command(command_name(&line[pos..]), dirs, pathext) {
-            out.push_str(&line[copied..pos]);
-            out.push_str("call ");
-            copied = pos;
-        }
-    }
-    out.push_str(&line[copied..]);
-    out
+    starts
+        .into_iter()
+        .filter_map(|start| {
+            let mut pos = start;
+            while pos < bytes.len() && matches!(bytes[pos], b' ' | b'\t' | b'@' | b'(') {
+                pos += 1;
+            }
+            needs_call(command_name(&line[pos..]), dirs, pathext).then_some(pos)
+        })
+        .collect()
 }
 
 fn command_name(rest: &str) -> &str {
@@ -145,7 +193,9 @@ fn command_name(rest: &str) -> &str {
     &rest[..end]
 }
 
-fn is_batch_command(name: &str, dirs: &[PathBuf], pathext: &[String]) -> bool {
+/// Whether a command is run with `call`: it resolves to a batch file, or it
+/// is not found. Built-ins and commands named by a variable are not.
+fn needs_call(name: &str, dirs: &[PathBuf], pathext: &[String]) -> bool {
     if name.is_empty()
         || name.contains(['%', '!'])
         || BUILTINS.iter().any(|b| b.eq_ignore_ascii_case(name))
@@ -181,7 +231,7 @@ fn is_batch_command(name: &str, dirs: &[PathBuf], pathext: &[String]) -> bool {
             }
         }
     }
-    false
+    true
 }
 
 fn is_batch_file(path: &Path) -> bool {
@@ -323,7 +373,6 @@ mod tests {
             "echo \"a & faketool\"",
             "echo a ^& faketool",
             "%TOOL% x",
-            "unknown x",
             "if exist x faketool",
         ];
         assert_eq!(tools.script(&lines.join("\n")), lines);
@@ -335,6 +384,48 @@ mod tests {
         assert_eq!(
             tools.script("echo a ^\nfaketool\nfaketool"),
             ["echo a ^", "faketool", "call faketool"]
+        );
+    }
+
+    #[test]
+    fn calls_commands_that_are_not_found() {
+        // `subtool.cmd` is only found from `sub`, and `newtool` only on the
+        // changed PATH, so neither resolves when the script is written.
+        let tools = Tools::new();
+        std::fs::create_dir(tools.0.join("sub")).unwrap();
+        std::fs::write(tools.0.join("sub").join("subtool.cmd"), "").unwrap();
+        assert_eq!(
+            tools.script(
+                "cd sub && subtool install && echo after\nset PATH=C:\\new;%PATH%\nnewtool"
+            ),
+            [
+                "cd sub && call subtool install && echo after",
+                "set PATH=C:\\new;%PATH%",
+                "call newtool",
+            ]
+        );
+    }
+
+    #[test]
+    fn calls_batch_commands_on_continued_lines() {
+        let tools = Tools::new();
+        assert_eq!(
+            tools.script("echo setup ^\n&& faketool install"),
+            ["echo setup ^", "&& call faketool install"]
+        );
+    }
+
+    #[test]
+    fn an_escaped_caret_does_not_continue_the_line() {
+        let tools = Tools::new();
+        assert_eq!(
+            tools.script("echo a ^^\nfaketool\necho \"b ^\"\nfaketool"),
+            [
+                "echo a ^^",
+                "call faketool",
+                "echo \"b ^\"",
+                "call faketool"
+            ]
         );
     }
 }
