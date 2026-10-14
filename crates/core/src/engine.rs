@@ -3447,7 +3447,6 @@ impl Engine {
         node: &Node,
         task: &Task,
         params: &HashMap<String, serde_json::Value>,
-        state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
         capabilities: &Option<HashSet<LlrtSupportedModules>>,
@@ -3490,7 +3489,6 @@ impl Engine {
             node,
             task,
             params,
-            state,
             bundle_path,
             &resolved.dependency_chain,
             capabilities,
@@ -3515,7 +3513,6 @@ impl Engine {
         _node: &Node,
         task: &Task,
         params: &HashMap<String, serde_json::Value>,
-        state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
         capabilities: &Option<HashSet<LlrtSupportedModules>>,
@@ -3606,11 +3603,20 @@ impl Engine {
         // Execute each node in the codemod workflow
         for node in &codemod_workflow.nodes {
             for step in &node.steps {
+                // Earlier child steps persist state onto the parent workflow run.
+                // Refresh before conditions and execution, just like top-level steps.
+                let state = self
+                    .state_adapter
+                    .lock()
+                    .await
+                    .get_state(task.workflow_run_id)
+                    .await?;
+
                 if let Some(condition) = &step.condition {
                     let should_execute = evaluate_condition(
                         condition,
                         params,
-                        state,
+                        &state,
                         task.matrix_values.as_ref(),
                         None,
                         Some(&codemod_task_expr_ctx),
@@ -3639,7 +3645,7 @@ impl Engine {
                         node,
                         task,
                         params,
-                        state,
+                        state: &state,
                         workflow: codemod_workflow,
                         bundle_path: &codemod_bundle_path,
                         dependency_chain,
