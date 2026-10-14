@@ -1659,7 +1659,8 @@ impl Engine {
         capabilities: Option<&HashSet<LlrtSupportedModules>>,
     ) -> Result<Uuid> {
         validate_workflow(&workflow, bundle_path.as_deref().unwrap_or(Path::new("")))?;
-        self.validate_codemod_dependencies(&workflow, &[]).await?;
+        self.validate_codemod_dependencies(&workflow, bundle_path.as_deref(), &[])
+            .await?;
 
         let workflow_run = WorkflowRun {
             id: workflow_run_id,
@@ -1973,10 +1974,11 @@ impl Engine {
     async fn validate_codemod_dependencies(
         &self,
         workflow: &Workflow,
+        bundle_path: Option<&Path>,
         dependency_chain: &[CodemodDependency],
     ) -> Result<()> {
         NestedCodemodService::new(&self.workflow_run_config.execution.registry_client)
-            .validate_workflow_dependencies(workflow, dependency_chain)
+            .validate_workflow_dependencies(workflow, bundle_path, dependency_chain)
             .await
     }
 
@@ -3456,7 +3458,7 @@ impl Engine {
 
         let resolved =
             NestedCodemodService::new(&self.workflow_run_config.execution.registry_client)
-                .resolve(&codemod.source, dependency_chain)
+                .resolve(&codemod.source, bundle_path.as_deref(), dependency_chain)
                 .await?;
         let dependency_display_path = codemod_dependency_display_path(&resolved.dependency_chain);
         notify_nested_codemod_progress(

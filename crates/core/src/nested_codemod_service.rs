@@ -2,6 +2,7 @@ use butterflow_models::{Error, Result, Workflow};
 use futures_util::{stream, StreamExt};
 use log::warn;
 use std::collections::HashSet;
+use std::path::Path;
 
 use crate::{
     engine::CodemodDependency,
@@ -54,9 +55,12 @@ impl<'a> NestedCodemodService<'a> {
         ))
     }
 
+    /// Resolves a nested codemod `source` declared by the package in
+    /// `base_dir`. A local `./` or `../` source is relative to that package.
     pub(crate) async fn resolve(
         &self,
         source: &str,
+        base_dir: Option<&Path>,
         dependency_chain: &[CodemodDependency],
     ) -> Result<ResolvedNestedCodemod> {
         if Self::find_cycle_in_chain(source, dependency_chain).is_some() {
@@ -69,8 +73,7 @@ impl<'a> NestedCodemodService<'a> {
         }
 
         let package = self
-            .registry_client
-            .resolve_package(source, None, false, None)
+            .resolve_package(source, base_dir)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve package: {e}")))?;
         let workflow = Self::load_workflow(&package)?;
@@ -86,6 +89,7 @@ impl<'a> NestedCodemodService<'a> {
     pub(crate) async fn validate_workflow_dependencies(
         &self,
         workflow: &Workflow,
+        base_dir: Option<&Path>,
         dependency_chain: &[CodemodDependency],
     ) -> Result<()> {
         let sources = Self::unique_codemod_sources(workflow);
@@ -101,7 +105,9 @@ impl<'a> NestedCodemodService<'a> {
         }
 
         let validations = stream::iter(sources.into_iter().map(|source| async move {
-            let result = self.resolve_and_validate(&source, dependency_chain).await;
+            let result = self
+                .resolve_and_validate(&source, base_dir, dependency_chain)
+                .await;
             (source, result)
         }))
         .buffer_unordered(PACKAGE_RESOLUTION_CONCURRENCY)
@@ -120,12 +126,13 @@ impl<'a> NestedCodemodService<'a> {
     pub(crate) async fn find_dry_run_only_dependency(
         &self,
         workflow: &Workflow,
+        base_dir: Option<&Path>,
         dependency_chain: &[CodemodDependency],
     ) -> Result<Option<String>> {
         let sources = Self::unique_codemod_sources(workflow);
         let mut resolutions = stream::iter(sources.into_iter().enumerate().map(
             |(index, source)| async move {
-                let result = self.resolve(&source, dependency_chain).await;
+                let result = self.resolve(&source, base_dir, dependency_chain).await;
                 (index, source, result)
             },
         ))
@@ -151,9 +158,11 @@ impl<'a> NestedCodemodService<'a> {
                 return Ok(Some(source));
             }
 
-            if let Some(source) = Box::pin(
-                self.find_dry_run_only_dependency(&resolved.workflow, &resolved.dependency_chain),
-            )
+            if let Some(source) = Box::pin(self.find_dry_run_only_dependency(
+                &resolved.workflow,
+                Some(&resolved.package.package_dir),
+                &resolved.dependency_chain,
+            ))
             .await?
             {
                 return Ok(Some(source));
@@ -183,17 +192,42 @@ impl<'a> NestedCodemodService<'a> {
     async fn resolve_and_validate(
         &self,
         source: &str,
+        base_dir: Option<&Path>,
         dependency_chain: &[CodemodDependency],
     ) -> Result<()> {
         let package = self
-            .registry_client
-            .resolve_package(source, None, false, None)
+            .resolve_package(source, base_dir)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve codemod {source}: {e}")))?;
         let workflow = Self::load_workflow(&package)?;
         let dependency_chain = Self::extend_dependency_chain(source, dependency_chain);
 
-        Box::pin(self.validate_workflow_dependencies(&workflow, &dependency_chain)).await
+        Box::pin(self.validate_workflow_dependencies(
+            &workflow,
+            Some(&package.package_dir),
+            &dependency_chain,
+        ))
+        .await
+    }
+
+    /// Resolves `source` from the registry, or, for a local `./` or `../`
+    /// path, from the directory of the package that declares it. Without a
+    /// `base_dir`, a local path is relative to the current directory.
+    async fn resolve_package(
+        &self,
+        source: &str,
+        base_dir: Option<&Path>,
+    ) -> crate::registry::Result<ResolvedPackage> {
+        match base_dir {
+            Some(base_dir) if source.starts_with("./") || source.starts_with("../") => self
+                .registry_client
+                .resolve_local_package_at(&base_dir.join(source)),
+            _ => {
+                self.registry_client
+                    .resolve_package(source, None, false, None)
+                    .await
+            }
+        }
     }
 
     fn load_workflow(package: &ResolvedPackage) -> Result<Workflow> {
@@ -298,7 +332,7 @@ mod tests {
             serde_yaml::from_str(&workflow_yaml_with_child("child-public")).expect("workflow yaml");
 
         let dry_run_only_dependency = NestedCodemodService::new(&registry_client)
-            .find_dry_run_only_dependency(&workflow, &[])
+            .find_dry_run_only_dependency(&workflow, None, &[])
             .await
             .expect("dry-run-only scan should succeed");
 
@@ -331,7 +365,7 @@ mod tests {
         .expect("workflow yaml");
 
         let dry_run_only_dependency = NestedCodemodService::new(&registry_client)
-            .find_dry_run_only_dependency(&workflow, &[])
+            .find_dry_run_only_dependency(&workflow, None, &[])
             .await
             .expect("dry-run-only scan should skip unresolved children");
 
@@ -371,7 +405,7 @@ mod tests {
                 .expect("workflow yaml");
 
         NestedCodemodService::new(&registry_client)
-            .validate_workflow_dependencies(&workflow, &[])
+            .validate_workflow_dependencies(&workflow, None, &[])
             .await
             .expect("dependency validation should succeed");
 
@@ -594,6 +628,61 @@ mod tests {
             .collect::<String>();
 
         format!("version: '1'\nnodes:\n- id: test\n  name: Test\n  steps:\n{steps}")
+    }
+
+    fn write_local_package(dir: &Path, workflow: &str) {
+        std::fs::create_dir_all(dir).expect("package dir");
+        std::fs::write(dir.join("codemod.yaml"), "name: local\n").expect("codemod.yaml");
+        std::fs::write(dir.join("workflow.yaml"), workflow).expect("workflow.yaml");
+    }
+
+    #[tokio::test]
+    async fn local_sources_resolve_from_the_declaring_package() {
+        // recipes/parent runs ../child, which runs ./grandchild; neither path
+        // exists relative to the process's current directory.
+        let packages = tempfile::tempdir().expect("packages dir");
+        let parent = packages.path().join("recipes").join("parent");
+        let child = packages.path().join("recipes").join("child");
+        write_local_package(&parent, &workflow_yaml_with_child("../child"));
+        write_local_package(&child, &workflow_yaml_with_child("./grandchild"));
+        write_local_package(&child.join("grandchild"), &workflow_yaml_without_children());
+        let cache_dir = tempfile::tempdir().expect("cache dir");
+        let registry_client = RegistryClient::new(
+            crate::registry::RegistryConfig {
+                default_registry: "http://127.0.0.1:9".to_string(),
+                cache_dir: cache_dir.path().to_path_buf(),
+            },
+            None,
+        );
+        let service = NestedCodemodService::new(&registry_client);
+
+        let resolved = service
+            .resolve("../child", Some(&parent), &[])
+            .await
+            .expect("../child resolves from the parent package");
+        assert_eq!(
+            resolved.package.package_dir.canonicalize().unwrap(),
+            child.canonicalize().unwrap()
+        );
+
+        // The child's own `./grandchild` is relative to the child package.
+        let grandchild = service
+            .resolve(
+                "./grandchild",
+                Some(&resolved.package.package_dir),
+                &resolved.dependency_chain,
+            )
+            .await
+            .expect("./grandchild resolves from the child package");
+        assert_eq!(
+            grandchild.package.package_dir.canonicalize().unwrap(),
+            child.join("grandchild").canonicalize().unwrap()
+        );
+
+        assert!(
+            service.resolve("../child", None, &[]).await.is_err(),
+            "without a base directory, ../child is relative to the current directory"
+        );
     }
 
     fn workflow_yaml_without_children() -> String {

@@ -295,6 +295,7 @@ pub async fn handler(
     } else {
         butterflow_core::utils::find_dry_run_only_codemod_dependency(
             &workflow_definition,
+            Some(&resolved_package.package_dir),
             &registry_client,
         )
         .await
