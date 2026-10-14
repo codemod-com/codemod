@@ -164,8 +164,9 @@ impl Lookup<'_> {
     }
 
     /// Follows a command that changes the directory or `PATH`. `args` is the
-    /// text after the command name, up to the next command.
-    fn follow(&mut self, name: &str, args: &str) {
+    /// text after the command name, up to the next command. A conditional
+    /// command (after `&&` or `||`) may not run.
+    fn follow(&mut self, name: &str, args: &str, conditional: bool) {
         let is = |builtin: &str| name.eq_ignore_ascii_case(builtin);
         let args = args.trim();
         if is("cd") || is("chdir") || is("pushd") {
@@ -183,10 +184,17 @@ impl Lookup<'_> {
                 return;
             }
             let other_drive = dir.as_bytes().get(1) == Some(&b':');
-            if dir.contains(['%', '!', '^']) || (other_drive && !switch_drive) {
+            let target = self.dirs[0].join(dir);
+            // The directory changes only if the command runs and the target
+            // exists. When either is uncertain, so is the directory.
+            if conditional
+                || dir.contains(['%', '!', '^'])
+                || (other_drive && !switch_drive)
+                || !target.is_dir()
+            {
                 self.unknown = true;
             } else {
-                self.dirs[0] = self.dirs[0].join(dir);
+                self.dirs[0] = target;
             }
         } else if is("popd")
             || (is("path") && !args.is_empty())
@@ -253,8 +261,9 @@ fn ends_with_continuation(text: &str) -> bool {
 /// `for`, or after `(` mid-line, are left as written.
 fn batch_command_starts(line: &str, lookup: &mut Lookup) -> Vec<usize> {
     let bytes = line.as_bytes();
-    // Each command runs from its start up to the operator after it.
-    let mut commands = vec![(0, line.len())];
+    // Each command runs from its start up to the operator after it, and is
+    // conditional when the operator before it is `&&` or `||`.
+    let mut commands = vec![(0, line.len(), false)];
     let mut in_quotes = false;
     let mut i = 0;
     while i < bytes.len() {
@@ -272,7 +281,7 @@ fn batch_command_starts(line: &str, lookup: &mut Lookup) -> Vec<usize> {
                     if let Some(last) = commands.last_mut() {
                         last.1 = operator;
                     }
-                    commands.push((i + 1, line.len()));
+                    commands.push((i + 1, line.len(), doubled));
                 }
             }
             _ => {}
@@ -281,7 +290,7 @@ fn batch_command_starts(line: &str, lookup: &mut Lookup) -> Vec<usize> {
     }
 
     let mut calls = Vec::new();
-    for (start, end) in commands {
+    for (start, end, conditional) in commands {
         let mut pos = start;
         while pos < end && matches!(bytes[pos], b' ' | b'\t' | b'@' | b'(') {
             pos += 1;
@@ -291,7 +300,7 @@ fn batch_command_starts(line: &str, lookup: &mut Lookup) -> Vec<usize> {
             calls.push(pos);
         }
         if let Some(args) = line[pos..end].strip_prefix(name) {
-            lookup.follow(name, args);
+            lookup.follow(name, args, conditional);
         }
     }
     calls
@@ -499,6 +508,21 @@ mod tests {
                 "call realtool",
             ]
         );
+    }
+
+    #[test]
+    fn calls_every_command_after_a_directory_change_that_may_not_happen() {
+        // `cd ..` after `||` runs only if `cd sub` fails, and `cd missing`
+        // fails, so the directory is unknown after either line.
+        let tools = Tools::new();
+        std::fs::create_dir(tools.0.join("sub")).unwrap();
+        for change in ["cd sub || cd ..", "cd sub && cd ..", "cd missing"] {
+            assert_eq!(
+                tools.script(&format!("{change}\nrealtool && echo after")),
+                [change, "call realtool && echo after"],
+                "after {change}"
+            );
+        }
     }
 
     #[test]
