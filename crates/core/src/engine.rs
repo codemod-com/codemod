@@ -617,8 +617,12 @@ pub struct Engine {
 /// Represents a codemod dependency chain for cycle detection
 #[derive(Debug, Clone)]
 pub struct CodemodDependency {
-    /// Source identifier (registry package or local path)
+    /// Source identifier (registry package or local path), as written
     pub(crate) source: String,
+    /// What the source refers to: the canonical directory of a local source,
+    /// otherwise the source itself. Cycles are detected on this, because the
+    /// same local path names a different package at each nesting level.
+    pub(crate) identity: String,
 }
 
 impl Default for Engine {
@@ -4393,18 +4397,23 @@ mod tests {
         let dependency_chain = vec![
             CodemodDependency {
                 source: "@codemod/child-a".to_string(),
+                identity: "@codemod/child-a".to_string(),
             },
             CodemodDependency {
                 source: "/Users/example/private/absolute-child".to_string(),
+                identity: "/Users/example/private/absolute-child".to_string(),
             },
             CodemodDependency {
                 source: "./private/relative-child".to_string(),
+                identity: "./private/relative-child".to_string(),
             },
             CodemodDependency {
                 source: "../private/sibling-child".to_string(),
+                identity: "../private/sibling-child".to_string(),
             },
             CodemodDependency {
                 source: "@alias/child-b".to_string(),
+                identity: "@alias/child-b".to_string(),
             },
         ];
         let registry_package = resolved_package(Some(RegistryPackageMetadata {

@@ -2,7 +2,7 @@ use butterflow_models::{Error, Result, Workflow};
 use futures_util::{stream, StreamExt};
 use log::warn;
 use std::collections::HashSet;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::{
     engine::CodemodDependency,
@@ -26,24 +26,43 @@ impl<'a> NestedCodemodService<'a> {
         Self { registry_client }
     }
 
+    /// The source of the dependency in `dependency_chain` with this
+    /// `identity`, if there is one.
     pub(crate) fn find_cycle_in_chain(
-        source: &str,
+        identity: &str,
         dependency_chain: &[CodemodDependency],
     ) -> Option<String> {
         dependency_chain
             .iter()
-            .find(|dep| dep.source == source)
+            .find(|dep| dep.identity == identity)
             .map(|dep| dep.source.clone())
+    }
+
+    /// What `source`, declared by the package in `base_dir`, refers to: the
+    /// canonical directory of a local source, otherwise the source itself.
+    fn dependency_identity(source: &str, base_dir: Option<&Path>) -> String {
+        if !(source.starts_with("./") || source.starts_with("../") || source.starts_with('/')) {
+            return source.to_string();
+        }
+        let path = match base_dir {
+            Some(base_dir) if !source.starts_with('/') => base_dir.join(source),
+            _ => PathBuf::from(source),
+        };
+        path.canonicalize()
+            .unwrap_or(path)
+            .to_string_lossy()
+            .into_owned()
     }
 
     pub(crate) fn format_cycle_error(
         prefix: &str,
+        identity: &str,
         source: &str,
         dependency_chain: &[CodemodDependency],
         validation_message: &str,
     ) -> Error {
         let cycle_start =
-            Self::find_cycle_in_chain(source, dependency_chain).unwrap_or_else(|| source.into());
+            Self::find_cycle_in_chain(identity, dependency_chain).unwrap_or_else(|| source.into());
 
         Error::Other(format!(
             "{prefix}\n\
@@ -63,9 +82,11 @@ impl<'a> NestedCodemodService<'a> {
         base_dir: Option<&Path>,
         dependency_chain: &[CodemodDependency],
     ) -> Result<ResolvedNestedCodemod> {
-        if Self::find_cycle_in_chain(source, dependency_chain).is_some() {
+        let identity = Self::dependency_identity(source, base_dir);
+        if Self::find_cycle_in_chain(&identity, dependency_chain).is_some() {
             return Err(Self::format_cycle_error(
                 "Runtime codemod dependency cycle detected!",
+                &identity,
                 source,
                 dependency_chain,
                 "This cycle was not caught during validation, indicating a dynamic dependency.",
@@ -77,7 +98,7 @@ impl<'a> NestedCodemodService<'a> {
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve package: {e}")))?;
         let workflow = Self::load_workflow(&package)?;
-        let dependency_chain = Self::extend_dependency_chain(source, dependency_chain);
+        let dependency_chain = Self::extend_dependency_chain(source, identity, dependency_chain);
 
         Ok(ResolvedNestedCodemod {
             package,
@@ -94,9 +115,11 @@ impl<'a> NestedCodemodService<'a> {
     ) -> Result<()> {
         let sources = Self::unique_codemod_sources(workflow);
         for source in &sources {
-            if Self::find_cycle_in_chain(source, dependency_chain).is_some() {
+            let identity = Self::dependency_identity(source, base_dir);
+            if Self::find_cycle_in_chain(&identity, dependency_chain).is_some() {
                 return Err(Self::format_cycle_error(
                     "Codemod dependency cycle detected!",
+                    &identity,
                     source,
                     dependency_chain,
                     "This would cause infinite recursion during execution.",
@@ -200,7 +223,11 @@ impl<'a> NestedCodemodService<'a> {
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve codemod {source}: {e}")))?;
         let workflow = Self::load_workflow(&package)?;
-        let dependency_chain = Self::extend_dependency_chain(source, dependency_chain);
+        let dependency_chain = Self::extend_dependency_chain(
+            source,
+            Self::dependency_identity(source, base_dir),
+            dependency_chain,
+        );
 
         Box::pin(self.validate_workflow_dependencies(
             &workflow,
@@ -248,11 +275,13 @@ impl<'a> NestedCodemodService<'a> {
 
     fn extend_dependency_chain(
         source: &str,
+        identity: String,
         dependency_chain: &[CodemodDependency],
     ) -> Vec<CodemodDependency> {
         let mut chain = dependency_chain.to_vec();
         chain.push(CodemodDependency {
             source: source.to_string(),
+            identity,
         });
         chain
     }
@@ -278,12 +307,15 @@ mod tests {
         let error = NestedCodemodService::format_cycle_error(
             "Runtime codemod dependency cycle detected!",
             "public-child",
+            "public-child",
             &[
                 CodemodDependency {
                     source: "public-child".to_string(),
+                    identity: "public-child".to_string(),
                 },
                 CodemodDependency {
                     source: "private-child".to_string(),
+                    identity: "private-child".to_string(),
                 },
             ],
             "This cycle was not caught during validation, indicating a dynamic dependency.",
@@ -683,6 +715,90 @@ mod tests {
             service.resolve("../child", None, &[]).await.is_err(),
             "without a base directory, ../child is relative to the current directory"
         );
+    }
+
+    #[tokio::test]
+    async fn repeated_local_sources_at_different_levels_are_not_a_cycle() {
+        // parent runs ./child, and that child runs its own ./child.
+        let packages = tempfile::tempdir().expect("packages dir");
+        let parent = packages.path().join("parent");
+        write_local_package(&parent, &workflow_yaml_with_child("./child"));
+        write_local_package(&parent.join("child"), &workflow_yaml_with_child("./child"));
+        write_local_package(
+            &parent.join("child").join("child"),
+            &workflow_yaml_without_children(),
+        );
+        let cache_dir = tempfile::tempdir().expect("cache dir");
+        let registry_client = local_registry_client(cache_dir.path());
+        let service = NestedCodemodService::new(&registry_client);
+
+        let child = service
+            .resolve("./child", Some(&parent), &[])
+            .await
+            .expect("parent/child resolves");
+        let grandchild = service
+            .resolve(
+                "./child",
+                Some(&child.package.package_dir),
+                &child.dependency_chain,
+            )
+            .await
+            .expect("parent/child/child is a different package, not a cycle");
+        assert_eq!(
+            grandchild.package.package_dir.canonicalize().unwrap(),
+            parent.join("child").join("child").canonicalize().unwrap()
+        );
+    }
+
+    #[tokio::test]
+    async fn local_sources_that_lead_back_to_a_package_are_a_cycle() {
+        // a runs ../b, and b runs ../a.
+        let packages = tempfile::tempdir().expect("packages dir");
+        let a = packages.path().join("a");
+        let b = packages.path().join("b");
+        write_local_package(&a, &workflow_yaml_with_child("../b"));
+        write_local_package(&b, &workflow_yaml_with_child("../a"));
+        let cache_dir = tempfile::tempdir().expect("cache dir");
+        let registry_client = local_registry_client(cache_dir.path());
+        let service = NestedCodemodService::new(&registry_client);
+
+        let to_b = service
+            .resolve("../b", Some(&a), &[])
+            .await
+            .expect("a -> b");
+        let to_a = service
+            .resolve(
+                "../a",
+                Some(&to_b.package.package_dir),
+                &to_b.dependency_chain,
+            )
+            .await
+            .expect("b -> a");
+        let error = service
+            .resolve(
+                "../b",
+                Some(&to_a.package.package_dir),
+                &to_a.dependency_chain,
+            )
+            .await
+            .err()
+            .expect("a -> b again is a cycle");
+        assert!(
+            error
+                .to_string()
+                .contains("Runtime codemod dependency cycle detected!"),
+            "{error}"
+        );
+    }
+
+    fn local_registry_client(cache_dir: &Path) -> RegistryClient {
+        RegistryClient::new(
+            crate::registry::RegistryConfig {
+                default_registry: "http://127.0.0.1:9".to_string(),
+                cache_dir: cache_dir.to_path_buf(),
+            },
+            None,
+        )
     }
 
     fn workflow_yaml_without_children() -> String {
