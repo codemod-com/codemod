@@ -47,9 +47,23 @@ function testDefaultDynamicImportArrowFunction() {
   assert(res[0]!.moduleType === "esm", "moduleType should be esm for dynamic()");
 }
 
+function testDefaultDynamicImportParameterBindingRestriction() {
+  // Test that only parameter bindings are matched, not other uses of the identifier
+  const programWithBodyUsage = parseProgram(
+    "typescript",
+    "import('test').then((mod = fallback) => {})",
+  );
+
+  const res = getAllImports(programWithBodyUsage, { type: "default", from: "test" });
+  assert(res.length === 1, "Should only match the parameter binding once");
+  assert(res[0]!.node.text() === "mod", "Node should reflect the parameter identifier");
+  assert(res[0]!.moduleType === "esm", "moduleType should be esm for dynamic()");
+}
+
 try {
   testDefaultDynamicImport();
   testDefaultDynamicImportArrowFunction();
+  testDefaultDynamicImportParameterBindingRestriction();
 
   console.log("imports-ts.test.ts: all assertions passed");
 } catch (error) {

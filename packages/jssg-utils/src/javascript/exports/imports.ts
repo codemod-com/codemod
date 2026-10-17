@@ -246,6 +246,8 @@ function findRawImportMatches<T extends Language>(
                   kind: "identifier",
                   pattern: "$NAMESPACE_ALIAS",
                   inside: {
+                    kind: "required_parameter",
+                    field: "pattern",
                     inside: {
                       kind: "formal_parameters",
                     },
