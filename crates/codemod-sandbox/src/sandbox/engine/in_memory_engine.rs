@@ -563,6 +563,36 @@ mod tests {
         hasher.finalize().into()
     }
 
+    struct EnvVarGuard {
+        key: &'static str,
+        original: Option<String>,
+    }
+
+    impl EnvVarGuard {
+        fn set(key: &'static str, value: &str) -> Self {
+            let original = std::env::var(key).ok();
+            // SAFETY: other tests in this binary do not read this key while it
+            // is set, and the guard restores the original value on drop.
+            unsafe {
+                std::env::set_var(key, value);
+            }
+            Self { key, original }
+        }
+    }
+
+    impl Drop for EnvVarGuard {
+        fn drop(&mut self) {
+            // SAFETY: matches the set in `EnvVarGuard::set`.
+            unsafe {
+                if let Some(value) = &self.original {
+                    std::env::set_var(self.key, value);
+                } else {
+                    std::env::remove_var(self.key);
+                }
+            }
+        }
+    }
+
     fn execute_runtime_codemod(codemod_content: &str) -> Result<CodemodOutput, ExecutionError> {
         let temp_dir = TempDir::new().expect("Failed to create temp directory");
         let resolver = Arc::new(OxcResolver::new(temp_dir.path().to_path_buf(), None).unwrap());
@@ -1095,9 +1125,10 @@ export default function transform(root, options) {
         // sorted list of `process` keys, and whether a few dangerous
         // llrt-provided properties are absent. When sandboxed, only `env` +
         // `cwd` should survive; `exit`, `argv`, `platform` etc. should be
-        // undefined since the llrt process module is no longer attached. The
-        // allowlisted `env` starts empty, so no host variable — including any
-        // host-side "LEAK_CHECK" marker — may surface inside the sandbox.
+        // undefined since the llrt process module is no longer attached. A
+        // host-side LEAK_CHECK marker is installed for this test run, so the
+        // allowlisted (empty) `env` must never surface it inside the sandbox.
+        let _leak_check_guard = EnvVarGuard::set("CODEMOD_SANDBOX_LEAK_CHECK", "1");
         let codemod_content = r#"
 export default function transform(root) {
   const envKeys = Object.keys(process.env).filter((key) => key.includes("LEAK_CHECK")).sort().join(",");

@@ -415,6 +415,13 @@ async fn run_cli() -> Result<()> {
         )
     {
         feedback::set_analytics_disabled(true);
+        if std::env::var_os("DISABLE_ANALYTICS").is_none() {
+            // SAFETY: single-threaded startup, before any child process or
+            // other thread that reads the environment has been spawned.
+            unsafe {
+                std::env::set_var("DISABLE_ANALYTICS", "1");
+            }
+        }
     }
 
     let telemetry_sender: Arc<Box<dyn TelemetrySender + Send + Sync>> =
