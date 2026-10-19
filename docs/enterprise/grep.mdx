@@ -22,6 +22,12 @@ Open Grep at [app.codemod.com/grep](https://app.codemod.com/grep).
 
 Repository scope follows the app context: the active organization when one is selected, or your personal Git repositories otherwise.
 
+## Access changes and source reads
+
+Codemod checks your current repository access before each new source or snapshot-metadata request. Removing organization membership or revoking repository access prevents new read authorizations. A read already authorized can start for up to 60 seconds after its access check began, and a read already in progress can finish.
+
+Deleting an indexed snapshot stops new authorizations for that snapshot. The search service rejects its stored identity once deletion is applied. Existing search requests use their original authorization; successful search access decisions can be reused for up to two minutes. Content already returned to your browser or a conversation is not recalled.
+
 ## Search indexed code
 
 <Steps>
