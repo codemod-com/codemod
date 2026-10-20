@@ -13,6 +13,7 @@ use butterflow_models::{
     DiffOperation, FieldDiff, Result, StateDiff, TaskExpressionContext,
 };
 use chrono::Utc;
+use codemod_llrt_capabilities::types::LlrtSupportedModules;
 use codemod_sandbox::sandbox::{
     engine::{
         codemod_lang::CodemodLang, execution_engine::execute_codemod_with_quickjs,
@@ -36,9 +37,9 @@ use crate::{
     engine::{
         auto_meta_files_include, await_js_ast_grep_execution_task, block_on_runtime_handle,
         build_js_ast_grep_idle_timeout_message, finish_unit_progress, format_runtime_event_log,
-        format_runtime_failure_message, js_ast_grep_idle_timeout, record_output_progress,
-        record_unit_progress, resolve_optional_glob_list, CapabilitiesData, Engine, StepPhase,
-        StepProgressState,
+        format_runtime_failure_message, js_ast_grep_idle_timeout,
+        merge_capability_strings_for_interaction, record_output_progress, record_unit_progress,
+        resolve_optional_glob_list, CapabilitiesData, Engine, StepPhase, StepProgressState,
     },
     execution::{CodemodExecutionConfig, PreRunCallback},
     progress_output::{
@@ -53,6 +54,7 @@ use crate::{
 
 pub(crate) struct JssgExecutionRequest<'a> {
     pub id: String,
+    pub progress_task_id: Option<String>,
     pub step_id: String,
     pub step_name: String,
     pub report_step_id: Option<String>,
@@ -87,21 +89,17 @@ impl<'a> JssgExecutionService<'a> {
             .bundle_path
             .as_ref()
             .unwrap_or(&self.engine.workflow_run_config().execution.bundle_path);
-        let js_file_path = effective_bundle_path.join(&request.js_ast_grep.js_file);
+        let js_file_path = crate::utils::resolve_workflow_path_within_root(
+            effective_bundle_path,
+            &request.js_ast_grep.js_file,
+            "js-ast-grep.js_file",
+        )?;
 
-        let target_path = if let Some(base_path) = &request.js_ast_grep.base_path {
-            self.engine
-                .workflow_run_config()
-                .execution
-                .target_path
-                .join(base_path)
-        } else {
-            self.engine
-                .workflow_run_config()
-                .execution
-                .target_path
-                .clone()
-        };
+        let target_path = crate::utils::resolve_optional_workflow_path_within_root(
+            &self.engine.workflow_run_config().execution.target_path,
+            request.js_ast_grep.base_path.as_deref(),
+            "js-ast-grep.base_path",
+        )?;
 
         if let Some(pre_run_callback) = self
             .engine
@@ -158,6 +156,7 @@ impl<'a> JssgExecutionService<'a> {
         let empty_state = HashMap::new();
         let resolved_params_ref = request.params.as_ref().unwrap_or(&empty_params);
         let resolved_state_ref = request.initial_state.unwrap_or(&empty_state);
+        let meta_files = auto_meta_files_include(resolved_state_ref, request.matrix_input.as_ref());
 
         let resolved_include = resolve_optional_glob_list(
             &request.js_ast_grep.include,
@@ -166,7 +165,7 @@ impl<'a> JssgExecutionService<'a> {
             request.matrix_input.as_ref(),
             request.task_expr_ctx,
         )?
-        .or_else(|| auto_meta_files_include(resolved_state_ref, request.matrix_input.as_ref()));
+        .or_else(|| meta_files.clone());
 
         let resolved_exclude = resolve_optional_glob_list(
             &request.js_ast_grep.exclude,
@@ -176,19 +175,38 @@ impl<'a> JssgExecutionService<'a> {
             request.task_expr_ctx,
         )?;
 
-        let explicit_files = request
-            .matrix_input
-            .as_ref()
-            .and_then(|m| m.get("_meta_files"))
-            .and_then(butterflow_models::variable::value_to_string_vec)
-            .map(|files| {
+        let explicit_files = meta_files
+            .map(|files| -> Result<Vec<PathBuf>> {
                 files
                     .into_iter()
-                    .map(|file| target_path.join(file))
+                    .map(|file| {
+                        crate::utils::resolve_workflow_path_within_root(
+                            &self.engine.workflow_run_config().execution.target_path,
+                            &file,
+                            "matrix._meta_files",
+                        )
+                    })
                     .collect()
-            });
+            })
+            .transpose()?;
+        let run_capabilities = request
+            .capabilities_data
+            .capabilities
+            .as_ref()
+            .map(|capabilities| capabilities.iter().copied().collect());
+        let effective_capabilities = merge_capability_strings_for_interaction(
+            &run_capabilities,
+            request
+                .js_ast_grep
+                .capabilities
+                .as_deref()
+                .unwrap_or(&[])
+                .iter()
+                .map(String::as_str),
+            self.engine.workflow_run_config().interaction.no_interactive,
+        );
 
-        let config = CodemodExecutionConfig {
+        let mut config = CodemodExecutionConfig {
             pre_run_callback: Some(pre_run_callback),
             progress_callback: self
                 .engine
@@ -209,12 +227,14 @@ impl<'a> JssgExecutionService<'a> {
                 .clone()
                 .unwrap_or("typescript".to_string())]),
             threads: request.js_ast_grep.max_threads,
-            capabilities: request
-                .capabilities_data
-                .capabilities
-                .as_ref()
-                .map(|v| v.clone().into_iter().collect()),
+            capabilities: effective_capabilities.clone(),
         };
+
+        if let Some(pre_run_callback) = &config.pre_run_callback {
+            (pre_run_callback.callback)(target_path.as_path(), !config.dry_run, &config)
+                .map_err(|error| Error::Other(format!("Pre-run check failed: {error}")))?;
+        }
+        config.pre_run_callback = None;
 
         let language = if let Some(lang_str) = &request.js_ast_grep.language {
             lang_str
@@ -230,11 +250,7 @@ impl<'a> JssgExecutionService<'a> {
             script_path: &js_file_path,
             language,
             resolver: Arc::clone(&resolver),
-            capabilities: request
-                .capabilities_data
-                .capabilities
-                .as_ref()
-                .map(|v| v.clone().into_iter().collect()),
+            capabilities: effective_capabilities,
             target_directory: Some(&target_path),
         })
         .await
@@ -300,7 +316,14 @@ impl<'a> JssgExecutionService<'a> {
                     let root = detailed
                         .root
                         .as_ref()
-                        .map(PathBuf::from)
+                        .map(|root| {
+                            crate::utils::resolve_workflow_path_within_root(
+                                target_path,
+                                root,
+                                "js-ast-grep.semantic_analysis.root",
+                            )
+                        })
+                        .transpose()?
                         .unwrap_or_else(|| target_path.to_path_buf());
                     Some(Arc::new(LazySemanticProvider::workspace_scope(root)))
                 }
@@ -414,7 +437,11 @@ impl<'a> JssgExecutionService<'a> {
         let js_file_path_clone = js_file_path.clone();
         let resolver_clone = resolver.clone();
         let request_id = request.id.clone();
-        let id_clone = Arc::new(request_id.clone());
+        let progress_task_id = request
+            .progress_task_id
+            .clone()
+            .unwrap_or_else(|| request_id.clone());
+        let id_clone = Arc::new(progress_task_id.clone());
         let progress_callback = self
             .engine
             .workflow_run_config()
@@ -429,6 +456,11 @@ impl<'a> JssgExecutionService<'a> {
             SharedStateContext::new()
         };
         let metrics_context_clone = metrics_context.clone();
+        let llm_request_handler = config
+            .capabilities
+            .as_ref()
+            .is_some_and(|capabilities| capabilities.contains(&LlrtSupportedModules::Fetch))
+            .then(|| self.engine.llm_request_handler());
         let shared_state_context_clone = shared_state_context.clone();
         let logger = request.logger.clone();
         let modified_files_collector_clone = request.modified_files_collector.clone();
@@ -552,7 +584,8 @@ impl<'a> JssgExecutionService<'a> {
         let failed_file_count_for_closure = Arc::clone(&failed_file_count);
 
         let execute_result = config
-            .execute_before_finish(
+            .execute_with_task_id_before_finish(
+                &progress_task_id,
                 move |file_path, config| {
                     if canceled_flag_for_closure.load(Ordering::Acquire)
                         || idle_timed_out_for_closure.load(Ordering::Acquire)
@@ -656,6 +689,7 @@ impl<'a> JssgExecutionService<'a> {
                     let runtime_event_task_id = task_log_task_id;
                     let runtime_event_run_id = workflow_run_id;
                     let progress_tx_for_runtime_events = progress_tx_for_closure.clone();
+                    let logger_for_runtime_events = logger.clone();
                     let runtime_event_callback: RuntimeEventCallback =
                         Arc::new(move |event| match event.kind {
                             RuntimeEventKind::SetCurrentUnit => {
@@ -703,6 +737,16 @@ impl<'a> JssgExecutionService<'a> {
                                         runtime_unit.clone(),
                                         message.clone(),
                                     );
+                                    let log_line = format!("{runtime_unit}\n{message}");
+                                    match event.kind {
+                                        RuntimeEventKind::Warn => {
+                                            slog!(logger_for_runtime_events, warn, "{}", log_line);
+                                        }
+                                        RuntimeEventKind::Progress => {
+                                            slog!(logger_for_runtime_events, info, "{}", log_line);
+                                        }
+                                        RuntimeEventKind::SetCurrentUnit => {}
+                                    }
                                 }
                                 if let (Some(task_id), Some(run_id), Some(message)) =
                                     (runtime_event_task_id, runtime_event_run_id, formatted_log)
@@ -731,6 +775,7 @@ impl<'a> JssgExecutionService<'a> {
                         let capabilities_owned = config.capabilities.clone();
                         let semantic_provider_owned = semantic_provider.clone();
                         let metrics_context_owned = metrics_context_clone.clone();
+                        let llm_request_handler_owned = llm_request_handler.clone();
                         let shared_state_context_owned = shared_state_context_clone.clone();
                         let target_path_owned = target_path.clone();
                         let idle_timed_out = Arc::clone(&idle_timed_out_for_closure);
@@ -752,6 +797,7 @@ impl<'a> JssgExecutionService<'a> {
                                         capabilities: capabilities_owned,
                                         semantic_provider: semantic_provider_owned,
                                         metrics_context: Some(metrics_context_owned),
+                                        llm_request_handler: llm_request_handler_owned,
                                         shared_state_context: Some(shared_state_context_owned),
                                         runtime_event_callback: Some(runtime_event_callback),
                                         cancellation_flag: Some(cancellation_flag_for_execution),

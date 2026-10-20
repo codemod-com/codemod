@@ -45,6 +45,21 @@ type TSDoc = TSStrDoc<CodemodLang>;
 #[cfg(all(feature = "wasm", target_arch = "wasm32"))]
 type TSDoc = WasmDoc;
 
+/// Full source text of the parsed document, including any leading whitespace or BOM.
+///
+/// Prefer this over `grep.root().text()`: tree-sitter's root node range starts at the first
+/// token, so its text drops leading padding.
+#[cfg(not(all(feature = "wasm", target_arch = "wasm32")))]
+pub(crate) fn document_source(grep: &AstGrep<TSDoc>) -> std::borrow::Cow<'_, str> {
+    std::borrow::Cow::Borrowed(grep.source())
+}
+
+/// Full source text of the parsed document, including any leading whitespace or BOM.
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+pub(crate) fn document_source(grep: &AstGrep<TSDoc>) -> std::borrow::Cow<'_, str> {
+    std::borrow::Cow::Owned(grep.root().get_doc().source_text())
+}
+
 pub(crate) struct SgRootInner {
     pub(crate) grep: AstGrep<TSDoc>,
     filename: Option<String>,
@@ -109,7 +124,7 @@ impl<'js> SgRootRjs<'js> {
     }
 
     pub fn source(&self) -> Result<String> {
-        Ok(self.inner.grep.root().text().to_string())
+        Ok(document_source(&self.inner.grep).into_owned())
     }
 
     /// Write content to this file.
@@ -201,6 +216,14 @@ impl<'js> SgRootRjs<'js> {
                         "Cannot call write() on the current file. Return the modified content from transform() instead.",
                     ));
                 }
+            }
+
+            let dry_run = ctx
+                .userdata::<crate::sandbox::engine::execution_engine::DryRunExecutionFlag>()
+                .map(|flag| flag.0)
+                .unwrap_or(false);
+            if dry_run {
+                return Ok(());
             }
 
             let path = std::path::Path::new(file_path);
@@ -796,13 +819,26 @@ impl<'js> SgNodeRjs<'js> {
 
     #[qjs(rename = "commitEdits")]
     pub fn commit_edits(&self, edits: Vec<JsEdit>) -> Result<String> {
-        let mut sorted_edits = edits.clone();
+        // tree-sitter starts the root node at its first token, so the root node's text omits
+        // leading blank lines, whitespace, and a BOM. Committing against that text silently
+        // dropped those bytes from every file, even when `edits` was empty. When committing on
+        // the root node, splice into the full document source instead so untouched bytes are
+        // preserved exactly.
+        let is_root = self.inner_node.parent().is_none();
+        let (old_content, offset) = if is_root {
+            (document_source(&self.root.grep), 0)
+        } else {
+            (self.inner_node.text(), self.inner_node.range().start)
+        };
+
+        if edits.is_empty() {
+            return Ok(old_content.into_owned());
+        }
+
+        let mut sorted_edits = edits;
         sorted_edits.sort_by_key(|edit| edit.start_pos);
 
-        let mut new_content = String::new();
-        let old_content = self.inner_node.text();
-
-        let offset = self.inner_node.range().start;
+        let mut new_content = String::with_capacity(old_content.len());
         let mut start = 0;
 
         for edit in sorted_edits {

@@ -16,6 +16,7 @@ mod diagnostics;
 mod dirty_git_check;
 mod engine;
 mod feedback;
+mod pro_dry_run;
 mod progress_bar;
 mod report_server;
 mod suitability;
@@ -25,8 +26,10 @@ mod workflow_runner;
 use crate::auth::TokenStorage;
 use ascii_art::print_ascii_art;
 use codemod_telemetry::{
+    send_composite::CompositeSender,
     send_event::{PostHogSender, TelemetrySender, TelemetrySenderOptions},
     send_null::NullSender,
+    send_scarf::ScarfSender,
 };
 
 pub const CLI_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -76,6 +79,9 @@ enum Commands {
 
     /// Publish a workflow
     Publish(commands::publish::Command),
+
+    /// Manage codemod package manifests
+    Manifest(commands::manifest::Command),
 
     /// Search for packages in the registry
     Search(commands::search::Command),
@@ -171,6 +177,7 @@ fn is_package_name(arg: &str) -> bool {
         "logout",
         "whoami",
         "publish",
+        "manifest",
         "search",
         "run",
         "unpublish",
@@ -417,17 +424,43 @@ async fn run_cli() -> Result<()> {
 
             let auth = storage.get_auth_for_registry(&config.default_registry)?;
 
-            let distinct_id = auth
-                .map(|auth| auth.user.id)
-                .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
+            let distinct_id = auth.map(|auth| auth.user.id).unwrap_or_else(|| {
+                storage
+                    .get_or_create_anonymous_telemetry_id()
+                    .unwrap_or_else(|error| {
+                        log::debug!("Failed to persist anonymous telemetry id: {error}");
+                        uuid::Uuid::new_v4().to_string()
+                    })
+            });
 
-            Arc::new(Box::new(
-                PostHogSender::new(TelemetrySenderOptions {
-                    distinct_id,
-                    cloud_role: "CLI".to_string(),
-                })
-                .await,
-            ))
+            let options = TelemetrySenderOptions {
+                distinct_id,
+                cloud_role: "CLI".to_string(),
+            };
+
+            let posthog = PostHogSender::new(options.clone())
+                .await
+                .inspect_err(|error| log::debug!("Failed to initialize PostHog telemetry: {error}"))
+                .ok();
+            let scarf = ScarfSender::new(options)
+                .inspect_err(|error| log::debug!("Failed to initialize Scarf telemetry: {error}"))
+                .ok();
+
+            // PostHog is the primary backend; Scarf is best-effort alongside it.
+            // If PostHog fails to initialize, Scarf can still carry telemetry
+            // on its own rather than disabling telemetry entirely.
+            match (posthog, scarf) {
+                (Some(posthog), scarf) => {
+                    let mut sender = CompositeSender::new(Arc::new(posthog));
+                    if let Some(scarf) = scarf {
+                        sender = sender.with_secondary(Arc::new(scarf));
+                    }
+                    let sender: Box<dyn TelemetrySender + Send + Sync> = Box::new(sender);
+                    Arc::new(sender)
+                }
+                (None, Some(scarf)) => Arc::new(Box::new(scarf)),
+                (None, None) => Arc::new(Box::new(NullSender {})),
+            }
         };
 
     telemetry_sender.initialize_panic_telemetry().await;
@@ -453,7 +486,7 @@ async fn run_cli() -> Result<()> {
                 commands::workflow::cancel::handler(args).await?;
             }
             WorkflowCommands::Tui(args) => {
-                commands::workflow::tui::handler(args).await?;
+                commands::workflow::tui::handler(args, telemetry_sender.clone()).await?;
             }
         },
         Some(Commands::Jssg(args)) => match &args.command {
@@ -487,6 +520,9 @@ async fn run_cli() -> Result<()> {
         }
         Some(Commands::Publish(args)) => {
             commands::publish::handler(args, telemetry_sender.clone()).await?;
+        }
+        Some(Commands::Manifest(args)) => {
+            commands::manifest::handler(args)?;
         }
         Some(Commands::Search(args)) => {
             commands::search::handler(args).await?;

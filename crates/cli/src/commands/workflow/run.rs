@@ -16,7 +16,12 @@ use clap::Args;
 use codemod_telemetry::send_event::BaseEvent;
 use std::sync::atomic::Ordering;
 
-use crate::engine::create_engine;
+use crate::commands::run_telemetry::nested_codemod_run_observer;
+use crate::commands::TelemetrySenderExt;
+use crate::engine::{create_engine, create_registry_client};
+use crate::pro_dry_run::{
+    apply_pro_dry_run_execution_settings, notify_pro_dry_run_required, ProDryRunReason,
+};
 use crate::workflow_runner::{
     resolve_workflow_source_with_name, run_workflow, workflow_has_manual_steps,
 };
@@ -139,8 +144,6 @@ pub async fn handler(args: &Command, telemetry: TelemetrySenderMutex) -> Result<
         cli_granted.insert(codemod_llrt_capabilities::types::LlrtSupportedModules::ChildProcess);
     }
 
-    let capabilities = prompt_capabilities(capabilities, &cli_granted, args.no_interactive);
-
     let target_path = normalize_target_path(
         args.target_path
             .clone()
@@ -151,12 +154,33 @@ pub async fn handler(args: &Command, telemetry: TelemetrySenderMutex) -> Result<
         .and_then(|value| value.to_str())
         .map(str::to_string)
         .unwrap_or_else(|| args.workflow.clone());
+    let execution_id = generate_execution_id();
     let workflow_definition = utils::parse_workflow_file(&workflow_file_path).context(format!(
         "Failed to parse workflow file: {}",
         workflow_file_path.display()
     ))?;
+    let registry_client = create_registry_client(None)?;
+    let dry_run_only_dependency = utils::find_dry_run_only_codemod_dependency(
+        &workflow_definition,
+        Some(workflow_dir),
+        &registry_client,
+    )
+    .await
+    .context("Failed to inspect bundled codemods")?;
+    if let Some(source) = dry_run_only_dependency.as_deref() {
+        if !args.dry_run {
+            notify_pro_dry_run_required(
+                ProDryRunReason::BundledChild { source },
+                args.no_interactive,
+            );
+        }
+    }
+    let pro_dry_run_required = dry_run_only_dependency.is_some();
+    let dry_run = args.dry_run || pro_dry_run_required;
+    let capabilities =
+        prompt_capabilities(capabilities, &cli_granted, args.no_interactive, dry_run);
     let auto_launch_tui =
-        should_auto_launch_workflow_tui(args.no_interactive, args.dry_run, &workflow_definition);
+        should_auto_launch_workflow_tui(args.no_interactive, dry_run, &workflow_definition);
 
     // Always collect diffs so we can offer report interactively
     let diff_collector = Some(Arc::new(Mutex::new(Vec::<FileDiff>::new())));
@@ -168,11 +192,11 @@ pub async fn handler(args: &Command, telemetry: TelemetrySenderMutex) -> Result<
         .parse()
         .map_err(|e: String| anyhow::anyhow!(e))?;
 
-    let (mut engine, config) = create_engine(
+    let (mut engine, mut config) = create_engine(
         workflow_file_path,
         target_path.clone(),
-        args.dry_run,
-        args.allow_dirty,
+        dry_run,
+        args.allow_dirty || pro_dry_run_required,
         params,
         None,
         Some(capabilities.clone()),
@@ -185,8 +209,21 @@ pub async fn handler(args: &Command, telemetry: TelemetrySenderMutex) -> Result<
         Some(crate::commands::package_skill::create_install_skill_executor(telemetry.clone())),
     )?;
 
-    engine.set_name(Some(workflow_label));
+    engine.set_name(Some(workflow_label.clone()));
+    engine
+        .workflow_run_config_mut()
+        .execution
+        .nested_codemod_run_observer = Some(nested_codemod_run_observer(
+        telemetry.clone(),
+        execution_id.clone(),
+        workflow_label,
+        dry_run,
+    ));
     apply_workflow_run_mode_to_config(engine.workflow_run_config_mut(), auto_launch_tui);
+    if pro_dry_run_required {
+        apply_pro_dry_run_execution_settings(engine.workflow_run_config_mut());
+        apply_pro_dry_run_execution_settings(&mut config);
+    }
     if auto_launch_tui {
         engine.set_quiet(true);
         engine.set_progress_callback(std::sync::Arc::new(None));
@@ -212,11 +249,12 @@ pub async fn handler(args: &Command, telemetry: TelemetrySenderMutex) -> Result<
             .map(|c| c.lock().unwrap().clone())
             .unwrap_or_default();
 
+        let registry_client = create_registry_client(None)?;
         let report = ExecutionReport::build(
             args.workflow.clone(),
             None,
             duration_ms,
-            args.dry_run,
+            dry_run,
             target_path.display().to_string(),
             CLI_VERSION.to_string(),
             files_modified,
@@ -224,7 +262,12 @@ pub async fn handler(args: &Command, telemetry: TelemetrySenderMutex) -> Result<
             files_with_errors,
             convert_metrics(&metrics_data),
             convert_diffs(&collected_diffs, &target_path.display().to_string()),
-        );
+        )
+        .with_registry_link_url(Some(
+            crate::utils::registry_link::registry_link_url_for_local_run(
+                &registry_client.config.default_registry,
+            ),
+        ));
 
         crate::report_server::serve_report(report).await?;
     } else {
@@ -233,14 +276,14 @@ pub async fn handler(args: &Command, telemetry: TelemetrySenderMutex) -> Result<
 
     // Generate a 20-byte execution ID (160 bits of entropy for collision resistance)
     telemetry
-        .send_event(
+        .send_event_logged(
             BaseEvent {
                 kind: "localWorkflowExecuted".to_string(),
                 properties: HashMap::from([
-                    ("executionId".to_string(), generate_execution_id()),
+                    ("executionId".to_string(), execution_id),
                     ("runTimeSeconds".to_string(), seconds.to_string()),
                     ("dirtyRun".to_string(), args.allow_dirty.to_string()),
-                    ("dryRun".to_string(), args.dry_run.to_string()),
+                    ("dryRun".to_string(), dry_run.to_string()),
                     ("cliVersion".to_string(), CLI_VERSION.to_string()),
                     ("os".to_string(), std::env::consts::OS.to_string()),
                     ("arch".to_string(), std::env::consts::ARCH.to_string()),

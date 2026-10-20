@@ -1,6 +1,8 @@
 use butterflow_models::schema::resolve_values_with_default;
 use codemod_ai::execute::{execute_ai_step, ExecuteAiStepConfig};
+use codemod_ai::llm::{generate as generate_llm, GenerateError, GenerateRequest, GenerateResponse};
 use futures_util::FutureExt;
+use serde::Deserialize;
 use std::any::Any;
 use std::collections::hash_map::DefaultHasher;
 use std::collections::{HashMap, HashSet};
@@ -32,7 +34,9 @@ use crate::execution::{CodemodExecutionConfig, ProgressCallback};
 use crate::execution_stats::ExecutionStats;
 use crate::file_ops::AsyncFileWriter;
 use crate::jssg_execution_service::{JssgExecutionRequest, JssgExecutionService};
+use crate::llm_usage::LlmUsageContext;
 use crate::managed_git_service::{ManagedGitService, WorktreeCleanup};
+use crate::nested_codemod_run::{observe_nested_codemod_run, NestedCodemodRun};
 use crate::nested_codemod_service::NestedCodemodService;
 use crate::progress_output::{
     append_buffered_diagnostic, append_buffered_log, flush_buffered_execution_output,
@@ -44,6 +48,7 @@ use crate::task_state_service::TaskStateService;
 use crate::utils::validate_workflow;
 use crate::workflow_runtime::{publish_event, WorkflowEvent};
 use chrono::Utc;
+use codemod_sandbox::llm::{LlmRequestHandler, LlmResponse};
 use codemod_sandbox::sandbox::engine::CodemodOutput;
 use codemod_sandbox::sandbox::runtime_module::{
     RuntimeEvent, RuntimeEventKind, RuntimeFailure, RuntimeFailureKind,
@@ -75,6 +80,7 @@ use butterflow_runners::{OutputCallback, Runner};
 use butterflow_scheduler::Scheduler;
 use butterflow_state::local_adapter::LocalStateAdapter;
 use butterflow_state::StateAdapter;
+use codemod_llrt_capabilities::module_builder::UNSAFE_MODULES;
 use codemod_llrt_capabilities::types::LlrtSupportedModules;
 use codemod_sandbox::MetricsContext;
 
@@ -210,6 +216,10 @@ pub(crate) struct PreparedStepExecution {
     pub(crate) env: HashMap<String, String>,
     pub(crate) state_outputs_path: PathBuf,
     pub(crate) state_input_path: PathBuf,
+}
+
+fn parent_env_for_child_processes() -> HashMap<String, String> {
+    std::env::vars().collect()
 }
 
 pub const JS_AST_GREP_IDLE_TIMEOUT_MS_DEFAULT: u64 = 60_000;
@@ -481,6 +491,34 @@ pub(crate) fn log_step_output(logger: &StructuredLogger, output: &str) {
     }
 }
 
+fn notify_nested_codemod_progress(
+    progress_callback: &Arc<Option<ProgressCallback>>,
+    task_id: &Uuid,
+    display_path: &str,
+) {
+    let Some(callback) = progress_callback.as_ref() else {
+        return;
+    };
+
+    let title = "Bundled codemods";
+    let line = format!("Running {display_path}");
+    (callback.callback)(
+        &task_id.to_string(),
+        &format!("{title}\n{line}"),
+        "log",
+        None,
+        &0,
+    );
+}
+
+fn codemod_dependency_display_path(dependency_chain: &[CodemodDependency]) -> String {
+    dependency_chain
+        .iter()
+        .map(|dependency| dependency.source.as_str())
+        .collect::<Vec<_>>()
+        .join(" > ")
+}
+
 fn format_shell_command_notice(request: &ShellCommandExecutionRequest) -> String {
     let mut message = format!(
         "About to execute shell command for step '{}' in node '{}':",
@@ -506,6 +544,9 @@ pub(crate) fn resolve_optional_glob_list(
         return Ok(None);
     };
     let resolved = resolve_string_list(items, params, state, matrix_values, None, task_context)?;
+    for glob in &resolved {
+        crate::utils::validate_workflow_glob_pattern(glob, "glob pattern")?;
+    }
     Ok(if resolved.is_empty() {
         None
     } else {
@@ -549,6 +590,9 @@ pub struct Engine {
     /// Metrics context for tracking metrics across all JSSG steps
     pub metrics_context: MetricsContext,
 
+    /// Provider-reported usage from engine-owned nested LLM calls
+    pub llm_usage_context: LlmUsageContext,
+
     /// Async file writer for batched I/O operations
     file_writer: Arc<AsyncFileWriter>,
 
@@ -573,8 +617,12 @@ pub struct Engine {
 /// Represents a codemod dependency chain for cycle detection
 #[derive(Debug, Clone)]
 pub struct CodemodDependency {
-    /// Source identifier (registry package or local path)
+    /// Source identifier (registry package or local path), as written
     pub(crate) source: String,
+    /// What the source refers to: the canonical directory of a local source,
+    /// otherwise the source itself. Cycles are detected on this, because the
+    /// same local path names a different package at each nesting level.
+    pub(crate) identity: String,
 }
 
 impl Default for Engine {
@@ -583,9 +631,110 @@ impl Default for Engine {
     }
 }
 
+fn record_llm_result(
+    usage_context: &LlmUsageContext,
+    configured_provider: &str,
+    configured_model: &str,
+    result: std::result::Result<GenerateResponse, GenerateError>,
+) -> std::result::Result<LlmResponse, String> {
+    match result {
+        Ok(response) => {
+            usage_context.record_success(&response.provider, &response.model, response.usage);
+            Ok(LlmResponse {
+                output: response.output,
+            })
+        }
+        Err(error) => {
+            usage_context.record_error(configured_provider, configured_model);
+            Err(error.to_string())
+        }
+    }
+}
+
 pub struct CapabilitiesData {
     pub capabilities: Option<Vec<LlrtSupportedModules>>,
     pub capabilities_security_callback: Option<CapabilitiesSecurityCallback>,
+}
+
+#[derive(Deserialize)]
+struct CodemodManifestCapabilities {
+    capabilities: Option<Vec<String>>,
+}
+
+pub(crate) fn merge_capabilities(
+    base: &Option<HashSet<LlrtSupportedModules>>,
+    additional: impl IntoIterator<Item = LlrtSupportedModules>,
+) -> Option<HashSet<LlrtSupportedModules>> {
+    let mut merged = base.clone().unwrap_or_default();
+    merged.extend(additional);
+    (!merged.is_empty()).then_some(merged)
+}
+
+fn noninteractive_capability_allowed(
+    base: &Option<HashSet<LlrtSupportedModules>>,
+    capability: LlrtSupportedModules,
+    no_interactive: bool,
+) -> bool {
+    if !no_interactive || !UNSAFE_MODULES.contains(&capability) {
+        return true;
+    }
+
+    base.as_ref()
+        .is_some_and(|capabilities| capabilities.contains(&capability))
+}
+
+pub(crate) fn merge_capabilities_for_interaction(
+    base: &Option<HashSet<LlrtSupportedModules>>,
+    additional: impl IntoIterator<Item = LlrtSupportedModules>,
+    no_interactive: bool,
+) -> Option<HashSet<LlrtSupportedModules>> {
+    merge_capabilities(
+        base,
+        additional.into_iter().filter(|capability| {
+            noninteractive_capability_allowed(base, *capability, no_interactive)
+        }),
+    )
+}
+
+pub(crate) fn parse_capability_strings<'a>(
+    additional: impl IntoIterator<Item = &'a str>,
+) -> Vec<LlrtSupportedModules> {
+    additional
+        .into_iter()
+        .filter_map(|capability| capability.parse().ok())
+        .collect()
+}
+
+pub(crate) fn merge_capability_strings_for_interaction<'a>(
+    base: &Option<HashSet<LlrtSupportedModules>>,
+    additional: impl IntoIterator<Item = &'a str>,
+    no_interactive: bool,
+) -> Option<HashSet<LlrtSupportedModules>> {
+    merge_capabilities_for_interaction(base, parse_capability_strings(additional), no_interactive)
+}
+
+fn load_manifest_capabilities(package_dir: &Path) -> Result<Vec<LlrtSupportedModules>> {
+    let manifest_path = package_dir.join("codemod.yaml");
+    let manifest_content = std::fs::read_to_string(&manifest_path).map_err(|error| {
+        Error::Other(format!(
+            "Failed to read codemod manifest '{}': {error}",
+            manifest_path.display()
+        ))
+    })?;
+    let manifest: CodemodManifestCapabilities =
+        serde_yaml::from_str(&manifest_content).map_err(|error| {
+            Error::Other(format!(
+                "Failed to parse codemod manifest '{}': {error}",
+                manifest_path.display()
+            ))
+        })?;
+
+    Ok(manifest
+        .capabilities
+        .unwrap_or_default()
+        .into_iter()
+        .filter_map(|capability| capability.parse().ok())
+        .collect())
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -932,6 +1081,7 @@ impl Engine {
             workflow_run_config: WorkflowRunConfig::default(),
             execution_stats: Arc::new(ExecutionStats::default()),
             metrics_context: MetricsContext::new(),
+            llm_usage_context: LlmUsageContext::new(),
             file_writer: Arc::new(AsyncFileWriter::new()),
             task_completion_notify: Arc::new(Notify::new()),
             scheduler_wake_notify,
@@ -960,6 +1110,7 @@ impl Engine {
             workflow_run_config,
             execution_stats: Arc::new(ExecutionStats::default()),
             metrics_context: MetricsContext::new(),
+            llm_usage_context: LlmUsageContext::new(),
             file_writer: Arc::new(AsyncFileWriter::new()),
             task_completion_notify: Arc::new(Notify::new()),
             scheduler_wake_notify,
@@ -976,6 +1127,53 @@ impl Engine {
 
     pub(crate) fn workflow_run_config(&self) -> &WorkflowRunConfig {
         &self.workflow_run_config
+    }
+
+    pub(crate) fn llm_request_handler(&self) -> LlmRequestHandler {
+        let usage_context = self.llm_usage_context.clone();
+        let provider = std::env::var("LLM_PROVIDER")
+            .unwrap_or_else(|_| "openai".to_string())
+            .trim()
+            .to_ascii_lowercase();
+        let model = std::env::var("LLM_MODEL").unwrap_or_default();
+        let endpoint = std::env::var("LLM_BASE_URL").unwrap_or_else(|_| match provider.as_str() {
+            "anthropic" => "https://api.anthropic.com".to_string(),
+            _ => "https://api.openai.com/v1".to_string(),
+        });
+        let api_key = std::env::var("LLM_API_KEY").unwrap_or_default();
+
+        Arc::new(move |request| {
+            let usage_context = usage_context.clone();
+            let provider = provider.clone();
+            let model = model.clone();
+            let endpoint = endpoint.clone();
+            let api_key = api_key.clone();
+
+            Box::pin(async move {
+                if api_key.trim().is_empty() {
+                    usage_context.record_error(&provider, &model);
+                    return Err("Engine LLM client requires LLM_API_KEY".to_string());
+                }
+                if model.trim().is_empty() {
+                    usage_context.record_error(&provider, &model);
+                    return Err("Engine LLM client requires LLM_MODEL".to_string());
+                }
+
+                let result = generate_llm(GenerateRequest {
+                    endpoint,
+                    api_key,
+                    model: model.clone(),
+                    provider: provider.clone(),
+                    system_prompt: request.system_prompt,
+                    prompt: request.prompt,
+                    output_schema: request.output_schema,
+                    max_tokens: request.max_tokens,
+                })
+                .await;
+
+                record_llm_result(&usage_context, &provider, &model, result)
+            })
+        })
     }
 
     pub(crate) fn state_adapter(&self) -> Arc<Mutex<Box<dyn StateAdapter>>> {
@@ -1009,6 +1207,7 @@ impl Engine {
             workflow_run_config,
             execution_stats: Arc::new(ExecutionStats::default()),
             metrics_context: MetricsContext::new(),
+            llm_usage_context: LlmUsageContext::new(),
             file_writer: Arc::new(AsyncFileWriter::new()),
             task_completion_notify: Arc::new(Notify::new()),
             scheduler_wake_notify,
@@ -1464,7 +1663,8 @@ impl Engine {
         capabilities: Option<&HashSet<LlrtSupportedModules>>,
     ) -> Result<Uuid> {
         validate_workflow(&workflow, bundle_path.as_deref().unwrap_or(Path::new("")))?;
-        self.validate_codemod_dependencies(&workflow, &[]).await?;
+        self.validate_codemod_dependencies(&workflow, bundle_path.as_deref(), &[])
+            .await?;
 
         let workflow_run = WorkflowRun {
             id: workflow_run_id,
@@ -1774,14 +1974,15 @@ impl Engine {
     ///
     /// # Returns
     /// * `Ok(())` if no cycles are detected
-    /// * `Err(Error::Other)` if a cycle is found, with detailed information about the cycle
+    /// * `Err(Error::Other)` if a cycle is found
     async fn validate_codemod_dependencies(
         &self,
         workflow: &Workflow,
+        bundle_path: Option<&Path>,
         dependency_chain: &[CodemodDependency],
     ) -> Result<()> {
         NestedCodemodService::new(&self.workflow_run_config.execution.registry_client)
-            .validate_workflow_dependencies(workflow, dependency_chain)
+            .validate_workflow_dependencies(workflow, bundle_path, dependency_chain)
             .await
     }
 
@@ -2416,6 +2617,7 @@ impl Engine {
                     dependency_chain: &[],
                     capabilities: &self.workflow_run_config.execution.capabilities,
                     task_expr_ctx: task_expr_ctx.as_ref(),
+                    progress_task_id: None,
                     logger: &step_logger,
                 },
             ))
@@ -2608,7 +2810,11 @@ impl Engine {
         let bundle_path = self.workflow_run_config.execution.bundle_path.clone();
         let progress_callback = self.workflow_run_config.execution.progress_callback.clone();
 
-        let config_path = bundle_path.join(&ast_grep.config_file);
+        let config_path = crate::utils::resolve_workflow_path_within_root(
+            &bundle_path,
+            &ast_grep.config_file,
+            "ast-grep.config_file",
+        )?;
 
         if !config_path.exists() {
             let message = format!("AST grep config file not found: {}", config_path.display());
@@ -2640,6 +2846,14 @@ impl Engine {
         }
 
         let config_path_clone = config_path.clone();
+        let base_path = ast_grep
+            .base_path
+            .as_deref()
+            .map(|base_path| {
+                crate::utils::validate_workflow_relative_path(base_path, "ast-grep.base_path")?;
+                Ok::<PathBuf, Error>(PathBuf::from(base_path.trim()))
+            })
+            .transpose()?;
 
         let scan_result = with_combined_scan(
             &config_path_clone.to_string_lossy(),
@@ -2651,7 +2865,7 @@ impl Engine {
                     pre_run_callback: None,
                     progress_callback: self.workflow_run_config.execution.progress_callback.clone(),
                     target_path: Some(self.workflow_run_config.execution.target_path.clone()),
-                    base_path: ast_grep.base_path.as_deref().map(PathBuf::from),
+                    base_path: base_path.clone(),
                     include_globs: ast_grep.include.as_deref().map(|v| v.to_vec()),
                     explicit_files: None,
                     exclude_globs: ast_grep.exclude.as_deref().map(|v| v.to_vec()),
@@ -2873,6 +3087,7 @@ impl Engine {
     pub async fn execute_js_ast_grep_step(
         &self,
         id: String,
+        progress_task_id: Option<String>,
         step_id: String,
         step_name: String,
         report_step_id: Option<String>,
@@ -2892,6 +3107,7 @@ impl Engine {
         JssgExecutionService::new(self)
             .execute(JssgExecutionRequest {
                 id,
+                progress_task_id,
                 step_id,
                 step_name,
                 report_step_id,
@@ -3237,7 +3453,6 @@ impl Engine {
         node: &Node,
         task: &Task,
         params: &HashMap<String, serde_json::Value>,
-        state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
         capabilities: &Option<HashSet<LlrtSupportedModules>>,
@@ -3247,8 +3462,14 @@ impl Engine {
 
         let resolved =
             NestedCodemodService::new(&self.workflow_run_config.execution.registry_client)
-                .resolve(&codemod.source, dependency_chain)
+                .resolve(&codemod.source, bundle_path.as_deref(), dependency_chain)
                 .await?;
+        let dependency_display_path = codemod_dependency_display_path(&resolved.dependency_chain);
+        notify_nested_codemod_progress(
+            &self.workflow_run_config.execution.progress_callback,
+            &task.id,
+            &dependency_display_path,
+        );
 
         slog!(
             logger,
@@ -3258,7 +3479,13 @@ impl Engine {
             resolved.package.package_dir.display()
         );
 
-        self.run_codemod_workflow_with_chain(
+        let run = registry_nested_codemod_run(&resolved.package, &resolved.dependency_chain);
+        let observer = self
+            .workflow_run_config
+            .execution
+            .nested_codemod_run_observer
+            .clone();
+        let operation = self.run_codemod_workflow_with_chain(
             &resolved.package,
             &resolved.workflow,
             codemod,
@@ -3268,13 +3495,16 @@ impl Engine {
             node,
             task,
             params,
-            state,
             bundle_path,
             &resolved.dependency_chain,
             capabilities,
             logger,
-        )
-        .await
+        );
+
+        match run {
+            Some(run) => observe_nested_codemod_run(observer.as_ref(), run, operation).await,
+            None => operation.await,
+        }
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -3289,7 +3519,6 @@ impl Engine {
         _node: &Node,
         task: &Task,
         params: &HashMap<String, serde_json::Value>,
-        state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
         dependency_chain: &[CodemodDependency],
         capabilities: &Option<HashSet<LlrtSupportedModules>>,
@@ -3352,6 +3581,16 @@ impl Engine {
             resolved_package.spec.name,
             codemod_params.len()
         );
+        let codemod_capabilities = merge_capabilities_for_interaction(
+            capabilities,
+            load_manifest_capabilities(&resolved_package.package_dir)?,
+            self.workflow_run_config.interaction.no_interactive,
+        );
+        let nested_progress_task_id = format!(
+            "{}:{}",
+            task.id,
+            codemod_dependency_display_path(dependency_chain)
+        );
 
         // Execute the codemod workflow synchronously by running its steps directly
         // This avoids the recursive engine execution cycle
@@ -3370,11 +3609,20 @@ impl Engine {
         // Execute each node in the codemod workflow
         for node in &codemod_workflow.nodes {
             for step in &node.steps {
+                // Earlier child steps persist state onto the parent workflow run.
+                // Refresh before conditions and execution, just like top-level steps.
+                let state = self
+                    .state_adapter
+                    .lock()
+                    .await
+                    .get_state(task.workflow_run_id)
+                    .await?;
+
                 if let Some(condition) = &step.condition {
                     let should_execute = evaluate_condition(
                         condition,
                         params,
-                        state,
+                        &state,
                         task.matrix_values.as_ref(),
                         None,
                         Some(&codemod_task_expr_ctx),
@@ -3403,12 +3651,13 @@ impl Engine {
                         node,
                         task,
                         params,
-                        state,
+                        state: &state,
                         workflow: codemod_workflow,
                         bundle_path: &codemod_bundle_path,
                         dependency_chain,
-                        capabilities,
+                        capabilities: &codemod_capabilities,
                         task_expr_ctx: Some(&codemod_task_expr_ctx),
+                        progress_task_id: Some(&nested_progress_task_id),
                         logger,
                     })
                     .await?;
@@ -3434,6 +3683,18 @@ impl Engine {
         use butterflow_models::step::ShardMethod;
 
         let target_path = self.workflow_run_config.execution.target_path.clone();
+        let mut resolved_shard_config = shard_config.clone();
+        if let Some(target) = &shard_config.target {
+            resolved_shard_config.target = Some(resolve_string_with_expression(
+                target,
+                params,
+                state,
+                task.matrix_values.as_ref(),
+                None,
+                task_expr_ctx,
+            )?);
+        }
+        let shard_config = &resolved_shard_config;
 
         // If a js-ast-grep config is set, pre-scan to find only files with matches
         let eligible_files = if let Some(js_ast_grep) = &shard_config.js_ast_grep {
@@ -3584,6 +3845,7 @@ impl Engine {
 
         self.execute_js_ast_grep_step(
             task_id.to_string(),
+            None,
             "shard-scan".to_string(),
             "Shard Scan".to_string(),
             None,
@@ -3676,7 +3938,11 @@ impl Engine {
         use codemod_sandbox::utils::project_discovery::find_tsconfig;
 
         let effective_bundle_path = &self.workflow_run_config.execution.bundle_path;
-        let func_path = effective_bundle_path.join(&func.function);
+        let func_path = crate::utils::resolve_workflow_path_within_root(
+            effective_bundle_path,
+            &func.function,
+            "shard.method.function",
+        )?;
 
         if !func_path.exists() {
             return Err(Error::Runtime(format!(
@@ -3689,12 +3955,13 @@ impl Engine {
         let files: Vec<String> = if let Some(eligible) = eligible_files {
             eligible.to_vec()
         } else if let Some(file_pattern) = &shard_config.file_pattern {
+            crate::utils::validate_workflow_glob_pattern(file_pattern, "shard.file_pattern")?;
             let target = shard_config.target.as_deref().unwrap_or(".");
-            let search_base = if Path::new(target).is_absolute() {
-                PathBuf::from(target)
-            } else {
-                target_path.join(target)
-            };
+            let search_base = crate::utils::resolve_workflow_path_within_root(
+                target_path,
+                target,
+                "shard.target",
+            )?;
             let found = collect_files_with_pattern(&search_base, file_pattern)
                 .map_err(|e| Error::Runtime(format!("Failed to collect files: {e}")))?;
             found
@@ -3889,8 +4156,7 @@ impl Engine {
         state: &HashMap<String, serde_json::Value>,
         bundle_path: &Option<PathBuf>,
     ) -> Result<PreparedStepExecution> {
-        // Start with a copy of the parent process's environment
-        let mut env: HashMap<String, String> = std::env::vars().collect();
+        let mut env = parent_env_for_child_processes();
 
         // Set npm_config_yes for non-interactive mode (auto-accept package installations)
         if self.workflow_run_config.interaction.no_interactive {
@@ -4051,6 +4317,31 @@ impl Engine {
     }
 }
 
+fn registry_nested_codemod_run(
+    package: &ResolvedPackage,
+    dependency_chain: &[CodemodDependency],
+) -> Option<NestedCodemodRun> {
+    let metadata = package.registry_metadata.as_ref()?;
+    Some(NestedCodemodRun {
+        codemod_name: metadata.package_web_path.clone(),
+        package_version: package.version.clone(),
+        execution_id: Uuid::new_v4().to_string(),
+        dependency_path: dependency_chain
+            .iter()
+            .map(|dependency| {
+                if dependency.source.starts_with("./")
+                    || dependency.source.starts_with("../")
+                    || dependency.source.starts_with("/")
+                {
+                    "<local>".to_string()
+                } else {
+                    dependency.source.clone()
+                }
+            })
+            .collect(),
+    })
+}
+
 impl Clone for Engine {
     fn clone(&self) -> Self {
         Self {
@@ -4060,6 +4351,7 @@ impl Clone for Engine {
             workflow_run_config: self.workflow_run_config.clone(),
             execution_stats: Arc::clone(&self.execution_stats),
             metrics_context: self.metrics_context.clone(),
+            llm_usage_context: self.llm_usage_context.clone(),
             file_writer: Arc::clone(&self.file_writer),
             task_completion_notify: Arc::clone(&self.task_completion_notify),
             scheduler_wake_notify: Arc::clone(&self.scheduler_wake_notify),
@@ -4075,11 +4367,221 @@ mod tests {
     use crate::config::{
         InstallSkillExecutionRequest, InstallSkillExecutor, SelectionPrompt, SelectionPromptOption,
     };
+    use crate::registry::{PackageSpec, RegistryPackageMetadata};
     use anyhow::Result as AnyhowResult;
-    use butterflow_models::step::{SemanticAnalysisConfig, SemanticAnalysisMode};
+    use butterflow_models::step::{
+        BuiltinShardMethod, BuiltinShardType, SemanticAnalysisConfig, SemanticAnalysisMode,
+        ShardMethod, UseShard,
+    };
+    use butterflow_state::mock_adapter::MockStateAdapter;
     use serial_test::serial;
     use std::sync::Arc;
     use tokio::sync::mpsc;
+
+    fn resolved_package(registry_metadata: Option<RegistryPackageMetadata>) -> ResolvedPackage {
+        ResolvedPackage {
+            spec: PackageSpec {
+                scope: None,
+                name: "child".to_string(),
+                version: Some("1.2.3".to_string()),
+            },
+            version: "1.2.3".to_string(),
+            package_dir: PathBuf::from("/tmp/child"),
+            dry_run_only: false,
+            registry_metadata,
+        }
+    }
+
+    #[test]
+    fn nested_run_is_created_only_for_registry_packages() {
+        let dependency_chain = vec![
+            CodemodDependency {
+                source: "@codemod/child-a".to_string(),
+                identity: "@codemod/child-a".to_string(),
+            },
+            CodemodDependency {
+                source: "/Users/example/private/absolute-child".to_string(),
+                identity: "/Users/example/private/absolute-child".to_string(),
+            },
+            CodemodDependency {
+                source: "./private/relative-child".to_string(),
+                identity: "./private/relative-child".to_string(),
+            },
+            CodemodDependency {
+                source: "../private/sibling-child".to_string(),
+                identity: "../private/sibling-child".to_string(),
+            },
+            CodemodDependency {
+                source: "@alias/child-b".to_string(),
+                identity: "@alias/child-b".to_string(),
+            },
+        ];
+        let registry_package = resolved_package(Some(RegistryPackageMetadata {
+            registry_base_url: "https://app.codemod.com".to_string(),
+            package_web_path: "@codemod/child-b".to_string(),
+            access: Some("public".to_string()),
+        }));
+
+        let run = registry_nested_codemod_run(&registry_package, &dependency_chain)
+            .expect("registry package run");
+        assert_eq!(run.codemod_name, "@codemod/child-b");
+        assert_eq!(run.package_version, "1.2.3");
+        assert_eq!(
+            run.dependency_path,
+            vec![
+                "@codemod/child-a",
+                "<local>",
+                "<local>",
+                "<local>",
+                "@alias/child-b"
+            ]
+        );
+        assert_eq!(run.dependency_path.len(), dependency_chain.len());
+        assert!(!run
+            .dependency_path
+            .iter()
+            .any(|segment| segment.contains("private")));
+        assert!(registry_nested_codemod_run(&resolved_package(None), &dependency_chain).is_none());
+    }
+
+    #[test]
+    fn nested_manifest_capabilities_merge_with_parent_capabilities() {
+        let package_dir = tempfile::tempdir().expect("package dir");
+        std::fs::write(
+            package_dir.path().join("codemod.yaml"),
+            r#"
+schema_version: 1.0.0
+name: child
+version: 1.0.0
+description: child
+author: test
+capabilities:
+  - fs
+  - child_process
+"#,
+        )
+        .expect("manifest");
+
+        let parent = Some([LlrtSupportedModules::Fetch].into_iter().collect());
+        let merged = merge_capabilities(
+            &parent,
+            load_manifest_capabilities(package_dir.path()).expect("capabilities"),
+        )
+        .expect("merged capabilities");
+
+        assert!(merged.contains(&LlrtSupportedModules::Fetch));
+        assert!(merged.contains(&LlrtSupportedModules::Fs));
+        assert!(merged.contains(&LlrtSupportedModules::ChildProcess));
+    }
+
+    #[test]
+    fn nested_manifest_without_capabilities_preserves_parent_capabilities() {
+        let package_dir = tempfile::tempdir().expect("package dir");
+        std::fs::write(
+            package_dir.path().join("codemod.yaml"),
+            r#"
+schema_version: 1.0.0
+name: child
+version: 1.0.0
+description: child
+author: test
+"#,
+        )
+        .expect("manifest");
+
+        let parent = Some([LlrtSupportedModules::Fetch].into_iter().collect());
+        let merged = merge_capabilities(
+            &parent,
+            load_manifest_capabilities(package_dir.path()).expect("capabilities"),
+        )
+        .expect("merged capabilities");
+
+        assert_eq!(merged.len(), 1);
+        assert!(merged.contains(&LlrtSupportedModules::Fetch));
+    }
+
+    #[test]
+    fn js_ast_grep_step_capabilities_merge_with_run_capabilities() {
+        let run_capabilities = Some([LlrtSupportedModules::Fetch].into_iter().collect());
+        let step_capabilities = ["fs", "child_process", "unknown"];
+        let merged = merge_capabilities(
+            &run_capabilities,
+            parse_capability_strings(step_capabilities),
+        )
+        .expect("merged capabilities");
+
+        assert!(merged.contains(&LlrtSupportedModules::Fetch));
+        assert!(merged.contains(&LlrtSupportedModules::Fs));
+        assert!(merged.contains(&LlrtSupportedModules::ChildProcess));
+        assert_eq!(merged.len(), 3);
+    }
+
+    #[test]
+    fn noninteractive_merge_filters_new_unsafe_capabilities() {
+        let run_capabilities = Some([LlrtSupportedModules::Fetch].into_iter().collect());
+        let step_capabilities = ["fs", "child_process"];
+        let merged =
+            merge_capability_strings_for_interaction(&run_capabilities, step_capabilities, true)
+                .expect("merged capabilities");
+
+        assert!(merged.contains(&LlrtSupportedModules::Fetch));
+        assert!(!merged.contains(&LlrtSupportedModules::Fs));
+        assert!(!merged.contains(&LlrtSupportedModules::ChildProcess));
+        assert_eq!(merged.len(), 1);
+    }
+
+    #[test]
+    fn noninteractive_merge_keeps_preapproved_unsafe_capabilities() {
+        let run_capabilities = Some([LlrtSupportedModules::Fs].into_iter().collect());
+        let step_capabilities = ["fs", "child_process"];
+        let merged =
+            merge_capability_strings_for_interaction(&run_capabilities, step_capabilities, true)
+                .expect("merged capabilities");
+
+        assert!(merged.contains(&LlrtSupportedModules::Fs));
+        assert!(!merged.contains(&LlrtSupportedModules::ChildProcess));
+        assert_eq!(merged.len(), 1);
+    }
+
+    #[test]
+    fn openai_compatible_success_and_error_share_one_provider_name() {
+        let usage_context = LlmUsageContext::new();
+
+        let response = record_llm_result(
+            &usage_context,
+            "openai_compatible",
+            "compatible-model",
+            Ok(GenerateResponse {
+                output: "welcomeTitle".to_string(),
+                provider: "openai_compatible".to_string(),
+                model: "compatible-model".to_string(),
+                usage: Some(codemod_ai::llm::TokenUsage {
+                    uncached_input_tokens: Some(10),
+                    cache_read_input_tokens: None,
+                    cache_write_input_tokens: None,
+                    output_tokens: Some(2),
+                    reasoning_tokens: None,
+                    total_tokens: Some(12),
+                }),
+            }),
+        )
+        .expect("successful response should be returned");
+        assert_eq!(response.output, "welcomeTitle");
+
+        record_llm_result(
+            &usage_context,
+            "openai_compatible",
+            "compatible-model",
+            Err(GenerateError::Request("rate limited".to_string())),
+        )
+        .expect_err("provider error should be returned");
+
+        let records = usage_context.get_all();
+        assert_eq!(records.len(), 2);
+        assert!(records
+            .iter()
+            .all(|record| record.provider == "openai_compatible"));
+    }
 
     struct EnvVarGuard {
         key: &'static str,
@@ -4118,6 +4620,65 @@ mod tests {
     }
 
     #[test]
+    #[serial]
+    fn parent_env_preserves_llm_env_for_cloud_backend() {
+        let _backend_guard = EnvVarGuard::unset("BUTTERFLOW_STATE_BACKEND");
+        let _token_guard = EnvVarGuard::unset("BUTTERFLOW_API_AUTH_TOKEN");
+        let _llm_guard = EnvVarGuard::unset("LLM_API_KEY");
+        let _llm_base_url_guard = EnvVarGuard::unset("LLM_BASE_URL");
+        let _git_askpass_guard = EnvVarGuard::unset("GIT_ASKPASS");
+        let _http_proxy_guard = EnvVarGuard::unset("HTTP_PROXY");
+
+        std::env::set_var("BUTTERFLOW_API_AUTH_TOKEN", "local-token");
+        std::env::set_var("LLM_API_KEY", "local-llm-key");
+        std::env::set_var("LLM_BASE_URL", "http://local-llm.example/v1");
+
+        let local_env = parent_env_for_child_processes();
+        assert_eq!(
+            local_env
+                .get("BUTTERFLOW_API_AUTH_TOKEN")
+                .map(String::as_str),
+            Some("local-token")
+        );
+        assert_eq!(
+            local_env.get("LLM_API_KEY").map(String::as_str),
+            Some("local-llm-key")
+        );
+        assert_eq!(
+            local_env.get("LLM_BASE_URL").map(String::as_str),
+            Some("http://local-llm.example/v1")
+        );
+
+        std::env::set_var("BUTTERFLOW_STATE_BACKEND", "cloud");
+        std::env::set_var("GIT_ASKPASS", "/tmp/codemod-git-askpass");
+        std::env::set_var("HTTP_PROXY", "http://proxy.example");
+
+        let cloud_env = parent_env_for_child_processes();
+        assert_eq!(
+            cloud_env
+                .get("BUTTERFLOW_API_AUTH_TOKEN")
+                .map(String::as_str),
+            Some("local-token")
+        );
+        assert_eq!(
+            cloud_env.get("LLM_API_KEY").map(String::as_str),
+            Some("local-llm-key")
+        );
+        assert_eq!(
+            cloud_env.get("LLM_BASE_URL").map(String::as_str),
+            Some("http://local-llm.example/v1")
+        );
+        assert_eq!(
+            cloud_env.get("GIT_ASKPASS").map(String::as_str),
+            Some("/tmp/codemod-git-askpass")
+        );
+        assert_eq!(
+            cloud_env.get("HTTP_PROXY").map(String::as_str),
+            Some("http://proxy.example")
+        );
+    }
+
+    #[test]
     fn shard_scan_falls_back_to_selector_matches_when_dry_run_finds_no_edits() {
         let eligible = select_shard_scan_eligible_files(
             Vec::new(),
@@ -4135,6 +4696,85 @@ mod tests {
         );
 
         assert_eq!(eligible, vec!["src/changed.ts"]);
+    }
+
+    #[tokio::test]
+    async fn shard_step_resolves_target_expression() {
+        let temp_dir = tempfile::TempDir::new().unwrap();
+        let temp_path = temp_dir.path();
+        std::fs::create_dir_all(temp_path.join("packages/app")).unwrap();
+        std::fs::write(temp_path.join("packages/app/one.ts"), "const one = 1;\n").unwrap();
+        std::fs::write(temp_path.join("packages/app/two.ts"), "const two = 2;\n").unwrap();
+
+        let workflow_run_id = Uuid::new_v4();
+        let config = WorkflowRunConfig {
+            execution: crate::config::WorkflowExecutionSettings {
+                target_path: temp_path.to_path_buf(),
+                ..WorkflowRunConfig::default().execution
+            },
+            ..WorkflowRunConfig::default()
+        };
+        let engine = Engine::with_state_adapter(Box::new(MockStateAdapter::new()), config);
+        let task = Task::new(workflow_run_id, "shard-node".to_string(), false);
+        let params = HashMap::from([(
+            "shardingDirectoryTarget".to_string(),
+            serde_json::json!("packages/app"),
+        )]);
+        let shard_config = UseShard {
+            method: ShardMethod::Builtin(BuiltinShardMethod {
+                r#type: BuiltinShardType::Directory,
+                max_files_per_shard: serde_json::json!(1),
+                min_shard_size: None,
+            }),
+            target: Some("${{ params.shardingDirectoryTarget }}".to_string()),
+            output_state: "shards".to_string(),
+            file_pattern: Some("**/*.ts".to_string()),
+            js_ast_grep: None,
+        };
+
+        let result = engine
+            .execute_shard_step(
+                &shard_config,
+                &task,
+                &params,
+                &HashMap::new(),
+                None,
+                &StructuredLogger::default(),
+            )
+            .await;
+
+        assert!(
+            result.is_ok(),
+            "shard target expressions should resolve before path validation: {result:?}"
+        );
+
+        let state = engine
+            .state_adapter
+            .lock()
+            .await
+            .get_state(workflow_run_id)
+            .await
+            .unwrap();
+        let shards = state
+            .get("shards")
+            .and_then(serde_json::Value::as_array)
+            .expect("shard step should write shards to state");
+        let shard_files = shards
+            .iter()
+            .flat_map(|shard| {
+                shard
+                    .get("_meta_files")
+                    .and_then(serde_json::Value::as_array)
+                    .into_iter()
+                    .flatten()
+                    .filter_map(serde_json::Value::as_str)
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            shard_files,
+            vec!["packages/app/one.ts", "packages/app/two.ts"]
+        );
     }
 
     #[test]
@@ -4200,6 +4840,7 @@ export default function transform(ast) {
         engine
             .execute_js_ast_grep_step(
                 "test-node".to_string(),
+                None,
                 "test-step".to_string(),
                 "test-step".to_string(),
                 None,

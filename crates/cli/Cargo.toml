@@ -32,6 +32,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 serde_json_canonicalizer = { workspace = true }
 serde_yaml = { workspace = true }
+semver = { workspace = true }
 anyhow = { workspace = true }
 uuid = { workspace = true }
 chrono = { workspace = true }
@@ -71,14 +72,17 @@ libtest-mimic = "0.8"
 similar = "2.0"
 ast-grep-language.workspace = true
 tabled = "0.20.0"
-posthog-rs = "0.3.7"
 async-trait.workspace = true
 indicatif = "0.18.0"
 ratatui = { workspace = true }
 crossterm = { workspace = true }
 futures = { workspace = true }
 toml_edit = "0.22"
+jsonc-parser = { version = "0.26", features = ["cst", "serde"] }
 arboard = "3.4"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
 
 [dev-dependencies]
 portable-pty = "0.9"
