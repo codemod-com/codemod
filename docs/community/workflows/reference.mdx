@@ -506,7 +506,7 @@ steps:
 </ParamField>
 
 <ParamField path="codemod.source" type="string" required>
-  Codemod source (registry package or local path). Supports version pinning: `@scope/pkg@1.2.3`.
+  Codemod source (registry package or local path). Supports version pinning: `@scope/pkg@1.2.3`. A local path that starts with `./` or `../` is relative to the directory that contains the workflow file with the step, not to the directory you run the CLI from.
 </ParamField>
 
 <ParamField path="codemod.args" type="string[]">
@@ -537,6 +537,15 @@ steps:
       npm run build
 ```
 
+On macOS and Linux, use `$CODEMOD_PATH` to run a shell script bundled with your codemod package. It points to the package root. Quote the script path so it works when the package directory contains spaces:
+
+```yaml workflow.yaml
+steps:
+  - name: Install dependency
+    run: |
+      "$CODEMOD_PATH/scripts/add-dependency.sh"
+```
+
 **Shell Command Step Parameters**:
 
 <ParamField path="name" type="string" required>
@@ -548,8 +557,12 @@ steps:
 </ParamField>
 
 <ParamField path="run" type="string" required>
-  Inline shell command to execute.
+  Inline shell command to execute. It runs with `sh -c` on macOS and Linux, and as a batch file with `cmd.exe` on Windows. Use the `CODEMOD_PATH` environment variable for scripts or files bundled with the codemod package.
 </ParamField>
+
+<Note>
+  On Windows, every line runs in order and the step's exit code is the last command's, as with `sh`. Batch-file rules apply: write a literal `%` as `%%` (for example in a URL, `%%20`) and `for` loop variables as `%%i`. A command that is itself a batch file, such as `npm`, `npx` or `pnpm`, is run with `call` automatically at the start of a line or after `&`, `&&` or `||`, so the lines after it still run. Inside `if` or `for`, write `call npm ...` yourself.
+</Note>
 
 <ParamField path="env" type="object">
   Step-level environment variables applied to the process environment.
@@ -723,6 +736,11 @@ state:
 <Info>
 State updates must be valid JSON if not primitive. Updates are applied only if the task exits successfully.
 </Info>
+
+When you run a nested `codemod:` step, its child steps share the parent workflow
+run's persisted state. Each child step reads that state before evaluating its `if`
+condition and executing its action, so later steps can use earlier steps' persisted
+updates, including values written with `setState` in JSSG transforms.
 
 ---
 
