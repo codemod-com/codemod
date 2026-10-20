@@ -7,22 +7,19 @@
     "type": "git",
     "url": "https://github.com/codemod/codemod"
   },
-  "files": [
-    "dist/js",
-    "sandbox.wasm"
-  ],
   "type": "module",
   "main": "./dist/js/index.js",
-  "types": "dist/js/index.d.ts",
   "exports": {
     ".": "./dist/js/index.js",
     "./node": "./dist/js/node-exports.js",
     "./sandbox.wasm": "./sandbox.wasm",
     "./web": "./dist/js/web-exports.js"
   },
-  "publishConfig": {
-    "access": "public"
-  },
+  "types": "dist/js/index.d.ts",
+  "files": [
+    "dist/js",
+    "sandbox.wasm"
+  ],
   "scripts": {
     "prepack": "pnpm run build",
     "build:rs": "cd ../.. && cargo run -p codemod-sandbox-build --features=optimize --color=always -- -r --optimize",
@@ -46,5 +43,8 @@
     "tsx": "^4.19.3",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.4.1+sha512.c753b6c3ad7afa13af388fa6d808035a008e30ea9993f58c6663e2bc5ff21679aa834db094987129aa4d488b86df57f7b634981b2f827cdcacc698cc0cfb88af"
+  "packageManager": "pnpm@10.4.1+sha512.c753b6c3ad7afa13af388fa6d808035a008e30ea9993f58c6663e2bc5ff21679aa834db094987129aa4d488b86df57f7b634981b2f827cdcacc698cc0cfb88af",
+  "publishConfig": {
+    "access": "public"
+  }
 }
