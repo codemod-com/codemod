@@ -165,6 +165,21 @@ function findRawImportMatches<T extends Language>(
     ],
   } satisfies Rule<Language>;
 
+  const callbackObjectPattern = {
+    kind: "object_pattern",
+    any: [
+      { inside: { kind: "formal_parameters" } },
+      { inside: { field: "pattern", inside: { kind: "formal_parameters" } } },
+      {
+        inside: {
+          kind: "assignment_pattern",
+          field: "left",
+          inside: { kind: "formal_parameters" },
+        },
+      },
+    ],
+  } satisfies Rule<Language>;
+
   return tsProgram.findAll({
     utils: {
       [CJS_OR_DYNAMIC_VALUE_UTIL_RULE]: cjsOrDynamicValue,
@@ -238,15 +253,11 @@ function findRawImportMatches<T extends Language>(
                     kind: "formal_parameters",
                   },
                 },
-                // - TypeScript wraps each parameter in `required_parameter`
-                //   (identifier > required_parameter > formal_parameters). That kind does
-                //   not exist in the JavaScript grammar, so match by shape (grandparent)
-                //   instead of naming the kind, which would make the whole rule invalid for JS.
+                // TypeScript parameter wrappers expose their binding in the pattern field.
                 {
                   kind: "identifier",
                   pattern: "$NAMESPACE_ALIAS",
                   inside: {
-                    kind: "required_parameter",
                     field: "pattern",
                     inside: {
                       kind: "formal_parameters",
@@ -259,23 +270,19 @@ function findRawImportMatches<T extends Language>(
                   pattern: "$NAMESPACE_ALIAS",
                   inside: {
                     kind: "arrow_function",
+                    field: "parameter",
                   },
                 },
                 // - dynamic with destructured callback: import("mod").then(({test}) => ...)
                 {
                   kind: "shorthand_property_identifier_pattern",
                   pattern: "$ORIGINAL",
-                  inside: {
-                    kind: "object_pattern",
-                    inside: {
-                      kind: "formal_parameters",
-                    },
-                  },
+                  inside: callbackObjectPattern,
                 },
                 // - dynamic with destructured + alias callback: import("mod").then(({test: alias}) => ...)
                 {
                   all: [
-                    { kind: "pair_pattern" },
+                    { kind: "pair_pattern", inside: callbackObjectPattern },
                     { has: { field: "key", kind: "property_identifier", pattern: "$ORIGINAL" } },
                     {
                       not: { has: { field: "key", kind: "property_identifier", regex: "default" } },
@@ -286,7 +293,7 @@ function findRawImportMatches<T extends Language>(
                 // - dynamic with destructured callback using default: import("mod").then(({default: test}) => ...)
                 {
                   all: [
-                    { kind: "pair_pattern" },
+                    { kind: "pair_pattern", inside: callbackObjectPattern },
                     { has: { field: "key", kind: "property_identifier", regex: "default" } },
                     { has: { field: "value", kind: "identifier", pattern: "$VAR_NAME" } },
                   ],
@@ -295,37 +302,52 @@ function findRawImportMatches<T extends Language>(
             },
             {
               inside: {
-                stopBy: "end",
-                kind: "call_expression",
-                has: {
-                  field: "function",
-                  kind: "member_expression",
-                  all: [
-                    {
-                      has: {
-                        field: "property",
-                        kind: "property_identifier",
-                        regex: "^then$",
-                      },
-                    },
-                    {
-                      has: {
-                        field: "object",
-                        kind: "call_expression",
-                        has: {
-                          field: "arguments",
-                          kind: "arguments",
+                stopBy: {
+                  any: [
+                    { kind: "arrow_function" },
+                    { kind: "function_expression" },
+                    { kind: "function_declaration" },
+                    { kind: "generator_function" },
+                    { kind: "generator_function_declaration" },
+                    { kind: "method_definition" },
+                  ],
+                },
+                any: [{ kind: "arrow_function" }, { kind: "function_expression" }],
+                inside: {
+                  kind: "arguments",
+                  inside: {
+                    kind: "call_expression",
+                    has: {
+                      field: "function",
+                      kind: "member_expression",
+                      all: [
+                        {
                           has: {
-                            kind: "string",
+                            field: "property",
+                            kind: "property_identifier",
+                            regex: "^then$",
+                          },
+                        },
+                        {
+                          has: {
+                            field: "object",
+                            kind: "call_expression",
                             has: {
-                              kind: "string_fragment",
-                              pattern: "$SOURCE",
+                              field: "arguments",
+                              kind: "arguments",
+                              has: {
+                                kind: "string",
+                                has: {
+                                  kind: "string_fragment",
+                                  pattern: "$SOURCE",
+                                },
+                              },
                             },
                           },
                         },
-                      },
+                      ],
                     },
-                  ],
+                  },
                 },
               },
             },

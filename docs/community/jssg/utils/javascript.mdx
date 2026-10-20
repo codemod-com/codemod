@@ -123,6 +123,10 @@ Locate imports of a given module and return their alias/identifier nodes.
 
 Returns an empty array if no imports are found.
 
+For JavaScript, TypeScript, and TSX, dynamic `import("module").then(...)` callbacks
+return the callback's parameter binding. Identifiers in its body, nested function
+parameters, and identifiers in TypeScript parameter default values are excluded.
+
 **Example**
 
 ```typescript
