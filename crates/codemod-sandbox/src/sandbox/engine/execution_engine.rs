@@ -157,6 +157,7 @@ pub struct FileChange {
 /// and any secondary file changes produced by `jssgTransform`.
 #[derive(Debug, Clone)]
 pub struct CodemodOutput {
+    pub matches: Vec<crate::matches::MatchLocation>,
     pub primary: ExecutionResult,
     pub secondary: Vec<FileChange>,
 }
@@ -470,6 +471,7 @@ where
 
     // Capture metrics context and shared state context for use inside async block
     let metrics_context = options.metrics_context.clone();
+    let match_context = crate::matches::MatchContext::default();
     let llm_runtime_context = LlmRuntimeContext::new(
         llm_capability_enabled
             .then(|| options.llm_request_handler.clone())
@@ -519,6 +521,12 @@ where
         ctx.store_userdata(TargetDirectory(options.target_directory.to_path_buf())).map_err(|e| ExecutionError::Runtime {
             source: crate::sandbox::errors::RuntimeError::InitializationFailed {
                 message: format!("Failed to store TargetDirectory: {:?}", e),
+            },
+        })?;
+
+        ctx.store_userdata(match_context.clone()).map_err(|e| ExecutionError::Runtime {
+            source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                message: format!("Failed to store MatchContext: {:?}", e),
             },
         })?;
 
@@ -659,13 +667,17 @@ where
                     .collect();
 
                 if ast_matches.is_empty() {
-                    return Ok(CodemodOutput { primary: ExecutionResult::Skipped, secondary: vec![] });
+                    return Ok(CodemodOutput { primary: ExecutionResult::Skipped, secondary: vec![], matches: vec![] });
                 }
 
-                Some(ast_matches.into_iter().map(|node_match| SgNodeRjs {
-                    root: Arc::clone(&parsed_content.inner),
-                    inner_node: node_match,
-                    _phantom: PhantomData,
+                Some(ast_matches.into_iter().map(|node_match| {
+                    let node = SgNodeRjs {
+                        root: Arc::clone(&parsed_content.inner),
+                        inner_node: node_match,
+                        _phantom: PhantomData,
+                    };
+                    node.record_match(&ctx);
+                    node
                 }).collect())
             } else {
                 None
@@ -712,7 +724,7 @@ where
                 .map(|guard| guard.clone())
                 .unwrap_or_default();
 
-            Ok(CodemodOutput { primary, secondary })
+            Ok(CodemodOutput { primary, secondary, matches: match_context.get_all() })
         };
         execution.await
     })

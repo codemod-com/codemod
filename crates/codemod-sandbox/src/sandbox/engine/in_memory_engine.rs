@@ -272,6 +272,7 @@ where
 
     // Capture metrics context and shared state context for use inside async block
     let metrics_context = options.metrics_context.clone();
+    let match_context = crate::matches::MatchContext::default();
     let llm_runtime_context = LlmRuntimeContext::new(options.llm_request_handler.clone());
     let shared_state_context = options.shared_state_context.clone();
     let runtime_hooks_context = RuntimeHooksContext::new(None, options.cancellation_flag.clone());
@@ -279,7 +280,14 @@ where
     let fs_sandbox = options.fs_sandbox.clone();
     let timeout_exceeded_check = Arc::clone(&timeout_exceeded);
 
+    let collected_matches = match_context.clone();
     let execution = async_with!(context => |ctx| {
+        ctx.store_userdata(match_context.clone()).map_err(|e| ExecutionError::Runtime {
+            source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                message: format!("Failed to store MatchContext: {:?}", e),
+            },
+        })?;
+
         // Store metrics context in runtime userdata if provided (must be done inside async_with)
         if let Some(ref metrics_ctx) = metrics_context {
             ctx.store_userdata(metrics_ctx.clone()).map_err(|e| ExecutionError::Runtime {
@@ -414,10 +422,14 @@ where
                     return Ok(ExecutionResult::Skipped);
                 }
 
-                Some(ast_matches.into_iter().map(|node_match| SgNodeRjs {
-                    root: Arc::clone(&parsed_content.inner),
-                    inner_node: node_match,
-                    _phantom: PhantomData,
+                Some(ast_matches.into_iter().map(|node_match| {
+                    let node = SgNodeRjs {
+                        root: Arc::clone(&parsed_content.inner),
+                        inner_node: node_match,
+                        _phantom: PhantomData,
+                    };
+                    node.record_match(&ctx);
+                    node
                 }).collect())
             } else {
                 None
@@ -528,6 +540,7 @@ where
     }
 
     result.map(|primary| CodemodOutput {
+        matches: collected_matches.get_all(),
         primary,
         secondary: vec![],
     })
@@ -558,7 +571,7 @@ mod tests {
     fn execute_runtime_codemod(codemod_content: &str) -> Result<CodemodOutput, ExecutionError> {
         let temp_dir = TempDir::new().expect("Failed to create temp directory");
         let resolver = Arc::new(OxcResolver::new(temp_dir.path().to_path_buf(), None).unwrap());
-        let content = "const x = 1;";
+        let content = "// café\nconst x = 1;";
         let ast = AstGrep::new(content, js_lang());
 
         execute_codemod_sync(InMemoryExecutionOptions {
@@ -582,6 +595,35 @@ mod tests {
             process_sandbox: None,
             fs_sandbox: None,
         })
+    }
+
+    #[test]
+    fn collects_and_deduplicates_match_locations_without_metrics() {
+        let output = execute_runtime_codemod(
+            r#"
+            export default function(root) {
+                root.root().findAll({rule: {kind: "identifier"}});
+                root.root().find({rule: {kind: "identifier"}});
+                root.root().find({rule: {pattern: "missing()"}});
+                return null;
+            }
+        "#,
+        )
+        .unwrap();
+        assert!(matches!(output.primary, ExecutionResult::Unmodified));
+        assert_eq!(
+            output.matches,
+            vec![crate::matches::MatchLocation {
+                path: "src/example.js".into(),
+                text: "x".into(),
+                start_byte: 15,
+                end_byte: 16,
+                start_line: 1,
+                end_line: 1,
+                start_column: 6,
+                end_column: 7,
+            }]
+        );
     }
 
     fn assert_runtime_hook_error(

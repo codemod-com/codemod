@@ -1031,3 +1031,16 @@ import runtime, {
 - Hooks are the preferred way to report semantic failures or progress to workflows and the TUI.
 - Uncaught exceptions still fail the task, but they provide less structured context.
 - `codemod:runtime` requires a runtime version that includes runtime-hook support.
+
+## Collected match locations
+
+JSSG execution results include deduplicated source locations from `find`, `findAll`,
+and exported selectors. Each location contains the source path, zero-based start
+and end lines/columns, end-exclusive byte offsets, and up to 500 characters of
+matched source. Repeated searches for the same node produce one location.
+Locations are collected even when the transform returns `null`. Searches on
+synthetic trees without a filename do not produce source locations.
+
+Insights uses these locations for file breakdowns and code samples. You do not
+need to encode paths or lines into metric cardinalities. Metric counters remain
+explicit: collected search matches can include nodes rejected by later predicates.

@@ -56,6 +56,17 @@ Use these categories when possible: `jssg` for JSSG feature requests or runtime 
 
 Keep feedback short and thematic. Do not include source code, secrets, auth tokens, private repository paths, user identity, or long transcripts.
 
+## Built-in JSSG match locations
+
+JSSG collects file paths, line/column ranges, byte offsets, and source snippets for
+nodes returned by `find`, `findAll`, and exported selectors, including read-only
+scripts that return `null`. Do not build separate location collectors or add
+file/line cardinalities just to show code samples or a per-file breakdown in Insights.
+Use Insights' `filePath` grouping and built-in code samples. Metric counters remain
+explicit and unchanged. Collected search matches may include nodes rejected by
+later script predicates; they are not per-metric evidence. Ranges are zero-based
+and end-exclusive; the UI displays one-based lines. Snippets stop at 500 characters.
+
 ## Authoring defaults
 
 - Treat the Codemod docs served through `codemod ai docs` or MCP resources as the source of truth for CLI, workflow, and JSSG semantics.

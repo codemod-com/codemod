@@ -24,6 +24,7 @@ async fn measure_completion_latency_once() -> Duration {
             let execution_task = tokio::task::spawn_local(async move {
                 let _ = release_rx.await;
                 Ok(CodemodOutput {
+                    matches: vec![],
                     primary: ExecutionResult::Unmodified,
                     secondary: vec![],
                 })

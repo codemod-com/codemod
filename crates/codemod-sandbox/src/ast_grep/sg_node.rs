@@ -456,6 +456,35 @@ fn find_node_at_range<'a>(
     }
 }
 
+impl SgNodeRjs<'_> {
+    pub(crate) fn record_match(&self, ctx: &Ctx<'_>) {
+        let Some(path) = self
+            .root
+            .relative_filename
+            .as_ref()
+            .or(self.root.filename.as_ref())
+        else {
+            return;
+        };
+        let Some(matches) = ctx.userdata::<crate::matches::MatchContext>() else {
+            return;
+        };
+        let start = self.inner_node.start_pos();
+        let end = self.inner_node.end_pos();
+        let range = self.inner_node.range();
+        matches.record(crate::matches::MatchLocation {
+            path: path.clone(),
+            text: self.inner_node.text().chars().take(500).collect(),
+            start_byte: range.start,
+            end_byte: range.end,
+            start_line: start.line(),
+            end_line: end.line(),
+            start_column: start.column(&self.inner_node),
+            end_column: end.column(&self.inner_node),
+        });
+    }
+}
+
 #[methods]
 impl<'js> SgNodeRjs<'js> {
     pub fn text(&self) -> Result<String> {
@@ -768,6 +797,7 @@ impl<'js> SgNodeRjs<'js> {
                     inner_node: static_node_match,
                     _phantom: PhantomData,
                 };
+                sg_node.record_match(&ctx);
                 sg_node.into_js(&ctx)
             }
             None => Ok(Value::new_null(ctx)),
@@ -784,11 +814,13 @@ impl<'js> SgNodeRjs<'js> {
             .map(|node_match| {
                 let static_node_match: NodeMatch<'static, TSDoc> =
                     unsafe { std::mem::transmute(node_match) };
-                SgNodeRjs {
+                let node = SgNodeRjs {
                     root: self.root.clone(),
                     inner_node: static_node_match,
                     _phantom: PhantomData,
-                }
+                };
+                node.record_match(&ctx);
+                node
             })
             .collect())
     }

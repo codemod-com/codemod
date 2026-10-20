@@ -8117,6 +8117,7 @@ async fn await_js_ast_grep_execution_task_returns_prompt_completion_without_poll
             let execution_task = tokio::task::spawn_local(async move {
                 let _ = release_rx.await;
                 Ok(CodemodOutput {
+                    matches: vec![],
                     primary: ExecutionResult::Unmodified,
                     secondary: vec![],
                 })
@@ -8178,6 +8179,7 @@ async fn await_js_ast_grep_execution_task_prefers_completed_result_over_later_id
             let execution_task = tokio::task::spawn_local(async move {
                 let _ = release_rx.await;
                 Ok(CodemodOutput {
+                    matches: vec![],
                     primary: ExecutionResult::Unmodified,
                     secondary: vec![],
                 })

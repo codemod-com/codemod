@@ -18,13 +18,28 @@ The JSSG source can come from:
 | **Select** | `File count` or `Metric` |
 | **Metric** | A named metric emitted by the JSSG source, with suggestions when Insights can extract them |
 | **Repository** | One or more repositories, or a repository template variable |
-| **Group by** | `repository`, `codeowner`, or metric cardinality keys |
+| **Group by** | `repository`, `codeowner`, `file path`, `directory`, or metric cardinality keys |
 | **Dimension filters** | Filter metric results by cardinality key-value pairs with equals, not-equals, or regex operators |
 | **File path filter** | Include or exclude files using glob patterns |
 | **Snapshot base** | A specific date or commit hash to analyze at a point in time, available for single number and table widgets |
 | **Query alias** | A label for the query result, available for timeseries and table widgets |
 
 When a JSSG metric includes cardinality keys, table widgets can use those keys to break down results by the dimension that matters to the migration, such as component name, API name, package, or risk category.
+
+## Match locations and code samples
+
+JSSG collects source locations automatically when your script calls `find` or
+`findAll`, or exports a selector. You do not need custom file or line metrics.
+A read-only script can return `null` and still contribute to **File count**.
+
+In a table widget, choose **Group by → File path** for a per-file breakdown.
+Use **View matches** in the **Code samples** column to inspect paths, line numbers,
+and source snippets. Each group shows up to five matches;
+each snippet is limited to 500 characters. Line numbers in the UI start at one.
+
+Samples describe AST search results. A script may reject some of those nodes after
+searching, so samples are not evidence for a specific metric or dimension filter.
+Existing metric counts and cardinalities keep their meaning.
 
 ## Related
 
