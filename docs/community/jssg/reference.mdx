@@ -140,6 +140,10 @@ if (node.is("function_declaration")) {
 <ParamField path="replace(text)" type="Edit">Create a replacement edit for this node.</ParamField>
 <ParamField path="commitEdits(edits)" type="string">Apply array of edits and return new code.</ParamField>
 
+Calling `root.root().commitEdits(edits)` preserves the file's leading whitespace and UTF-8 byte
+order mark (BOM). An empty edits array returns the original source unchanged. Calling
+`commitEdits` on a non-root node returns only that node's updated text.
+
 ### Semantic Analysis Methods
 
 <Info>
