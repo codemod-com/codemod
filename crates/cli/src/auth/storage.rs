@@ -11,9 +11,6 @@ use crate::auth::types::{AuthTokens, UserInfo};
 
 const DEFAULT_REGISTRY_URL: &str = "https://app.codemod.com";
 
-#[cfg(test)]
-pub(crate) static REGISTRY_ENV_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub default_registry: String,
@@ -385,7 +382,7 @@ mod tests {
 
     #[test]
     fn enable_anonymous_feedback_does_not_persist_registry_env_override() {
-        let _env_lock = super::REGISTRY_ENV_LOCK.lock().expect("registry env lock");
+        let _env_lock = crate::ENV_GUARD.lock().expect("registry env lock");
         let temp_dir = tempfile::tempdir().expect("expected temp dir");
         let storage =
             TokenStorage::with_config_dir(temp_dir.path().to_path_buf()).expect("storage");
