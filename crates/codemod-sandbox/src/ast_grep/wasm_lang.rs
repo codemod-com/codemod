@@ -495,6 +495,13 @@ impl Node {
     }
 }
 
+impl WasmDoc {
+    /// Full document source, including leading whitespace that the root node range excludes.
+    pub(crate) fn source_text(&self) -> String {
+        String::from_utf8_lossy(&self.source.inner).into_owned()
+    }
+}
+
 impl Doc for WasmDoc {
     type Lang = WasmLang;
     type Source = Wrapper;
