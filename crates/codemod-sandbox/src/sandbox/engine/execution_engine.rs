@@ -1,11 +1,15 @@
 use super::codemod_lang::CodemodLang;
-use super::curated_fs::{CuratedFsConfig, CuratedFsModule, CuratedFsPromisesModule};
+use super::curated_fs::{
+    normalize_virtual_absolute_path, CuratedFsConfig, CuratedFsModule, CuratedFsPromisesModule,
+    FileFetcher,
+};
 use super::quickjs_adapters::{QuickJSLoader, QuickJSResolver};
 use super::transform_helpers::{
     build_transform_options, process_transform_result, ModificationCheck,
 };
 use crate::ast_grep::sg_node::{SgNodeRjs, SgRootRjs};
 use crate::ast_grep::AstGrepModule;
+use crate::llm::{LlmModule, LlmRequestHandler, LlmRuntimeContext};
 use crate::metrics::{MetricsContext, MetricsModule};
 use crate::sandbox::errors::ExecutionError;
 use crate::sandbox::resolvers::ModuleResolver;
@@ -24,6 +28,7 @@ use rquickjs::prelude::Rest;
 use rquickjs::{async_with, AsyncContext, AsyncRuntime, Ctx, Object, Type, Value};
 use rquickjs::{CatchResultExt, Function, Module};
 use std::collections::{HashMap, HashSet};
+use std::io::Write;
 use std::marker::PhantomData;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::AtomicBool;
@@ -38,6 +43,13 @@ pub struct ExecutionModeFlag {
 
 unsafe impl<'js> rquickjs::JsLifetime<'js> for ExecutionModeFlag {
     type Changed<'to> = ExecutionModeFlag;
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct DryRunExecutionFlag(pub bool);
+
+unsafe impl<'js> rquickjs::JsLifetime<'js> for DryRunExecutionFlag {
+    type Changed<'to> = DryRunExecutionFlag;
 }
 
 fn install_console_bridge(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
@@ -226,6 +238,8 @@ pub struct JssgExecutionOptions<'a, R> {
     pub semantic_provider: Option<Arc<dyn SemanticProvider>>,
     /// Optional metrics context for tracking metrics across execution
     pub metrics_context: Option<MetricsContext>,
+    /// Optional engine-owned LLM request handler exposed through codemod:llm
+    pub llm_request_handler: Option<LlmRequestHandler>,
     /// Optional shared state context for cross-thread state communication
     pub shared_state_context: Option<SharedStateContext>,
     /// Optional runtime event callback for codemod:runtime hook emissions
@@ -239,6 +253,93 @@ pub struct JssgExecutionOptions<'a, R> {
     /// The target directory the codemod is running against.
     /// Used to validate that `jssgTransform` and `rename()` only access files within this directory.
     pub target_directory: &'a Path,
+}
+
+struct DryRunDiskFetcher {
+    target_directory: PathBuf,
+}
+
+impl FileFetcher for DryRunDiskFetcher {
+    fn fetch(&self, path: &str) -> std::result::Result<Option<Vec<u8>>, String> {
+        let candidate = self.candidate(path);
+        match std::fs::read(candidate) {
+            Ok(bytes) => Ok(Some(bytes)),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+            Err(error) => Err(error.to_string()),
+        }
+    }
+
+    fn metadata(&self, path: &str) -> std::result::Result<Option<vfs::VfsMetadata>, String> {
+        let candidate = self.candidate(path);
+        match std::fs::metadata(candidate) {
+            Ok(meta) => Ok(Some(vfs::VfsMetadata {
+                file_type: if meta.is_dir() {
+                    vfs::VfsFileType::Directory
+                } else {
+                    vfs::VfsFileType::File
+                },
+                len: meta.len(),
+                created: meta.created().ok(),
+                modified: meta.modified().ok(),
+                accessed: meta.accessed().ok(),
+            })),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+            Err(error) => Err(error.to_string()),
+        }
+    }
+
+    fn read_dir(&self, path: &str) -> std::result::Result<Option<Vec<String>>, String> {
+        let candidate = self.candidate(path);
+        match std::fs::read_dir(candidate) {
+            Ok(entries) => entries
+                .map(|entry| {
+                    entry
+                        .map_err(|error| error.to_string())
+                        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+                })
+                .collect::<std::result::Result<Vec<_>, _>>()
+                .map(Some),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+            Err(error) => Err(error.to_string()),
+        }
+    }
+}
+
+impl DryRunDiskFetcher {
+    fn candidate(&self, path: &str) -> PathBuf {
+        let path = normalize_virtual_absolute_path(path);
+        let target = normalize_virtual_absolute_path(&self.target_directory.to_string_lossy());
+        let relative = path
+            .strip_prefix(&target)
+            .unwrap_or(&path)
+            .trim_start_matches('/');
+        self.target_directory.join(relative)
+    }
+}
+
+fn seed_dry_run_current_file(
+    root: &vfs::VfsPath,
+    _target_directory: &Path,
+    file_path: &Path,
+    content: &str,
+) {
+    let file_path = file_path
+        .canonicalize()
+        .unwrap_or_else(|_| file_path.to_path_buf());
+    let relative = normalize_virtual_absolute_path(&file_path.to_string_lossy());
+    if let Some(parent) = Path::new(&relative).parent() {
+        let parent = parent.to_string_lossy();
+        if !parent.is_empty() {
+            if let Ok(parent_vfs) = root.join(parent.trim_start_matches('/')) {
+                let _ = parent_vfs.create_dir_all();
+            }
+        }
+    }
+    if let Ok(file) = root.join(relative.trim_start_matches('/')) {
+        if let Ok(mut writer) = file.create_file() {
+            let _ = writer.write_all(content.as_bytes());
+        }
+    }
 }
 
 /// Execute a codemod on string content using QuickJS
@@ -271,10 +372,18 @@ where
 
     // Create AstGrep instance for the SgRootRjs
     let ast_grep = AstGrep::new(options.content, options.language);
+    let canonical_target_directory = options
+        .target_directory
+        .canonicalize()
+        .unwrap_or_else(|_| options.target_directory.to_path_buf());
 
     // Track whether the caller opted into llrt's real-disk fs capability
     // so we know whether to install the curated fs below instead.
     let mut fs_capability_enabled = false;
+    let llm_capability_enabled = options
+        .capabilities
+        .as_ref()
+        .is_some_and(|capabilities| capabilities.contains(&LlrtSupportedModules::Fetch));
 
     // Set up built-in modules
     let mut module_builder = LlrtModuleBuilder::build();
@@ -284,10 +393,14 @@ where
                 LlrtSupportedModules::Fetch => {
                     module_builder.enable_fetch();
                 }
-                LlrtSupportedModules::Fs => {
+                LlrtSupportedModules::Fs if !options.dry_run => {
                     module_builder.enable_fs();
                     fs_capability_enabled = true;
                 }
+                LlrtSupportedModules::Fs => {}
+                // Unlike unrestricted fs, child_process is controlled by an
+                // explicit capability grant. Dry-run must not silently revoke
+                // a permission the caller already approved.
                 LlrtSupportedModules::ChildProcess => {
                     module_builder.enable_child_process();
                 }
@@ -299,7 +412,7 @@ where
     // Install the curated `fs` when the caller gave us a target directory
     // and didn't explicitly opt into the unrestricted llrt fs.
     let curated_fs_target = if !fs_capability_enabled {
-        Some(options.target_directory.to_string_lossy().into_owned())
+        Some(canonical_target_directory.to_string_lossy().into_owned())
     } else {
         None
     };
@@ -317,6 +430,13 @@ where
     // Add MetricsModule (metrics tracking)
     built_in_resolver = built_in_resolver.add_name("codemod:metrics");
     built_in_loader = built_in_loader.with_module("codemod:metrics", MetricsModule);
+
+    // Engine-owned model access can make network requests, so expose it only
+    // when the caller explicitly grants the fetch capability.
+    if llm_capability_enabled {
+        built_in_resolver = built_in_resolver.add_name("codemod:llm");
+        built_in_loader = built_in_loader.with_module("codemod:llm", LlmModule);
+    }
 
     // Add RuntimeModule (progress/failure hooks)
     built_in_resolver = built_in_resolver.add_name("codemod:runtime");
@@ -350,6 +470,11 @@ where
 
     // Capture metrics context and shared state context for use inside async block
     let metrics_context = options.metrics_context.clone();
+    let llm_runtime_context = LlmRuntimeContext::new(
+        llm_capability_enabled
+            .then(|| options.llm_request_handler.clone())
+            .flatten(),
+    );
     let shared_state_context = options.shared_state_context.clone();
     let runtime_hooks_context = RuntimeHooksContext::new(
         options.runtime_event_callback.clone(),
@@ -363,6 +488,12 @@ where
         ctx.store_userdata(ExecutionModeFlag { test_mode }).map_err(|e| ExecutionError::Runtime {
             source: crate::sandbox::errors::RuntimeError::InitializationFailed {
                 message: format!("Failed to store ExecutionModeFlag: {:?}", e),
+            },
+        })?;
+
+        ctx.store_userdata(DryRunExecutionFlag(options.dry_run)).map_err(|e| ExecutionError::Runtime {
+            source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                message: format!("Failed to store DryRunExecutionFlag: {:?}", e),
             },
         })?;
 
@@ -400,6 +531,12 @@ where
             })?;
         }
 
+        ctx.store_userdata(llm_runtime_context.clone()).map_err(|e| ExecutionError::Runtime {
+            source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                message: format!("Failed to store LlmRuntimeContext: {:?}", e),
+            },
+        })?;
+
         // Always store a SharedStateContext so codemod:workflow functions work
         ctx.store_userdata(shared_state_context.unwrap_or_default()).map_err(|e| ExecutionError::Runtime {
             source: crate::sandbox::errors::RuntimeError::InitializationFailed {
@@ -414,12 +551,28 @@ where
         })?;
 
         if let Some(target_dir) = curated_fs_target.clone() {
-            let physical_root: vfs::VfsPath = vfs::PhysicalFS::new(std::path::PathBuf::from("/")).into();
-            // PhysicalFS is rooted at "/", so `target_dir` is already the
-            // host-disk path corresponding to the VFS target. Hand it through
-            // so the resolver can reject paths that traverse a symlink.
-            let cfg = CuratedFsConfig::new(target_dir.clone(), physical_root)
-                .with_physical_target_dir(std::path::PathBuf::from(&target_dir));
+            let cfg = if options.dry_run {
+                let target_path = std::path::PathBuf::from(&target_dir);
+                let memory_root: vfs::VfsPath = vfs::MemoryFS::new().into();
+                seed_dry_run_current_file(
+                    &memory_root,
+                    &target_path,
+                    options.file_path,
+                    options.content,
+                );
+                CuratedFsConfig::new(target_dir.clone(), memory_root).with_fetcher(Arc::new(
+                    DryRunDiskFetcher {
+                        target_directory: target_path,
+                    },
+                ))
+            } else {
+                let physical_root: vfs::VfsPath = vfs::PhysicalFS::new(std::path::PathBuf::from("/")).into();
+                // PhysicalFS is rooted at "/", so `target_dir` is already the
+                // host-disk path corresponding to the VFS target. Hand it through
+                // so the resolver can reject paths that traverse a symlink.
+                CuratedFsConfig::new(target_dir.clone(), physical_root)
+                    .with_physical_target_dir(std::path::PathBuf::from(&target_dir))
+            };
             ctx.store_userdata(cfg)
                 .map_err(|e| ExecutionError::Runtime {
                     source: crate::sandbox::errors::RuntimeError::InitializationFailed {
@@ -477,10 +630,7 @@ where
                 .unwrap_or_else(|_| options.file_path.to_path_buf())
                 .to_string_lossy()
                 .to_string();
-            let target_directory = options
-                .target_directory
-                .canonicalize()
-                .unwrap_or_else(|_| options.target_directory.to_path_buf());
+            let target_directory = canonical_target_directory.clone();
             let parsed_content =
                 SgRootRjs::try_new_with_semantic(
                     ast_grep,
@@ -569,7 +719,7 @@ where
     .await
 }
 
-fn map_transform_execution_error(
+pub(super) fn map_transform_execution_error(
     runtime_hooks_context: &RuntimeHooksContext,
     error: impl std::fmt::Display,
 ) -> ExecutionError {
@@ -995,6 +1145,18 @@ mod tests {
         (temp_dir, codemod_path)
     }
 
+    #[test]
+    fn dry_run_uses_curated_fs_virtual_path_normalization() {
+        assert_eq!(
+            normalize_virtual_absolute_path(r"c:\repo\src\foo.cs"),
+            "/C:/repo/src/foo.cs"
+        );
+        assert_eq!(
+            normalize_virtual_absolute_path("C:/repo/src/foo.cs"),
+            "/C:/repo/src/foo.cs"
+        );
+    }
+
     /// Create a simple console.log to logger.log codemod for testing
     fn create_test_codemod() -> String {
         r#"
@@ -1051,6 +1213,7 @@ function example() {
             capabilities: None,
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: None,
             cancellation_flag: None,
@@ -1074,6 +1237,283 @@ function example() {
             },
             Err(e) => panic!("Expected success, got error: {:?}", e),
         }
+    }
+
+    #[tokio::test]
+    async fn test_codemod_llm_delegates_generation_to_engine_handler() {
+        let codemod_content = r#"
+import { generate } from "codemod:llm";
+
+export default async function transform() {
+  const response = await generate({
+    prompt: "Generate an identifier",
+    systemPrompt: "Return JSON",
+    outputSchema: {
+      type: "object",
+      properties: { identifier: { type: "string" } },
+      required: ["identifier"],
+      additionalProperties: false,
+    },
+    maxTokens: 128,
+  });
+  return response.output;
+}
+        "#
+        .trim();
+        let (temp_dir, codemod_path) = setup_test_codemod(codemod_content);
+        let resolver = Arc::new(OxcResolver::new(temp_dir.path().to_path_buf(), None).unwrap());
+        let requests = Arc::new(Mutex::new(Vec::new()));
+        let captured_requests = Arc::clone(&requests);
+        let handler: LlmRequestHandler = Arc::new(move |request| {
+            captured_requests
+                .lock()
+                .expect("request capture should lock")
+                .push(request);
+            Box::pin(async {
+                Ok(crate::llm::LlmResponse {
+                    output: "{\"identifier\":\"welcomeTitle\"}".to_string(),
+                })
+            })
+        });
+        let options = JssgExecutionOptions {
+            script_path: &codemod_path,
+            resolver,
+            language: js_lang(),
+            file_path: Path::new("test.js"),
+            content: "const value = true;",
+            selector_config: None,
+            params: None,
+            matrix_values: None,
+            capabilities: Some([LlrtSupportedModules::Fetch].into_iter().collect()),
+            semantic_provider: None,
+            metrics_context: None,
+            llm_request_handler: Some(handler),
+            shared_state_context: None,
+            runtime_event_callback: None,
+            cancellation_flag: None,
+            test_mode: false,
+            dry_run: false,
+            target_directory: Path::new("."),
+        };
+
+        let output = execute_codemod_with_quickjs(options)
+            .await
+            .expect("LLM-backed codemod should succeed");
+        match output.primary {
+            ExecutionResult::Modified(modified) => {
+                assert_eq!(modified.content, "{\"identifier\":\"welcomeTitle\"}");
+            }
+            other => panic!("Expected modified result, got: {other:?}"),
+        }
+
+        let requests = requests.lock().expect("request capture should lock");
+        assert_eq!(requests.len(), 1);
+        assert_eq!(requests[0].prompt, "Generate an identifier");
+        assert_eq!(requests[0].system_prompt.as_deref(), Some("Return JSON"));
+        assert_eq!(requests[0].max_tokens, Some(128));
+        assert_eq!(
+            requests[0]
+                .output_schema
+                .as_ref()
+                .and_then(|schema| schema["properties"]["identifier"]["type"].as_str()),
+            Some("string")
+        );
+    }
+
+    #[tokio::test]
+    async fn test_codemod_llm_is_unavailable_without_fetch_capability() {
+        let codemod_content = r#"
+import { generate } from "codemod:llm";
+
+export default async function transform() {
+  return (await generate({ prompt: "Send source code" })).output;
+}
+        "#
+        .trim();
+        let (temp_dir, codemod_path) = setup_test_codemod(codemod_content);
+        let resolver = Arc::new(OxcResolver::new(temp_dir.path().to_path_buf(), None).unwrap());
+        let requests = Arc::new(Mutex::new(Vec::new()));
+        let captured_requests = Arc::clone(&requests);
+        let handler: LlmRequestHandler = Arc::new(move |request| {
+            captured_requests
+                .lock()
+                .expect("request capture should lock")
+                .push(request);
+            Box::pin(async {
+                Ok(crate::llm::LlmResponse {
+                    output: "unexpected".to_string(),
+                })
+            })
+        });
+        let options = JssgExecutionOptions {
+            script_path: &codemod_path,
+            resolver,
+            language: js_lang(),
+            file_path: Path::new("test.js"),
+            content: "const secret = true;",
+            selector_config: None,
+            params: None,
+            matrix_values: None,
+            capabilities: None,
+            semantic_provider: None,
+            metrics_context: None,
+            llm_request_handler: Some(handler),
+            shared_state_context: None,
+            runtime_event_callback: None,
+            cancellation_flag: None,
+            test_mode: false,
+            dry_run: false,
+            target_directory: Path::new("."),
+        };
+
+        let error = execute_codemod_with_quickjs(options)
+            .await
+            .expect_err("codemod:llm should not resolve without fetch capability");
+        assert!(format!("{error:?}").contains("codemod:llm"));
+        assert!(requests
+            .lock()
+            .expect("request capture should lock")
+            .is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_dry_run_curated_fs_does_not_mutate_disk() {
+        let codemod_content = r#"
+import fs from "fs";
+import { parseFile } from "codemod:ast-grep";
+
+export default function transform(root, options) {
+  const currentExistsBeforeRead = fs.existsSync(root.filename());
+  const currentSizeBeforeRead = fs.statSync(root.filename()).size;
+  const entriesBeforeRead = fs.readdirSync(options.targetDir).join(",");
+  const siblingPath = `${options.targetDir}/Sibling.js`;
+  const siblingExistsBeforeRead = fs.existsSync(siblingPath);
+  const siblingSizeBeforeRead = fs.statSync(siblingPath).size;
+  fs.unlinkSync(siblingPath);
+  const siblingExistsAfterUnlink = fs.existsSync(siblingPath);
+  const current = fs.readFileSync(root.filename(), "utf-8");
+  fs.writeFileSync(`${options.targetDir}/appsettings.json`, '{"dryRun":true}\n', "utf-8");
+  const written = fs.readFileSync(`${options.targetDir}/appsettings.json`, "utf-8");
+  parseFile("javascript", `${options.targetDir}/Sibling.js`).write("export const sibling = 2;");
+  fs.unlinkSync(root.filename());
+  const currentExistsAfterUnlink = fs.existsSync(root.filename());
+  return [
+    `currentExistsBeforeRead=${currentExistsBeforeRead}`,
+    `currentSizeBeforeRead=${currentSizeBeforeRead}`,
+    `entriesBeforeRead=${entriesBeforeRead}`,
+    `siblingExistsBeforeRead=${siblingExistsBeforeRead}`,
+    `siblingSizeBeforeRead=${siblingSizeBeforeRead}`,
+    `siblingExistsAfterUnlink=${siblingExistsAfterUnlink}`,
+    `current=${current}`,
+    `written=${written.trim()}`,
+    `currentExistsAfterUnlink=${currentExistsAfterUnlink}`,
+  ].join(";");
+}
+        "#
+        .trim();
+        let (temp_dir, codemod_path) = setup_test_codemod(codemod_content);
+        let target_dir = temp_dir.path().join("repo");
+        fs::create_dir_all(&target_dir).expect("target dir should be created");
+        let file_path = target_dir.join("App.js");
+        fs::write(&file_path, "const config = true;").expect("fixture should be written");
+        let sibling_path = target_dir.join("Sibling.js");
+        fs::write(&sibling_path, "export const sibling = 1;").expect("sibling should be written");
+
+        let resolver = Arc::new(OxcResolver::new(temp_dir.path().to_path_buf(), None).unwrap());
+        let options = JssgExecutionOptions {
+            script_path: &codemod_path,
+            resolver,
+            language: js_lang(),
+            file_path: &file_path,
+            content: "const config = true;",
+            selector_config: None,
+            params: None,
+            matrix_values: None,
+            capabilities: None,
+            semantic_provider: None,
+            metrics_context: None,
+            llm_request_handler: None,
+            shared_state_context: None,
+            runtime_event_callback: None,
+            cancellation_flag: None,
+            test_mode: false,
+            dry_run: true,
+            target_directory: &target_dir,
+        };
+
+        let result = execute_codemod_with_quickjs(options)
+            .await
+            .expect("dry-run execution should succeed");
+        match result.primary {
+            ExecutionResult::Modified(modified) => {
+                assert_eq!(
+                    modified.content,
+                    concat!(
+                        "currentExistsBeforeRead=true;",
+                        "currentSizeBeforeRead=20;",
+                        "entriesBeforeRead=App.js,Sibling.js;",
+                        "siblingExistsBeforeRead=true;",
+                        "siblingSizeBeforeRead=25;",
+                        "siblingExistsAfterUnlink=false;",
+                        "current=const config = true;;",
+                        "written={\"dryRun\":true};",
+                        "currentExistsAfterUnlink=false"
+                    )
+                );
+            }
+            other => panic!("Expected modified result, got: {:?}", other),
+        }
+
+        assert_eq!(
+            fs::read_to_string(&file_path).expect("current file should remain on disk"),
+            "const config = true;"
+        );
+        assert!(
+            !target_dir.join("appsettings.json").exists(),
+            "dry-run fs writes must not create files on disk"
+        );
+        assert_eq!(
+            fs::read_to_string(&sibling_path).expect("root.write target should remain on disk"),
+            "export const sibling = 1;"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_dry_run_enables_explicitly_granted_child_process_capability() {
+        let codemod_content = r#"
+import { spawn } from "child_process";
+
+export default function transform() {
+  return spawn ? null : null;
+}
+        "#
+        .trim();
+        let (temp_dir, codemod_path) = setup_test_codemod(codemod_content);
+        let resolver = Arc::new(OxcResolver::new(temp_dir.path().to_path_buf(), None).unwrap());
+        let options = JssgExecutionOptions {
+            script_path: &codemod_path,
+            resolver,
+            language: js_lang(),
+            file_path: Path::new("test.js"),
+            content: "const value = true;",
+            selector_config: None,
+            params: None,
+            matrix_values: None,
+            capabilities: Some([LlrtSupportedModules::ChildProcess].into_iter().collect()),
+            semantic_provider: None,
+            metrics_context: None,
+            llm_request_handler: None,
+            shared_state_context: None,
+            runtime_event_callback: None,
+            cancellation_flag: None,
+            test_mode: false,
+            dry_run: true,
+            target_directory: temp_dir.path(),
+        };
+
+        execute_codemod_with_quickjs(options)
+            .await
+            .expect("an explicitly granted capability should remain enabled in dry-run mode");
     }
 
     #[tokio::test]
@@ -1106,6 +1546,7 @@ export default function transform(root, options) {
             capabilities: None,
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: None,
             cancellation_flag: None,
@@ -1168,6 +1609,7 @@ function example() {
             capabilities: None,
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: None,
             cancellation_flag: None,
@@ -1220,6 +1662,7 @@ function example() {
             capabilities: None,
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: None,
             cancellation_flag: None,
@@ -1272,6 +1715,7 @@ function example() {
             capabilities: None,
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: None,
             cancellation_flag: None,
@@ -1316,6 +1760,7 @@ function example() {
             capabilities: None,
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: None,
             cancellation_flag: None,
@@ -1365,6 +1810,7 @@ function example() {
             capabilities: None,
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: None,
             cancellation_flag: None,
@@ -1475,6 +1921,7 @@ function example() {
             capabilities: None,
             semantic_provider: None,
             metrics_context: Some(metrics_ctx.clone()),
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: None,
             cancellation_flag: None,
@@ -1554,6 +2001,7 @@ export default function transform(root) {
             capabilities: None,
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: Some(runtime_event_callback),
             cancellation_flag: None,
@@ -1601,6 +2049,7 @@ export default function transform(root) {
             capabilities: None,
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: None,
             cancellation_flag: None,
@@ -1648,6 +2097,7 @@ export default function transform(root) {
             capabilities: None,
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: None,
             cancellation_flag: None,
@@ -1695,6 +2145,7 @@ export default async function transform(root) {
             capabilities: None,
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
             runtime_event_callback: None,
             cancellation_flag: None,

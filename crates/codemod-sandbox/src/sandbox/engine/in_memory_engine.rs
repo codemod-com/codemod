@@ -1,15 +1,17 @@
 use super::codemod_lang::CodemodLang;
 use super::curated_fs::{CuratedFsConfig, CuratedFsModule, CuratedFsPromisesModule, FileFetcher};
-use super::execution_engine::{CodemodOutput, ExecutionResult};
+use super::execution_engine::{map_transform_execution_error, CodemodOutput, ExecutionResult};
 use super::quickjs_adapters::QuickJSResolver;
 use super::transform_helpers::{
     build_transform_options, process_transform_result, ModificationCheck,
 };
 use crate::ast_grep::sg_node::{SgNodeRjs, SgRootRjs};
 use crate::ast_grep::AstGrepModule;
+use crate::llm::{LlmModule, LlmRequestHandler, LlmRuntimeContext};
 use crate::metrics::{MetricsContext, MetricsModule};
 use crate::sandbox::errors::ExecutionError;
 use crate::sandbox::resolvers::{InMemoryLoader, InMemoryResolver, ModuleResolver};
+use crate::sandbox::runtime_module::{RuntimeHooksContext, RuntimeModule};
 use crate::utils::quickjs_utils::maybe_promise;
 use crate::workflow_global::{SharedStateContext, WorkflowGlobalModule};
 use ast_grep_config::RuleConfig;
@@ -24,7 +26,7 @@ use std::collections::HashMap;
 use std::marker::PhantomData;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 use vfs::VfsPath;
 
 /// Default execution timeout in milliseconds (180s)
@@ -97,8 +99,13 @@ pub struct InMemoryExecutionOptions<'a, R> {
     pub semantic_provider: Option<Arc<dyn SemanticProvider>>,
     /// Optional metrics context for tracking metrics across execution
     pub metrics_context: Option<MetricsContext>,
+    /// Optional engine-owned LLM request handler exposed through codemod:llm
+    pub llm_request_handler: Option<LlmRequestHandler>,
     /// Optional shared state context for cross-thread state communication
     pub shared_state_context: Option<SharedStateContext>,
+    /// Optional cooperative cancellation flag. When set, the QuickJS
+    /// interrupt handler stops execution as soon as cancellation is observed.
+    pub cancellation_flag: Option<Arc<AtomicBool>>,
     /// Execution timeout in milliseconds (default: 200ms)
     pub timeout_ms: Option<u64>,
     /// Memory limit in bytes (default: 64 MB)
@@ -172,15 +179,27 @@ where
 
     let timeout_ms = options.timeout_ms.unwrap_or(DEFAULT_TIMEOUT_MS);
     let memory_limit = options.memory_limit.unwrap_or(DEFAULT_MEMORY_LIMIT);
+    let cancellation_flag = options.cancellation_flag.clone();
+    let cancellation_wait_flag = options.cancellation_flag.clone();
+    let cancellation_result_flag = options.cancellation_flag.clone();
 
     runtime.set_memory_limit(memory_limit).await;
     runtime.set_max_stack_size(DEFAULT_MAX_STACK_SIZE).await;
     let start_time = Instant::now();
     let timeout_exceeded = Arc::new(AtomicBool::new(false));
     let timeout_exceeded_clone = Arc::clone(&timeout_exceeded);
+    let cancellation_observed = Arc::new(AtomicBool::new(false));
+    let cancellation_observed_clone = Arc::clone(&cancellation_observed);
 
     runtime
         .set_interrupt_handler(Some(Box::new(move || {
+            if cancellation_flag
+                .as_ref()
+                .is_some_and(|flag| flag.load(Ordering::Relaxed))
+            {
+                cancellation_observed_clone.store(true, Ordering::SeqCst);
+                return true;
+            }
             if start_time.elapsed().as_millis() as u64 > timeout_ms {
                 timeout_exceeded_clone.store(true, Ordering::SeqCst);
                 true // Interrupt execution
@@ -209,6 +228,16 @@ where
 
     built_in_resolver = built_in_resolver.add_name("codemod:metrics");
     built_in_loader = built_in_loader.with_module("codemod:metrics", MetricsModule);
+
+    built_in_resolver = built_in_resolver.add_name("codemod:runtime");
+    built_in_loader = built_in_loader.with_module("codemod:runtime", RuntimeModule);
+
+    // In-memory callers have no capability set; supplying the engine-owned
+    // handler is their explicit authorization to expose model access.
+    if options.llm_request_handler.is_some() {
+        built_in_resolver = built_in_resolver.add_name("codemod:llm");
+        built_in_loader = built_in_loader.with_module("codemod:llm", LlmModule);
+    }
 
     built_in_resolver = built_in_resolver.add_name("codemod:workflow");
     built_in_loader = built_in_loader.with_module("codemod:workflow", WorkflowGlobalModule);
@@ -243,12 +272,14 @@ where
 
     // Capture metrics context and shared state context for use inside async block
     let metrics_context = options.metrics_context.clone();
+    let llm_runtime_context = LlmRuntimeContext::new(options.llm_request_handler.clone());
     let shared_state_context = options.shared_state_context.clone();
+    let runtime_hooks_context = RuntimeHooksContext::new(None, options.cancellation_flag.clone());
     let process_sandbox = options.process_sandbox.clone();
     let fs_sandbox = options.fs_sandbox.clone();
     let timeout_exceeded_check = Arc::clone(&timeout_exceeded);
 
-    let result = async_with!(context => |ctx| {
+    let execution = async_with!(context => |ctx| {
         // Store metrics context in runtime userdata if provided (must be done inside async_with)
         if let Some(ref metrics_ctx) = metrics_context {
             ctx.store_userdata(metrics_ctx.clone()).map_err(|e| ExecutionError::Runtime {
@@ -258,10 +289,22 @@ where
             })?;
         }
 
+        ctx.store_userdata(llm_runtime_context.clone()).map_err(|e| ExecutionError::Runtime {
+            source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                message: format!("Failed to store LlmRuntimeContext: {:?}", e),
+            },
+        })?;
+
         // Always store a SharedStateContext so codemod:workflow functions work
         ctx.store_userdata(shared_state_context.unwrap_or_default()).map_err(|e| ExecutionError::Runtime {
             source: crate::sandbox::errors::RuntimeError::InitializationFailed {
                 message: format!("Failed to store SharedStateContext: {:?}", e),
+            },
+        })?;
+
+        ctx.store_userdata(runtime_hooks_context.clone()).map_err(|e| ExecutionError::Runtime {
+            source: crate::sandbox::errors::RuntimeError::InitializationFailed {
+                message: format!("Failed to store RuntimeHooksContext: {:?}", e),
             },
         })?;
 
@@ -318,14 +361,15 @@ where
                     },
                 })?;
 
-            let (evaluated, _) = module
+            let (evaluated, eval_value) = module
                 .eval()
                 .catch(&ctx)
-                .map_err(|e| ExecutionError::Runtime {
-                source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                    message: e.to_string(),
-                },
-            })?;
+                .map_err(|e| map_transform_execution_error(&runtime_hooks_context, e))?;
+
+            maybe_promise(eval_value.into())
+                .await
+                .catch(&ctx)
+                .map_err(|e| map_transform_execution_error(&runtime_hooks_context, e))?;
 
             while ctx.execute_pending_job() {}
 
@@ -406,21 +450,14 @@ where
                     },
                 })?;
 
-            let result_obj_promise = func.call((parsed_content, run_options_qjs)).catch(&ctx).map_err(|e| {
-                ExecutionError::Runtime {
-                    source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                        message: e.to_string(),
-                    },
-                }
-            })?;
+            let result_obj_promise = func
+                .call((parsed_content, run_options_qjs))
+                .catch(&ctx)
+                .map_err(|e| map_transform_execution_error(&runtime_hooks_context, e))?;
             let result_obj = maybe_promise(result_obj_promise)
                 .await
                 .catch(&ctx)
-                .map_err(|e| ExecutionError::Runtime {
-                    source: crate::sandbox::errors::RuntimeError::InitializationFailed {
-                        message: e.to_string(),
-                    },
-                })?;
+                .map_err(|e| map_transform_execution_error(&runtime_hooks_context, e))?;
 
             process_transform_result(
                 &result_obj,
@@ -429,8 +466,60 @@ where
             )
         };
         execution.await
-    })
-    .await;
+    });
+    let cancellation_wait = async move {
+        match cancellation_wait_flag {
+            Some(flag) => loop {
+                if flag.load(Ordering::Relaxed) {
+                    break;
+                }
+                tokio::time::sleep(Duration::from_millis(25)).await;
+            },
+            None => std::future::pending::<()>().await,
+        }
+    };
+    let remaining_timeout = Duration::from_millis(timeout_ms).saturating_sub(start_time.elapsed());
+
+    // QuickJS invokes the interrupt handler while executing JavaScript, but
+    // an async codemod can instead be parked waiting for a host future. Race
+    // the whole execution against wall-clock timeout and cancellation so
+    // those pending host operations are bounded too.
+    let result = tokio::select! {
+        biased;
+        result = execution => result,
+        _ = cancellation_wait => {
+            cancellation_observed.store(true, Ordering::SeqCst);
+            Err(ExecutionError::Runtime {
+                source: crate::sandbox::errors::RuntimeError::ExecutionCancelled,
+            })
+        }
+        _ = tokio::time::sleep(remaining_timeout) => {
+            timeout_exceeded.store(true, Ordering::SeqCst);
+            Err(ExecutionError::Runtime {
+                source: crate::sandbox::errors::RuntimeError::ExecutionTimeout { timeout_ms },
+            })
+        }
+    };
+
+    if cancellation_observed.load(Ordering::SeqCst) {
+        return Err(ExecutionError::Runtime {
+            source: crate::sandbox::errors::RuntimeError::ExecutionCancelled,
+        });
+    }
+
+    // A workflow state/lock wait observes the same cancellation flag and may
+    // finish by throwing before the polling future wins the select. Preserve
+    // cancellation semantics instead of exposing that host exception as a
+    // generic execution failure.
+    if result.is_err()
+        && cancellation_result_flag
+            .as_ref()
+            .is_some_and(|flag| flag.load(Ordering::Relaxed))
+    {
+        return Err(ExecutionError::Runtime {
+            source: crate::sandbox::errors::RuntimeError::ExecutionCancelled,
+        });
+    }
 
     if timeout_exceeded_check.load(Ordering::SeqCst) {
         return Err(ExecutionError::Runtime {
@@ -449,6 +538,7 @@ mod tests {
     use super::*;
     use crate::sandbox::errors::RuntimeError;
     use crate::sandbox::resolvers::oxc_resolver::OxcResolver;
+    use crate::sandbox::runtime_module::RuntimeFailureKind;
     use ast_grep_language::SupportLang;
     use sha2::{Digest, Sha256};
     use std::fs;
@@ -463,6 +553,51 @@ mod tests {
         let mut hasher = Sha256::new();
         hasher.update(content.as_bytes());
         hasher.finalize().into()
+    }
+
+    fn execute_runtime_codemod(codemod_content: &str) -> Result<CodemodOutput, ExecutionError> {
+        let temp_dir = TempDir::new().expect("Failed to create temp directory");
+        let resolver = Arc::new(OxcResolver::new(temp_dir.path().to_path_buf(), None).unwrap());
+        let content = "const x = 1;";
+        let ast = AstGrep::new(content, js_lang());
+
+        execute_codemod_sync(InMemoryExecutionOptions {
+            codemod_source: codemod_content,
+            language: js_lang(),
+            ast,
+            original_sha256: Some(compute_sha256(content)),
+            resolver: Some(resolver),
+            selector_config: None,
+            params: None,
+            matrix_values: None,
+            file_path: Some("/app/src/example.js"),
+            target_directory: "/app/",
+            semantic_provider: None,
+            metrics_context: None,
+            llm_request_handler: None,
+            shared_state_context: None,
+            cancellation_flag: None,
+            timeout_ms: None,
+            memory_limit: None,
+            process_sandbox: None,
+            fs_sandbox: None,
+        })
+    }
+
+    fn assert_runtime_hook_error(
+        result: Result<CodemodOutput, ExecutionError>,
+        expected_kind: RuntimeFailureKind,
+        expected_message: &str,
+        expected_meta: &str,
+    ) {
+        match result {
+            Err(ExecutionError::RuntimeHook { source }) => {
+                assert_eq!(source.kind, expected_kind);
+                assert_eq!(source.message, expected_message);
+                assert_eq!(source.meta.as_deref(), Some(expected_meta));
+            }
+            other => panic!("Expected runtime hook error, got: {other:?}"),
+        }
     }
 
     #[test]
@@ -500,7 +635,9 @@ export default function transform(root) {
             target_directory: ".",
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
+            cancellation_flag: None,
             timeout_ms: Some(50), // 50ms timeout for faster test
             memory_limit: None,
             process_sandbox: None,
@@ -519,6 +656,206 @@ export default function transform(root) {
             ),
             Err(e) => panic!("Expected timeout error, got different error: {:?}", e),
         }
+    }
+
+    #[test]
+    fn test_execute_codemod_sync_timeout_interrupts_pending_promise() {
+        let codemod_content = r#"
+export default async function transform() {
+  await new Promise(() => {});
+}
+        "#
+        .trim();
+        let content = "const x = 1;";
+        let started = Instant::now();
+
+        let result = execute_codemod_sync(InMemoryExecutionOptions::<InMemoryResolver> {
+            codemod_source: codemod_content,
+            language: js_lang(),
+            ast: AstGrep::new(content, js_lang()),
+            original_sha256: Some(compute_sha256(content)),
+            resolver: None,
+            selector_config: None,
+            params: None,
+            matrix_values: None,
+            file_path: None,
+            target_directory: ".",
+            semantic_provider: None,
+            metrics_context: None,
+            llm_request_handler: None,
+            shared_state_context: None,
+            cancellation_flag: None,
+            timeout_ms: Some(50),
+            memory_limit: None,
+            process_sandbox: None,
+            fs_sandbox: None,
+        });
+
+        assert!(started.elapsed() < Duration::from_secs(2));
+        assert!(matches!(
+            result,
+            Err(ExecutionError::Runtime {
+                source: RuntimeError::ExecutionTimeout { timeout_ms: 50 },
+            })
+        ));
+    }
+
+    #[test]
+    fn test_execute_codemod_sync_cancellation_interrupts_quickjs() {
+        let codemod_content = r#"
+export default function transform(root) {
+  while (true) {
+    // Infinite loop to prove cancellation interrupts active JavaScript.
+  }
+  return root.root().text();
+}
+        "#
+        .trim();
+        let content = "const x = 1;";
+        let cancellation_flag = Arc::new(AtomicBool::new(false));
+        let cancellation_trigger = Arc::clone(&cancellation_flag);
+        let trigger = std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(25));
+            cancellation_trigger.store(true, Ordering::SeqCst);
+        });
+        let started = Instant::now();
+
+        let result = execute_codemod_sync(InMemoryExecutionOptions::<InMemoryResolver> {
+            codemod_source: codemod_content,
+            language: js_lang(),
+            ast: AstGrep::new(content, js_lang()),
+            original_sha256: Some(compute_sha256(content)),
+            resolver: None,
+            selector_config: None,
+            params: None,
+            matrix_values: None,
+            file_path: None,
+            target_directory: ".",
+            semantic_provider: None,
+            metrics_context: None,
+            llm_request_handler: None,
+            shared_state_context: None,
+            cancellation_flag: Some(cancellation_flag),
+            timeout_ms: Some(5_000),
+            memory_limit: None,
+            process_sandbox: None,
+            fs_sandbox: None,
+        });
+
+        trigger.join().unwrap();
+        assert!(
+            started.elapsed() < std::time::Duration::from_secs(2),
+            "cancellation should not wait for the five-second timeout"
+        );
+        assert!(matches!(
+            result,
+            Err(ExecutionError::Runtime {
+                source: RuntimeError::ExecutionCancelled,
+            })
+        ));
+    }
+
+    #[test]
+    fn test_execute_codemod_sync_cancellation_interrupts_pending_promise() {
+        let codemod_content = r#"
+export default async function transform() {
+  await new Promise(() => {});
+}
+        "#
+        .trim();
+        let content = "const x = 1;";
+        let cancellation_flag = Arc::new(AtomicBool::new(false));
+        let cancellation_trigger = Arc::clone(&cancellation_flag);
+        let trigger = std::thread::spawn(move || {
+            std::thread::sleep(Duration::from_millis(25));
+            cancellation_trigger.store(true, Ordering::SeqCst);
+        });
+        let started = Instant::now();
+
+        let result = execute_codemod_sync(InMemoryExecutionOptions::<InMemoryResolver> {
+            codemod_source: codemod_content,
+            language: js_lang(),
+            ast: AstGrep::new(content, js_lang()),
+            original_sha256: Some(compute_sha256(content)),
+            resolver: None,
+            selector_config: None,
+            params: None,
+            matrix_values: None,
+            file_path: None,
+            target_directory: ".",
+            semantic_provider: None,
+            metrics_context: None,
+            llm_request_handler: None,
+            shared_state_context: None,
+            cancellation_flag: Some(cancellation_flag),
+            timeout_ms: Some(5_000),
+            memory_limit: None,
+            process_sandbox: None,
+            fs_sandbox: None,
+        });
+
+        trigger.join().unwrap();
+        assert!(started.elapsed() < Duration::from_secs(2));
+        assert!(matches!(
+            result,
+            Err(ExecutionError::Runtime {
+                source: RuntimeError::ExecutionCancelled,
+            })
+        ));
+    }
+
+    #[test]
+    fn test_execute_codemod_sync_maps_cancelled_workflow_wait_to_cancellation() {
+        let codemod_content = r#"
+import { getState } from "codemod:workflow";
+
+export default function transform(root) {
+  getState("blocked-state");
+  return root.root().text();
+}
+        "#
+        .trim();
+        let shared_state = SharedStateContext::new();
+        let guard = shared_state.acquire_lock("blocked-state");
+        let cancellation_flag = Arc::new(AtomicBool::new(false));
+        let execution_cancellation_flag = Arc::clone(&cancellation_flag);
+
+        let runner = std::thread::spawn(move || {
+            let content = "const x = 1;";
+            execute_codemod_sync(InMemoryExecutionOptions::<InMemoryResolver> {
+                codemod_source: codemod_content,
+                language: js_lang(),
+                ast: AstGrep::new(content, js_lang()),
+                original_sha256: Some(compute_sha256(content)),
+                resolver: None,
+                selector_config: None,
+                params: None,
+                matrix_values: None,
+                file_path: None,
+                target_directory: ".",
+                semantic_provider: None,
+                metrics_context: None,
+                llm_request_handler: None,
+                shared_state_context: Some(shared_state),
+                cancellation_flag: Some(execution_cancellation_flag),
+                timeout_ms: Some(5_000),
+                memory_limit: None,
+                process_sandbox: None,
+                fs_sandbox: None,
+            })
+        });
+
+        std::thread::sleep(Duration::from_millis(25));
+        cancellation_flag.store(true, Ordering::SeqCst);
+        let result = runner.join().unwrap();
+        guard.release();
+
+        assert!(matches!(
+            result,
+            Err(ExecutionError::Runtime {
+                source: RuntimeError::ExecutionCancelled,
+            })
+        ));
     }
 
     #[test]
@@ -560,7 +897,9 @@ export default function transform(root) {
             target_directory: ".",
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
+            cancellation_flag: None,
             timeout_ms: None,
             memory_limit: None,
             process_sandbox: None,
@@ -577,6 +916,98 @@ export default function transform(root) {
             },
             Err(e) => panic!("Expected success, got error: {:?}", e),
         }
+    }
+
+    #[test]
+    fn test_execute_codemod_sync_supports_runtime_module() {
+        let codemod_content = r#"
+import runtime, { isCanceled, progress, setCurrentUnit, warn } from "codemod:runtime";
+
+export default function transform(root) {
+  progress("started");
+  setCurrentUnit("src/example.js", { phase: "scan" });
+  warn("warning");
+  runtime.progress("still running");
+
+  if (isCanceled()) {
+    throw new Error("unexpected cancellation");
+  }
+
+  return root.root().text();
+}
+        "#
+        .trim();
+
+        let result = execute_runtime_codemod(codemod_content);
+
+        match result {
+            Ok(output) => assert!(matches!(output.primary, ExecutionResult::Unmodified)),
+            Err(error) => panic!("Expected runtime module import to succeed, got: {error:?}"),
+        }
+    }
+
+    #[test]
+    fn test_execute_codemod_sync_maps_fail_step_from_transform_call() {
+        let result = execute_runtime_codemod(
+            r#"
+import runtime from "codemod:runtime";
+
+export default function transform() {
+  runtime.failStep("Step failed", { code: "step_failed" });
+}
+            "#
+            .trim(),
+        );
+
+        assert_runtime_hook_error(
+            result,
+            RuntimeFailureKind::Step,
+            "Step failed",
+            r#"{"code":"step_failed"}"#,
+        );
+    }
+
+    #[test]
+    fn test_execute_codemod_sync_maps_fail_step_from_module_evaluation() {
+        let result = execute_runtime_codemod(
+            r#"
+import runtime from "codemod:runtime";
+
+runtime.failStep("Initialization failed", { code: "init_failed" });
+
+export default function transform() {}
+            "#
+            .trim(),
+        );
+
+        assert_runtime_hook_error(
+            result,
+            RuntimeFailureKind::Step,
+            "Initialization failed",
+            r#"{"code":"init_failed"}"#,
+        );
+    }
+
+    #[test]
+    fn test_execute_codemod_sync_maps_fail_file_from_transform_promise() {
+        let result = execute_runtime_codemod(
+            r#"
+import runtime from "codemod:runtime";
+
+export default async function transform() {
+  await Promise.resolve();
+  runtime.failFile("File failed", { file: "src/example.js" });
+}
+            "#
+            .trim(),
+        );
+
+        assert_runtime_hook_error(
+            result,
+            RuntimeFailureKind::File,
+            "File failed",
+            r#"{"file":"src/example.js"}"#,
+        );
     }
 
     #[test]
@@ -616,7 +1047,9 @@ export default function transform(root, options) {
             target_directory: "/app",
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
+            cancellation_flag: None,
             timeout_ms: None,
             memory_limit: None,
             process_sandbox: None,
@@ -690,7 +1123,9 @@ export default function transform(root) {
             target_directory: ".",
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
+            cancellation_flag: None,
             timeout_ms: None,
             memory_limit: None,
             process_sandbox: Some(sandbox),
@@ -729,6 +1164,59 @@ export default function transform(root) {
             w.write_all(content.as_bytes()).unwrap();
         }
         root
+    }
+
+    /// Execute a curated-fs transform and return its primary modified content.
+    fn run_fs_sandbox_transform(
+        codemod_source: &str,
+        files: &[(&str, &str)],
+        fetcher: Option<Arc<dyn crate::sandbox::engine::curated_fs::FileFetcher>>,
+    ) -> String {
+        let temp_dir = TempDir::new().expect("tempdir");
+        fs::write(temp_dir.path().join("fs_compat_codemod.js"), codemod_source)
+            .expect("write codemod");
+
+        let root = build_memory_fs_with_files(files);
+        let fs_sandbox = FsSandbox {
+            target_dir: "/app".to_string(),
+            root,
+            fetcher,
+        };
+        let resolver = Arc::new(OxcResolver::new(temp_dir.path().to_path_buf(), None).unwrap());
+        let content = files
+            .iter()
+            .find(|(path, _)| *path == "/app/main.ts")
+            .map(|(_, body)| *body)
+            .unwrap_or("const x = 1;");
+        let ast = AstGrep::new(content, js_lang());
+        let result = execute_codemod_sync(InMemoryExecutionOptions {
+            codemod_source,
+            language: js_lang(),
+            ast,
+            original_sha256: Some(compute_sha256(content)),
+            resolver: Some(resolver),
+            selector_config: None,
+            params: None,
+            matrix_values: None,
+            file_path: Some("/app/main.ts"),
+            target_directory: "/app",
+            semantic_provider: None,
+            metrics_context: None,
+            llm_request_handler: None,
+            shared_state_context: None,
+            cancellation_flag: None,
+            timeout_ms: None,
+            memory_limit: None,
+            process_sandbox: None,
+            fs_sandbox: Some(fs_sandbox),
+        });
+        match result {
+            Ok(output) => match output.primary {
+                ExecutionResult::Modified(modified) => modified.content,
+                other => panic!("Expected modified result, got: {other:?}"),
+            },
+            Err(e) => panic!("Expected success, got error: {e:?}"),
+        }
     }
 
     /// Curated fs must expose allowed files to the sandbox while rejecting
@@ -792,7 +1280,9 @@ export default function transform(root) {
             target_directory: "/app",
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
+            cancellation_flag: None,
             timeout_ms: None,
             memory_limit: None,
             process_sandbox: None,
@@ -869,7 +1359,9 @@ export default function transform(root) {
             target_directory: "/app",
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
+            cancellation_flag: None,
             timeout_ms: None,
             memory_limit: None,
             process_sandbox: None,
@@ -889,6 +1381,397 @@ export default function transform(root) {
             },
             Err(e) => panic!("Expected success, got error: {:?}", e),
         }
+    }
+
+    /// `readdirSync(path, { withFileTypes: true })` must return Dirent-like
+    /// objects with a defined `name` and working `isDirectory`/`isFile`
+    /// predicates. Returning bare strings (the previous curated-fs behaviour)
+    /// makes Node-style walkers crash on `entry.name.startsWith(...)`.
+    #[test]
+    fn test_fs_sandbox_readdir_with_file_types_returns_dirents() {
+        let temp_dir = TempDir::new().expect("Failed to create temp directory");
+
+        let codemod_content = r#"
+import fs from "fs";
+export default function transform(root) {
+  const plain = fs.readdirSync("/app");
+  const entries = fs.readdirSync("/app", { withFileTypes: true });
+  const mapped = entries
+    .map((entry) => {
+      const kind = entry.isDirectory() ? "dir" : entry.isFile() ? "file" : "other";
+      return entry.name + ":" + kind + ":" + typeof entry.name;
+    })
+    .sort()
+    .join(",");
+  let accessOk = false;
+  try {
+    fs.accessSync("/app/nested/child.ts");
+    accessOk = true;
+  } catch {
+    accessOk = false;
+  }
+  let accessMissing = "none";
+  try {
+    fs.accessSync("/app/missing.ts");
+  } catch (e) {
+    accessMissing = e.code;
+  }
+  return [
+    "plain=" + plain.sort().join(","),
+    "dirents=" + mapped,
+    "accessOk=" + accessOk,
+    "accessMissing=" + accessMissing,
+  ].join(";");
+}
+        "#
+        .trim();
+
+        fs::write(
+            temp_dir.path().join("fs_dirent_codemod.js"),
+            codemod_content,
+        )
+        .expect("Failed to write codemod file");
+
+        let root = build_memory_fs_with_files(&[
+            ("/app/main.ts", "const x = 1;"),
+            ("/app/nested/child.ts", "export const y = 2;"),
+            ("/app/readme.md", "# hi"),
+        ]);
+        let fs_sandbox = FsSandbox {
+            target_dir: "/app".to_string(),
+            root: root.clone(),
+            fetcher: None,
+        };
+
+        let resolver = Arc::new(OxcResolver::new(temp_dir.path().to_path_buf(), None).unwrap());
+        let content = "const x = 1;";
+        let ast = AstGrep::new(content, js_lang());
+
+        let result = execute_codemod_sync(InMemoryExecutionOptions {
+            codemod_source: codemod_content,
+            language: js_lang(),
+            ast,
+            original_sha256: Some(compute_sha256(content)),
+            resolver: Some(resolver),
+            selector_config: None,
+            params: None,
+            matrix_values: None,
+            file_path: Some("/app/main.ts"),
+            target_directory: "/app",
+            semantic_provider: None,
+            metrics_context: None,
+            llm_request_handler: None,
+            shared_state_context: None,
+            cancellation_flag: None,
+            timeout_ms: None,
+            memory_limit: None,
+            process_sandbox: None,
+            fs_sandbox: Some(fs_sandbox),
+        });
+
+        match result {
+            Ok(output) => match output.primary {
+                ExecutionResult::Modified(modified) => {
+                    assert_eq!(
+                        modified.content,
+                        "plain=main.ts,nested,readme.md;dirents=main.ts:file:string,nested:dir:string,readme.md:file:string;accessOk=true;accessMissing=ENOENT",
+                    );
+                }
+                other => panic!("Expected modified result, got: {:?}", other),
+            },
+            Err(e) => panic!("Expected success, got error: {:?}", e),
+        }
+    }
+
+    /// Registry packages such as `@codemod/java-*` and
+    /// `dotnet-packagereference-migrate` treat bare `readdirSync` results as
+    /// strings (`localeCompare`, `for...of`, `.join`, `endsWith`). Returning
+    /// Dirents by default would break them.
+    #[test]
+    fn test_fs_sandbox_readdir_default_remains_string_array() {
+        let content = run_fs_sandbox_transform(
+            r#"
+import { readdirSync } from "fs";
+export default function transform() {
+  const plain = readdirSync("/app");
+  const explicitFalse = readdirSync("/app", { withFileTypes: false });
+  const names = [];
+  for (const entry of plain) {
+    names.push(typeof entry + ":" + entry);
+  }
+  return [
+    "join=" + plain.slice().sort().join("|"),
+    "sorted=" + plain.slice().sort((a, b) => a.localeCompare(b)).join("|"),
+    "types=" + names.sort().join("|"),
+    "falseMode=" + explicitFalse.every((e) => typeof e === "string"),
+    "array=" + Array.isArray(plain),
+  ].join(";");
+}
+            "#
+            .trim(),
+            &[
+                ("/app/main.ts", "const x = 1;"),
+                ("/app/B.ts", "export const b = 1;"),
+                ("/app/a.ts", "export const a = 1;"),
+            ],
+            None,
+        );
+        assert_eq!(
+            content,
+            "join=B.ts|a.ts|main.ts;sorted=B.ts|a.ts|main.ts;types=string:B.ts|string:a.ts|string:main.ts;falseMode=true;array=true",
+        );
+    }
+
+    /// Mirrors debarrel / js-dependency-mining walkers that call
+    /// `readdirSync(..., { withFileTypes: true })` and rely on `entry.name`,
+    /// `entry.name.startsWith`, and recursive `isDirectory()`/`isFile()`.
+    #[test]
+    fn test_fs_sandbox_readdir_dirent_walker_skips_and_recurses() {
+        let content = run_fs_sandbox_transform(
+            r#"
+import fs from "fs";
+import path from "path";
+export default function transform() {
+  const files = [];
+  function walk(dir) {
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const entry of entries) {
+      if (entry.name === "node_modules" || entry.name.startsWith(".")) continue;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.isFile() && entry.name.endsWith(".ts")) files.push(entry.name);
+    }
+  }
+  walk("/app");
+  return files.sort().join(",");
+}
+            "#
+            .trim(),
+            &[
+                ("/app/main.ts", "const x = 1;"),
+                ("/app/pkg/index.ts", "export {};"),
+                ("/app/node_modules/lib/index.ts", "export {};"),
+                ("/app/.hidden/secret.ts", "export {};"),
+                ("/app/readme.md", "# hi"),
+            ],
+            None,
+        );
+        assert_eq!(content, "index.ts,main.ts");
+    }
+
+    /// `accessSync` must stay Node-shaped for debarrel-style `fileExists`
+    /// helpers: succeed for present paths, accept ignored mode bits, throw
+    /// `ENOENT` for missing paths, and throw `EACCES` outside target_dir.
+    #[test]
+    fn test_fs_sandbox_access_sync_node_error_codes() {
+        let content = run_fs_sandbox_transform(
+            r#"
+import fs from "fs";
+export default function transform() {
+  fs.accessSync("/app/main.ts");
+  fs.accessSync("/app/main.ts", 0);
+  let missing = "none";
+  try {
+    fs.accessSync("/app/nope.ts");
+  } catch (e) {
+    missing = e.code;
+  }
+  let outside = "none";
+  try {
+    fs.accessSync("/etc/passwd");
+  } catch (e) {
+    outside = e.code;
+  }
+  const existsOk = fs.existsSync("/app/main.ts");
+  const existsMissing = fs.existsSync("/app/nope.ts");
+  const existsOutside = fs.existsSync("/etc/passwd");
+  return [
+    "missing=" + missing,
+    "outside=" + outside,
+    "existsOk=" + existsOk,
+    "existsMissing=" + existsMissing,
+    "existsOutside=" + existsOutside,
+  ].join(";");
+}
+            "#
+            .trim(),
+            &[("/app/main.ts", "const x = 1;")],
+            None,
+        );
+        assert_eq!(
+            content,
+            "missing=ENOENT;outside=EACCES;existsOk=true;existsMissing=false;existsOutside=false",
+        );
+    }
+
+    /// Unlinked paths must disappear from both string and Dirent listings,
+    /// matching dry-run semantics where deleted_paths suppresses rehydration.
+    #[test]
+    fn test_fs_sandbox_readdir_excludes_unlinked_entries() {
+        let content = run_fs_sandbox_transform(
+            r#"
+import fs from "fs";
+export default function transform() {
+  fs.unlinkSync("/app/gone.ts");
+  const plain = fs.readdirSync("/app").sort().join(",");
+  const dirents = fs
+    .readdirSync("/app", { withFileTypes: true })
+    .map((e) => e.name + ":" + (e.isFile() ? "file" : "dir"))
+    .sort()
+    .join(",");
+  let accessGone = "none";
+  try {
+    fs.accessSync("/app/gone.ts");
+  } catch (e) {
+    accessGone = e.code;
+  }
+  return ["plain=" + plain, "dirents=" + dirents, "accessGone=" + accessGone].join(";");
+}
+            "#
+            .trim(),
+            &[
+                ("/app/main.ts", "const x = 1;"),
+                ("/app/gone.ts", "export {};"),
+                ("/app/keep.ts", "export {};"),
+            ],
+            None,
+        );
+        assert_eq!(
+            content,
+            "plain=keep.ts,main.ts;dirents=keep.ts:file,main.ts:file;accessGone=ENOENT",
+        );
+    }
+
+    /// Empty directories and async `fs.promises.readdir` must keep the same
+    /// string/Dirent contract as the sync API.
+    #[test]
+    fn test_fs_sandbox_promises_readdir_and_empty_dir() {
+        let content = run_fs_sandbox_transform(
+            r#"
+import fs from "fs";
+export default async function transform() {
+  fs.mkdirSync("/app/empty", { recursive: true });
+  const emptyPlain = await fs.promises.readdir("/app/empty");
+  const emptyDirents = await fs.promises.readdir("/app/empty", { withFileTypes: true });
+  const rootDirents = await fs.promises.readdir("/app", { withFileTypes: true });
+  const rootPlain = await fs.promises.readdir("/app");
+  return [
+    "emptyPlainLen=" + emptyPlain.length,
+    "emptyDirentsLen=" + emptyDirents.length,
+    "rootPlainAllStrings=" + rootPlain.every((e) => typeof e === "string"),
+    "root=" + rootDirents
+      .map((e) => e.name + ":" + (e.isDirectory() ? "dir" : "file"))
+      .sort()
+      .join(","),
+  ].join(";");
+}
+            "#
+            .trim(),
+            &[("/app/main.ts", "const x = 1;")],
+            None,
+        );
+        assert_eq!(
+            content,
+            "emptyPlainLen=0;emptyDirentsLen=0;rootPlainAllStrings=true;root=empty:dir,main.ts:file",
+        );
+    }
+
+    /// Dirent predicates beyond isFile/isDirectory must be callable (Node
+    /// Dirent surface). Walkers sometimes call these unconditionally.
+    #[test]
+    fn test_fs_sandbox_dirent_predicate_surface() {
+        let content = run_fs_sandbox_transform(
+            r#"
+import fs from "fs";
+export default function transform() {
+  const [entry] = fs.readdirSync("/app", { withFileTypes: true });
+  return [
+    "name=" + entry.name,
+    "parentPath=" + entry.parentPath,
+    "path=" + entry.path,
+    "isFile=" + entry.isFile(),
+    "isDirectory=" + entry.isDirectory(),
+    "isSymbolicLink=" + entry.isSymbolicLink(),
+    "isBlockDevice=" + entry.isBlockDevice(),
+    "isCharacterDevice=" + entry.isCharacterDevice(),
+    "isFIFO=" + entry.isFIFO(),
+    "isSocket=" + entry.isSocket(),
+  ].join(";");
+}
+            "#
+            .trim(),
+            &[("/app/main.ts", "const x = 1;")],
+            None,
+        );
+        assert_eq!(
+            content,
+            "name=main.ts;parentPath=/app;path=/app;isFile=true;isDirectory=false;isSymbolicLink=false;isBlockDevice=false;isCharacterDevice=false;isFIFO=false;isSocket=false",
+        );
+    }
+
+    /// Dry-run / fetcher-backed listings must still produce typed Dirents when
+    /// the VFS miss is filled by `FileFetcher::read_dir` + `metadata`.
+    #[test]
+    fn test_fs_sandbox_readdir_with_file_types_via_fetcher() {
+        struct ListingFetcher;
+
+        impl crate::sandbox::engine::curated_fs::FileFetcher for ListingFetcher {
+            fn fetch(&self, _path: &str) -> std::result::Result<Option<Vec<u8>>, String> {
+                Ok(None)
+            }
+
+            fn metadata(
+                &self,
+                path: &str,
+            ) -> std::result::Result<Option<vfs::VfsMetadata>, String> {
+                Ok(Some(vfs::VfsMetadata {
+                    file_type: if path.ends_with("/pkg") || path == "/app/pkg" {
+                        vfs::VfsFileType::Directory
+                    } else {
+                        vfs::VfsFileType::File
+                    },
+                    len: 0,
+                    created: None,
+                    modified: None,
+                    accessed: None,
+                }))
+            }
+
+            fn read_dir(&self, path: &str) -> std::result::Result<Option<Vec<String>>, String> {
+                if path == "/app" {
+                    Ok(Some(vec![
+                        "main.ts".to_string(),
+                        "pkg".to_string(),
+                        "extra.ts".to_string(),
+                    ]))
+                } else {
+                    Ok(None)
+                }
+            }
+        }
+
+        let content = run_fs_sandbox_transform(
+            r#"
+import fs from "fs";
+export default function transform() {
+  const entries = fs.readdirSync("/app", { withFileTypes: true });
+  return entries
+    .map((e) => e.name + ":" + (e.isDirectory() ? "dir" : e.isFile() ? "file" : "other"))
+    .sort()
+    .join(",");
+}
+            "#
+            .trim(),
+            // Seed only main.ts in the VFS; pkg + extra.ts come from the fetcher listing.
+            &[("/app/main.ts", "const x = 1;")],
+            Some(Arc::new(ListingFetcher)),
+        );
+        assert_eq!(content, "extra.ts:file,main.ts:file,pkg:dir");
     }
 
     /// Mirror pg_ast_grep's batch flow: run the same fs-using codemod across
@@ -945,7 +1828,9 @@ export default function transform(root) {
                 target_directory: "/app",
                 semantic_provider: None,
                 metrics_context: None,
+                llm_request_handler: None,
                 shared_state_context: None,
+                cancellation_flag: None,
                 timeout_ms: None,
                 memory_limit: None,
                 process_sandbox: None,
@@ -1016,7 +1901,9 @@ export default function transform(root) {
             target_directory: "/app",
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
+            cancellation_flag: None,
             timeout_ms: None,
             memory_limit: None,
             process_sandbox: None,
@@ -1124,7 +2011,9 @@ export default function transform(root) {
             target_directory: "/app",
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
+            cancellation_flag: None,
             timeout_ms: None,
             memory_limit: None,
             process_sandbox: None,
@@ -1215,7 +2104,9 @@ export default function transform(root) {
             target_directory: "/app",
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
+            cancellation_flag: None,
             timeout_ms: None,
             memory_limit: None,
             process_sandbox: None,
@@ -1283,7 +2174,9 @@ export default function transform(root) {
             target_directory: "/app",
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
+            cancellation_flag: None,
             timeout_ms: None,
             memory_limit: None,
             process_sandbox: None,
@@ -1321,7 +2214,9 @@ export default function transform(root) {
             target_directory: "/app",
             semantic_provider: None,
             metrics_context: None,
+            llm_request_handler: None,
             shared_state_context: None,
+            cancellation_flag: None,
             timeout_ms: None,
             memory_limit: None,
             process_sandbox: None,

@@ -1,5 +1,8 @@
 use butterflow_models::{Error, Result, Workflow};
+use futures_util::{stream, StreamExt};
 use log::warn;
+use std::collections::HashSet;
+use std::path::{Path, PathBuf};
 
 use crate::{
     engine::CodemodDependency,
@@ -16,58 +19,74 @@ pub(crate) struct NestedCodemodService<'a> {
     registry_client: &'a RegistryClient,
 }
 
+const PACKAGE_RESOLUTION_CONCURRENCY: usize = 4;
+
 impl<'a> NestedCodemodService<'a> {
     pub(crate) fn new(registry_client: &'a RegistryClient) -> Self {
         Self { registry_client }
     }
 
+    /// The source of the dependency in `dependency_chain` with this
+    /// `identity`, if there is one.
     pub(crate) fn find_cycle_in_chain(
-        source: &str,
+        identity: &str,
         dependency_chain: &[CodemodDependency],
     ) -> Option<String> {
         dependency_chain
             .iter()
-            .find(|dep| dep.source == source)
+            .find(|dep| dep.identity == identity)
             .map(|dep| dep.source.clone())
+    }
+
+    /// What `source`, declared by the package in `base_dir`, refers to: the
+    /// canonical directory of a local source, otherwise the source itself.
+    fn dependency_identity(source: &str, base_dir: Option<&Path>) -> String {
+        if !(source.starts_with("./") || source.starts_with("../") || source.starts_with('/')) {
+            return source.to_string();
+        }
+        let path = match base_dir {
+            Some(base_dir) if !source.starts_with('/') => base_dir.join(source),
+            _ => PathBuf::from(source),
+        };
+        path.canonicalize()
+            .unwrap_or(path)
+            .to_string_lossy()
+            .into_owned()
     }
 
     pub(crate) fn format_cycle_error(
         prefix: &str,
+        identity: &str,
         source: &str,
         dependency_chain: &[CodemodDependency],
         validation_message: &str,
     ) -> Error {
         let cycle_start =
-            Self::find_cycle_in_chain(source, dependency_chain).unwrap_or_else(|| source.into());
-        let chain_str = dependency_chain
-            .iter()
-            .map(|d| d.source.as_str())
-            .collect::<Vec<_>>()
-            .join(" → ");
+            Self::find_cycle_in_chain(identity, dependency_chain).unwrap_or_else(|| source.into());
 
         Error::Other(format!(
             "{prefix}\n\
-            Cycle: {} → {} → {}\n\
+            Cycle detected while resolving codemod dependency \"{}\".\n\
             {validation_message}\n\
-            Please review your codemod dependencies to remove the circular reference.",
-            cycle_start,
-            if chain_str.is_empty() {
-                "(root)"
-            } else {
-                &chain_str
-            },
-            source
+            This bundle cannot be executed because one of its nested codemod dependencies forms a cycle. \
+            Contact the package owner or try a different bundle version.",
+            cycle_start
         ))
     }
 
+    /// Resolves a nested codemod `source` declared by the package in
+    /// `base_dir`. A local `./` or `../` source is relative to that package.
     pub(crate) async fn resolve(
         &self,
         source: &str,
+        base_dir: Option<&Path>,
         dependency_chain: &[CodemodDependency],
     ) -> Result<ResolvedNestedCodemod> {
-        if Self::find_cycle_in_chain(source, dependency_chain).is_some() {
+        let identity = Self::dependency_identity(source, base_dir);
+        if Self::find_cycle_in_chain(&identity, dependency_chain).is_some() {
             return Err(Self::format_cycle_error(
                 "Runtime codemod dependency cycle detected!",
+                &identity,
                 source,
                 dependency_chain,
                 "This cycle was not caught during validation, indicating a dynamic dependency.",
@@ -75,12 +94,11 @@ impl<'a> NestedCodemodService<'a> {
         }
 
         let package = self
-            .registry_client
-            .resolve_package(source, None, false, None)
+            .resolve_package(source, base_dir)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve package: {e}")))?;
         let workflow = Self::load_workflow(&package)?;
-        let dependency_chain = Self::extend_dependency_chain(source, dependency_chain);
+        let dependency_chain = Self::extend_dependency_chain(source, identity, dependency_chain);
 
         Ok(ResolvedNestedCodemod {
             package,
@@ -92,50 +110,151 @@ impl<'a> NestedCodemodService<'a> {
     pub(crate) async fn validate_workflow_dependencies(
         &self,
         workflow: &Workflow,
+        base_dir: Option<&Path>,
         dependency_chain: &[CodemodDependency],
     ) -> Result<()> {
-        for node in &workflow.nodes {
-            for step in &node.steps {
-                if let butterflow_models::step::StepAction::Codemod(codemod) = &step.action {
-                    if Self::find_cycle_in_chain(&codemod.source, dependency_chain).is_some() {
-                        return Err(Self::format_cycle_error(
-                            "Codemod dependency cycle detected!",
-                            &codemod.source,
-                            dependency_chain,
-                            "This would cause infinite recursion during execution.",
-                        ));
-                    }
+        let sources = Self::unique_codemod_sources(workflow);
+        for source in &sources {
+            let identity = Self::dependency_identity(source, base_dir);
+            if Self::find_cycle_in_chain(&identity, dependency_chain).is_some() {
+                return Err(Self::format_cycle_error(
+                    "Codemod dependency cycle detected!",
+                    &identity,
+                    source,
+                    dependency_chain,
+                    "This would cause infinite recursion during execution.",
+                ));
+            }
+        }
 
-                    if let Err(error) = self
-                        .resolve_and_validate(&codemod.source, dependency_chain)
-                        .await
-                    {
-                        warn!(
-                            "Failed to validate codemod dependency {}: {}",
-                            codemod.source, error
-                        );
-                    }
-                }
+        let validations = stream::iter(sources.into_iter().map(|source| async move {
+            let result = self
+                .resolve_and_validate(&source, base_dir, dependency_chain)
+                .await;
+            (source, result)
+        }))
+        .buffer_unordered(PACKAGE_RESOLUTION_CONCURRENCY)
+        .collect::<Vec<_>>()
+        .await;
+
+        for (source, result) in validations {
+            if let Err(error) = result {
+                warn!("Failed to validate codemod dependency {source}: {error}");
             }
         }
 
         Ok(())
     }
 
+    pub(crate) async fn find_dry_run_only_dependency(
+        &self,
+        workflow: &Workflow,
+        base_dir: Option<&Path>,
+        dependency_chain: &[CodemodDependency],
+    ) -> Result<Option<String>> {
+        let sources = Self::unique_codemod_sources(workflow);
+        let mut resolutions = stream::iter(sources.into_iter().enumerate().map(
+            |(index, source)| async move {
+                let result = self.resolve(&source, base_dir, dependency_chain).await;
+                (index, source, result)
+            },
+        ))
+        .buffer_unordered(PACKAGE_RESOLUTION_CONCURRENCY)
+        .collect::<Vec<_>>()
+        .await;
+        // Preserve workflow order so the reported dry-run-only dependency is
+        // deterministic even though package I/O completes out of order.
+        resolutions.sort_by_key(|(index, _, _)| *index);
+
+        for (_, source, result) in resolutions {
+            let resolved = match result {
+                Ok(resolved) => resolved,
+                Err(error) => {
+                    warn!(
+                        "Failed to inspect codemod dependency {source} for dry-run-only status: {error}"
+                    );
+                    continue;
+                }
+            };
+
+            if resolved.package.dry_run_only {
+                return Ok(Some(source));
+            }
+
+            if let Some(source) = Box::pin(self.find_dry_run_only_dependency(
+                &resolved.workflow,
+                Some(&resolved.package.package_dir),
+                &resolved.dependency_chain,
+            ))
+            .await?
+            {
+                return Ok(Some(source));
+            }
+        }
+
+        Ok(None)
+    }
+
+    fn unique_codemod_sources(workflow: &Workflow) -> Vec<String> {
+        let mut seen = HashSet::new();
+        let mut sources = Vec::new();
+
+        for node in &workflow.nodes {
+            for step in &node.steps {
+                if let butterflow_models::step::StepAction::Codemod(codemod) = &step.action {
+                    if seen.insert(codemod.source.clone()) {
+                        sources.push(codemod.source.clone());
+                    }
+                }
+            }
+        }
+
+        sources
+    }
+
     async fn resolve_and_validate(
         &self,
         source: &str,
+        base_dir: Option<&Path>,
         dependency_chain: &[CodemodDependency],
     ) -> Result<()> {
         let package = self
-            .registry_client
-            .resolve_package(source, None, false, None)
+            .resolve_package(source, base_dir)
             .await
             .map_err(|e| Error::Other(format!("Failed to resolve codemod {source}: {e}")))?;
         let workflow = Self::load_workflow(&package)?;
-        let dependency_chain = Self::extend_dependency_chain(source, dependency_chain);
+        let dependency_chain = Self::extend_dependency_chain(
+            source,
+            Self::dependency_identity(source, base_dir),
+            dependency_chain,
+        );
 
-        Box::pin(self.validate_workflow_dependencies(&workflow, &dependency_chain)).await
+        Box::pin(self.validate_workflow_dependencies(
+            &workflow,
+            Some(&package.package_dir),
+            &dependency_chain,
+        ))
+        .await
+    }
+
+    /// Resolves `source` from the registry, or, for a local `./` or `../`
+    /// path, from the directory of the package that declares it. Without a
+    /// `base_dir`, a local path is relative to the current directory.
+    async fn resolve_package(
+        &self,
+        source: &str,
+        base_dir: Option<&Path>,
+    ) -> crate::registry::Result<ResolvedPackage> {
+        match base_dir {
+            Some(base_dir) if source.starts_with("./") || source.starts_with("../") => self
+                .registry_client
+                .resolve_local_package_at(&base_dir.join(source)),
+            _ => {
+                self.registry_client
+                    .resolve_package(source, None, false, None)
+                    .await
+            }
+        }
     }
 
     fn load_workflow(package: &ResolvedPackage) -> Result<Workflow> {
@@ -156,12 +275,534 @@ impl<'a> NestedCodemodService<'a> {
 
     fn extend_dependency_chain(
         source: &str,
+        identity: String,
         dependency_chain: &[CodemodDependency],
     ) -> Vec<CodemodDependency> {
         let mut chain = dependency_chain.to_vec();
         chain.push(CodemodDependency {
             source: source.to_string(),
+            identity,
         });
         chain
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use flate2::{write::GzEncoder, Compression};
+    use std::{
+        collections::HashMap,
+        io::Write,
+        sync::{
+            atomic::{AtomicUsize, Ordering},
+            Arc,
+        },
+        time::Duration,
+    };
+    use tokio::net::TcpListener;
+
+    #[test]
+    fn format_cycle_error_does_not_expose_dependency_chain() {
+        let error = NestedCodemodService::format_cycle_error(
+            "Runtime codemod dependency cycle detected!",
+            "public-child",
+            "public-child",
+            &[
+                CodemodDependency {
+                    source: "public-child".to_string(),
+                    identity: "public-child".to_string(),
+                },
+                CodemodDependency {
+                    source: "private-child".to_string(),
+                    identity: "private-child".to_string(),
+                },
+            ],
+            "This cycle was not caught during validation, indicating a dynamic dependency.",
+        );
+        let message = error.to_string();
+
+        assert!(message.contains("Runtime codemod dependency cycle detected!"));
+        assert!(message.contains("Cycle detected while resolving codemod dependency"));
+        assert!(message.contains(
+            "This bundle cannot be executed because one of its nested codemod dependencies forms a cycle."
+        ));
+        assert!(!message.contains("Please review your codemod dependencies"));
+        assert!(message.contains("public-child"));
+        assert!(!message.contains("private-child"));
+        assert!(!message.contains("→"));
+    }
+
+    #[tokio::test]
+    async fn find_dry_run_only_dependency_detects_nested_registry_child() {
+        let packages = HashMap::from([
+            (
+                "child-public".to_string(),
+                MockPackage {
+                    workflow: workflow_yaml_with_child("child-pro"),
+                    dry_run_only: false,
+                },
+            ),
+            (
+                "child-pro".to_string(),
+                MockPackage {
+                    workflow: workflow_yaml_without_children(),
+                    dry_run_only: true,
+                },
+            ),
+        ]);
+        let (registry_url, server) = spawn_registry_server(packages).await;
+        let cache_dir = tempfile::tempdir().expect("cache dir");
+        let registry_client = RegistryClient::new(
+            crate::registry::RegistryConfig {
+                default_registry: registry_url,
+                cache_dir: cache_dir.path().to_path_buf(),
+            },
+            None,
+        );
+        let workflow: Workflow =
+            serde_yaml::from_str(&workflow_yaml_with_child("child-public")).expect("workflow yaml");
+
+        let dry_run_only_dependency = NestedCodemodService::new(&registry_client)
+            .find_dry_run_only_dependency(&workflow, None, &[])
+            .await
+            .expect("dry-run-only scan should succeed");
+
+        assert_eq!(dry_run_only_dependency.as_deref(), Some("child-pro"));
+        server.abort();
+    }
+
+    #[tokio::test]
+    async fn find_dry_run_only_dependency_skips_unresolved_children() {
+        let packages = HashMap::from([(
+            "child-pro".to_string(),
+            MockPackage {
+                workflow: workflow_yaml_without_children(),
+                dry_run_only: true,
+            },
+        )]);
+        let (registry_url, server) = spawn_registry_server(packages).await;
+        let cache_dir = tempfile::tempdir().expect("cache dir");
+        let registry_client = RegistryClient::new(
+            crate::registry::RegistryConfig {
+                default_registry: registry_url,
+                cache_dir: cache_dir.path().to_path_buf(),
+            },
+            None,
+        );
+        let workflow: Workflow = serde_yaml::from_str(&workflow_yaml_with_children(&[
+            "missing-child",
+            "child-pro",
+        ]))
+        .expect("workflow yaml");
+
+        let dry_run_only_dependency = NestedCodemodService::new(&registry_client)
+            .find_dry_run_only_dependency(&workflow, None, &[])
+            .await
+            .expect("dry-run-only scan should skip unresolved children");
+
+        assert_eq!(dry_run_only_dependency.as_deref(), Some("child-pro"));
+        server.abort();
+    }
+
+    #[tokio::test]
+    async fn validates_direct_bundle_dependencies_concurrently() {
+        let packages = HashMap::from([
+            (
+                "child-a".to_string(),
+                MockPackage {
+                    workflow: workflow_yaml_without_children(),
+                    dry_run_only: false,
+                },
+            ),
+            (
+                "child-b".to_string(),
+                MockPackage {
+                    workflow: workflow_yaml_without_children(),
+                    dry_run_only: false,
+                },
+            ),
+        ]);
+        let (registry_url, server, metrics) = spawn_registry_server_with_metrics(packages).await;
+        let cache_dir = tempfile::tempdir().expect("cache dir");
+        let registry_client = RegistryClient::new(
+            crate::registry::RegistryConfig {
+                default_registry: registry_url,
+                cache_dir: cache_dir.path().to_path_buf(),
+            },
+            None,
+        );
+        let workflow: Workflow =
+            serde_yaml::from_str(&workflow_yaml_with_children(&["child-a", "child-b"]))
+                .expect("workflow yaml");
+
+        NestedCodemodService::new(&registry_client)
+            .validate_workflow_dependencies(&workflow, None, &[])
+            .await
+            .expect("dependency validation should succeed");
+
+        assert!(
+            metrics.maximum_active_package_info.load(Ordering::SeqCst) >= 2,
+            "independent child package lookups should overlap"
+        );
+        server.abort();
+    }
+
+    #[derive(Clone)]
+    struct MockPackage {
+        workflow: String,
+        dry_run_only: bool,
+    }
+
+    #[derive(Default)]
+    struct RegistryServerMetrics {
+        active_package_info: AtomicUsize,
+        maximum_active_package_info: AtomicUsize,
+    }
+
+    async fn spawn_registry_server(
+        packages: HashMap<String, MockPackage>,
+    ) -> (String, tokio::task::JoinHandle<()>) {
+        let (registry_url, handle, _) = spawn_registry_server_with_metrics(packages).await;
+        (registry_url, handle)
+    }
+
+    async fn spawn_registry_server_with_metrics(
+        packages: HashMap<String, MockPackage>,
+    ) -> (
+        String,
+        tokio::task::JoinHandle<()>,
+        Arc<RegistryServerMetrics>,
+    ) {
+        let listener = TcpListener::bind("127.0.0.1:0")
+            .await
+            .expect("bind test registry");
+        let addr = listener.local_addr().expect("test registry address");
+        let registry_url = format!("http://{addr}");
+        let packages = Arc::new(packages);
+        let server_url = registry_url.clone();
+        let metrics = Arc::new(RegistryServerMetrics::default());
+        let server_metrics = Arc::clone(&metrics);
+
+        let handle = tokio::spawn(async move {
+            loop {
+                let Ok((stream, _)) = listener.accept().await else {
+                    break;
+                };
+
+                let packages = Arc::clone(&packages);
+                let server_url = server_url.clone();
+                let metrics = Arc::clone(&server_metrics);
+                tokio::spawn(async move {
+                    let mut buffer = [0; 4096];
+                    let Ok(size) = stream
+                        .readable()
+                        .await
+                        .and_then(|_| stream.try_read(&mut buffer))
+                    else {
+                        return;
+                    };
+                    let request = String::from_utf8_lossy(&buffer[..size]);
+                    let Some(request_line) = request.lines().next() else {
+                        return;
+                    };
+                    let mut parts = request_line.split_whitespace();
+                    let method = parts.next().unwrap_or_default();
+                    let path = parts.next().unwrap_or_default();
+
+                    let is_package_info = method == "GET"
+                        && path.starts_with("/api/v1/registry/packages/")
+                        && !path.contains("/download/");
+                    if is_package_info {
+                        let active = metrics.active_package_info.fetch_add(1, Ordering::SeqCst) + 1;
+                        metrics
+                            .maximum_active_package_info
+                            .fetch_max(active, Ordering::SeqCst);
+                        tokio::time::sleep(Duration::from_millis(50)).await;
+                        metrics.active_package_info.fetch_sub(1, Ordering::SeqCst);
+                    }
+
+                    let (status, content_type, body) =
+                        registry_response(method, path, &server_url, &packages).unwrap_or_else(
+                            || ("404 Not Found", "text/plain", b"not found".to_vec()),
+                        );
+
+                    let response = format!(
+                        "HTTP/1.1 {status}\r\nContent-Type: {content_type}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                        body.len()
+                    );
+
+                    let _ = stream.writable().await;
+                    let _ = stream.try_write(response.as_bytes());
+                    if method != "HEAD" && !body.is_empty() {
+                        let _ = stream.writable().await;
+                        let _ = stream.try_write(&body);
+                    }
+                });
+            }
+        });
+
+        (registry_url, handle, metrics)
+    }
+
+    fn registry_response(
+        method: &str,
+        path: &str,
+        registry_url: &str,
+        packages: &HashMap<String, MockPackage>,
+    ) -> Option<(&'static str, &'static str, Vec<u8>)> {
+        if let Some(package_name) = path.strip_prefix("/cdn/") {
+            let package_name = package_name.strip_suffix(".tgz")?;
+            let package = packages.get(package_name)?;
+            return match method {
+                "HEAD" => Some(("200 OK", "application/gzip", Vec::new())),
+                "GET" => Some((
+                    "200 OK",
+                    "application/gzip",
+                    package_archive(&package.workflow),
+                )),
+                _ => None,
+            };
+        }
+
+        let package_name = path.strip_prefix("/api/v1/registry/packages/")?;
+
+        if method == "GET" && !package_name.contains("/download/") {
+            packages.get(package_name)?;
+            return Some((
+                "200 OK",
+                "application/json",
+                package_info_response(package_name).into_bytes(),
+            ));
+        }
+
+        if let Some((package_name, version)) = package_name.split_once("/download/") {
+            let package = packages.get(package_name)?;
+            if version != "1.0.0" {
+                return None;
+            }
+
+            return match method {
+                "HEAD" => Some(("200 OK", "application/json", Vec::new())),
+                "GET" => Some((
+                    "200 OK",
+                    "application/json",
+                    download_response(registry_url, package_name, package.dry_run_only)
+                        .into_bytes(),
+                )),
+                _ => None,
+            };
+        }
+
+        None
+    }
+
+    fn package_info_response(package_name: &str) -> String {
+        serde_json::json!({
+            "id": format!("pkg_{package_name}"),
+            "name": package_name,
+            "scope": null,
+            "is_legacy": false,
+            "latest_version": "1.0.0",
+            "versions": {
+                "1.0.0": {
+                    "version": "1.0.0",
+                    "description": null,
+                    "checksum": "sha256:test",
+                    "size": 1
+                }
+            }
+        })
+        .to_string()
+    }
+
+    fn download_response(registry_url: &str, package_name: &str, dry_run_only: bool) -> String {
+        serde_json::json!({
+            "download_url": format!("{registry_url}/cdn/{package_name}.tgz"),
+            "expires_at": "2099-01-01T00:00:00Z",
+            "dry_run_only": dry_run_only
+        })
+        .to_string()
+    }
+
+    fn package_archive(workflow: &str) -> Vec<u8> {
+        let mut tar_buffer = Vec::new();
+        {
+            let mut archive = tar::Builder::new(&mut tar_buffer);
+            append_tar_file(&mut archive, "codemod.yaml", b"name: test\n");
+            append_tar_file(&mut archive, "workflow.yaml", workflow.as_bytes());
+            archive.finish().expect("finish tar");
+        }
+
+        let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
+        encoder.write_all(&tar_buffer).expect("write gzip");
+        encoder.finish().expect("finish gzip")
+    }
+
+    fn append_tar_file(archive: &mut tar::Builder<&mut Vec<u8>>, path: &str, contents: &[u8]) {
+        let mut header = tar::Header::new_gnu();
+        header.set_path(path).expect("set tar path");
+        header.set_size(contents.len() as u64);
+        header.set_cksum();
+        archive.append(&header, contents).expect("append tar file");
+    }
+
+    fn workflow_yaml_with_child(source: &str) -> String {
+        format!(
+            "version: '1'\nnodes:\n- id: test\n  name: Test\n  steps:\n  - name: Run child\n    codemod:\n      source: {source}\n"
+        )
+    }
+
+    fn workflow_yaml_with_children(sources: &[&str]) -> String {
+        let steps = sources
+            .iter()
+            .map(|source| format!("  - name: Run {source}\n    codemod:\n      source: {source}\n"))
+            .collect::<String>();
+
+        format!("version: '1'\nnodes:\n- id: test\n  name: Test\n  steps:\n{steps}")
+    }
+
+    fn write_local_package(dir: &Path, workflow: &str) {
+        std::fs::create_dir_all(dir).expect("package dir");
+        std::fs::write(dir.join("codemod.yaml"), "name: local\n").expect("codemod.yaml");
+        std::fs::write(dir.join("workflow.yaml"), workflow).expect("workflow.yaml");
+    }
+
+    #[tokio::test]
+    async fn local_sources_resolve_from_the_declaring_package() {
+        // recipes/parent runs ../child, which runs ./grandchild; neither path
+        // exists relative to the process's current directory.
+        let packages = tempfile::tempdir().expect("packages dir");
+        let parent = packages.path().join("recipes").join("parent");
+        let child = packages.path().join("recipes").join("child");
+        write_local_package(&parent, &workflow_yaml_with_child("../child"));
+        write_local_package(&child, &workflow_yaml_with_child("./grandchild"));
+        write_local_package(&child.join("grandchild"), &workflow_yaml_without_children());
+        let cache_dir = tempfile::tempdir().expect("cache dir");
+        let registry_client = RegistryClient::new(
+            crate::registry::RegistryConfig {
+                default_registry: "http://127.0.0.1:9".to_string(),
+                cache_dir: cache_dir.path().to_path_buf(),
+            },
+            None,
+        );
+        let service = NestedCodemodService::new(&registry_client);
+
+        let resolved = service
+            .resolve("../child", Some(&parent), &[])
+            .await
+            .expect("../child resolves from the parent package");
+        assert_eq!(
+            resolved.package.package_dir.canonicalize().unwrap(),
+            child.canonicalize().unwrap()
+        );
+
+        // The child's own `./grandchild` is relative to the child package.
+        let grandchild = service
+            .resolve(
+                "./grandchild",
+                Some(&resolved.package.package_dir),
+                &resolved.dependency_chain,
+            )
+            .await
+            .expect("./grandchild resolves from the child package");
+        assert_eq!(
+            grandchild.package.package_dir.canonicalize().unwrap(),
+            child.join("grandchild").canonicalize().unwrap()
+        );
+
+        assert!(
+            service.resolve("../child", None, &[]).await.is_err(),
+            "without a base directory, ../child is relative to the current directory"
+        );
+    }
+
+    #[tokio::test]
+    async fn repeated_local_sources_at_different_levels_are_not_a_cycle() {
+        // parent runs ./child, and that child runs its own ./child.
+        let packages = tempfile::tempdir().expect("packages dir");
+        let parent = packages.path().join("parent");
+        write_local_package(&parent, &workflow_yaml_with_child("./child"));
+        write_local_package(&parent.join("child"), &workflow_yaml_with_child("./child"));
+        write_local_package(
+            &parent.join("child").join("child"),
+            &workflow_yaml_without_children(),
+        );
+        let cache_dir = tempfile::tempdir().expect("cache dir");
+        let registry_client = local_registry_client(cache_dir.path());
+        let service = NestedCodemodService::new(&registry_client);
+
+        let child = service
+            .resolve("./child", Some(&parent), &[])
+            .await
+            .expect("parent/child resolves");
+        let grandchild = service
+            .resolve(
+                "./child",
+                Some(&child.package.package_dir),
+                &child.dependency_chain,
+            )
+            .await
+            .expect("parent/child/child is a different package, not a cycle");
+        assert_eq!(
+            grandchild.package.package_dir.canonicalize().unwrap(),
+            parent.join("child").join("child").canonicalize().unwrap()
+        );
+    }
+
+    #[tokio::test]
+    async fn local_sources_that_lead_back_to_a_package_are_a_cycle() {
+        // a runs ../b, and b runs ../a.
+        let packages = tempfile::tempdir().expect("packages dir");
+        let a = packages.path().join("a");
+        let b = packages.path().join("b");
+        write_local_package(&a, &workflow_yaml_with_child("../b"));
+        write_local_package(&b, &workflow_yaml_with_child("../a"));
+        let cache_dir = tempfile::tempdir().expect("cache dir");
+        let registry_client = local_registry_client(cache_dir.path());
+        let service = NestedCodemodService::new(&registry_client);
+
+        let to_b = service
+            .resolve("../b", Some(&a), &[])
+            .await
+            .expect("a -> b");
+        let to_a = service
+            .resolve(
+                "../a",
+                Some(&to_b.package.package_dir),
+                &to_b.dependency_chain,
+            )
+            .await
+            .expect("b -> a");
+        let error = service
+            .resolve(
+                "../b",
+                Some(&to_a.package.package_dir),
+                &to_a.dependency_chain,
+            )
+            .await
+            .err()
+            .expect("a -> b again is a cycle");
+        assert!(
+            error
+                .to_string()
+                .contains("Runtime codemod dependency cycle detected!"),
+            "{error}"
+        );
+    }
+
+    fn local_registry_client(cache_dir: &Path) -> RegistryClient {
+        RegistryClient::new(
+            crate::registry::RegistryConfig {
+                default_registry: "http://127.0.0.1:9".to_string(),
+                cache_dir: cache_dir.to_path_buf(),
+            },
+            None,
+        )
+    }
+
+    fn workflow_yaml_without_children() -> String {
+        "version: '1'\nnodes:\n- id: test\n  name: Test\n  steps:\n  - name: Done\n    run: echo done\n"
+            .to_string()
     }
 }
