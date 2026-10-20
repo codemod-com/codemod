@@ -127,6 +127,9 @@ mod tests {
 
     #[test]
     fn env_registry_url_trims_and_ignores_empty_values() {
+        let _env_lock = crate::auth::storage::REGISTRY_ENV_LOCK
+            .lock()
+            .expect("registry env lock");
         let _registry_url_guard =
             EnvVarGuard::set("CODEMOD_REGISTRY_URL", " http://localhost:3000 ");
         assert_eq!(env_registry_url().as_deref(), Some("http://localhost:3000"));
