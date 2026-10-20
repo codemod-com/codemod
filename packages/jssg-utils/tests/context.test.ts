@@ -99,13 +99,12 @@ function testIsUsedInReflectiveAccessHandlesComputedAndInOperator() {
     'const boundFn = fn.bind(obj); (boundFn || fallback)["name"];\n',
   );
   const leftShortCircuitUsage = requireNode(
-    leftShortCircuitProgram.find({
-      rule: {
-        kind: "identifier",
-        pattern: "boundFn",
-      },
-    }),
+    findIdentifierWithAncestorKind(leftShortCircuitProgram, "boundFn", "binary_expression"),
     "Should find left short-circuit operand usage",
+  );
+  assert(
+    leftShortCircuitUsage.parent()?.is("binary_expression"),
+    "Should select the operand, not its declaration",
   );
   assert(
     !isUsedInReflectiveAccess(leftShortCircuitUsage, ["name", "length", "prototype"]),

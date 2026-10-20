@@ -78,7 +78,10 @@ function isTypeOnlyImportDefinition(node: SgNode<Language>) {
 }
 
 function isDirectRequireCall(node: SgNode<Language> | null) {
-  return !!node?.is("call_expression") && node.field("function")?.text() === "require";
+  if (!node?.is("call_expression")) return false;
+
+  const callee = node.field("function");
+  return callee?.text() === "require" && !callee.definition({ resolveExternal: false })?.node;
 }
 
 function isDirectRequireBindingDefinition(node: SgNode<Language>) {
@@ -111,7 +114,14 @@ export function isRuntimeImportBinding<T extends SgNode<Language>>(node: T) {
   const isNamedImports = def?.node.parent()?.is("named_imports");
   const isImportSpecifier = def?.node.parent()?.is("import_specifier");
   const isImportStatement = def?.node.parent()?.is("import_statement");
+  const isNamespaceImport = def?.node.parent()?.is("namespace_import");
   const isRequireBinding = isDirectRequireBindingDefinition(def.node);
 
-  return isImportSpecifier || isNamedImports || isImportStatement || isRequireBinding;
+  return (
+    isImportSpecifier ||
+    isNamedImports ||
+    isImportStatement ||
+    isNamespaceImport ||
+    isRequireBinding
+  );
 }
