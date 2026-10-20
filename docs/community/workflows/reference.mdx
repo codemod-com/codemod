@@ -537,6 +537,15 @@ steps:
       npm run build
 ```
 
+On macOS and Linux, use `$CODEMOD_PATH` to run a shell script bundled with your codemod package. It points to the package root. Quote the script path so it works when the package directory contains spaces:
+
+```yaml workflow.yaml
+steps:
+  - name: Install dependency
+    run: |
+      "$CODEMOD_PATH/scripts/add-dependency.sh"
+```
+
 **Shell Command Step Parameters**:
 
 <ParamField path="name" type="string" required>
@@ -548,7 +557,7 @@ steps:
 </ParamField>
 
 <ParamField path="run" type="string" required>
-  Inline shell command to execute. It runs with `sh -c` on macOS and Linux, and as a batch file with `cmd.exe` on Windows.
+  Inline shell command to execute. It runs with `sh -c` on macOS and Linux, and as a batch file with `cmd.exe` on Windows. Use the `CODEMOD_PATH` environment variable for scripts or files bundled with the codemod package.
 </ParamField>
 
 <Note>
