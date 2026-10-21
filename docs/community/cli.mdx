@@ -87,7 +87,7 @@ Along with skill files, install writes or updates a Codemod MCP server entry. Pr
 }
 ```
 
-User installs (`--user`) stay on the current machine, so they launch the installed `codemod` executable directly. If the CLI itself was run through `npx`, its cached executable is temporary, so user installs fall back to `codemod` on `PATH` or the same pinned `npx` launcher. Re-running `ai` updates entries that an earlier Codemod install generated (including absolute executable paths) without `--force`.
+User installs (`--user`) stay on the current machine, so they launch the installed `codemod` executable directly. If the CLI itself was run through `npx`, its cached executable is temporary, so user installs fall back to `codemod` on `PATH` (outside the npx cache) or the same pinned `npx` launcher. Re-running `ai --project` repairs one known broken entry without `--force`: a project entry whose command is an absolute path to an executable inside npm's npx cache (`_npx`), which earlier releases wrote. Every other existing `codemod` entry is kept and reported as a conflict, including absolute paths outside the npx cache, older pinned `codemod@<version>` launchers, and all user-scope entries. Re-run with `--force` to replace it.
 
 Prerequisites for project installs:
 - The project MCP launcher needs Node.js and npm (`npx`) on every machine that uses the committed config. The first launch of a pinned version downloads it from the npm registry unless it is already in the npm cache.
