@@ -101,7 +101,8 @@
                   "enterprise/insights/jssg-queries",
                   "enterprise/insights/ast-grep-queries",
                   "enterprise/insights/dependency-queries",
-                  "enterprise/insights/smart-queries"
+                  "enterprise/insights/smart-queries",
+                  "enterprise/insights/mcp-troubleshooting"
                 ]
               },
               "enterprise/campaigns",
