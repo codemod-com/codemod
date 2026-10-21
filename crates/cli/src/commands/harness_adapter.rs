@@ -423,6 +423,7 @@ pub(crate) struct RuntimePaths {
     /// Where Codex reads its user config: `$CODEX_HOME`, else `~/.codex`.
     codex_home: Option<PathBuf>,
     current_executable: Option<PathBuf>,
+    path_env: Option<OsString>,
 }
 
 impl RuntimePaths {
@@ -448,6 +449,7 @@ impl RuntimePaths {
             home_dir: home_dir_from_env(environment),
             codex_home: codex_home_from_env(environment),
             current_executable: std::env::current_exe().ok(),
+            path_env: std::env::var_os("PATH"),
         })
     }
 }
@@ -1673,7 +1675,7 @@ fn codemod_cli_invocation_for_mcp(
         InstallScope::Project => codemod_cli_npx_invocation(),
         InstallScope::User => codemod_cli_invocation_candidates(scope, runtime_paths)
             .into_iter()
-            .find(codemod_cli_invocation_available)
+            .find(|invocation| codemod_cli_invocation_available(invocation, runtime_paths))
             .unwrap_or_else(codemod_cli_npx_invocation),
     }
 }
@@ -1708,21 +1710,25 @@ fn is_codemod_generated_mcp_launcher(command: &str, args: &[String]) -> bool {
     prefix.is_empty() && stem == CODEMOD_CLI_COMMAND
 }
 
-fn codemod_cli_invocation_available(invocation: &CodemodCliInvocation) -> bool {
+fn codemod_cli_invocation_available(
+    invocation: &CodemodCliInvocation,
+    runtime_paths: &RuntimePaths,
+) -> bool {
     if is_explicit_command_path(&invocation.command) {
         return Path::new(&invocation.command).exists();
     }
 
-    command_exists_in_path(&invocation.command)
+    command_exists_in_path(&invocation.command, runtime_paths.path_env.as_ref())
 }
 
-fn command_exists_in_path(command: &str) -> bool {
-    std::env::var_os("PATH")
+/// npx prepends its cache's `node_modules/.bin` to PATH, so a command found there
+/// is the same transient shim and must not be persisted as a bare command.
+fn command_exists_in_path(command: &str, path_env: Option<&OsString>) -> bool {
+    path_env
         .map(|paths| {
-            std::env::split_paths(&paths).any(|dir| {
-                let candidate = dir.join(command);
-                candidate.is_file()
-            })
+            std::env::split_paths(paths)
+                .filter(|dir| !is_npx_cache_path(dir))
+                .any(|dir| dir.join(command).is_file())
         })
         .unwrap_or(false)
 }
@@ -4490,6 +4496,7 @@ mod tests {
             home_dir: Some(temp_dir.path().join("home")),
             codex_home: Some(temp_dir.path().join("home").join(CODEX_CONFIG_DIR_NAME)),
             current_executable: Some(codemod_executable),
+            path_env: None,
         };
         std::fs::create_dir_all(&runtime_paths.cwd).unwrap();
         std::fs::create_dir_all(runtime_paths.home_dir.as_ref().unwrap()).unwrap();
@@ -4531,17 +4538,19 @@ mod tests {
     }
 
     /// A project whose path contains spaces, installed by a CLI that npx launched
-    /// from its package cache.
+    /// from its package cache, with npx's transient `.bin` shim first on PATH.
     fn npx_launched_runtime_paths(root: &Path, project_dir_name: &str) -> RuntimePaths {
-        let npx_executable =
-            root.join("npm cache/_npx/0a1b2c3d/node_modules/@codemod.com/cli-darwin-arm64/codemod");
+        let npx_modules = root.join("npm cache/_npx/0a1b2c3d/node_modules");
+        let npx_executable = npx_modules.join("@codemod.com/cli-darwin-arm64/codemod");
         write_fake_executable(&npx_executable, "#!/bin/sh\nexit 0\n");
+        write_fake_executable(&npx_modules.join(".bin/codemod"), "#!/bin/sh\nexit 0\n");
         let home_dir = root.join("home dir");
         let runtime_paths = RuntimePaths {
             cwd: root.join(project_dir_name),
             home_dir: Some(home_dir.clone()),
             codex_home: Some(home_dir.join(CODEX_CONFIG_DIR_NAME)),
             current_executable: Some(npx_executable),
+            path_env: Some(std::env::join_paths([npx_modules.join(".bin")]).unwrap()),
         };
         fs::create_dir_all(&runtime_paths.cwd).unwrap();
         fs::create_dir_all(&home_dir).unwrap();
@@ -4642,10 +4651,24 @@ mod tests {
         let config_path =
             install_mcp_server_config(Harness::Claude, &user_request, &npx_runtime).unwrap();
         let command = generated_mcp_command(Harness::Claude, &config_path);
-        // Falls back to a codemod binary on PATH when this machine has one, else pinned npx.
-        assert!(
-            command == ["codemod", "mcp"] || command == pinned_npx_mcp_command(),
-            "{command:?}"
+        // The only codemod on PATH is npx's transient shim, so persist pinned npx.
+        assert_eq!(command, pinned_npx_mcp_command());
+
+        // A codemod installed outside the npx cache is still preferred.
+        let global_bin = temp_dir.path().join("global bin");
+        write_fake_executable(&global_bin.join("codemod"), "#!/bin/sh\nexit 0\n");
+        let npx_shim_dir = std::env::split_paths(npx_runtime.path_env.as_ref().unwrap())
+            .next()
+            .unwrap();
+        let with_global = RuntimePaths {
+            path_env: Some(std::env::join_paths([npx_shim_dir, global_bin]).unwrap()),
+            ..npx_runtime
+        };
+        let config_path =
+            install_mcp_server_config(Harness::Claude, &user_request, &with_global).unwrap();
+        assert_eq!(
+            generated_mcp_command(Harness::Claude, &config_path),
+            vec!["codemod".to_string(), "mcp".to_string()]
         );
     }
 
