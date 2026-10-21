@@ -135,6 +135,7 @@ The installed skill also points users to CLI fallbacks when MCP is unavailable o
 
 `ai` also wires a periodic, cooldown-protected update check trigger:
 - `claude`: `hooks.SessionStart` command in `./.claude/settings.json` (project) or `~/.claude/settings.json` (user). The project hook runs `"$CLAUDE_PROJECT_DIR"/.claude/codemod/periodic-update/check-updates.sh`, so it keeps working after the project is cloned or moved. Re-running `ai` replaces a project hook that an earlier install wrote with an absolute runner path, including one written from a different checkout.
+  Only unmodified generated hooks are migrated automatically. Hooks with custom matchers, timeouts or other fields are preserved; update their paths manually when moving a checkout.
 - `cursor`: `hooks.afterAgentResponse` command in `./.cursor/hooks.json` (project) or `~/.cursor/hooks.json` (user)
 - `opencode`: plugin `codemod-periodic-update.js` in `./.opencode/plugins/` (project) or `~/.config/opencode/plugins/` (user), listening to `session.idle`
 - `goose`: managed `codemod-periodic-update` block in `./.goosehints` (project) or `~/.config/goose/.goosehints` (user) as fallback guidance
