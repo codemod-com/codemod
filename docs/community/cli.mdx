@@ -74,18 +74,20 @@ npx codemod ai [--harness <claude|goose|opencode|cursor|codex|auto>] [--project|
 
 Interactive prompts are enabled by default in TTY sessions. Use `--no-interactive` to skip prompts and use flags/defaults directly.
 
-Along with skill files, install writes or updates a Codemod MCP server entry:
+Along with skill files, install writes or updates a Codemod MCP server entry. Project installs (`--project`) write a portable launcher pinned to the CLI version that ran the install, so the config can be committed and used on other machines and checkouts:
 
 ```json
 {
   "mcpServers": {
     "codemod": {
       "command": "npx",
-      "args": ["codemod@latest", "mcp"]
+      "args": ["-y", "codemod@<installing CLI version>", "mcp"]
     }
   }
 }
 ```
+
+User installs (`--user`) stay on the current machine, so they launch the installed `codemod` executable directly. If the CLI itself was run through `npx`, its cached executable is temporary, so user installs fall back to `codemod` on `PATH` or the same pinned `npx` launcher. Re-running `ai` updates entries that an earlier Codemod install generated (including absolute executable paths) without `--force`.
 
 For Opencode, install writes `opencode.json` using the Opencode-specific `mcp` schema instead of `mcpServers`.
 
@@ -127,7 +129,7 @@ The installed skill also points users to CLI fallbacks when MCP is unavailable o
 - `npx codemod ai feedback --category <category> --message <message>`: submit short anonymous platform feedback after consent is recorded
 
 `ai` also wires a periodic, cooldown-protected update check trigger:
-- `claude`: `hooks.SessionStart` command in `./.claude/settings.json` (project) or `~/.claude/settings.json` (user)
+- `claude`: `hooks.SessionStart` command in `./.claude/settings.json` (project) or `~/.claude/settings.json` (user). The project hook runs `"$CLAUDE_PROJECT_DIR"/.claude/codemod/periodic-update/check-updates.sh`, so it keeps working after the project is cloned or moved.
 - `cursor`: `hooks.afterAgentResponse` command in `./.cursor/hooks.json` (project) or `~/.cursor/hooks.json` (user)
 - `opencode`: plugin `codemod-periodic-update.js` in `./.opencode/plugins/` (project) or `~/.config/opencode/plugins/` (user), listening to `session.idle`
 - `goose`: managed `codemod-periodic-update` block in `./.goosehints` (project) or `~/.config/goose/.goosehints` (user) as fallback guidance
