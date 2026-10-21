@@ -1240,14 +1240,23 @@ fn upsert_claude_session_start_hook_command(
             .is_some_and(|hooks| hooks.iter().any(|hook| is_command_hook(hook, command)))
     });
     // Rewrite the first legacy hook in place and drop the rest, removing only the
-    // entries this leaves empty.
+    // entries this leaves empty. Only the exact shapes earlier installs wrote are
+    // touched: an entry with just `hooks`, holding hooks with just `type` and
+    // `command`. Entries with a matcher or hooks with extra fields are user-owned.
     session_start_hooks.retain_mut(|entry| {
+        if !entry
+            .as_object()
+            .is_some_and(|entry| entry.len() == 1 && entry.contains_key("hooks"))
+        {
+            return true;
+        }
         let Some(hooks) = entry.get_mut("hooks").and_then(Value::as_array_mut) else {
             return true;
         };
         let original_len = hooks.len();
         hooks.retain_mut(|hook| {
-            let is_legacy = hook.get("type").and_then(Value::as_str) == Some("command")
+            let is_legacy = hook.as_object().is_some_and(|hook| hook.len() == 2)
+                && hook.get("type").and_then(Value::as_str) == Some("command")
                 && hook
                     .get("command")
                     .and_then(Value::as_str)
@@ -4844,6 +4853,63 @@ mod tests {
             &runtime_paths,
         )
         .unwrap();
+        assert!(!second.updated_paths.contains(&settings_path));
+        assert_eq!(fs::read_to_string(&settings_path).unwrap(), migrated);
+    }
+
+    #[test]
+    fn claude_project_hook_migration_preserves_customized_legacy_hooks() {
+        let (runtime_paths, _temp_dir) = runtime_paths_with_temp_roots();
+        let settings_path =
+            expected_harness_root(&runtime_paths, Harness::Claude, InstallScope::Project)
+                .join(CODEMOD_PERIODIC_TRIGGER_CLAUDE_SETTINGS_FILE_NAME);
+        fs::create_dir_all(settings_path.parent().unwrap()).unwrap();
+        let legacy = "/machine-a/project/.claude/codemod/periodic-update/check-updates.sh";
+        let resume_entry = json!({
+            "matcher": "resume",
+            "hooks": [{ "type": "command", "command": legacy }]
+        });
+        let timeout_entry = json!({
+            "hooks": [{ "type": "command", "command": legacy, "timeout": 30 }]
+        });
+        let committed = json!({
+            "hooks": {
+                "SessionStart": [
+                    { "hooks": [{ "type": "command", "command": legacy }] },
+                    resume_entry,
+                    timeout_entry,
+                    { "hooks": [{ "type": "command", "command": "C:\\machine-b\\project\\.claude\\codemod\\periodic-update\\check-updates.sh" }] }
+                ]
+            }
+        });
+        fs::write(&settings_path, committed.to_string()).unwrap();
+
+        let install = || {
+            upsert_periodic_update_trigger_with_runtime(
+                Harness::Claude,
+                InstallScope::Project,
+                PeriodicUpdatePolicy::Manual,
+                &runtime_paths,
+            )
+            .unwrap()
+        };
+        install();
+
+        let migrated = fs::read_to_string(&settings_path).unwrap();
+        let parsed: Value = serde_json::from_str(&migrated).unwrap();
+        let session_start = parsed["hooks"]["SessionStart"].as_array().unwrap();
+        assert_eq!(
+            session_start,
+            &vec![
+                json!({ "hooks": [{ "type": "command", "command": CLAUDE_PROJECT_RUNNER_COMMAND }] }),
+                resume_entry.clone(),
+                timeout_entry.clone(),
+            ]
+        );
+        assert_eq!(session_start[1].to_string(), resume_entry.to_string());
+        assert_eq!(session_start[2].to_string(), timeout_entry.to_string());
+
+        let second = install();
         assert!(!second.updated_paths.contains(&settings_path));
         assert_eq!(fs::read_to_string(&settings_path).unwrap(), migrated);
     }
