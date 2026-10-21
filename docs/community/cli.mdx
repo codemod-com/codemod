@@ -89,6 +89,11 @@ Along with skill files, install writes or updates a Codemod MCP server entry. Pr
 
 User installs (`--user`) stay on the current machine, so they launch the installed `codemod` executable directly. If the CLI itself was run through `npx`, its cached executable is temporary, so user installs fall back to `codemod` on `PATH` or the same pinned `npx` launcher. Re-running `ai` updates entries that an earlier Codemod install generated (including absolute executable paths) without `--force`.
 
+Prerequisites for project installs:
+- The project MCP launcher needs Node.js and npm (`npx`) on every machine that uses the committed config. The first launch of a pinned version downloads it from the npm registry unless it is already in the npm cache.
+- If npm is not available, use `--user` with an installed `codemod` executable instead.
+- The Claude periodic update hook runs a POSIX shell script. Claude Code runs hook commands with `sh` on macOS and Linux and with Git Bash on Windows, so Windows machines need Git for Windows; the hook does not run under PowerShell.
+
 For Opencode, install writes `opencode.json` using the Opencode-specific `mcp` schema instead of `mcpServers`.
 
 MCP config paths by harness and scope:
@@ -129,7 +134,7 @@ The installed skill also points users to CLI fallbacks when MCP is unavailable o
 - `npx codemod ai feedback --category <category> --message <message>`: submit short anonymous platform feedback after consent is recorded
 
 `ai` also wires a periodic, cooldown-protected update check trigger:
-- `claude`: `hooks.SessionStart` command in `./.claude/settings.json` (project) or `~/.claude/settings.json` (user). The project hook runs `"$CLAUDE_PROJECT_DIR"/.claude/codemod/periodic-update/check-updates.sh`, so it keeps working after the project is cloned or moved.
+- `claude`: `hooks.SessionStart` command in `./.claude/settings.json` (project) or `~/.claude/settings.json` (user). The project hook runs `"$CLAUDE_PROJECT_DIR"/.claude/codemod/periodic-update/check-updates.sh`, so it keeps working after the project is cloned or moved. Re-running `ai` replaces a project hook that an earlier install wrote with an absolute runner path, including one written from a different checkout.
 - `cursor`: `hooks.afterAgentResponse` command in `./.cursor/hooks.json` (project) or `~/.cursor/hooks.json` (user)
 - `opencode`: plugin `codemod-periodic-update.js` in `./.opencode/plugins/` (project) or `~/.config/opencode/plugins/` (user), listening to `session.idle`
 - `goose`: managed `codemod-periodic-update` block in `./.goosehints` (project) or `~/.config/goose/.goosehints` (user) as fallback guidance

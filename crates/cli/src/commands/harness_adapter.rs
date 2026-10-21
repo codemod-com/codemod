@@ -1125,12 +1125,15 @@ fn upsert_claude_session_start_periodic_hook(
     settings_path: &Path,
     runner_path: &Path,
 ) -> AdapterResult<bool> {
-    upsert_claude_session_start_hook_command(settings_path, &runner_path.to_string_lossy(), None)
+    upsert_claude_session_start_hook_command(settings_path, &runner_path.to_string_lossy(), |_| {
+        false
+    })
 }
 
 /// Project settings are shared through version control, so the hook resolves the
 /// runner through Claude Code's `CLAUDE_PROJECT_DIR` instead of an absolute path.
-/// A hook previously written with the absolute runner path is replaced in place.
+/// Hooks previously written with an absolute runner path, from this or any other
+/// checkout of the project, are replaced in place.
 fn upsert_claude_project_session_start_periodic_hook(
     settings_path: &Path,
     runner_path: &Path,
@@ -1150,14 +1153,35 @@ fn upsert_claude_project_session_start_periodic_hook(
     upsert_claude_session_start_hook_command(
         settings_path,
         &format!("\"$CLAUDE_PROJECT_DIR\"/{relative_runner_path}"),
-        Some(&runner_path.to_string_lossy()),
+        |command| is_absolute_project_runner_command(command, &relative_runner_path),
     )
+}
+
+/// Whether a hook command is exactly an absolute path (Unix or Windows form) to
+/// the project runner, which is how earlier Codemod installs wrote project hooks.
+/// Commands with arguments, quoting, or shell syntax are treated as user-owned.
+fn is_absolute_project_runner_command(command: &str, relative_runner_path: &str) -> bool {
+    let normalized = command.replace('\\', "/");
+    let Some(root) = normalized
+        .strip_suffix(relative_runner_path)
+        .and_then(|root| root.strip_suffix('/'))
+    else {
+        return false;
+    };
+    let bytes = root.as_bytes();
+    let is_absolute = root.starts_with('/')
+        || (bytes.len() >= 2 && bytes[0].is_ascii_alphabetic() && bytes[1] == b':');
+    let has_shell_syntax = root.contains(" /")
+        || root
+            .chars()
+            .any(|character| "'\"`$;&|<>".contains(character));
+    is_absolute && !has_shell_syntax
 }
 
 fn upsert_claude_session_start_hook_command(
     settings_path: &Path,
     command: &str,
-    legacy_command: Option<&str>,
+    is_legacy_command: impl Fn(&str) -> bool,
 ) -> AdapterResult<bool> {
     let existing = if settings_path.exists() {
         fs::read_to_string(settings_path).map_err(|error| {
@@ -1209,22 +1233,36 @@ fn upsert_claude_session_start_hook_command(
         hook.get("type").and_then(Value::as_str) == Some("command")
             && hook.get("command").and_then(Value::as_str) == Some(expected)
     };
-    if let Some(legacy_command) = legacy_command.filter(|legacy| *legacy != command) {
-        for hook in session_start_hooks
-            .iter_mut()
-            .filter_map(|entry| entry.get_mut("hooks").and_then(Value::as_array_mut))
-            .flatten()
-        {
-            if is_command_hook(hook, legacy_command) {
-                hook["command"] = json!(command);
-            }
-        }
-    }
-    let already_present = session_start_hooks.iter().any(|entry| {
+    let mut already_present = session_start_hooks.iter().any(|entry| {
         entry
             .get("hooks")
             .and_then(Value::as_array)
             .is_some_and(|hooks| hooks.iter().any(|hook| is_command_hook(hook, command)))
+    });
+    // Rewrite the first legacy hook in place and drop the rest, removing only the
+    // entries this leaves empty.
+    session_start_hooks.retain_mut(|entry| {
+        let Some(hooks) = entry.get_mut("hooks").and_then(Value::as_array_mut) else {
+            return true;
+        };
+        let original_len = hooks.len();
+        hooks.retain_mut(|hook| {
+            let is_legacy = hook.get("type").and_then(Value::as_str) == Some("command")
+                && hook
+                    .get("command")
+                    .and_then(Value::as_str)
+                    .is_some_and(|existing| existing != command && is_legacy_command(existing));
+            if !is_legacy {
+                return true;
+            }
+            if already_present {
+                return false;
+            }
+            hook["command"] = json!(command);
+            already_present = true;
+            true
+        });
+        !(hooks.is_empty() && hooks.len() < original_len)
     });
 
     if !already_present {
@@ -4748,6 +4786,96 @@ mod tests {
                 "echo user-hook".to_string()
             ]
         );
+    }
+
+    #[test]
+    fn claude_project_hook_migrates_absolute_runner_hook_from_another_checkout() {
+        let (runtime_paths, _temp_dir) = runtime_paths_with_temp_roots();
+        let settings_path =
+            expected_harness_root(&runtime_paths, Harness::Claude, InstallScope::Project)
+                .join(CODEMOD_PERIODIC_TRIGGER_CLAUDE_SETTINGS_FILE_NAME);
+        fs::create_dir_all(settings_path.parent().unwrap()).unwrap();
+        let custom_runner_hook =
+            "/bin/sh /machine-a/project/.claude/codemod/periodic-update/check-updates.sh";
+        let matcher_entry = json!({
+            "matcher": "startup",
+            "hooks": [{ "type": "command", "command": "echo user-hook" }]
+        });
+        let empty_user_entry = json!({ "hooks": [] });
+        let committed = json!({
+            "permissions": { "allow": ["Bash(ls)"] },
+            "hooks": {
+                "SessionStart": [
+                    { "hooks": [{ "type": "command", "command": "/machine-a/my project/.claude/codemod/periodic-update/check-updates.sh" }] },
+                    matcher_entry,
+                    { "hooks": [{ "type": "command", "command": "C:\\Users\\dev\\my project\\.claude\\codemod\\periodic-update\\check-updates.sh" }] },
+                    { "hooks": [{ "type": "command", "command": custom_runner_hook }] },
+                    empty_user_entry
+                ]
+            }
+        });
+        fs::write(&settings_path, committed.to_string()).unwrap();
+
+        upsert_periodic_update_trigger_with_runtime(
+            Harness::Claude,
+            InstallScope::Project,
+            PeriodicUpdatePolicy::Manual,
+            &runtime_paths,
+        )
+        .unwrap();
+
+        let migrated = fs::read_to_string(&settings_path).unwrap();
+        let parsed: Value = serde_json::from_str(&migrated).unwrap();
+        assert_eq!(
+            parsed["hooks"]["SessionStart"],
+            json!([
+                { "hooks": [{ "type": "command", "command": CLAUDE_PROJECT_RUNNER_COMMAND }] },
+                matcher_entry,
+                { "hooks": [{ "type": "command", "command": custom_runner_hook }] },
+                empty_user_entry
+            ])
+        );
+        assert_eq!(parsed["permissions"], committed["permissions"]);
+
+        let second = upsert_periodic_update_trigger_with_runtime(
+            Harness::Claude,
+            InstallScope::Project,
+            PeriodicUpdatePolicy::Manual,
+            &runtime_paths,
+        )
+        .unwrap();
+        assert!(!second.updated_paths.contains(&settings_path));
+        assert_eq!(fs::read_to_string(&settings_path).unwrap(), migrated);
+    }
+
+    #[test]
+    fn absolute_project_runner_detection_ignores_custom_commands() {
+        let relative = ".claude/codemod/periodic-update/check-updates.sh";
+        for generated in [
+            "/machine-a/project/.claude/codemod/periodic-update/check-updates.sh",
+            "/Users/dev/my project/.claude/codemod/periodic-update/check-updates.sh",
+            "C:\\Users\\dev\\my project\\.claude\\codemod\\periodic-update\\check-updates.sh",
+            "D:/work/project/.claude/codemod/periodic-update/check-updates.sh",
+        ] {
+            assert!(
+                is_absolute_project_runner_command(generated, relative),
+                "{generated}"
+            );
+        }
+        for custom in [
+            CLAUDE_PROJECT_RUNNER_COMMAND,
+            ".claude/codemod/periodic-update/check-updates.sh",
+            "/bin/sh /p/.claude/codemod/periodic-update/check-updates.sh",
+            "cd /p && /p/.claude/codemod/periodic-update/check-updates.sh",
+            "\"/p\"/.claude/codemod/periodic-update/check-updates.sh",
+            "/p/.claude/codemod/periodic-update/check-updates.sh --verbose",
+            "/p/other/check-updates.sh",
+        ] {
+            assert!(
+                !is_absolute_project_runner_command(custom, relative),
+                "{custom}"
+            );
+        }
     }
 
     #[test]
