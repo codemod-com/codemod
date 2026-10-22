@@ -1176,7 +1176,7 @@ fn is_absolute_project_runner_command(command: &str, relative_runner_path: &str)
     let has_shell_syntax = root.contains(" /")
         || root
             .chars()
-            .any(|character| "'\"`$;&|<>".contains(character));
+            .any(|character| "'\"`$;&|<>\n\r".contains(character));
     is_absolute && !has_shell_syntax
 }
 
@@ -4995,6 +4995,8 @@ mod tests {
             "\"/p\"/.claude/codemod/periodic-update/check-updates.sh",
             "/p/.claude/codemod/periodic-update/check-updates.sh --verbose",
             "/p/other/check-updates.sh",
+            "/bin/custom\n/p/.claude/codemod/periodic-update/check-updates.sh",
+            "/bin/custom\r/p/.claude/codemod/periodic-update/check-updates.sh",
         ] {
             assert!(
                 !is_absolute_project_runner_command(custom, relative),
