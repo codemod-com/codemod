@@ -135,7 +135,7 @@ The installed skill also points users to CLI fallbacks when MCP is unavailable o
 
 `ai` also wires a periodic, cooldown-protected update check trigger:
 - `claude`: `hooks.SessionStart` command in `./.claude/settings.json` (project) or `~/.claude/settings.json` (user). The project hook runs `"$CLAUDE_PROJECT_DIR"/.claude/codemod/periodic-update/check-updates.sh`, so it keeps working after the project is cloned or moved. Re-running `ai` replaces a project hook that an earlier install wrote with an absolute runner path, including one written from a different checkout.
-  Only unmodified generated hooks are migrated automatically. Hooks with custom matchers, timeouts or other fields are preserved; update their paths manually when moving a checkout.
+  Only unmodified generated hooks with an unambiguous absolute runner command are migrated automatically. Commands containing whitespace (including old unquoted paths with spaces), quoting, arguments or shell syntax are preserved, as are hooks with custom matchers, timeouts or other fields. Review and remove obsolete preserved hooks manually when moving a checkout; install adds the portable hook without deleting those commands.
 - `cursor`: `hooks.afterAgentResponse` command in `./.cursor/hooks.json` (project) or `~/.cursor/hooks.json` (user)
 - `opencode`: plugin `codemod-periodic-update.js` in `./.opencode/plugins/` (project) or `~/.config/opencode/plugins/` (user), listening to `session.idle`
 - `goose`: managed `codemod-periodic-update` block in `./.goosehints` (project) or `~/.config/goose/.goosehints` (user) as fallback guidance
@@ -145,7 +145,7 @@ Managed update policy is install-flag driven and shared by install-time reconcil
 - `--update-source <local|registry|URL>` (default: `registry`)
 - `--require-signed-manifest` or `--allow-unsigned-manifest` (optional override)
   `--update-source` only accepts `local`, `registry`, or an absolute `http(s)` URL (legacy `registry:`/`url:` aliases are rejected).
-Periodic runs enforce signed manifest verification via `--require-signed-manifest` in the generated runner command.
+Project periodic runners use the same pinned `npx -y codemod@<installing CLI version>` launcher as project MCP, even when another global CLI version is installed. User runners retain their local executable/PATH fallback. Periodic runs enforce signed manifest verification via `--require-signed-manifest` in the generated runner command.
 After install, restart or reload your harness session so newly installed skills and command entrypoints are picked up.
 
 **`ai feedback`**

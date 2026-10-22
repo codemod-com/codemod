@@ -1161,7 +1161,7 @@ fn upsert_claude_project_session_start_periodic_hook(
 
 /// Whether a hook command is exactly an absolute path (Unix or Windows form) to
 /// the project runner, which is how earlier Codemod installs wrote project hooks.
-/// Commands with arguments, quoting, or shell syntax are treated as user-owned.
+/// Ambiguous shell commands (including whitespace and quoting) are user-owned.
 fn is_absolute_project_runner_command(command: &str, relative_runner_path: &str) -> bool {
     let normalized = command.replace('\\', "/");
     let Some(root) = normalized
@@ -1170,13 +1170,15 @@ fn is_absolute_project_runner_command(command: &str, relative_runner_path: &str)
     else {
         return false;
     };
-    let bytes = root.as_bytes();
-    let is_absolute = root.starts_with('/')
-        || (bytes.len() >= 2 && bytes[0].is_ascii_alphabetic() && bytes[1] == b':');
-    let has_shell_syntax = root.contains(" /")
-        || root
-            .chars()
-            .any(|character| "'\"`$;&|<>\n\r".contains(character));
+    let bytes = normalized.as_bytes();
+    let is_absolute = normalized.starts_with('/')
+        || (bytes.len() >= 3
+            && bytes[0].is_ascii_alphabetic()
+            && bytes[1] == b':'
+            && bytes[2] == b'/');
+    let has_shell_syntax = root
+        .chars()
+        .any(|character| character.is_whitespace() || "'\"`$;&|<>()*?[]{}".contains(character));
     is_absolute && !has_shell_syntax
 }
 
@@ -1629,6 +1631,9 @@ fn codemod_cli_invocation_candidates(
     scope: InstallScope,
     runtime_paths: &RuntimePaths,
 ) -> Vec<CodemodCliInvocation> {
+    if scope == InstallScope::Project {
+        return vec![codemod_cli_npx_invocation()];
+    }
     let mut invocations = Vec::new();
     if let (InstallScope::User, Some(current_executable)) =
         (scope, runtime_paths.current_executable.as_ref())
@@ -2497,10 +2502,16 @@ fn install_mcs_skill_bundle_with_runtime(
 
     if let Some(mcp_config_path) = maybe_install_mcp_server_config(harness, request, runtime_paths)?
     {
+        let invocation = codemod_cli_invocation_for_mcp(request.scope, runtime_paths);
+        let package_prefix = format!("{CODEMOD_NPM_PACKAGE}@");
+        let version = invocation
+            .args_prefix
+            .iter()
+            .find_map(|arg| arg.strip_prefix(&package_prefix).map(str::to_string));
         installed.push(InstalledSkill {
             name: "codemod-mcp".to_string(),
             path: mcp_config_path,
-            version: None,
+            version,
             scope: Some(request.scope),
         });
     }
@@ -4654,6 +4665,14 @@ mod tests {
         let command = generated_mcp_command(Harness::Claude, &config_path);
         // The only codemod on PATH is npx's transient shim, so persist pinned npx.
         assert_eq!(command, pinned_npx_mcp_command());
+        let installed =
+            install_mcs_skill_bundle_with_runtime(Harness::Claude, &user_request, &npx_runtime)
+                .unwrap();
+        let mcp = installed
+            .iter()
+            .find(|entry| entry.name == "codemod-mcp")
+            .unwrap();
+        assert_eq!(mcp.version.as_deref(), Some(CODEMOD_CLI_VERSION));
 
         // A codemod installed outside the npx cache is still preferred.
         let global_bin = temp_dir.path().join("global bin");
@@ -4874,6 +4893,7 @@ mod tests {
             "permissions": { "allow": ["Bash(ls)"] },
             "hooks": {
                 "SessionStart": [
+                    { "hooks": [{ "type": "command", "command": "/machine-a/project/.claude/codemod/periodic-update/check-updates.sh" }] },
                     { "hooks": [{ "type": "command", "command": "/machine-a/my project/.claude/codemod/periodic-update/check-updates.sh" }] },
                     matcher_entry,
                     { "hooks": [{ "type": "command", "command": "C:\\Users\\dev\\my project\\.claude\\codemod\\periodic-update\\check-updates.sh" }] },
@@ -4898,7 +4918,9 @@ mod tests {
             parsed["hooks"]["SessionStart"],
             json!([
                 { "hooks": [{ "type": "command", "command": CLAUDE_PROJECT_RUNNER_COMMAND }] },
+                committed["hooks"]["SessionStart"][1],
                 matcher_entry,
+                committed["hooks"]["SessionStart"][3],
                 { "hooks": [{ "type": "command", "command": custom_runner_hook }] },
                 empty_user_entry
             ])
@@ -4978,9 +5000,9 @@ mod tests {
         let relative = ".claude/codemod/periodic-update/check-updates.sh";
         for generated in [
             "/machine-a/project/.claude/codemod/periodic-update/check-updates.sh",
-            "/Users/dev/my project/.claude/codemod/periodic-update/check-updates.sh",
-            "C:\\Users\\dev\\my project\\.claude\\codemod\\periodic-update\\check-updates.sh",
             "D:/work/project/.claude/codemod/periodic-update/check-updates.sh",
+            "C:/.claude/codemod/periodic-update/check-updates.sh",
+            "/.claude/codemod/periodic-update/check-updates.sh",
         ] {
             assert!(
                 is_absolute_project_runner_command(generated, relative),
@@ -4989,7 +5011,16 @@ mod tests {
         }
         for custom in [
             CLAUDE_PROJECT_RUNNER_COMMAND,
+            "/Users/dev/my project/.claude/codemod/periodic-update/check-updates.sh",
+            r"C:\Users\dev\my project\.claude\codemod\periodic-update\check-updates.sh",
+            "/bin/echo --runner=/old/.claude/codemod/periodic-update/check-updates.sh",
+            "/bin/sh\t/p/.claude/codemod/periodic-update/check-updates.sh",
+            "/p/*/.claude/codemod/periodic-update/check-updates.sh",
+            "/p/(custom)/.claude/codemod/periodic-update/check-updates.sh",
             ".claude/codemod/periodic-update/check-updates.sh",
+            "C:project/.claude/codemod/periodic-update/check-updates.sh",
+            "C:../project/.claude/codemod/periodic-update/check-updates.sh",
+            r"C:project\.claude\codemod\periodic-update\check-updates.sh",
             "/bin/sh /p/.claude/codemod/periodic-update/check-updates.sh",
             "cd /p && /p/.claude/codemod/periodic-update/check-updates.sh",
             "\"/p\"/.claude/codemod/periodic-update/check-updates.sh",
@@ -5002,6 +5033,52 @@ mod tests {
                 !is_absolute_project_runner_command(custom, relative),
                 "{custom}"
             );
+        }
+    }
+
+    #[test]
+    fn claude_project_hook_preserves_ambiguous_commands_on_reinstall() {
+        for portable_present in [false, true] {
+            let (runtime_paths, _temp_dir) = runtime_paths_with_temp_roots();
+            let settings_path = runtime_paths.cwd.join(".claude/settings.json");
+            fs::create_dir_all(settings_path.parent().unwrap()).unwrap();
+            let custom = vec![
+                "/bin/echo --runner=/old/.claude/codemod/periodic-update/check-updates.sh",
+                "/bin/sh\t/p/.claude/codemod/periodic-update/check-updates.sh",
+                "C:project/.claude/codemod/periodic-update/check-updates.sh",
+                "/Users/dev/my project/.claude/codemod/periodic-update/check-updates.sh",
+            ];
+            let mut commands = custom.clone();
+            if portable_present {
+                commands.push(CLAUDE_PROJECT_RUNNER_COMMAND);
+            }
+            let entries = commands
+                .iter()
+                .map(|command| json!({ "hooks": [{ "type": "command", "command": command }] }))
+                .collect::<Vec<_>>();
+            fs::write(
+                &settings_path,
+                json!({ "hooks": { "SessionStart": entries } }).to_string(),
+            )
+            .unwrap();
+            for _ in 0..2 {
+                upsert_periodic_update_trigger_with_runtime(
+                    Harness::Claude,
+                    InstallScope::Project,
+                    PeriodicUpdatePolicy::Manual,
+                    &runtime_paths,
+                )
+                .unwrap();
+                let actual =
+                    claude_session_start_commands(&fs::read_to_string(&settings_path).unwrap());
+                let expected = custom
+                    .iter()
+                    .copied()
+                    .chain([CLAUDE_PROJECT_RUNNER_COMMAND])
+                    .map(str::to_string)
+                    .collect::<Vec<_>>();
+                assert_eq!(actual, expected);
+            }
         }
     }
 
@@ -5063,7 +5140,7 @@ mod tests {
         );
         write_fake_executable(
             &fake_bin.join("npx"),
-            "#!/bin/sh\nprintf 'npx args=%s\\n' \"$*\" >> \"$FAKE_LOG\"\nexit 1\n",
+            "#!/bin/sh\nprintf 'npx cwd=%s args=%s\\n' \"$(pwd -P)\" \"$*\" >> \"$FAKE_LOG\"\n",
         );
         let status = std::process::Command::new("sh")
             .arg("-c")
@@ -5081,8 +5158,8 @@ mod tests {
         assert_eq!(
             log,
             format!(
-                "codemod cwd={} args=ai --harness claude --project --update-policy manual --require-signed-manifest --format json\n",
-                moved_project.display()
+                "npx cwd={} args=-y codemod@{} ai --harness claude --project --update-policy manual --require-signed-manifest --format json\n",
+                moved_project.display(), CODEMOD_CLI_VERSION
             )
         );
         assert!(moved_project
@@ -6192,6 +6269,11 @@ codemod-skill-version: 0.1.0
                     expected_project_mcp_path(&runtime_paths, harness)
                 );
                 assert!(mcp_entry.path.exists());
+                assert_eq!(mcp_entry.version.as_deref(), Some(CODEMOD_CLI_VERSION));
+                assert_eq!(
+                    generated_mcp_command(harness, &mcp_entry.path),
+                    pinned_npx_mcp_command()
+                );
             } else {
                 assert!(installed.iter().all(|entry| entry.name != "codemod-mcp"));
             }
