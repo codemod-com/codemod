@@ -409,6 +409,52 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn registry_server_answers_requests_split_across_tcp_writes() {
+        let workflow = workflow_yaml_without_children();
+        let packages = HashMap::from([(
+            "child-pro".to_string(),
+            MockPackage {
+                workflow: workflow.clone(),
+                dry_run_only: false,
+            },
+        )]);
+        let (registry_url, server) = spawn_registry_server(packages).await;
+        let address = registry_url
+            .strip_prefix("http://")
+            .expect("registry address");
+        let mut client = tokio::net::TcpStream::connect(address)
+            .await
+            .expect("connect to test registry");
+
+        // Split inside the path: a server that answers from its first read
+        // sees `/cdn/child` and responds 404 instead of serving the archive.
+        client
+            .write_all(b"GET /cdn/child")
+            .await
+            .expect("write first request fragment");
+        for _ in 0..16 {
+            tokio::task::yield_now().await;
+        }
+        client
+            .write_all(b"-pro.tgz HTTP/1.1\r\nHost: localhost\r\n\r\n")
+            .await
+            .expect("write second request fragment");
+
+        let mut response = Vec::new();
+        client
+            .read_to_end(&mut response)
+            .await
+            .expect("read registry response");
+        let body = package_archive(&workflow);
+        let head = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: application/gzip\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+            body.len()
+        );
+        assert_eq!(response, [head.as_bytes(), &body].concat());
+        server.abort();
+    }
+
+    #[tokio::test]
     async fn validates_direct_bundle_dependencies_concurrently() {
         let packages = HashMap::from([
             (
